@@ -1,0 +1,212 @@
+---
+title: Questo è un test.
+createdAt: '2023-06-02T00:00:00Z'
+modifiedAt: '2023-06-02T00:00:00Z'
+summary: Ascoltami, non mi aprire e non mi leggere.
+image: '/images/blog/test/thumb.png'
+authorId: matteo
+tags: ['test', 'example']
+---
+
+Se c'è una cosa che non sopporto è quando qualcuno mi ruba del tempo inutilmente.
+
+In questo momento, se stai leggendo questo testo, stai rubando del tempo a te stesso.
+
+Perché questo testo non ha alcun senso, non ha alcun significato, non ha alcun valore.
+Non è un testo che ti insegna qualcosa, non è un testo che ti fa riflettere, non è un testo che ti fa ridere.
+
+Io ti avevo avvertito, non mi aprire e non mi leggere.
+
+# Questo è un h1
+
+## Questo è un h2
+
+### Questo è un h3
+
+Questo è un paragrafo.
+
+Questo è un paragrafo con un link: [devv](https://devv.it)
+
+Questo è del testo in grassetto: **Devv**
+
+Questo è del testo in corsivo: _Devv_
+
+Questo è del testo barrato: ~~Devv~~
+
+Questo è del testo sottolineato: <u>Devv</u>
+
+Questo è del testo con tasti:
+
+Questo è un elenco puntato:
+
+-   [Devv](https://devv.it) - The best website
+-   [Wezard](https://wezard.it) - The best software house
+
+Questo è un elenco numerato:
+
+1. Elemento numero 1
+2. Elemento numero 2
+3. Elemento numero 3
+
+Questa è una gif:
+
+<Image src='/images/blog/test/example.gif' alt='Demo' width={1500} height={500} />
+
+Questa è una immagine:
+
+<Image src='/images/blog/test/project-example.webp' alt='Download CMWTAT Digital' width={1500} height={500} />
+
+## Tabella
+
+Questa è una tabella:
+
+<Table
+    headers={['Example', 'Description', 'Rules']}
+    rows={[
+        ['$value', 'Lowercase', '✅'],
+        ['$Value', 'Uppercase', '✅'],
+        ['$_value', 'Underscore', '✅'],
+        ['$1value', 'Start from number', '❌'],
+    ]}
+/>
+
+## Codice
+
+Inline `code` has `back-ticks around` it.
+
+Inline [`code`]() with link.
+
+Inline `console.log("hello world"){:js}` highlighted code
+
+Questo è del codice inline: `console.log('Hello world!')`
+
+Questi sono snippet di codice:
+
+```sh title="Terminal"
+yarn create next-app nextjs-mdx-blog
+```
+
+```js showLineNumbers title="lib/mdx.js" {3}
+import path from 'path'
+
+const POSTS_PATH = path.join(root, 'data', 'blog')
+// Output: A:\nextjs-mdx-blog\data\blog
+```
+
+```jsx showLineNumbers title="pages/index.js"
+import Link from 'next/link'
+
+import { formatDate } from '../lib/formatDate'
+import { getAllPosts } from '../lib/mdx'
+
+export default function Home({ posts }) {
+    return (
+        <>
+            <h1 className='mb-8 text-6xl font-bold'>Blog</h1>
+            <hr className='my-8' />
+            <ul className='flex flex-col gap-3'>
+                {posts.map(({ slug, title, summary, date }) => (
+                    <li key={slug}>
+                        <Link href={`/blog/${slug}`}>
+                            <a className='block rounded-lg border border-solid border-gray-300 p-6 shadow-md'>
+                                <div className='flex justify-between'>
+                                    <h2>{title}</h2>
+                                    <time dateTime={date}>{formatDate(date)}</time>
+                                </div>
+                                <p className='mt-4'>{summary}</p>
+                            </a>
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </>
+    )
+}
+
+// Use getStaticProps to get all articles
+export const getStaticProps = async () => {
+    const posts = getAllPosts()
+
+    return {
+        props: {
+            posts,
+        },
+    }
+}
+```
+
+Questo è un blocco di testo:
+
+```txt
+ZF3R0-FHED2-M80TY-8QYAC-NPKYF
+YF390-0HF8P-M81RQ-2DXQE-M2UT6
+ZF71R-DMX85-08DQY-8YMNC-PPHV8
+```
+
+## Altri componenti
+
+Questo è un Item:
+
+<ItemGrid
+    items={[
+        {
+            image: '/images/blog/test/thumb.webp',
+            name: 'Next.js',
+            description: 'The React Framework for Production',
+            url: 'https://nextjs.org',
+        },
+    ]}
+/>
+
+Questa è una directory:
+
+<Tree
+    data={[
+        {
+            name: 'components',
+            children: [{ name: 'Layout.js' }],
+        },
+        {
+            name: 'data',
+            children: [
+                {
+                    name: 'blog',
+                    children: [{ name: 'markdown.mdx' }, { name: 'nextjs.mdx' }, { name: 'react.mdx' }],
+                },
+            ],
+        },
+        {
+            name: 'lib',
+            children: [{ name: 'formatDate.js' }, { name: 'mdx.js' }],
+        },
+        {
+            name: 'pages',
+            children: [{ name: 'blog', children: [{ name: '[slug].js' }] }],
+        },
+    ]}
+/>
+
+Questo è un blocco di info:
+
+<Alert>
+    <AlertTitle>Link</AlertTitle>
+    <AlertDescription>[Wezard: la migliore software house a Torino](https://wezard.it)</AlertDescription>
+</Alert>
+
+Questo è un blocco di avviso:
+
+<Alert variant='warning'>
+    <AlertTitle>Warning</AlertTitle>
+    <AlertDescription>Installation process, wait patiently</AlertDescription>
+</Alert>
+
+Questa è una CTA:
+
+<CtaCard
+    title="Pronto per l'innovazione aziendale?"
+    description="Esplora come il mio servizio di Fractional CTO può portare la tua azienda all'avanguardia. Contattami per scoprire i benefici tangibili e trasformare la tua strategia tecnologica."
+    primaryButtonText="Contattami Ora"
+    primaryButtonUrl="/contacts"
+    align="center"
+    pattern="circles"
+/>
