@@ -22,7 +22,7 @@ const Steps = [
 
 export function HowToUse() {
     return (
-        <section id='reason' className='container max-w-6xl py-16 md:py-24'>
+        <section id='how-it-works' className='container max-w-6xl py-16 md:py-24'>
             <div className='flex flex-col gap-16'>
                 <div className='mx-auto max-w-2xl space-y-6 md:text-center'>
                     <h2 className='text-balance font-heading text-2xl sm:text-4xl md:text-5xl'>

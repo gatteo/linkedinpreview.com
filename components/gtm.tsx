@@ -5,6 +5,10 @@ import Script from 'next/script'
 import { env } from '@/env.mjs'
 
 export function GTM() {
+    if (process.env.NODE_ENV !== 'production') {
+        return null
+    }
+
     return (
         <>
             <noscript>

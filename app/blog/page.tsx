@@ -6,9 +6,8 @@ import { getAllBlogPosts } from '@/lib/blog'
 import { FilteredPosts } from '@/components/blog/filtered-posts'
 import { Hero } from '@/components/blog/hero'
 
-const title = 'articoli'
-const description =
-    'un remoto angolo del web che posso riempire di articoli, storie e guide. Tanto chi legge i blog nel 2024?'
+const title = 'Tips & Guides'
+const description = 'Useful Tips and Guides to write better LinkedIn posts, get more engagement, and grow your audience'
 
 type Props = {
     params: Record<string, never>

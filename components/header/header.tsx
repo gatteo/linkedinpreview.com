@@ -15,9 +15,12 @@ export function Header() {
                 <Logo className='pr-20' />
                 <div className='flex items-center gap-2'>
                     <Navbar />
+                    <Button asChild size='sm' className='md:hidden'>
+                        <Link href={Routes.Tool}>Get Started, It's Free</Link>
+                    </Button>
                     <MobileNav />
                 </div>
-                <Button asChild size='sm'>
+                <Button asChild size='sm' className='hidden md:flex'>
                     <Link href={Routes.Tool}>Get Started, It's Free</Link>
                 </Button>
             </div>

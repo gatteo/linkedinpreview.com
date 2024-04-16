@@ -58,8 +58,8 @@ export function FAQs() {
                 <Accordion type='multiple'>
                     {FAQList.map((faq) => (
                         <AccordionItem key={faq.question} value={faq.question}>
-                            <AccordionTrigger>{faq.question}</AccordionTrigger>
-                            <AccordionContent>{faq.answer}</AccordionContent>
+                            <AccordionTrigger className='gap-4 text-start'>{faq.question}</AccordionTrigger>
+                            <AccordionContent className=''>{faq.answer}</AccordionContent>
                         </AccordionItem>
                     ))}
                 </Accordion>

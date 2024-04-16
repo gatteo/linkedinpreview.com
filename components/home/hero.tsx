@@ -1,9 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import HeroBG from '@/public/images/bg-pattern-filled.png'
-import { UtmUrl } from '@/utils/urls'
 
-import { UtmMediums } from '@/types/urls'
 import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
 
@@ -55,10 +53,10 @@ export function Hero() {
                     {/* CTA */}
                     <div className='space-x-4'>
                         <Button asChild>
-                            <Link href={UtmUrl(Routes.Tool, { medium: UtmMediums.Hero })}>Get Started</Link>
+                            <Link href={Routes.Tool}>Get Started</Link>
                         </Button>
                         <Button variant='secondary' asChild>
-                            <Link href={UtmUrl(Routes.MainFeatures, { medium: UtmMediums.Hero })}>Learn more</Link>
+                            <Link href={Routes.MainFeatures}>Learn more</Link>
                         </Button>
                     </div>
                 </div>

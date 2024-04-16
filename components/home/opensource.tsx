@@ -7,7 +7,7 @@ import { Button } from '../ui/button'
 
 export function OpenSource() {
     return (
-        <section className='w-full bg-muted py-12 md:py-16 lg:py-24'>
+        <section id='opensource' className='w-full bg-muted py-12 md:py-16 lg:py-24'>
             <div className='container flex flex-col items-center space-y-6 px-4 text-center md:px-6'>
                 <Icons.github className='size-10' />
                 <h2 className='font-heading text-2xl sm:text-4xl md:text-5xl'>Proudly Open Source</h2>
