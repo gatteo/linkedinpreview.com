@@ -22,7 +22,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
                 width={1280}
                 height={720}
                 alt={post.title}
-                className='aspect-video rounded-sm object-cover object-center'
+                className='aspect-video rounded-sm border object-cover object-center shadow-lg'
             />
 
             <div className='mt-4 grow items-start space-y-2'>

@@ -99,7 +99,7 @@ export function PreviewPanel({ content }: { content: string }) {
                                         decoding='async'
                                         data-nimg='1'
                                         className='h-5 w-auto'
-                                        src='/images/post-reactions.svg'
+                                        src='/images/home/post-reactions.svg'
                                     />
                                     <span className='mt-1 text-xs font-medium text-gray-500'>Wezard and 88 others</span>
                                 </div>

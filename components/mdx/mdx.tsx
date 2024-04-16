@@ -35,7 +35,11 @@ const components: MDXComponents = {
     Image: ({ alt, ...rest }: React.ComponentPropsWithoutRef<typeof Image>) => (
         <>
             <ImageZoom>
-                <Image className='rounded-md transition-transform hover:scale-[102%]' alt={alt} {...rest} />
+                <Image
+                    className='rounded-md border shadow-md transition-transform hover:scale-[102%]'
+                    alt={alt}
+                    {...rest}
+                />
             </ImageZoom>
             <figcaption className='text-center'>{alt}</figcaption>
         </>
