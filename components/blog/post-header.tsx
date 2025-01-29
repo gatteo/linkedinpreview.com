@@ -9,6 +9,7 @@ import { AspectRatio } from '../ui/aspect-ratio'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Badge } from '../ui/badge'
 import { ShareIcons } from './share-icons'
+import Link from 'next/link'
 
 type Props = {
     title: string
@@ -29,13 +30,13 @@ export function Header({ createdAt, title, slug, summary, image, author, tags }:
                 <div className='mt-4 text-balance text-muted-foreground md:text-center'>{summary}</div>
                 <div className='mt-16 flex flex-col justify-between gap-8 md:flex-row md:items-center'>
                     <div className='flex flex-wrap items-center gap-2 text-xs sm:text-sm'>
-                        <div className='flex flex-row items-center gap-2'>
+                        <Link className='flex flex-row items-center gap-2' href={author.url}>
                             <Avatar className='size-6'>
                                 <AvatarImage src={author.image} />
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                             <p>{author.name}</p>
-                        </div>
+                        </Link>
 
                         <div className='text-muted-foreground'>•</div>
 

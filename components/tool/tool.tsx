@@ -3,7 +3,7 @@
 import React from 'react'
 
 import { EditorPanel } from './editor-panel'
-import { PreviewPanel } from './preview-panel'
+import { PreviewPanel } from './preview/preview-panel'
 
 export function Tool() {
     const [content, setContent] = React.useState<string>('')

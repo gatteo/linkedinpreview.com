@@ -172,6 +172,7 @@ export function applyStylesJSON(obj: any, style: string[]) {
         })
     }
 }
+
 interface Node {
     type: string
     content?: Node[]
@@ -212,4 +213,51 @@ function mapMarks(style: string) {
         default:
             return ''
     }
+}
+
+function toText(node: Node, parentType = ''): string {
+    if (node.type === 'hardBreak') {
+        return '\n'
+    } else if (node.type === 'text') {
+        return node.text || ''
+    } else if (node.type === 'bulletList') {
+        return node.content?.map((item, index) => `• ${toText(item, node.type)}`).join('\n') || ''
+    } else if (node.type === 'orderedList') {
+        return node.content?.map((item, index) => `${index + 1}. ${toText(item, node.type)}`).join('\n') || ''
+    } else if (node.type === 'listItem') {
+        return node.content?.map((childNode) => toText(childNode, parentType)).join('') || ''
+    } else if (node.content) {
+        return node.content.map((childNode) => toText(childNode, node.type)).join('')
+    } else {
+        return ''
+    }
+}
+
+export function toPlainText(json: Node[]): string {
+    let plainText = ''
+
+    for (let i = 0; i < json.length; i++) {
+        const block = json[i]
+        const text = toText(block)
+
+        if (block.type === 'paragraph' && !text.trim()) {
+            plainText += '\n\n'
+        } else if (block.type === 'bulletList' || block.type === 'orderedList') {
+            // Ensure list starts on a new line
+            plainText = plainText + '\n' + text + '\n'
+        } else {
+            if (
+                i !== json.length - 1 &&
+                (json[i + 1].type === 'paragraph' ||
+                    json[i + 1].type === 'bulletList' ||
+                    json[i + 1].type === 'orderedList') &&
+                json[i + 1].content?.some((item) => item.type === 'text')
+            ) {
+                plainText += text + '\n'
+            } else {
+                plainText += text
+            }
+        }
+    }
+    return plainText.replace(/\n{3,}/g, '\n\n').trim()
 }
