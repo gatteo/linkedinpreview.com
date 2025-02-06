@@ -104,7 +104,6 @@ The app will be available at `localhost:3000`.
   </tr>
 </table>
 
-
 ## 🪪 License
 
 This project is open source and available under the [MIT License](LICENSE).

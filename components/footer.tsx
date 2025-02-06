@@ -47,7 +47,9 @@ export function Footer() {
             <div className='mt-10 space-y-4 border-t pt-10'>
                 <p className='text-sm text-muted-foreground '>
                     Created by{' '}
-                    <Link className='font-semibold' href='https://matteogiardino.com?utm_source=linkedinpreview.com&utm_content=footer'>
+                    <Link
+                        className='font-semibold'
+                        href='https://matteogiardino.com?utm_source=linkedinpreview.com&utm_content=footer'>
                         Matteo Giardino
                     </Link>{' '}
                     - Copywright &copy; {new Date().getFullYear()}

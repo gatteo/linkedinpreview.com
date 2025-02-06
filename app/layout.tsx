@@ -11,7 +11,6 @@ import { GTM } from '@/components/gtm'
 import { Header } from '@/components/header/header'
 import { ProgressProvider } from '@/components/progress-provider'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
-import { ThemeProvider } from '@/components/theme-provider'
 
 import '../styles/globals.css'
 
@@ -55,13 +54,11 @@ export default function RootLayout({
     return (
         <html lang='en' className={cn(sans.variable, cal.variable)}>
             <body>
-                <ThemeProvider attribute='class' defaultTheme='light' enableSystem={false}>
-                    <ProgressProvider>
-                        <Header />
-                        <main className='py-16'>{children}</main>
-                        <Footer />
-                    </ProgressProvider>
-                </ThemeProvider>
+                <ProgressProvider>
+                    <Header />
+                    <main className='py-16'>{children}</main>
+                    <Footer />
+                </ProgressProvider>
                 <GTM />
                 <Toaster />
                 <SpeedInsights />

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { formatDate } from '@/utils/dates'
 import { absoluteUrl } from '@/utils/urls'
 
@@ -9,7 +10,6 @@ import { AspectRatio } from '../ui/aspect-ratio'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Badge } from '../ui/badge'
 import { ShareIcons } from './share-icons'
-import Link from 'next/link'
 
 type Props = {
     title: string
