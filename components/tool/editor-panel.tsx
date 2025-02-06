@@ -54,17 +54,7 @@ export function EditorPanel({ onChange }: { onChange: (json: any) => void }) {
         },
     })
 
-    React.useEffect(() => {
-        const interceptCopy = (event: ClipboardEvent) => {
-            event.preventDefault()
-            handleCopy()
-        }
-
-        document.addEventListener('copy', interceptCopy)
-        return () => document.removeEventListener('copy', interceptCopy)
-    }, [])
-
-    function handleCopy() {
+    const handleCopy = React.useCallback(() => {
         if (!editor) return
 
         const textContent = toPlainText(processNodes(editor.getJSON()).content)
@@ -73,7 +63,17 @@ export function EditorPanel({ onChange }: { onChange: (json: any) => void }) {
             .writeText(textContent)
             .then(() => toast.success('Text copied to clipboard'))
             .catch((err) => toast.error(`Failed to copy text: ${err}`))
-    }
+    }, [editor])
+
+    React.useEffect(() => {
+        const interceptCopy = (event: ClipboardEvent) => {
+            event.preventDefault()
+            handleCopy()
+        }
+
+        document.addEventListener('copy', interceptCopy)
+        return () => document.removeEventListener('copy', interceptCopy)
+    }, [handleCopy])
 
     if (!editor) {
         return <EditorLoading />

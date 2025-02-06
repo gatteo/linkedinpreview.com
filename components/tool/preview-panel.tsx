@@ -135,9 +135,9 @@ export function PreviewPanel({ content }: { content: string }) {
                                     </span>
                                 </div>
                                 <div className='flex items-center justify-end gap-2'>
-                                    {['4 comments', '•', '1 repost'].map((text, index) => (
+                                    {['4 comments', '•', '1 repost'].map((text) => (
                                         <span
-                                            key={index}
+                                            key={text}
                                             className={cn(
                                                 'font-medium text-gray-500',
                                                 screenSize === 'mobile' ? 'text-[10px]' : 'text-xs',

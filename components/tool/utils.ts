@@ -153,12 +153,12 @@ export function applyStyles(characters: string, style: string[]): string {
     return appenders.reduce(applyAppender, styledText)
 }
 
-export function applyStylesJSON(obj: any, style: string[]) {
+export function applyStylesJSON(obj: any) {
     if (obj.content) {
         obj.content.forEach((item) => {
-            const mappedMarks = item.marks.reduce((mark) => mapMarks(mark.type))
+            // const mappedMarks = item.marks.reduce((mark) => mapMarks(mark.type))
 
-            item.content.forEach((item) => {
+            item.content.forEach(() => {
                 if (textItem.text) {
                     textItem.text = textItem.text.toUpperCase()
                 }
@@ -221,7 +221,7 @@ function toText(node: Node, parentType = ''): string {
     } else if (node.type === 'text') {
         return node.text || ''
     } else if (node.type === 'bulletList') {
-        return node.content?.map((item, index) => `• ${toText(item, node.type)}`).join('\n') || ''
+        return node.content?.map((item) => `• ${toText(item, node.type)}`).join('\n') || ''
     } else if (node.type === 'orderedList') {
         return node.content?.map((item, index) => `${index + 1}. ${toText(item, node.type)}`).join('\n') || ''
     } else if (node.type === 'listItem') {
