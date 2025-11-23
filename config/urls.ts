@@ -16,6 +16,11 @@ export const ExternalLinks = {
 export const HeaderLinks: HeaderLinksT = [
     {
         icon: 'learningProductsPage',
+        href: Routes.Tool,
+        text: 'Use Tool',
+    },
+    {
+        icon: 'learningProductsPage',
         href: Routes.HowItWorks,
         text: 'How it works',
     },

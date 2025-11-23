@@ -10,10 +10,11 @@ import { Reactions } from './reactions'
 import { UserInfo } from './user-info'
 
 interface PreviewPanelProps {
-    content: string
+    content: any
+    image: string | null
 }
 
-const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content }) => {
+const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) => {
     const { screenSize } = useScreenSize()
 
     const containerWidth = {
@@ -32,9 +33,17 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content }) => {
                             <UserInfo />
                             <ContentSection content={content} />
                         </div>
-                        <div className='relative'>
-                            <div className='overflow-hidden'></div>
-                        </div>
+                        {image && (
+                            <div className='relative w-full'>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={image}
+                                    alt='Post'
+                                    className='w-full object-cover'
+                                    style={{ maxHeight: '600px', objectFit: 'contain' }}
+                                />
+                            </div>
+                        )}
                         <div className='py-3 pl-4 pr-6'>
                             <Reactions />
                             <hr className='mt-3 border-gray-200' />
@@ -47,10 +56,10 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content }) => {
     )
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content }) => {
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, image }) => {
     return (
         <ScreenSizeProvider>
-            <PreviewPanelContent content={content} />
+            <PreviewPanelContent content={content} image={image} />
         </ScreenSizeProvider>
     )
 }

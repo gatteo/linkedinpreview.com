@@ -25,7 +25,24 @@ const listStyles = `
   }
 `
 
-export function EditorPanel({ onChange }: { onChange: (json: any) => void }) {
+export function EditorPanel({
+    onChange,
+    onImageChange,
+}: {
+    onChange: (json: any) => void
+    onImageChange: (imageSrc: string | null) => void
+}) {
+    const fileInputRef = React.useRef<HTMLInputElement>(null)
+    const [currentImage, setCurrentImage] = React.useState<string | null>(null)
+
+    const handleImageChangeWrapper = React.useCallback(
+        (imageSrc: string | null) => {
+            setCurrentImage(imageSrc)
+            onImageChange(imageSrc)
+        },
+        [onImageChange],
+    )
+
     const editor = useEditor({
         // immediatelyRender: false,
         extensions: [
@@ -75,6 +92,53 @@ export function EditorPanel({ onChange }: { onChange: (json: any) => void }) {
         return () => document.removeEventListener('copy', interceptCopy)
     }, [handleCopy])
 
+    const handleImageUpload = React.useCallback(() => {
+        fileInputRef.current?.click()
+    }, [])
+
+    const handleFileChange = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0]
+            if (!file) return
+
+            // Check if file is an image
+            if (!file.type.startsWith('image/')) {
+                toast.error('Please select an image file')
+                return
+            }
+
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Image size must be less than 5MB')
+                return
+            }
+
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                const src = e.target?.result as string
+                if (src) {
+                    handleImageChangeWrapper(src)
+                    toast.success('Image added successfully')
+                }
+            }
+            reader.onerror = () => {
+                toast.error('Failed to read image file')
+            }
+            reader.readAsDataURL(file)
+
+            // Reset input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+            }
+        },
+        [handleImageChangeWrapper],
+    )
+
+    const handleRemoveImage = React.useCallback(() => {
+        handleImageChangeWrapper(null)
+        toast.success('Image removed')
+    }, [handleImageChangeWrapper])
+
     if (!editor) {
         return <EditorLoading />
     }
@@ -113,14 +177,24 @@ export function EditorPanel({ onChange }: { onChange: (json: any) => void }) {
                         </div>
 
                         <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
-                                <Icons.image className='size-4' />
-                            </Button>
+                            <input
+                                ref={fileInputRef}
+                                type='file'
+                                accept='image/*'
+                                className='hidden'
+                                onChange={handleFileChange}
+                            />
+                            {currentImage ? (
+                                <Button variant='outline' size='icon' onClick={handleRemoveImage} title='Remove Image'>
+                                    <Icons.image className='size-4' />
+                                </Button>
+                            ) : (
+                                <Button variant='outline' size='icon' onClick={handleImageUpload}>
+                                    <Icons.image className='size-4' />
+                                </Button>
+                            )}
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Add Image
+                                {currentImage ? 'Remove Image' : 'Add Image'}
                             </span>
                         </div>
 

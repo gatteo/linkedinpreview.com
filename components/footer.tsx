@@ -33,14 +33,20 @@ export function Footer() {
 
                 <div className='flex flex-col space-y-2'>
                     <h3 className='text-sm font-semibold'>Guides & Resources</h3>
-                    <Link className='text-sm text-muted-foreground hover:underline' href='#'>
-                        Resource 1
+                    <Link
+                        className='text-sm text-muted-foreground hover:underline'
+                        href={Routes.BlogPost('linkedin-algorithm-tips-increase-post-reach')}>
+                        LinkedIn Algorithm Tips
                     </Link>
-                    <Link className='text-sm text-muted-foreground hover:underline' href='#'>
-                        Resource 2
+                    <Link
+                        className='text-sm text-muted-foreground hover:underline'
+                        href={Routes.BlogPost('linkedin-profile-optimization-complete-guide')}>
+                        LinkedIn Profile Optimization
                     </Link>
-                    <Link className='text-sm text-muted-foreground hover:underline' href='#'>
-                        Resource 3
+                    <Link
+                        className='text-sm text-muted-foreground hover:underline'
+                        href={Routes.BlogPost('how-to-write-linkedin-posts-that-get-comments')}>
+                        How to Get More Comments
                     </Link>
                 </div>
             </div>
