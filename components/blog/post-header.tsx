@@ -26,14 +26,14 @@ export function Header({ createdAt, title, slug, summary, image, author, tags }:
     return (
         <>
             <div>
-                <h1 className='text-balance font-heading text-3xl font-bold md:text-center md:text-5xl'>{title}</h1>
-                <div className='mt-4 text-balance text-muted-foreground md:text-center'>{summary}</div>
+                <h1 className='text-balance font-heading text-3xl font-bold md:text-5xl'>{title}</h1>
+                <div className='mt-4 text-balance text-muted-foreground'>{summary}</div>
                 <div className='mt-16 flex flex-col justify-between gap-8 md:flex-row md:items-center'>
                     <div className='flex flex-wrap items-center gap-2 text-xs sm:text-sm'>
                         <Link className='flex flex-row items-center gap-2' href={author.url}>
                             <Avatar className='size-6'>
                                 <AvatarImage src={author.image} />
-                                <AvatarFallback>CN</AvatarFallback>
+                                <AvatarFallback>MG</AvatarFallback>
                             </Avatar>
                             <p>{author.name}</p>
                         </Link>
@@ -62,7 +62,13 @@ export function Header({ createdAt, title, slug, summary, image, author, tags }:
             {image && (
                 <div className='my-6'>
                     <AspectRatio ratio={16 / 9} className='overflow-hidden rounded-lg border shadow-xl'>
-                        <Image src={image} alt={title} fill className='object-cover' />
+                        <Image
+                            src={image}
+                            alt={`Featured image for: ${title}`}
+                            fill
+                            className='object-cover'
+                            priority
+                        />
                     </AspectRatio>
                 </div>
             )}

@@ -6,8 +6,9 @@ import { getAllBlogPosts } from '@/lib/blog'
 import { FilteredPosts } from '@/components/blog/filtered-posts'
 import { Hero } from '@/components/blog/hero'
 
-const title = 'Tips & Guides'
-const description = 'Useful Tips and Guides to write better LinkedIn posts, get more engagement, and grow your audience'
+const title = 'LinkedIn Post Tips & Guides'
+const description =
+    'Expert tips and guides for creating engaging LinkedIn posts. Learn formatting techniques, best practices, and strategies to boost your LinkedIn presence and grow your professional network.'
 
 type Props = {
     params: Record<string, never>

@@ -1,14 +1,17 @@
 import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import { absoluteUrl } from '@/utils/urls'
-import { type Article, type WithContext } from 'schema-dts'
+import { type Article, type BreadcrumbList, type WithContext } from 'schema-dts'
 
 import { BlogPostSource } from '@/types/blog'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { getLocalBlogPost, getLocalBlogPosts } from '@/lib/blog'
+import { generateHowToSchema } from '@/lib/schema'
 import { Footer } from '@/components/blog/post-footer'
 import { Header } from '@/components/blog/post-header'
+import { RelatedArticles } from '@/components/blog/related-articles'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { Content } from '@/components/mdx-content'
 import { ScrollIndicator } from '@/components/scroll-indicator'
 
@@ -100,15 +103,57 @@ export default function Page({ params: { slug } }: Props) {
             'url': post.author.url,
         },
         'publisher': {
-            '@type': 'Person',
-            'name': post.author.name,
-            'url': post.author.url,
+            '@id': `${site.url}/#organization`,
+        },
+        'mainEntityOfPage': {
+            '@type': 'WebPage',
+            '@id': absoluteUrl(Routes.BlogPost(slug)),
         },
     }
 
+    const breadcrumbSchema: WithContext<BreadcrumbList> = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {
+                '@type': 'ListItem',
+                'position': 1,
+                'name': 'Home',
+                'item': site.url,
+            },
+            {
+                '@type': 'ListItem',
+                'position': 2,
+                'name': 'Blog',
+                'item': absoluteUrl(Routes.Blog),
+            },
+            {
+                '@type': 'ListItem',
+                'position': 3,
+                'name': post.title,
+                'item': absoluteUrl(Routes.BlogPost(slug)),
+            },
+        ],
+    }
+
+    // Generate HowTo schema for tutorial posts
+    const howToSchema = generateHowToSchema(post)
+
     return (
-        <main className='container max-w-6xl py-16'>
+        <main className='container max-w-6xl pb-16'>
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+            {howToSchema && (
+                <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
+            )}
+
+            <Breadcrumbs
+                items={[
+                    { label: 'Home', href: '/' },
+                    { label: 'Blog', href: Routes.Blog },
+                    { label: post.title, href: Routes.BlogPost(slug) },
+                ]}
+            />
 
             <Header
                 createdAt={post.createdAt}
@@ -124,6 +169,8 @@ export default function Page({ params: { slug } }: Props) {
             <Content title={post.title} body={post.body} url={absoluteUrl(Routes.BlogPost(slug))} />
 
             <Footer slug={slug} title={post.title} author={post.author} source={BlogPostSource.Local} />
+
+            <RelatedArticles currentPost={post} />
 
             <ScrollIndicator />
         </main>

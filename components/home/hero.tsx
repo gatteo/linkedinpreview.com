@@ -70,9 +70,10 @@ function Background() {
     return (
         <>
             <Image
-                alt='Background'
+                alt='Decorative background pattern for LinkedIn Post Preview tool'
                 className='absolute inset-0 -z-10 size-full animate-pulse object-cover opacity-30'
                 src={HeroBG}
+                priority
             />
             <div className='absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/85 via-20% to-background to-80%' />
         </>

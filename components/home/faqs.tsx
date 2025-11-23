@@ -1,3 +1,5 @@
+import { type FAQPage, type WithContext } from 'schema-dts'
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 
 const FAQList = [
@@ -44,8 +46,22 @@ const FAQList = [
 ]
 
 export function FAQs() {
+    const faqSchema: WithContext<FAQPage> = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': FAQList.map((faq) => ({
+            '@type': 'Question',
+            'name': faq.question,
+            'acceptedAnswer': {
+                '@type': 'Answer',
+                'text': faq.answer,
+            },
+        })),
+    }
+
     return (
         <section id='faqs' className='container max-w-6xl py-16 md:py-24'>
+            <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <div className='space-y-6'>
                 <div className='space-y-4'>
                     <h2 className='font-heading text-2xl sm:text-4xl md:text-5xl'>Frequently Asked Questions</h2>

@@ -10,7 +10,7 @@ type Site = {
 export const site: Site = {
     title: 'LinkedIn Post Preview',
     description:
-        'A free online tool to write, format, and preview your LinkedIn posts before publishing them. Add bold, italic, and emoji to your LinkedIn posts, and see how they look on desktop and mobile.',
+        'Free LinkedIn post preview tool. Format your posts with bold, italic, lists and see exactly how they will look on mobile and desktop before publishing. Improve engagement and professionalism.',
     url: process.env.NODE_ENV === 'production' ? 'https://linkedinpreview.com' : 'http://localhost:3000',
     logo: 'https://linkedinpreview.com/images/logo-rounded-rectangle.png',
 }
@@ -107,9 +107,13 @@ export const siteBaseMetadata: Metadata = {
             },
         ],
     },
-    // verification: {
-    //     google: 'google-site-verification-id',
-    // },
+    verification: {
+        google: 'your-google-site-verification-code',
+        // yandex: 'your-yandex-verification-code',
+        // Add your verification codes after registering with search engines:
+        // Google: https://search.google.com/search-console
+        // Bing: https://www.bing.com/webmasters
+    },
     alternates: {
         canonical: site.url,
         // languages: {

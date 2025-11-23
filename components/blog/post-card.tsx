@@ -18,7 +18,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
             })}
             className='flex flex-col rounded-lg p-4 transition-all duration-150 hover:bg-muted'>
             <Image
-                src={post.image ?? '/images/blog-post-placeholder.webp'}
+                src={post.image ?? '/images/blog-post-placeholder.png'}
                 width={1280}
                 height={720}
                 alt={post.title}

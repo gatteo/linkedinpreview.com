@@ -32,6 +32,7 @@ A free, open source, online tool to write, format, and preview your LinkedIn pos
 - 📈 SEO optimized with meta tags and JSON-LD
 - 📰 RSS feed
 - 🗺 Sitemap
+- 🤖 llms.txt - AI-friendly content discovery
 - 📊 Google Analytics
 - 📖 Table of contents for blog posts
 - 📷 Image zoom - zoom in on images in blog posts
