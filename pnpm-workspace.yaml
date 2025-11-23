@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - '@vercel/speed-insights'
+  - contentlayer
+  - esbuild
+  - protobufjs
+  - sharp
