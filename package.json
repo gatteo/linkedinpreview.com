@@ -103,7 +103,7 @@
         "typescript": "^5"
     },
     "engines": {
-        "node": ">=18",
+        "node": ">=18 <25",
         "pnpm": ">=8"
     },
     "packageManager": "pnpm@9.12.3",
