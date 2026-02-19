@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
+import posthog from 'posthog-js'
 
 import { feedbackConfig } from '@/config/feedback'
 
@@ -25,6 +26,13 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
     const handleVote = (value: 'yes' | 'no') => {
         localStorage.setItem(getStorageKey(slug), value)
         setVote(value)
+
+        // Track article helpful voted event
+        posthog.capture('article_helpful_voted', {
+            article_slug: slug,
+            article_title: title,
+            vote: value,
+        })
 
         window.Tally?.openPopup(formId, {
             hiddenFields: {

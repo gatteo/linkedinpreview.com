@@ -6,6 +6,7 @@ import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
 
 import { Icons } from '../icon'
+import { TrackClick } from '../tracking/track-click'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 
@@ -17,12 +18,14 @@ export function Hero() {
                     {/* Tagline */}
                     <div className='flex items-center gap-6'>
                         <Badge>Completely Free</Badge>
-                        <Link
-                            className='inline-flex items-center space-x-1 text-sm text-muted-foreground'
-                            href={ExternalLinks.GitHub}>
-                            <Icons.github className='size-4' />
-                            <span>View Source</span>
-                        </Link>
+                        <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
+                            <Link
+                                className='inline-flex items-center space-x-1 text-sm text-muted-foreground'
+                                href={ExternalLinks.GitHub}>
+                                <Icons.github className='size-4' />
+                                <span>View Source</span>
+                            </Link>
+                        </TrackClick>
                     </div>
 
                     {/* Headline */}
@@ -52,12 +55,20 @@ export function Hero() {
 
                     {/* CTA */}
                     <div className='space-x-4'>
-                        <Button asChild>
-                            <Link href={Routes.Tool}>Get Started</Link>
-                        </Button>
-                        <Button variant='secondary' asChild>
-                            <Link href={Routes.MainFeatures}>Learn more</Link>
-                        </Button>
+                        <TrackClick
+                            event='cta_button_clicked'
+                            properties={{ button_name: 'get_started', source: 'hero' }}>
+                            <Button asChild>
+                                <Link href={Routes.Tool}>Get Started</Link>
+                            </Button>
+                        </TrackClick>
+                        <TrackClick
+                            event='cta_button_clicked'
+                            properties={{ button_name: 'learn_more', source: 'hero' }}>
+                            <Button variant='secondary' asChild>
+                                <Link href={Routes.MainFeatures}>Learn more</Link>
+                            </Button>
+                        </TrackClick>
                     </div>
                 </div>
             </section>

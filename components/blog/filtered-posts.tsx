@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { IconSearch } from '@tabler/icons-react'
+import posthog from 'posthog-js'
 
 import { type BlogPostPreview } from '@/types/blog'
 import { Input } from '@/components/ui/input'
@@ -11,8 +12,37 @@ import { PostCard } from './post-card'
 
 export function FilteredPosts({ posts }: { posts: BlogPostPreview[] }) {
     const [searchValue, setSearchValue] = React.useState('')
+    const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const filteredPosts = posts.filter((post) => post.title.toLowerCase().includes(searchValue.toLowerCase()))
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
+        setSearchValue(value)
+
+        // Debounce tracking to avoid excessive events
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current)
+        }
+
+        if (value.length >= 2) {
+            searchTimeoutRef.current = setTimeout(() => {
+                posthog.capture('blog_search_performed', {
+                    search_query: value,
+                    results_count: posts.filter((post) => post.title.toLowerCase().includes(value.toLowerCase()))
+                        .length,
+                })
+            }, 500)
+        }
+    }
+
+    React.useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current)
+            }
+        }
+    }, [])
 
     return (
         <section id='reason' className='container max-w-6xl py-16 md:py-24'>
@@ -20,7 +50,7 @@ export function FilteredPosts({ posts }: { posts: BlogPostPreview[] }) {
                 <Input
                     type='text'
                     value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={handleSearchChange}
                     placeholder='Search for an article'
                     aria-label='Search for an article'
                     className='pl-12'

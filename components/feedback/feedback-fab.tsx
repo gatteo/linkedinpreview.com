@@ -1,6 +1,7 @@
 'use client'
 
 import { MessageSquarePlus } from 'lucide-react'
+import posthog from 'posthog-js'
 
 import { feedbackConfig } from '@/config/feedback'
 
@@ -10,6 +11,12 @@ export function FeedbackFab() {
     if (!formId) return null
 
     const handleClick = () => {
+        // Track feedback button clicked event
+        posthog.capture('feedback_button_clicked', {
+            source: 'fab',
+            page_url: window.location.href,
+        })
+
         window.Tally?.openPopup(formId, {
             hiddenFields: {
                 source: 'fab',

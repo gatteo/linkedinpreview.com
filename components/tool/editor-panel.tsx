@@ -5,6 +5,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
@@ -85,8 +86,16 @@ export function EditorPanel({
             .then(() => {
                 toast.success('Text copied to clipboard')
                 notifyCopy(textContent.length)
+
+                // Track post copied event
+                posthog.capture('post_copied', {
+                    content_length: textContent.length,
+                })
             })
-            .catch((err) => toast.error(`Failed to copy text: ${err}`))
+            .catch((err) => {
+                posthog.captureException(err)
+                toast.error(`Failed to copy text: ${err}`)
+            })
     }, [editor, notifyCopy])
 
     React.useEffect(() => {
@@ -126,10 +135,17 @@ export function EditorPanel({
                 if (src) {
                     handleImageChangeWrapper(src)
                     toast.success('Image added successfully')
+
+                    // Track image added event
+                    posthog.capture('image_added', {
+                        image_type: file.type,
+                        image_size_bytes: file.size,
+                    })
                 }
             }
             reader.onerror = () => {
                 toast.error('Failed to read image file')
+                posthog.captureException(new Error('Failed to read image file'))
             }
             reader.readAsDataURL(file)
 
@@ -144,6 +160,9 @@ export function EditorPanel({
     const handleRemoveImage = React.useCallback(() => {
         handleImageChangeWrapper(null)
         toast.success('Image removed')
+
+        // Track image removed event
+        posthog.capture('image_removed')
     }, [handleImageChangeWrapper])
 
     if (!editor) {

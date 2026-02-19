@@ -1,5 +1,7 @@
 import type React from 'react'
+import { CircleHelp } from 'lucide-react'
 
+import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
 
 import { ActionButtons } from './action-buttons'
@@ -51,6 +53,16 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) =>
                         </div>
                     </div>
                 </div>
+                <button
+                    onClick={() =>
+                        window.Tally?.openPopup(feedbackConfig.forms.feedback, {
+                            hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
+                        })
+                    }
+                    className='flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-600'>
+                    <CircleHelp className='size-3.5' />
+                    <span>Bug or feature request? Let us know</span>
+                </button>
             </div>
         </div>
     )

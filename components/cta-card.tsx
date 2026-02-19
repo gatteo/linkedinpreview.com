@@ -6,6 +6,8 @@ import { cn, shineAnimation } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 
+import { TrackClick } from './tracking/track-click'
+
 type Props = {
     title: string
     description: string
@@ -41,18 +43,43 @@ export function CtaCard({
                     </div>
                     <div className='flex gap-4'>
                         {secondaryButtonText && secondaryButtonUrl && (
-                            <Button variant='outline' asChild>
+                            <TrackClick
+                                event='cta_card_clicked'
+                                properties={{
+                                    button_type: 'secondary',
+                                    button_text: secondaryButtonText,
+                                    button_url: secondaryButtonUrl,
+                                    card_title: title,
+                                }}>
+                                <Button variant='outline' asChild>
+                                    <Link
+                                        href={UtmUrl(secondaryButtonUrl, {
+                                            medium: UtmMediums.Blog,
+                                            content: 'card_cta',
+                                        })}>
+                                        {secondaryButtonText}
+                                    </Link>
+                                </Button>
+                            </TrackClick>
+                        )}
+                        <TrackClick
+                            event='cta_card_clicked'
+                            properties={{
+                                button_type: 'primary',
+                                button_text: primaryButtonText,
+                                button_url: primaryButtonUrl,
+                                card_title: title,
+                            }}>
+                            <Button asChild>
                                 <Link
-                                    href={UtmUrl(secondaryButtonUrl, { medium: UtmMediums.Blog, content: 'card_cta' })}>
-                                    {secondaryButtonText}
+                                    href={UtmUrl(primaryButtonUrl, {
+                                        medium: UtmMediums.Blog,
+                                        content: 'card_cta',
+                                    })}>
+                                    {primaryButtonText}
                                 </Link>
                             </Button>
-                        )}
-                        <Button asChild>
-                            <Link href={UtmUrl(primaryButtonUrl, { medium: UtmMediums.Blog, content: 'card_cta' })}>
-                                {primaryButtonText}
-                            </Link>
-                        </Button>
+                        </TrackClick>
                     </div>
                 </div>
 

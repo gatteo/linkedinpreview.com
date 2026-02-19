@@ -4,18 +4,28 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatDate } from '@/utils/dates'
 import { UtmUrl } from '@/utils/urls'
+import posthog from 'posthog-js'
 
 import { BlogPostPreview } from '@/types/blog'
 
 import { Badge } from '../ui/badge'
 
 export function PostCard({ post }: { post: BlogPostPreview }) {
+    const handleClick = () => {
+        posthog.capture('blog_article_clicked', {
+            article_slug: post.slug,
+            article_title: post.title,
+            article_tags: post.tags,
+        })
+    }
+
     return (
         <Link
             key={post.id}
             href={UtmUrl(post.url, {
                 content: 'post_card',
             })}
+            onClick={handleClick}
             className='flex flex-col rounded-lg p-4 transition-all duration-150 hover:bg-muted'>
             <Image
                 src={post.image ?? '/images/blog-post-placeholder.png'}

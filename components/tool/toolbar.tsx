@@ -3,6 +3,7 @@
 import React from 'react'
 import type { Editor } from '@tiptap/react'
 import { Bold, Italic, List, ListOrdered, Redo, Strikethrough, Underline, Undo } from 'lucide-react'
+import posthog from 'posthog-js'
 
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
@@ -16,31 +17,49 @@ const Toolbar = ({ editor }: Props) => {
         return null
     }
 
+    const trackFormatting = (formatType: string) => {
+        posthog.capture('formatting_applied', {
+            format_type: formatType,
+        })
+    }
+
     return (
         <div className='flex flex-none flex-wrap items-center justify-start gap-2'>
             <Button
-                onClick={() => editor.chain().focus().toggleBold().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleBold().run()
+                    trackFormatting('bold')
+                }}
                 variant={editor.isActive('bold') ? 'default' : 'outline'}
                 size='icon'>
                 <Bold className='size-5' />
             </Button>
 
             <Button
-                onClick={() => editor.chain().focus().toggleItalic().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleItalic().run()
+                    trackFormatting('italic')
+                }}
                 variant={editor.isActive('italic') ? 'default' : 'outline'}
                 size='icon'>
                 <Italic className='size-5' />
             </Button>
 
             <Button
-                onClick={() => editor.chain().focus().toggleStrike().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleStrike().run()
+                    trackFormatting('strikethrough')
+                }}
                 variant={editor.isActive('strike') ? 'default' : 'outline'}
                 size='icon'>
                 <Strikethrough className='size-5' />
             </Button>
 
             <Button
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleUnderline().run()
+                    trackFormatting('underline')
+                }}
                 variant={editor.isActive('underline') ? 'default' : 'outline'}
                 size='icon'>
                 <Underline className='size-5' />
@@ -49,14 +68,20 @@ const Toolbar = ({ editor }: Props) => {
             <Separator orientation='vertical' className='h-full' />
 
             <Button
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleBulletList().run()
+                    trackFormatting('bullet_list')
+                }}
                 variant={editor.isActive('bulletList') ? 'default' : 'outline'}
                 size='icon'>
                 <List className='size-5' />
             </Button>
 
             <Button
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                onClick={() => {
+                    editor.chain().focus().toggleOrderedList().run()
+                    trackFormatting('ordered_list')
+                }}
                 variant={editor.isActive('orderedList') ? 'default' : 'outline'}
                 size='icon'>
                 <ListOrdered className='size-5' />

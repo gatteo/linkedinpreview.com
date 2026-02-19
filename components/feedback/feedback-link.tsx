@@ -17,7 +17,7 @@ export function FeedbackLink() {
     }
 
     return (
-        <button onClick={handleClick} className='text-sm text-muted-foreground hover:underline'>
+        <button onClick={handleClick} className='text-start text-sm text-muted-foreground hover:underline'>
             Share Feedback
         </button>
     )
