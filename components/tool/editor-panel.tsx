@@ -169,6 +169,9 @@ export function EditorPanel({
         return <EditorLoading />
     }
 
+    const text = editor.getText()
+    const charCount = text.length
+
     return (
         <div className='flex size-full flex-col'>
             <style>{listStyles}</style>
@@ -184,6 +187,13 @@ export function EditorPanel({
                 <div className='not-prose relative text-sm font-normal'>
                     <EditorContent editor={editor} />
                 </div>
+            </div>
+
+            {/** Character count */}
+            <div className='px-4 pb-1 sm:px-6'>
+                <span className='text-xs tabular-nums text-muted-foreground'>
+                    {charCount} {charCount === 1 ? 'char' : 'chars'}
+                </span>
             </div>
 
             {/** Actions */}
