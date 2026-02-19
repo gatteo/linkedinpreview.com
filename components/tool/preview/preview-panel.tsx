@@ -55,7 +55,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) =>
                 </div>
                 <button
                     onClick={() =>
-                        window.Tally?.openPopup(feedbackConfig.forms.feedback, {
+                        window.Tally?.openPopup(feedbackConfig.formId, {
                             hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
                         })
                     }

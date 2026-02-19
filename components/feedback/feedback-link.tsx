@@ -3,7 +3,7 @@
 import { feedbackConfig } from '@/config/feedback'
 
 export function FeedbackLink() {
-    const formId = feedbackConfig.forms.feedback
+    const formId = feedbackConfig.formId
 
     if (!formId) return null
 

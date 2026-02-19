@@ -115,26 +115,24 @@ Loaded via the `<GTM>` component in the root layout.
 
 ## Feedback System (Tally.so)
 
-Four touchpoints, all using Tally.so popup forms:
+A single Tally.so form (star rating + optional comment) is used across four touchpoints:
 
 1. **Post-Copy Rating** — popup after 2nd+ copy action (1.5s delay, session + 7-day cooldowns)
 2. **Floating FAB** — fixed bottom-right button on all pages
 3. **Article Helpfulness** — thumbs up/down on blog posts with per-slug localStorage cooldown
 4. **Footer Link** — "Share Feedback" in the footer
 
-Configuration is centralized in `config/feedback.ts`. The Tally SDK is loaded lazily via `next/script` in `components/feedback/tally-script.tsx`.
+Each touchpoint passes hidden fields (`source`, `pageUrl`, `copyCount`) to identify context. Configuration is centralized in `config/feedback.ts`. The Tally SDK is loaded lazily via `next/script` in `components/feedback/tally-script.tsx`.
 
 ## Environment Variables
 
 Validated at build time via `@t3-oss/env-nextjs` in `env.mjs`:
 
-| Variable                                | Required | Purpose                  |
-| --------------------------------------- | -------- | ------------------------ |
-| `NEXT_PUBLIC_GTM_MEASUREMENT_ID`        | Yes      | Google Tag Manager       |
-| `NEXT_PUBLIC_POSTHOG_KEY`               | Yes      | PostHog analytics        |
-| `NEXT_PUBLIC_TALLY_POSTCOPY_FORM_ID`    | No       | Post-copy feedback form  |
-| `NEXT_PUBLIC_TALLY_FEEDBACK_FORM_ID`    | No       | General feedback form    |
-| `NEXT_PUBLIC_TALLY_HELPFULNESS_FORM_ID` | No       | Article helpfulness form |
+| Variable                         | Required | Purpose                |
+| -------------------------------- | -------- | ---------------------- |
+| `NEXT_PUBLIC_GTM_MEASUREMENT_ID` | Yes      | Google Tag Manager     |
+| `NEXT_PUBLIC_POSTHOG_KEY`        | Yes      | PostHog analytics      |
+| `NEXT_PUBLIC_TALLY_FORM_ID`      | No       | Tally.so feedback form |
 
 ## SEO
 

@@ -130,21 +130,19 @@ tags: ['linkedin', 'engagement']
 
 ## Feedback System
 
-Four touchpoints for collecting user feedback via Tally.so:
+A single Tally.so form (star rating + optional comment) is reused across four touchpoints. Hidden fields (`source`, `pageUrl`, `copyCount`) identify where the feedback came from.
 
 ### 1. Post-Copy Rating
 
 - **Trigger:** 1.5 seconds after a successful copy action
 - **Conditions:** User's 2nd+ copy ever, content >= 50 chars, not shown this session, not dismissed in last 7 days
-- **Form:** Star rating + optional comment
-- **Hidden fields:** `source`, `copyCount`
+- **Hidden fields:** `source: "post-copy"`, `pageUrl`, `copyCount`
 - **Hook:** `hooks/use-feedback-after-copy.ts`
 
 ### 2. Floating Feedback Button
 
 - **Location:** Fixed `bottom-6 right-6` on all pages
 - **Appearance:** Icon only on mobile, icon + "Feedback" label on larger screens
-- **Form:** Bug/suggestion type + description
 - **Hidden fields:** `source: "fab"`, `pageUrl`
 
 ### 3. Article Helpfulness
@@ -152,12 +150,11 @@ Four touchpoints for collecting user feedback via Tally.so:
 - **Location:** Below blog post content, above related articles
 - **UX:** Thumbs up/down buttons. On click, records vote in localStorage (per-slug), then opens Tally popup for optional comment
 - **If already voted:** Shows "Thanks for your feedback!" text
-- **Hidden fields:** `source: "article"`, `articleSlug`, `helpful: "yes"/"no"`
+- **Hidden fields:** `source: "article-yes"` or `"article-no"`, `pageUrl`
 
 ### 4. Footer Link
 
 - **Location:** "Share Feedback" in the footer's "Useful Links" column
-- **Form:** Same bug/suggestion form as the floating button
 - **Hidden fields:** `source: "footer"`, `pageUrl`
 
 ## Other Features

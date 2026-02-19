@@ -1,9 +1,5 @@
 export const feedbackConfig = {
-    forms: {
-        postCopy: process.env.NEXT_PUBLIC_TALLY_POSTCOPY_FORM_ID ?? '',
-        feedback: process.env.NEXT_PUBLIC_TALLY_FEEDBACK_FORM_ID ?? '',
-        helpfulness: process.env.NEXT_PUBLIC_TALLY_HELPFULNESS_FORM_ID ?? '',
-    },
+    formId: process.env.NEXT_PUBLIC_TALLY_FORM_ID ?? '',
     postCopy: {
         /** Delay in ms before showing the popup after a successful copy */
         delayMs: 1500,

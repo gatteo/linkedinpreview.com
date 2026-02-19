@@ -11,7 +11,7 @@ function getStorageKey(slug: string) {
 }
 
 export function ArticleHelpfulness({ slug, title }: { slug: string; title: string }) {
-    const formId = feedbackConfig.forms.helpfulness
+    const formId = feedbackConfig.formId
     const [vote, setVote] = React.useState<'yes' | 'no' | null>(null)
 
     React.useEffect(() => {
@@ -27,7 +27,6 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
         localStorage.setItem(getStorageKey(slug), value)
         setVote(value)
 
-        // Track article helpful voted event
         posthog.capture('article_helpful_voted', {
             article_slug: slug,
             article_title: title,
@@ -36,9 +35,8 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
 
         window.Tally?.openPopup(formId, {
             hiddenFields: {
-                source: 'article',
-                articleSlug: slug,
-                helpful: value,
+                source: `article-${value}`,
+                pageUrl: window.location.href,
             },
         })
     }

@@ -4,7 +4,7 @@ import React from 'react'
 
 import { feedbackConfig } from '@/config/feedback'
 
-const { postCopy, storage, forms } = feedbackConfig
+const { postCopy, storage, formId } = feedbackConfig
 
 function isDismissCooldownActive(): boolean {
     const dismissedAt = localStorage.getItem(storage.dismissedAt)
@@ -33,7 +33,6 @@ export function useFeedbackAfterCopy() {
     }, [])
 
     const notifyCopy = React.useCallback((contentLength: number) => {
-        const formId = forms.postCopy
         if (!formId) return
 
         if (contentLength < postCopy.minContentLength) return
@@ -53,6 +52,7 @@ export function useFeedbackAfterCopy() {
             window.Tally?.openPopup(formId, {
                 hiddenFields: {
                     source: 'post-copy',
+                    pageUrl: window.location.href,
                     copyCount: String(count),
                 },
                 onClose: () => {

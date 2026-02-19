@@ -6,12 +6,11 @@ import posthog from 'posthog-js'
 import { feedbackConfig } from '@/config/feedback'
 
 export function FeedbackFab() {
-    const formId = feedbackConfig.forms.feedback
+    const formId = feedbackConfig.formId
 
     if (!formId) return null
 
     const handleClick = () => {
-        // Track feedback button clicked event
         posthog.capture('feedback_button_clicked', {
             source: 'fab',
             page_url: window.location.href,
