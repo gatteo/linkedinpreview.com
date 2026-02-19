@@ -7,11 +7,13 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { toast } from 'sonner'
 
+import { CopyFeedback } from '../feedback/copy-feedback'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
 import Toolbar from './toolbar'
 import { processNodes, toPlainText } from './utils'
+import { useCopyFeedback } from '@/hooks/use-copy-feedback'
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {
@@ -34,6 +36,7 @@ export function EditorPanel({
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentImage, setCurrentImage] = React.useState<string | null>(null)
+    const feedback = useCopyFeedback()
 
     const handleImageChangeWrapper = React.useCallback(
         (imageSrc: string | null) => {
@@ -78,9 +81,12 @@ export function EditorPanel({
 
         navigator.clipboard
             .writeText(textContent)
-            .then(() => toast.success('Text copied to clipboard'))
+            .then(() => {
+                toast.success('Text copied to clipboard')
+                feedback.show()
+            })
             .catch((err) => toast.error(`Failed to copy text: ${err}`))
-    }, [editor])
+    }, [editor, feedback])
 
     React.useEffect(() => {
         const interceptCopy = (event: ClipboardEvent) => {
@@ -230,6 +236,8 @@ export function EditorPanel({
                     </div>
                 </div>
             </div>
+
+            <CopyFeedback visible={feedback.visible} onDismiss={feedback.hide} />
         </div>
     )
 }

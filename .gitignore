@@ -45,3 +45,6 @@ next-env.d.ts
 /.unlighthouse/
 
 dev
+
+# feedback data
+data/feedback.json
