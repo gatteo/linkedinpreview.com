@@ -1,8 +1,10 @@
 'use client'
 
+import React from 'react'
 import Image from 'next/image'
 import { type MDXComponents } from 'mdx/types'
-import { useMDXComponent } from 'next-contentlayer/hooks'
+import * as runtime from 'react/jsx-runtime'
+import ReactDOM from 'react-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
@@ -58,6 +60,23 @@ const components: MDXComponents = {
     Video,
     LinkCard,
     CtaCard,
+}
+
+// Contentlayer compiles MDX with the dev JSX transform (jsxDEV).
+// React 19's production runtime doesn't expose getOwner on the dispatcher,
+// which jsxDEV tries to call, breaking the build.
+// This shim maps jsxDEV → jsx/jsxs so the compiled code works in production.
+const patchedRuntime = {
+    ...runtime,
+    jsxDEV: (runtime as any).jsx,
+}
+
+function useMDXComponent(code: string) {
+    return React.useMemo(() => {
+        const scope = { React, ReactDOM, _jsx_runtime: patchedRuntime }
+        const fn = new Function(...Object.keys(scope), code)
+        return fn(...Object.values(scope)).default
+    }, [code])
 }
 
 const Mdx = ({ code }: MdxProps) => {

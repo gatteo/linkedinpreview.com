@@ -7,6 +7,8 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { toast } from 'sonner'
 
+import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
+
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
@@ -34,6 +36,7 @@ export function EditorPanel({
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentImage, setCurrentImage] = React.useState<string | null>(null)
+    const { notifyCopy } = useFeedbackAfterCopy()
 
     const handleImageChangeWrapper = React.useCallback(
         (imageSrc: string | null) => {
@@ -78,9 +81,12 @@ export function EditorPanel({
 
         navigator.clipboard
             .writeText(textContent)
-            .then(() => toast.success('Text copied to clipboard'))
+            .then(() => {
+                toast.success('Text copied to clipboard')
+                notifyCopy(textContent.length)
+            })
             .catch((err) => toast.error(`Failed to copy text: ${err}`))
-    }, [editor])
+    }, [editor, notifyCopy])
 
     React.useEffect(() => {
         const interceptCopy = (event: ClipboardEvent) => {

@@ -1,5 +1,3 @@
-import { withContentlayer } from 'next-contentlayer'
-
 import './env.mjs'
 
 /** @type {import('next').NextConfig} */
@@ -31,8 +29,17 @@ const nextConfig = {
         config.infrastructureLogging = {
             level: 'error',
         }
+        // Required for contentlayer's ESM/CJS interop (replaces withContentlayer wrapper).
+        // We run contentlayer separately via the build script with NODE_ENV=production
+        // to ensure the compiled MDX uses the production JSX transform, avoiding the
+        // React 19 "t.getOwner is not a function" error during static prerendering.
+        config.module?.rules?.push({
+            test: /\.m?js$/,
+            type: 'javascript/auto',
+            resolve: { fullySpecified: false },
+        })
         return config
     },
 }
 
-export default withContentlayer(nextConfig)
+export default nextConfig

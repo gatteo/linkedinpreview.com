@@ -10,6 +10,8 @@ import { Footer } from '@/components/footer'
 import { GTM } from '@/components/gtm'
 import { Header } from '@/components/header/header'
 import { ProgressProvider } from '@/components/progress-provider'
+import { FeedbackFab } from '@/components/feedback/feedback-fab'
+import { TallyScript } from '@/components/feedback/tally-script'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
 import '../styles/globals.css'
@@ -62,6 +64,8 @@ export default function RootLayout({
                 <GTM />
                 <Toaster />
                 <SpeedInsights />
+                <TallyScript />
+                <FeedbackFab />
                 <TailwindIndicator />
             </body>
         </html>

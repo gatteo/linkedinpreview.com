@@ -13,6 +13,7 @@ import { Header } from '@/components/blog/post-header'
 import { RelatedArticles } from '@/components/blog/related-articles'
 import { Breadcrumbs } from '@/components/breadcrumbs'
 import { Content } from '@/components/mdx-content'
+import { ArticleHelpfulness } from '@/components/feedback/article-helpfulness'
 import { ScrollIndicator } from '@/components/scroll-indicator'
 
 type Props = {
@@ -169,6 +170,8 @@ export default function Page({ params: { slug } }: Props) {
             <Content title={post.title} body={post.body} url={absoluteUrl(Routes.BlogPost(slug))} />
 
             <Footer slug={slug} title={post.title} author={post.author} source={BlogPostSource.Local} />
+
+            <ArticleHelpfulness slug={slug} title={post.title} />
 
             <RelatedArticles currentPost={post} />
 

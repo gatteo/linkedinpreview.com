@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { Routes } from '@/config/routes'
 
+import { FeedbackLink } from './feedback/feedback-link'
 import { Logo } from './logo'
 
 export function Footer() {
@@ -29,6 +30,7 @@ export function Footer() {
                     <Link className='text-sm text-muted-foreground hover:underline' href={Routes.HowItWorks}>
                         How It Works
                     </Link>
+                    <FeedbackLink />
                 </div>
 
                 <div className='flex flex-col space-y-2'>
