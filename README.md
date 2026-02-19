@@ -6,9 +6,9 @@
   LinkedIn Post Preview
 </h1>
 
-A free, open source, online tool to write, format, and preview your LinkedIn posts before publishing them. Add bold, italic, and emoji to your LinkedIn posts, and see how they will look on desktop and mobile.
+A free, open-source tool to write, format, and preview LinkedIn posts before publishing. Add bold, italic, underline, strikethrough, lists, and images to your posts and see exactly how they look on desktop, tablet, and mobile.
 
-## ✨ Tool Features
+## Tool Features
 
 - Preview LinkedIn Post on Mobile Devices
 - Preview LinkedIn Post on Tabet Devices
@@ -22,7 +22,7 @@ A free, open source, online tool to write, format, and preview your LinkedIn pos
 
 ## 💫 Tech Stack & Features
 
-- ⚡️ Next.js 14 with App Router (Turbo)
+- ⚡️ Next.js 16 with App Router (Turbo)
 - 📝 MDX & ContentLayer - for blog posts
 - 🎨 Tailwind CSS - for styling
 - 🌈 shadcn/ui & Radix UI - UI components
@@ -38,7 +38,6 @@ A free, open source, online tool to write, format, and preview your LinkedIn pos
 - 📷 Image zoom - zoom in on images in blog posts
 - 📝 Code syntax highlighting - using Shiki
 - 🎨 Animation - using Framer Motion
-- 🤖 GitHub Actions for CI/CD
 - 🏠 LightHouse score of nearly 100
 - 💄 Prettier - code formatting
 - 👷🏻‍♂️ t3-env - validate environment variables before building
@@ -47,9 +46,6 @@ A free, open source, online tool to write, format, and preview your LinkedIn pos
 
 - Node, recommended `20.x`
 - pnpm, recommended `8.14.0`
-- PostgreSQL, recommended `14.x` (optional if you don't need all the functionalities)
-- [Visual Studio Code](https://code.visualstudio.com/) with [recommended extensions](.vscode/extensions.json)
-- Optionally [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en)
 
 ## 👋 Getting Started
 
@@ -61,21 +57,7 @@ cd linkedinpreview.com
 pnpm install
 ```
 
-Create a `.env.local` file based on the provided `.env.example` file and fill in the necessary variables.
-
-OR you can skip this by modifying `apps/web/src/env.ts`:
-
-```ts
-export const env = createEnv({
-    skipValidation: true,
-
-    server: {
-        // ...
-    },
-})
-```
-
-To run the app in development mode:
+To run the app:
 
 ```bash
 pnpm dev
@@ -83,27 +65,16 @@ pnpm dev
 
 The app will be available at `localhost:3000`.
 
-## ✍🏻 Author
+## 📜 Documentation
+
+See the `docs/` folder for detailed documentation:
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — System architecture, tech decisions, and build pipeline
+- **[FEATURES.md](docs/FEATURES.md)** — Detailed feature descriptions and user flows
+
+## Author
 
 [@gatteo](https://github.com/gatteo)
-
-## Sponsors
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://wezard.it/?utm_source=github.com&utm_medium=linkedinpreview" target="_blank">
-        <img src="https://storage.googleapis.com/westudents-public/team-images/Animazione_firma-2.gif" width="200px;" alt="Speakeasy API" />
-      </a>
-      <br />
-      <b>Wezard</b>
-      <br />
-      <a href="https://wezard.it/?utm_source=github.com&utm_medium=linkedinpreview" target="_blank">wezard.it</a>
-      <br />
-      <p width="200px">React Native App<br /> Development Company</p>
-    </td>
-  </tr>
-</table>
 
 ## 🪪 License
 
@@ -111,5 +82,5 @@ This project is open source and available under the [MIT License](LICENSE).
 
 <hr>
 <p align="center">
-Made with ❤️ in Turin (Italy)
+Made with ❤️ in Turin, Italy
 </p>
