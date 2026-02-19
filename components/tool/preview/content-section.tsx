@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -10,22 +10,17 @@ interface ContentSectionProps {
 }
 
 export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
-    const [processedContent, setProcessedContent] = useState<string>('')
     const [isExpanded, setIsExpanded] = useState(false)
     const [showMoreButton, setShowMoreButton] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        if (!content) {
-            return
-        }
-
-        const plainText = toPlainText(processNodes(content).content)
-        setProcessedContent(plainText)
-        checkContentOverflow()
+    const processedContent = useMemo(() => {
+        if (!content) return ''
+        // @ts-ignore-next-line
+        return toPlainText(processNodes(content).content)
     }, [content])
 
-    const checkContentOverflow = () => {
+    const checkContentOverflow = useCallback(() => {
         setTimeout(() => {
             const contentElement = contentRef.current
             if (contentElement) {
@@ -34,7 +29,13 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
                 setShowMoreButton(contentElement.scrollHeight > maxHeight)
             }
         }, 0)
-    }
+    }, [])
+
+    useEffect(() => {
+        if (processedContent) {
+            checkContentOverflow()
+        }
+    }, [processedContent, checkContentOverflow])
 
     return (
         <div className='relative mt-5'>

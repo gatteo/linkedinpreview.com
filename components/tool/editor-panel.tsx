@@ -47,7 +47,7 @@ export function EditorPanel({
     )
 
     const editor = useEditor({
-        // immediatelyRender: false,
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                 bulletList: {
@@ -77,6 +77,7 @@ export function EditorPanel({
     const handleCopy = React.useCallback(() => {
         if (!editor) return
 
+        // @ts-expect-error - TODO: fix this
         const textContent = toPlainText(processNodes(editor.getJSON()).content)
 
         navigator.clipboard

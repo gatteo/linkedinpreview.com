@@ -12,14 +12,14 @@ import { Footer } from '@/components/blog/post-footer'
 import { Header } from '@/components/blog/post-header'
 import { RelatedArticles } from '@/components/blog/related-articles'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import { Content } from '@/components/mdx-content'
 import { ArticleHelpfulness } from '@/components/feedback/article-helpfulness'
+import { Content } from '@/components/mdx-content'
 import { ScrollIndicator } from '@/components/scroll-indicator'
 
 type Props = {
-    params: {
+    params: Promise<{
         slug: string
-    }
+    }>
 }
 
 export function generateStaticParams() {
@@ -30,10 +30,11 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+    const { slug } = await params
     const previousOpenGraph = (await parent)?.openGraph ?? {}
     const previousTwitter = (await parent)?.twitter ?? {}
 
-    const post = getLocalBlogPost(params.slug)
+    const post = getLocalBlogPost(slug)
     if (!post) return {}
 
     const ISOPublishedTime = new Date(post.createdAt).toISOString()
@@ -43,11 +44,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         title: post.title,
         description: post.summary,
         alternates: {
-            canonical: absoluteUrl(Routes.BlogPost(params.slug)),
+            canonical: absoluteUrl(Routes.BlogPost(slug)),
         },
         openGraph: {
             ...previousOpenGraph,
-            url: absoluteUrl(Routes.BlogPost(params.slug)),
+            url: absoluteUrl(Routes.BlogPost(slug)),
             type: 'article',
             title: post.title,
             siteName: site.title,
@@ -82,7 +83,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     }
 }
 
-export default function Page({ params: { slug } }: Props) {
+export default async function Page({ params }: Props) {
+    const { slug } = await params
     const post = getLocalBlogPost(slug)
 
     if (!post) {

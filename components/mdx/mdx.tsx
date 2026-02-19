@@ -1,9 +1,9 @@
 'use client'
 
 import React from 'react'
+import * as runtime from 'react/jsx-runtime'
 import Image from 'next/image'
 import { type MDXComponents } from 'mdx/types'
-import * as runtime from 'react/jsx-runtime'
 import ReactDOM from 'react-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -79,6 +79,7 @@ function useMDXComponent(code: string) {
     }, [code])
 }
 
+/* eslint-disable react-hooks/static-components -- MDX component is dynamically compiled from contentlayer code string */
 const Mdx = ({ code }: MdxProps) => {
     const Component = useMDXComponent(code)
 
@@ -88,5 +89,6 @@ const Mdx = ({ code }: MdxProps) => {
         </div>
     )
 }
+/* eslint-enable react-hooks/static-components */
 
 export default Mdx

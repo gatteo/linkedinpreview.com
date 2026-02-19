@@ -20,7 +20,7 @@ export const Reactions: React.FC = () => {
                     src='/images/home/post-reactions.svg'
                 />
                 <span className={cn('mt-1 font-medium text-gray-500', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
-                    Devv and 88 others
+                    John Doe and 169 others
                 </span>
             </div>
             <div className='flex items-center justify-end gap-2'>

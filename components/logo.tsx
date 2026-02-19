@@ -1,9 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import LogoImage from '@/public/images/logo-rounded-rectangle.png'
 
 import { cn } from '@/lib/utils'
-
-import LogoImage from '/public/images/logo-rounded-rectangle.png'
 
 export function Logo({ className }: { className?: string }) {
     return (

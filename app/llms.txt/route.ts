@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { absoluteUrl } from '@/utils/urls'
 
-import { site } from '@/config/site'
 import { Routes } from '@/config/routes'
+import { site } from '@/config/site'
 import { getAllBlogPosts } from '@/lib/blog'
 
 export const GET = async () => {

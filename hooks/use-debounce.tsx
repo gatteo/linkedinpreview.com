@@ -1,15 +1,21 @@
-import { DependencyList, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
-function useDebounce(callback: () => void, delay: number, dependencies: DependencyList): void {
+function useDebounce(callback: () => void, delay: number): void {
+    const callbackRef = useRef(callback)
+
+    useEffect(() => {
+        callbackRef.current = callback
+    })
+
     useEffect(() => {
         const handler = setTimeout(() => {
-            callback()
+            callbackRef.current()
         }, delay)
 
         return () => {
             clearTimeout(handler)
         }
-    }, dependencies)
+    }, [delay])
 }
 
 export default useDebounce

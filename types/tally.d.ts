@@ -4,7 +4,16 @@ interface TallyPopupOptions {
         width?: number
         emoji?: {
             text: string
-            animation: 'none' | 'wave' | 'tada' | 'heart-beat' | 'spin' | 'flash' | 'bounce' | 'rubber-band' | 'head-shake'
+            animation:
+                | 'none'
+                | 'wave'
+                | 'tada'
+                | 'heart-beat'
+                | 'spin'
+                | 'flash'
+                | 'bounce'
+                | 'rubber-band'
+                | 'head-shake'
         }
     }
     hiddenFields?: Record<string, string>

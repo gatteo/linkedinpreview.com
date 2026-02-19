@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
@@ -9,22 +9,17 @@ import { processNodes, toPlainText } from './utils'
 
 export function PreviewPanel({ content }: { content: string }) {
     const [screenSize, setScreenSize] = React.useState<'mobile' | 'tablet' | 'desktop'>('desktop')
-    const [processedContent, setProcessedContent] = React.useState<string>('')
     const [isExpanded, setIsExpanded] = useState(false)
     const [showMoreButton, setShowMoreButton] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        if (!content) {
-            return
-        }
-
-        const plainText = toPlainText(processNodes(content).content)
-        setProcessedContent(plainText)
-        checkContentOverflow()
+    const processedContent = useMemo(() => {
+        if (!content) return ''
+        // @ts-ignore-next-line
+        return toPlainText(processNodes(content).content)
     }, [content])
 
-    const checkContentOverflow = () => {
+    const checkContentOverflow = useCallback(() => {
         setTimeout(() => {
             const contentElement = contentRef.current
             if (contentElement) {
@@ -33,7 +28,13 @@ export function PreviewPanel({ content }: { content: string }) {
                 setShowMoreButton(contentElement.scrollHeight > maxHeight)
             }
         }, 0)
-    }
+    }, [])
+
+    useEffect(() => {
+        if (processedContent) {
+            checkContentOverflow()
+        }
+    }, [processedContent, checkContentOverflow])
 
     const containerWidth = {
         mobile: 'w-[320px]',
@@ -85,7 +86,7 @@ export function PreviewPanel({ content }: { content: string }) {
                                                 Matteo Giardino
                                             </p>
                                             <p className='truncate text-xs font-normal text-gray-500'>
-                                                Founder @ devv.it
+                                                Founder @ matteogiardino.com
                                             </p>
                                             <div className='flex items-center gap-1'>
                                                 <span className='text-xs font-normal text-gray-500'>Now</span>
@@ -131,7 +132,7 @@ export function PreviewPanel({ content }: { content: string }) {
                                             'mt-1 font-medium text-gray-500',
                                             screenSize === 'mobile' ? 'hidden' : 'text-xs',
                                         )}>
-                                        Devv and 88 others
+                                        John Doe and 169 others
                                     </span>
                                 </div>
                                 <div className='flex items-center justify-end gap-2'>
