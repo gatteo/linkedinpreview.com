@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the SEO improvements implemented on LinkedInPreview.com following best practices for 2025.
+This document summarizes the SEO improvements implemented on LinkedInPreview.com following best practices for 2026.
 
 **Implementation Date:** January 23, 2025
 **Priority Level:** Priority 1 (High Impact)

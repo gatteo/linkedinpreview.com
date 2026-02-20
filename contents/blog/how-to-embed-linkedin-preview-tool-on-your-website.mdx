@@ -1,0 +1,150 @@
+---
+title: How to Embed the LinkedIn Post Preview Tool on Your Website
+createdAt: '2026-02-20T00:00:00Z'
+modifiedAt: '2026-02-20T00:00:00Z'
+summary: 'Learn how to embed the free LinkedIn post preview and formatting tool on your website. Give your visitors the ability to write, format, and preview LinkedIn posts without leaving your site.'
+image: '/images/blog/blog-post-placeholder.png'
+authorId: matteo
+tags: ['linkedin', 'embed', 'linkedin post', 'website tools']
+---
+
+## Introduction
+
+If you run a blog, a marketing resource site, or any platform that helps professionals improve their LinkedIn presence, you can now embed the [LinkedInPreview.com](https://linkedinpreview.com/#tool) tool directly on your website. Your visitors will be able to write, format, and preview their LinkedIn posts without ever leaving your page.
+
+In this guide, we'll walk you through exactly how to add the embed to your site, how the auto-resize feature works, and best practices for integrating it seamlessly.
+
+<CtaCard
+    title='Try the LinkedIn Post Preview Tool'
+    description='Write, format, and preview your LinkedIn posts for free — see how they look on desktop and mobile before publishing.'
+    primaryButtonText='Use the Free Tool'
+    primaryButtonUrl='/#tool'
+    pattern='circles'
+    align='center'
+/>
+
+## Why Embed the LinkedIn Preview Tool?
+
+Adding a LinkedIn post preview tool to your website provides real value to your audience:
+
+- **Increased engagement**: Visitors spend more time on your site when you offer useful interactive tools.
+- **Added value**: Complement your LinkedIn tips and guides with a hands-on formatting tool.
+- **No maintenance**: The embed always serves the latest version of the tool — no updates needed on your end.
+- **Free to use**: There are no costs or API keys required. Just paste the embed code and you're done.
+
+## How to Embed the Tool
+
+Adding the LinkedIn preview tool to your site takes just two steps: paste an iframe and optionally add an auto-resize script.
+
+### Step 1: Copy the Embed Code
+
+Add the following HTML snippet wherever you want the tool to appear on your page:
+
+```html
+<iframe
+    id="linkedin-preview"
+    src="https://linkedinpreview.com/embed"
+    width="100%"
+    height="600"
+    style="border:1px solid #e5e7eb;border-radius:8px"
+    allow="clipboard-write"></iframe>
+```
+
+This renders the full LinkedIn post editor and preview tool inside an iframe on your page.
+
+### Step 2: Add Auto-Resize (Optional)
+
+By default the iframe has a fixed height of 600px. If you want it to automatically adjust its height to fit the content, add this small script after the iframe:
+
+```html
+<script>
+    window.addEventListener('message', function (e) {
+        if (e.data?.type === 'linkedinpreview-resize')
+            document.getElementById('linkedin-preview').height = e.data.height
+    })
+</script>
+```
+
+The embed sends a `postMessage` event whenever its content height changes. The script listens for these messages and updates the iframe height accordingly, so there's never an unnecessary scrollbar.
+
+### Complete Embed Code
+
+Here's the full snippet with both the iframe and auto-resize script combined:
+
+```html
+<iframe
+    id="linkedin-preview"
+    src="https://linkedinpreview.com/embed"
+    width="100%"
+    height="600"
+    style="border:1px solid #e5e7eb;border-radius:8px"
+    allow="clipboard-write"></iframe>
+<script>
+    window.addEventListener('message', function (e) {
+        if (e.data?.type === 'linkedinpreview-resize')
+            document.getElementById('linkedin-preview').height = e.data.height
+    })
+</script>
+```
+
+You can also grab the code directly from the [Embed section on our homepage](https://linkedinpreview.com/#embed).
+
+## Important: Clipboard Permission
+
+Notice the `allow="clipboard-write"` attribute on the iframe. This is required so your visitors can use the **copy to clipboard** button inside the tool. Without it, the copy functionality won't work in most browsers.
+
+## Customizing the Embed Appearance
+
+You can adjust the iframe's styling to match your site's design:
+
+- **Border**: Change `border:1px solid #e5e7eb` to match your brand colors, or remove it entirely with `border:none`.
+- **Border radius**: Adjust `border-radius:8px` for more or less rounded corners.
+- **Width**: The default `width="100%"` makes it responsive. You can set a fixed pixel width if you prefer.
+- **Height**: Change the initial `height="600"` value. If you're using the auto-resize script, this is just the starting height before the first resize event fires.
+
+## Where to Use the Embed
+
+Here are some ideas for where the embedded tool works well:
+
+- **Blog posts about LinkedIn**: Add the tool alongside your LinkedIn tips and guides so readers can practice immediately.
+- **Marketing resource pages**: Offer it as a free tool to attract and retain visitors.
+- **Learning platforms**: Include it in courses or tutorials about LinkedIn content creation.
+- **Agency websites**: Let clients preview and format posts before sending them to you for review.
+
+<CtaCard
+    title='Embed the Tool on Your Site'
+    description='Copy the embed code and add the LinkedIn post preview tool to your website in seconds.'
+    primaryButtonText='Get the Embed Code'
+    primaryButtonUrl='/#embed'
+    pattern='circles'
+    align='center'
+/>
+
+## Troubleshooting
+
+### The copy button doesn't work inside the embed
+
+Make sure you have `allow="clipboard-write"` on the iframe element. This permission is required for the Clipboard API to work inside iframes.
+
+### The iframe has a scrollbar
+
+If you're not using the auto-resize script, increase the `height` attribute on the iframe. If you are using the script, make sure it's placed after the iframe in your HTML and that there are no JavaScript errors in your browser console.
+
+### The embed looks too narrow
+
+The tool works best at a minimum width of around 350px. If your container is narrower than that, the layout may look cramped. Consider placing the embed in a wider section of your page.
+
+## Conclusion
+
+Embedding the LinkedIn post preview tool on your website is a simple way to add real value for your visitors. With just a few lines of HTML, you can offer a fully functional post editor and multi-device preview — no setup, no costs, no maintenance.
+
+Ready to add it to your site? Head to the [Embed section](https://linkedinpreview.com/#embed) to copy the code, or try the [full tool](https://linkedinpreview.com/#tool) yourself first.
+
+<CtaCard
+    title='Format and Preview Your LinkedIn Posts'
+    description='Add bold, italic, and emoji to your LinkedIn posts, and see how they look on desktop and mobile.'
+    primaryButtonText='Use the Free Tool'
+    primaryButtonUrl='/#tool'
+    pattern='circles'
+    align='center'
+/>
