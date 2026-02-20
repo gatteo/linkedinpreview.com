@@ -3,6 +3,7 @@
 import React from 'react'
 import { Eye, PenLine } from 'lucide-react'
 
+import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
 
 import { EditorPanel } from './editor-panel'
@@ -17,7 +18,7 @@ type MobileTab = 'editor' | 'preview'
 const STORAGE_KEY = 'linkedinpreview-draft'
 const SAVE_DELAY_MS = 2000
 
-function loadDraft(): any | null {
+function loadLocalDraft(): any | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY)
         return raw ? JSON.parse(raw) : null
@@ -51,7 +52,37 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
     const [image, setImage] = React.useState<string | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
-    const [initialContent] = React.useState(() => loadDraft())
+    const [initialContent, setInitialContent] = React.useState<any>(undefined)
+    const [isLoading, setIsLoading] = React.useState(true)
+
+    // Load draft: URL ?draft= param takes priority over localStorage
+    React.useEffect(() => {
+        async function loadDraft() {
+            const params = new URLSearchParams(window.location.search)
+            const draftParam = params.get('draft')
+
+            if (draftParam) {
+                const decoded = await decodeDraft(draftParam)
+                if (decoded) {
+                    setInitialContent(decoded)
+                    setIsLoading(false)
+                    return
+                }
+            }
+
+            const local = loadLocalDraft()
+            if (local) setInitialContent(local)
+            setIsLoading(false)
+        }
+        loadDraft()
+    }, [])
+
+    // Browser processes #hash before React mounts, so re-scroll after loading
+    React.useEffect(() => {
+        if (!isLoading && window.location.hash) {
+            document.querySelector(window.location.hash)?.scrollIntoView()
+        }
+    }, [isLoading])
 
     useDraftPersistence(content)
 
@@ -61,6 +92,19 @@ export function Tool({ variant = 'default' }: ToolProps) {
 
     const handleImageChange = (imageSrc: string | null) => {
         setImage(imageSrc)
+    }
+
+    const handleShare = React.useCallback(async (): Promise<string | null> => {
+        if (!content) return null
+        const encoded = await encodeDraft(content)
+        if (!encoded) return null
+
+        const hash = variant === 'default' ? '#tool' : ''
+        return `${window.location.origin}${window.location.pathname}?draft=${encoded}${hash}`
+    }, [content, variant])
+
+    if (isLoading) {
+        return null
     }
 
     const inner = (
@@ -104,6 +148,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         initialContent={initialContent}
                         onChange={handleContentChange}
                         onImageChange={handleImageChange}
+                        onShare={handleShare}
                     />
                 </div>
                 <div

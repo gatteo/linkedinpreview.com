@@ -5,6 +5,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import { Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
@@ -13,6 +14,7 @@ import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
+import { ShareDialog } from './share-dialog'
 import Toolbar from './toolbar'
 import { processNodes, toPlainText } from './utils'
 
@@ -32,13 +34,17 @@ export function EditorPanel({
     initialContent,
     onChange,
     onImageChange,
+    onShare,
 }: {
     initialContent?: any
     onChange: (json: any) => void
     onImageChange: (imageSrc: string | null) => void
+    onShare?: () => Promise<string | null>
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentImage, setCurrentImage] = React.useState<string | null>(null)
+    const [shareUrl, setShareUrl] = React.useState<string | null>(null)
+    const [shareOpen, setShareOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
 
     const handleImageChangeWrapper = React.useCallback(
@@ -265,6 +271,35 @@ export function EditorPanel({
                         </div>
                     </div>
                     <div className='flex flex-1 items-center justify-end gap-2 sm:gap-4'>
+                        {onShare && (
+                            <>
+                                <div className='group relative'>
+                                    <Button
+                                        variant='outline'
+                                        size='icon'
+                                        onClick={() => {
+                                            onShare()
+                                                .then((url) => {
+                                                    if (url) {
+                                                        setShareUrl(url)
+                                                        setShareOpen(true)
+                                                    }
+                                                })
+                                                .catch(() => {
+                                                    toast.error('Failed to create share link')
+                                                })
+                                        }}>
+                                        <Share2 className='size-4' />
+                                    </Button>
+                                    <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                                        Share Draft
+                                    </span>
+                                </div>
+                                {shareUrl && (
+                                    <ShareDialog url={shareUrl} open={shareOpen} onOpenChange={setShareOpen} />
+                                )}
+                            </>
+                        )}
                         <Button variant='default' onClick={handleCopy}>
                             <Icons.copy className='mr-2 size-4' />
                             Copy Text
