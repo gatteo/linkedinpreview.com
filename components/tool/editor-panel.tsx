@@ -176,8 +176,8 @@ export function EditorPanel({
         <div className='flex size-full flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='flex h-16 border-b px-4 sm:px-6'>
-                <div className='flex grow items-center justify-between'>
+            <div className='flex h-16 border-b'>
+                <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>
             </div>

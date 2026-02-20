@@ -24,7 +24,7 @@ const Toolbar = ({ editor }: Props) => {
     }
 
     return (
-        <div className='flex flex-none flex-wrap items-center justify-start gap-2'>
+        <div className='flex flex-none items-center justify-start gap-2 px-4 sm:px-6'>
             <Button
                 onClick={() => {
                     editor.chain().focus().toggleBold().run()

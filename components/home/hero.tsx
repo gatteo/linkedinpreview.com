@@ -54,7 +54,7 @@ export function Hero() {
                     </div>
 
                     {/* CTA */}
-                    <div className='space-x-4'>
+                    <div className='flex gap-2'>
                         <TrackClick
                             event='cta_button_clicked'
                             properties={{ button_name: 'get_started', source: 'hero' }}>
