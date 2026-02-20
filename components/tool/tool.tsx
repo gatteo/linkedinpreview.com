@@ -14,10 +14,46 @@ type ToolProps = {
 
 type MobileTab = 'editor' | 'preview'
 
+const STORAGE_KEY = 'linkedinpreview-draft'
+const SAVE_DELAY_MS = 2000
+
+function loadDraft(): any | null {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        return raw ? JSON.parse(raw) : null
+    } catch {
+        return null
+    }
+}
+
+function useDraftPersistence(content: any) {
+    const timerRef = React.useRef<ReturnType<typeof setTimeout>>(null)
+
+    React.useEffect(() => {
+        if (!content) return
+
+        if (timerRef.current) clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
+            } catch {
+                // localStorage full or unavailable — silently ignore
+            }
+        }, SAVE_DELAY_MS)
+
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current)
+        }
+    }, [content])
+}
+
 export function Tool({ variant = 'default' }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
     const [image, setImage] = React.useState<string | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
+    const [initialContent] = React.useState(() => loadDraft())
+
+    useDraftPersistence(content)
 
     const handleContentChange = (json: any) => {
         setContent(json)
@@ -64,7 +100,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
             {/* Panels — on mobile only the active tab is visible; on desktop both show side-by-side */}
             <div className='flex flex-1'>
                 <div className={cn('min-w-0 flex-1 flex-col', mobileTab === 'editor' ? 'flex' : 'hidden md:flex')}>
-                    <EditorPanel onChange={handleContentChange} onImageChange={handleImageChange} />
+                    <EditorPanel
+                        initialContent={initialContent}
+                        onChange={handleContentChange}
+                        onImageChange={handleImageChange}
+                    />
                 </div>
                 <div
                     className={cn(

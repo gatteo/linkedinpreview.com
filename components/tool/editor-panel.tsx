@@ -29,9 +29,11 @@ const listStyles = `
 `
 
 export function EditorPanel({
+    initialContent,
     onChange,
     onImageChange,
 }: {
+    initialContent?: any
     onChange: (json: any) => void
     onImageChange: (imageSrc: string | null) => void
 }) {
@@ -49,6 +51,7 @@ export function EditorPanel({
 
     const editor = useEditor({
         immediatelyRender: false,
+        content: initialContent ?? undefined,
         extensions: [
             StarterKit.configure({
                 bulletList: {
@@ -69,6 +72,9 @@ export function EditorPanel({
             attributes: {
                 class: 'prose-md focus:outline-none resize-none block w-full p-0 text-gray-900 border-none appearance-none placeholder:text-gray-500 focus:ring-0 overflow-y-auto h-full',
             },
+        },
+        onCreate: ({ editor }) => {
+            if (initialContent) onChange(editor.getJSON())
         },
         onUpdate: ({ editor }) => {
             onChange(editor.getJSON())
