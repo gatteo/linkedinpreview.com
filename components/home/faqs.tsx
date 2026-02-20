@@ -43,6 +43,10 @@ const FAQList = [
         question: 'How can I ensure my LinkedIn posts are engaging?',
         answer: 'To create engaging posts, focus on clear, impactful content. Use formatting tools to make important text stand out, structure your content with lists, and always preview your posts to ensure they look perfect across all platforms.',
     },
+    {
+        question: 'Can I embed the LinkedIn preview tool on my own website?',
+        answer: 'Yes! You can embed the LinkedInPreview.com tool on your website using a simple iframe code snippet. The embed includes auto-resize support so it fits seamlessly into your page. Visit the Embed section on our homepage to copy the code and see a live preview.',
+    },
 ]
 
 export function FAQs() {

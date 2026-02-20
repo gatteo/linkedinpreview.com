@@ -6,7 +6,7 @@ const robots = () => {
             {
                 userAgent: '*',
                 allow: ['/'],
-                disallow: ['/404', '/500', '/api/*'],
+                disallow: ['/404', '/500', '/api/*', '/embed'],
             },
         ],
         sitemap: `${site.url}/sitemap.xml`,

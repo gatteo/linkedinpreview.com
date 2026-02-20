@@ -30,6 +30,9 @@ export function Footer() {
                     <Link className='text-sm text-muted-foreground hover:underline' href={Routes.HowItWorks}>
                         How It Works
                     </Link>
+                    <Link className='text-sm text-muted-foreground hover:underline' href={Routes.Embed}>
+                        Embed this tool on your website
+                    </Link>
                     <FeedbackLink />
                 </div>
 

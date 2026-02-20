@@ -42,6 +42,7 @@ export enum UtmMediums {
     LearningProducts = 'learning_products',
     NotFound = 'not_found',
 
+    Embed = 'embed',
     Footer = 'footer',
     NotificationPopup = 'notification_popup',
 }

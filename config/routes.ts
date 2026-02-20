@@ -9,4 +9,6 @@ export const Routes = {
     Faqs: '/#faqs',
     Blog: '/blog',
     BlogPost: (slug: string) => `/blog/${slug}`,
+    Embed: '/embed',
+    EmbedSection: '/#embed',
 }
