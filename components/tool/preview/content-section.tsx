@@ -9,7 +9,7 @@ interface ContentSectionProps {
     content: string
 }
 
-function renderWithHashtags(text: string): React.ReactNode {
+export function renderWithHashtags(text: string): React.ReactNode {
     const parts = text.split(/(#[\w\u00C0-\u024F]+)/g)
     if (parts.length === 1) return text
     return parts.map((part, i) =>

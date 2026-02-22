@@ -1,5 +1,6 @@
 export const ApiRoutes = {
-    Generate: '/api/generate',
+    Chat: '/api/chat',
+    Suggestions: '/api/suggestions',
 }
 
 export const Routes = {

@@ -9,13 +9,14 @@ import { Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
+import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
+import { AIGenerateSheet } from '../ai-chat/sheet'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
-import { GenerateSheet } from './generate-sheet'
 import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
 import Toolbar from './toolbar'
@@ -325,12 +326,14 @@ export function EditorPanel({
                 </div>
             </div>
 
-            <GenerateSheet
+            <AIGenerateSheet
                 open={generateOpen}
                 onOpenChange={setGenerateOpen}
                 onInsert={(text) => {
-                    editor?.commands.setContent(text)
-                    setGenerateOpen(false)
+                    if (!editor) return
+                    const paragraphs = toTipTapParagraphs(text)
+                    editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
+                    onChange(editor.getJSON())
                 }}
             />
         </div>
