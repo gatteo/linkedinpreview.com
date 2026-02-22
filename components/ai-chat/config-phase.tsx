@@ -17,7 +17,7 @@ export function ConfigPhase({ topic, onTopicChange, tone, onToneChange, onGenera
         <div className='flex flex-1 flex-col gap-6 px-6 pb-6'>
             <div className='flex flex-col gap-2'>
                 <label htmlFor='ai-topic' className='text-sm font-medium'>
-                    Topic
+                    Topic or draft
                 </label>
                 <textarea
                     id='ai-topic'

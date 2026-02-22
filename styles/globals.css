@@ -65,15 +65,42 @@
 
 @keyframes shine {
     0% {
-        background-position: -100% 0;
+        background-position: 200% 0;
     }
     100% {
-        background-position: 200% 0;
+        background-position: -200% 0;
     }
 }
 
 .animate-shine {
-    animation: shine 2s infinite;
+    animation: shine 3s ease-in-out infinite;
+}
+
+/* Text shimmer — sweeps a bright highlight across text */
+
+@keyframes text-shimmer {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.text-shimmer {
+    color: transparent;
+    background: linear-gradient(
+        90deg,
+        hsl(var(--primary)) 0%,
+        hsl(var(--primary)) 40%,
+        hsl(var(--primary) / 0.4) 50%,
+        hsl(var(--primary)) 60%,
+        hsl(var(--primary)) 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: text-shimmer 3s ease-in-out infinite;
 }
 
 /* Text bg fill animation */

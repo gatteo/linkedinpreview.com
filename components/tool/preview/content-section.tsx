@@ -52,6 +52,16 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
         }
     }, [processedContent, checkContentOverflow])
 
+    if (!processedContent) {
+        return (
+            <div className='mt-5 whitespace-pre-line text-sm'>
+                {'Start writing and your post will appear here..\nYou can add images, links, '}
+                <span className='font-semibold text-[#0a66c2]'>#hashtags</span>
+                {' and emojis 🤩'}
+            </div>
+        )
+    }
+
     return (
         <div className='relative mt-5'>
             <div

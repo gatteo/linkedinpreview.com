@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -75,9 +74,6 @@ export function EditorPanel({
                 },
             }),
             Underline,
-            Placeholder.configure({
-                placeholder: 'Write something… or generate with AI',
-            }),
         ],
         editorProps: {
             attributes: {
@@ -219,6 +215,17 @@ export function EditorPanel({
             <div className='grow overflow-y-auto px-4 py-5 sm:px-6'>
                 <div className='not-prose relative text-sm font-normal'>
                     <EditorContent editor={editor} />
+                    {!text.trim() && (
+                        <div className='pointer-events-none absolute inset-x-0 -top-0.5 flex items-center text-sm text-muted-foreground/60'>
+                            Write something… or{' '}
+                            <button
+                                onClick={() => setGenerateOpen(true)}
+                                className='text-shimmer pointer-events-auto ml-1.5 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-sm font-medium transition-all hover:border-primary/40 hover:bg-primary/10'>
+                                <Icons.magic className='size-3.5 text-primary' />
+                                <span>Generate with AI</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
