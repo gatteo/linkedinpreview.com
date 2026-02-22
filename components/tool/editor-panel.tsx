@@ -15,6 +15,7 @@ import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
+import { GenerateSheet } from './generate-sheet'
 import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
 import Toolbar from './toolbar'
@@ -47,6 +48,7 @@ export function EditorPanel({
     const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
+    const [generateOpen, setGenerateOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
 
     const handleMediaChangeWrapper = React.useCallback(
@@ -73,7 +75,7 @@ export function EditorPanel({
             }),
             Underline,
             Placeholder.configure({
-                placeholder: 'Write something …',
+                placeholder: 'Write something… or generate with AI',
             }),
         ],
         editorProps: {
@@ -276,17 +278,14 @@ export function EditorPanel({
                             </span>
                         </div> */}
 
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
+                        <div className='group relative'>
+                            <Button variant='outline' size='icon' onClick={() => setGenerateOpen(true)}>
                                 <Icons.magic className='size-4' />
                             </Button>
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Rewrite with AI
+                                Generate with AI
                             </span>
-                        </div> */}
+                        </div>
                     </div>
                     <div className='flex flex-1 items-center justify-end gap-2 sm:gap-4'>
                         {onShare && (
@@ -325,6 +324,15 @@ export function EditorPanel({
                     </div>
                 </div>
             </div>
+
+            <GenerateSheet
+                open={generateOpen}
+                onOpenChange={setGenerateOpen}
+                onInsert={(text) => {
+                    editor?.commands.setContent(text)
+                    setGenerateOpen(false)
+                }}
+            />
         </div>
     )
 }

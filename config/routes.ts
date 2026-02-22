@@ -1,4 +1,6 @@
-export const ApiRoutes = {}
+export const ApiRoutes = {
+    Generate: '/api/generate',
+}
 
 export const Routes = {
     Home: '',
