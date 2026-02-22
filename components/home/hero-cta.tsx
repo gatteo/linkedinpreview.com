@@ -24,9 +24,9 @@
  * tracking is needed to know which variant each user saw.
  */
 import Link from 'next/link'
+import { useFeatureFlagVariantKey } from 'posthog-js/react'
 
 import { Routes } from '@/config/routes'
-import { usePostHogFlag } from '@/hooks/use-posthog-flag'
 
 import { TrackClick } from '../tracking/track-click'
 import { Button } from '../ui/button'
@@ -43,23 +43,24 @@ const CTA_VARIANTS: Record<string, CtaCopy> = {
 }
 
 export function HeroCTA() {
-    const { variant } = usePostHogFlag('hero-cta-copy')
+    const variant = useFeatureFlagVariantKey('hero-cta-copy')
 
     // Fall back to control copy while loading or if the flag returns an unknown variant.
-    const copy = (variant !== undefined && CTA_VARIANTS[variant]) || CONTROL
+    const variantKey = typeof variant === 'string' ? variant : 'control'
+    const copy = CTA_VARIANTS[variantKey] || CONTROL
 
     return (
         <div className='flex gap-2'>
             <TrackClick
                 event='cta_button_clicked'
-                properties={{ button_name: 'get_started', source: 'hero', variant: variant ?? 'control' }}>
+                properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
                 <Button asChild>
                     <Link href={Routes.Tool}>{copy.primary}</Link>
                 </Button>
             </TrackClick>
             <TrackClick
                 event='cta_button_clicked'
-                properties={{ button_name: 'learn_more', source: 'hero', variant: variant ?? 'control' }}>
+                properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
                 <Button variant='secondary' asChild>
                     <Link href={Routes.MainFeatures}>{copy.secondary}</Link>
                 </Button>
