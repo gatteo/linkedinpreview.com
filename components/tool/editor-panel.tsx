@@ -9,12 +9,14 @@ import { Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
+import { getPostAnalytics } from '@/lib/post-analytics'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
 import { ShareDialog } from './share-dialog'
+import type { Media } from './tool'
 import Toolbar from './toolbar'
 import { processNodes, toPlainText } from './utils'
 
@@ -33,26 +35,26 @@ const listStyles = `
 export function EditorPanel({
     initialContent,
     onChange,
-    onImageChange,
+    onMediaChange,
     onShare,
 }: {
     initialContent?: any
     onChange: (json: any) => void
-    onImageChange: (imageSrc: string | null) => void
+    onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
-    const [currentImage, setCurrentImage] = React.useState<string | null>(null)
+    const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
 
-    const handleImageChangeWrapper = React.useCallback(
-        (imageSrc: string | null) => {
-            setCurrentImage(imageSrc)
-            onImageChange(imageSrc)
+    const handleMediaChangeWrapper = React.useCallback(
+        (media: Media | null) => {
+            setCurrentMedia(media)
+            onMediaChange(media)
         },
-        [onImageChange],
+        [onMediaChange],
     )
 
     const editor = useEditor({
@@ -87,38 +89,51 @@ export function EditorPanel({
         },
     })
 
-    const handleCopy = React.useCallback(() => {
-        if (!editor) return
-
+    const getEditorContent = React.useCallback(() => {
+        if (!editor) return null
+        const json = editor.getJSON()
         // @ts-expect-error - TODO: fix this
-        const textContent = toPlainText(processNodes(editor.getJSON()).content)
+        const text = toPlainText(processNodes(json).content) as string
+        return { json, text }
+    }, [editor])
+
+    const onCopied = React.useCallback(
+        (json: any, text: string) => {
+            toast.success('Text copied to clipboard')
+            notifyCopy(text.length)
+            posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
+        },
+        [notifyCopy, currentMedia],
+    )
+
+    const handleCopy = React.useCallback(() => {
+        const content = getEditorContent()
+        if (!content) return
 
         navigator.clipboard
-            .writeText(textContent)
-            .then(() => {
-                toast.success('Text copied to clipboard')
-                notifyCopy(textContent.length)
-
-                // Track post copied event
-                posthog.capture('post_copied', {
-                    content_length: textContent.length,
-                })
-            })
+            .writeText(content.text)
+            .then(() => onCopied(content.json, content.text))
             .catch((err) => {
                 posthog.captureException(err)
                 toast.error(`Failed to copy text: ${err}`)
             })
-    }, [editor, notifyCopy])
+    }, [getEditorContent, onCopied])
 
     React.useEffect(() => {
         const interceptCopy = (event: ClipboardEvent) => {
+            const content = getEditorContent()
+            if (!content) return
             event.preventDefault()
-            handleCopy()
+
+            // Use synchronous clipboardData API — navigator.clipboard.writeText()
+            // requires transient user activation which Firefox denies in copy events
+            event.clipboardData?.setData('text/plain', content.text)
+            onCopied(content.json, content.text)
         }
 
         document.addEventListener('copy', interceptCopy)
         return () => document.removeEventListener('copy', interceptCopy)
-    }, [handleCopy])
+    }, [getEditorContent, onCopied])
 
     const handleImageUpload = React.useCallback(() => {
         fileInputRef.current?.click()
@@ -129,15 +144,17 @@ export function EditorPanel({
             const file = event.target.files?.[0]
             if (!file) return
 
-            // Check if file is an image
-            if (!file.type.startsWith('image/')) {
-                toast.error('Please select an image file')
+            const isVideo = file.type.startsWith('video/')
+            const isImage = file.type.startsWith('image/')
+
+            if (!isImage && !isVideo) {
+                toast.error('Please select an image or video file')
                 return
             }
 
-            // Check file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                toast.error('Image size must be less than 5MB')
+            const maxSize = isVideo ? 25 * 1024 * 1024 : 5 * 1024 * 1024
+            if (file.size > maxSize) {
+                toast.error(isVideo ? 'Video size must be less than 25MB' : 'Image size must be less than 5MB')
                 return
             }
 
@@ -145,19 +162,20 @@ export function EditorPanel({
             reader.onload = (e) => {
                 const src = e.target?.result as string
                 if (src) {
-                    handleImageChangeWrapper(src)
-                    toast.success('Image added successfully')
+                    const mediaType = isVideo ? 'video' : 'image'
+                    handleMediaChangeWrapper({ type: mediaType, src })
+                    toast.success(isVideo ? 'Video added successfully' : 'Image added successfully')
 
-                    // Track image added event
-                    posthog.capture('image_added', {
-                        image_type: file.type,
-                        image_size_bytes: file.size,
+                    posthog.capture('media_added', {
+                        media_type: mediaType,
+                        file_type: file.type,
+                        file_size_bytes: file.size,
                     })
                 }
             }
             reader.onerror = () => {
-                toast.error('Failed to read image file')
-                posthog.captureException(new Error('Failed to read image file'))
+                toast.error(isVideo ? 'Failed to read video file' : 'Failed to read image file')
+                posthog.captureException(new Error(`Failed to read ${isVideo ? 'video' : 'image'} file`))
             }
             reader.readAsDataURL(file)
 
@@ -166,16 +184,16 @@ export function EditorPanel({
                 fileInputRef.current.value = ''
             }
         },
-        [handleImageChangeWrapper],
+        [handleMediaChangeWrapper],
     )
 
-    const handleRemoveImage = React.useCallback(() => {
-        handleImageChangeWrapper(null)
-        toast.success('Image removed')
+    const handleRemoveMedia = React.useCallback(() => {
+        const mediaType = currentMedia?.type
+        handleMediaChangeWrapper(null)
+        toast.success(mediaType === 'video' ? 'Video removed' : 'Image removed')
 
-        // Track image removed event
-        posthog.capture('image_removed')
-    }, [handleImageChangeWrapper])
+        posthog.capture('media_removed', { media_type: mediaType })
+    }, [handleMediaChangeWrapper, currentMedia])
 
     if (!editor) {
         return <EditorLoading />
@@ -228,12 +246,12 @@ export function EditorPanel({
                             <input
                                 ref={fileInputRef}
                                 type='file'
-                                accept='image/*'
+                                accept='image/*,video/mp4,video/quicktime,video/webm'
                                 className='hidden'
                                 onChange={handleFileChange}
                             />
-                            {currentImage ? (
-                                <Button variant='outline' size='icon' onClick={handleRemoveImage} title='Remove Image'>
+                            {currentMedia ? (
+                                <Button variant='outline' size='icon' onClick={handleRemoveMedia} title='Remove Media'>
                                     <Icons.image className='size-4' />
                                 </Button>
                             ) : (
@@ -242,7 +260,7 @@ export function EditorPanel({
                                 </Button>
                             )}
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                {currentImage ? 'Remove Image' : 'Add Image'}
+                                {currentMedia ? 'Remove Media' : 'Add Image/Video'}
                             </span>
                         </div>
 

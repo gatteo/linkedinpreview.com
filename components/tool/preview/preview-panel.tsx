@@ -4,6 +4,7 @@ import { CircleHelp } from 'lucide-react'
 import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
 
+import type { Media } from '../tool'
 import { ActionButtons } from './action-buttons'
 import { ContentSection } from './content-section'
 import { PreviewHeader } from './preview-header'
@@ -13,10 +14,10 @@ import { UserInfo } from './user-info'
 
 interface PreviewPanelProps {
     content: any
-    image: string | null
+    media: Media | null
 }
 
-const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) => {
+const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) => {
     const { screenSize } = useScreenSize()
 
     const containerWidth = {
@@ -35,15 +36,26 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) =>
                             <UserInfo />
                             <ContentSection content={content} />
                         </div>
-                        {image && (
+                        {media && (
                             <div className='relative w-full'>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={image}
-                                    alt='Post'
-                                    className='w-full object-cover'
-                                    style={{ maxHeight: '600px', objectFit: 'contain' }}
-                                />
+                                {media.type === 'video' ? (
+                                    <video
+                                        src={media.src}
+                                        controls
+                                        playsInline
+                                        loop
+                                        className='w-full'
+                                        style={{ maxHeight: '600px' }}
+                                    />
+                                ) : (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={media.src}
+                                        alt='Post'
+                                        className='w-full object-cover'
+                                        style={{ maxHeight: '600px', objectFit: 'contain' }}
+                                    />
+                                )}
                             </div>
                         )}
                         <div className='py-3 pl-4 pr-6'>
@@ -68,10 +80,10 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, image }) =>
     )
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, image }) => {
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media }) => {
     return (
         <ScreenSizeProvider>
-            <PreviewPanelContent content={content} image={image} />
+            <PreviewPanelContent content={content} media={media} />
         </ScreenSizeProvider>
     )
 }
