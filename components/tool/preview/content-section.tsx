@@ -9,6 +9,21 @@ interface ContentSectionProps {
     content: string
 }
 
+function renderWithHashtags(text: string): React.ReactNode {
+    const parts = text.split(/(#[\w\u00C0-\u024F]+)/g)
+    if (parts.length === 1) return text
+    return parts.map((part, i) =>
+        /^#[\w\u00C0-\u024F]+$/.test(part) ? (
+            // eslint-disable-next-line react/no-array-index-key -- static list derived from text, never reordered
+            <span key={i} className='font-semibold text-[#0a66c2]'>
+                {part}
+            </span>
+        ) : (
+            part
+        ),
+    )
+}
+
 export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [showMoreButton, setShowMoreButton] = useState(false)
@@ -42,7 +57,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
             <div
                 ref={contentRef}
                 className={cn('relative whitespace-pre-line text-sm', !isExpanded && 'line-clamp-3 overflow-hidden')}>
-                {processedContent}
+                {renderWithHashtags(processedContent)}
             </div>
             {showMoreButton && (
                 <button
