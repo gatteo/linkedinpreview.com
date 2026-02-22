@@ -230,7 +230,7 @@ export function EditorPanel({
             <div className='border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
-                        <div className='group relative'>
+                        {/* <div className='group relative'>
                             <Button
                                 variant='outline'
                                 size='icon'
@@ -240,7 +240,7 @@ export function EditorPanel({
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Insert Emoji
                             </span>
-                        </div>
+                        </div> */}
 
                         <div className='group relative'>
                             <input
@@ -260,11 +260,11 @@ export function EditorPanel({
                                 </Button>
                             )}
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                {currentMedia ? 'Remove Media' : 'Add Image/Video'}
+                                {currentMedia ? 'Remove Media' : 'Add Image or Video'}
                             </span>
                         </div>
 
-                        <div className='group relative'>
+                        {/* <div className='group relative'>
                             <Button
                                 variant='outline'
                                 size='icon'
@@ -274,9 +274,9 @@ export function EditorPanel({
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Add Carousel
                             </span>
-                        </div>
+                        </div> */}
 
-                        <div className='group relative'>
+                        {/* <div className='group relative'>
                             <Button
                                 variant='outline'
                                 size='icon'
@@ -286,7 +286,7 @@ export function EditorPanel({
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Rewrite with AI
                             </span>
-                        </div>
+                        </div> */}
                     </div>
                     <div className='flex flex-1 items-center justify-end gap-2 sm:gap-4'>
                         {onShare && (
