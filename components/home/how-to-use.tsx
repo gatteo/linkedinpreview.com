@@ -16,55 +16,57 @@ const Steps = [
     {
         title: 'Copy and Publish!',
         description:
-            'When everything looks good, click the “copy text” button. Then go to LinkedIn, paste your post, and share it with confidence!',
+            'When everything looks good, click the "copy text" button. Then go to LinkedIn, paste your post, and share it with confidence!',
     },
 ]
 
 export function HowToUse() {
     return (
-        <section id='how-it-works' className='container max-w-6xl py-16 md:py-24'>
-            <div className='flex flex-col gap-16'>
-                <div className='mx-auto max-w-2xl space-y-6 md:text-center'>
-                    <h2 className='text-balance font-heading text-2xl sm:text-4xl md:text-5xl'>
-                        How to Use{' '}
-                        <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
-                            LinkedIn Preview{' '}
-                        </span>
-                        Tool{' '}
-                    </h2>
+        <section id='how-it-works' className='border-t border-border'>
+            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+                <div className='flex flex-col gap-16 md:flex-row'>
+                    {/* Left text */}
+                    <div className='md:w-5/12'>
+                        <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                            How to use the tool
+                        </h2>
+                        <p className='mb-10 text-lg leading-7 text-neutral-500'>
+                            Just follow these simple steps to make your LinkedIn post look great.
+                        </p>
 
-                    <p className='mx-auto max-w-[700px] text-balance text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed'>
-                        Just follow these simple steps to make your LinkedIn post look great
-                    </p>
-                </div>
-
-                <div className='flex flex-wrap items-center'>
-                    <div className='w-full pr-6 md:w-5/12'>
-                        <ol className='relative border-s'>
+                        {/* Timeline */}
+                        <div className='relative border-l border-border pl-8'>
                             {Steps.map((step, index) => (
-                                <li key={step.title} className='mb-10 ms-4'>
-                                    <time className='mb-1 text-sm font-medium leading-none text-muted-foreground'>
+                                <div key={step.title} className='relative pb-10 last:pb-0'>
+                                    {/* Circle */}
+                                    <div
+                                        className='absolute flex size-[10px] items-center justify-center rounded-full border-2 border-primary bg-white'
+                                        style={{ left: 'calc(-2rem - 5px)' }}
+                                    />
+                                    <span className='mb-1 block text-xs font-medium uppercase tracking-wider text-neutral-400'>
                                         Step {index + 1}
-                                    </time>
-                                    <div className='absolute -start-1.5 mt-1.5 size-3 rounded-full border border-white bg-gray-200 dark:border-gray-900 dark:bg-gray-700'></div>
-                                    <h3 className='font-heading text-lg/relaxed font-semibold'>{step.title}</h3>
-                                    <p className='text-sm font-normal text-muted-foreground'>{step.description}</p>
-                                </li>
+                                    </span>
+                                    <h3 className='mb-1 text-base font-semibold text-neutral-900'>{step.title}</h3>
+                                    <p className='text-sm leading-relaxed text-neutral-500'>{step.description}</p>
+                                </div>
                             ))}
-                        </ol>
+                        </div>
                     </div>
 
-                    <div className='w-full pt-24 md:w-7/12 md:pt-0'>
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            style={{
-                                transform: 'scale(1) perspective(1040px) rotateY(-11deg) rotateX(2deg) rotate(2deg)',
-                            }}
-                            className='over m-auto rounded-lg border shadow-xl md:max-h-[400px] md:object-cover md:object-left'>
-                            <source src='/images/home/screen-rec.mov' className='rounded-lg' />
-                        </video>
+                    {/* Right video */}
+                    <div className='flex items-center md:w-7/12'>
+                        <div className='dot-grid w-full overflow-hidden rounded-2xl border border-border bg-neutral-50 shadow-hero'>
+                            <div className='p-4'>
+                                <video
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className='w-full rounded-xl border border-border shadow-elevated'>
+                                    <source src='/images/home/screen-rec.mov' />
+                                </video>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

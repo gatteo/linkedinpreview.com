@@ -50,7 +50,7 @@
         "clsx": "^2.1.1",
         "contentlayer": "^0.3.4",
         "date-fns": "^3.4.0",
-        "framer-motion": "^11.0.8",
+        "framer-motion": "^12.34.3",
         "github-slugger": "^2.0.0",
         "gray-matter": "^4.0.3",
         "hast-util-select": "^6.0.3",

@@ -4,48 +4,49 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 200 100% 17%;
+        /* Dub.co-inspired monochrome palette with LinkedIn blue accent */
+        --background: 0 0% 98%;
+        --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;
-        --card-foreground: 200 100% 17%;
+        --card-foreground: 0 0% 3.9%;
         --popover: 0 0% 100%;
-        --popover-foreground: 200 100% 17%;
-        --primary: 200 100% 37%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
+        --popover-foreground: 0 0% 15.1%;
+        --primary: 201 100% 35%;
+        --primary-foreground: 0 0% 98%;
+        --secondary: 0 0% 96.1%;
+        --secondary-foreground: 0 0% 9%;
+        --muted: 0 0% 96.1%;
+        --muted-foreground: 0 0% 45.1%;
+        --accent: 0 0% 94.1%;
+        --accent-foreground: 0 0% 9%;
         --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 200 100% 37%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 89.8%;
+        --input: 0 0% 89.8%;
+        --ring: 201 100% 35%;
         --radius: 0.75rem;
     }
 
     .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
+        --background: 0 0% 3.9%;
+        --foreground: 0 0% 98%;
+        --card: 0 0% 7%;
+        --card-foreground: 0 0% 98%;
+        --popover: 0 0% 7%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 201 100% 50%;
+        --primary-foreground: 0 0% 9%;
+        --secondary: 0 0% 14.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 0 0% 14.9%;
+        --muted-foreground: 0 0% 63.9%;
+        --accent: 0 0% 14.9%;
+        --accent-foreground: 0 0% 98%;
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 48%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 14.9%;
+        --input: 0 0% 14.9%;
+        --ring: 201 100% 50%;
     }
 }
 
@@ -55,14 +56,25 @@
     }
     html {
         overflow-y: scroll;
+        scroll-behavior: smooth;
     }
     body {
-        @apply bg-background text-foreground font-sans;
+        @apply bg-background text-foreground font-sans antialiased;
     }
 }
 
-/* Shine animation */
+/* ─── Dot Grid Background (dub.co pattern) ─── */
+.dot-grid {
+    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+    background-size: 24px 24px;
+}
 
+/* ─── Section border pattern (dub.co column) ─── */
+.section-border {
+    @apply border-x border-border;
+}
+
+/* ─── Shine animation ─── */
 @keyframes shine {
     0% {
         background-position: 200% 0;
@@ -76,8 +88,7 @@
     animation: shine 3s ease-in-out infinite;
 }
 
-/* Text shimmer — sweeps a bright highlight across text */
-
+/* ─── Text shimmer ─── */
 @keyframes text-shimmer {
     0% {
         background-position: 100% 50%;
@@ -103,8 +114,7 @@
     animation: text-shimmer 3s ease-in-out infinite;
 }
 
-/* Text bg fill animation */
-
+/* ─── Text highlight animation ─── */
 .text-highlight {
     background: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #6dd5ed 51%, #2193b0 100%);
     background-size: 200% 100%;
@@ -112,8 +122,43 @@
     -webkit-text-fill-color: transparent;
 }
 
-/** Code Highlighting */
+/* ─── Scroll-triggered entrance animation ─── */
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+.animate-fade-up {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered delay utilities */
+.delay-0 {
+    animation-delay: 0ms;
+}
+.delay-1 {
+    animation-delay: 75ms;
+}
+.delay-2 {
+    animation-delay: 150ms;
+}
+.delay-3 {
+    animation-delay: 225ms;
+}
+.delay-4 {
+    animation-delay: 300ms;
+}
+.delay-5 {
+    animation-delay: 375ms;
+}
+
+/* ─── Code Highlighting ─── */
 .shiki span {
     color: var(--shiki-light);
 }
@@ -133,8 +178,7 @@ pre.shiki .highlighted {
     background-color: theme('colors.primary.DEFAULT / 10%');
 }
 
-/* Tiptap */
-
+/* ─── Tiptap ─── */
 .tiptap .is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -149,4 +193,13 @@ pre.shiki .highlighted {
     float: left;
     height: 0;
     pointer-events: none;
+}
+
+/* ─── Scrollbar hidden ─── */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

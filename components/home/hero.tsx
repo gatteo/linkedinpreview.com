@@ -1,76 +1,67 @@
-import Image from 'next/image'
+'use client'
+
 import Link from 'next/link'
-import HeroBG from '@/public/images/bg-pattern-filled.png'
 
 import { ExternalLinks } from '@/config/urls'
 
 import { Icons } from '../icon'
 import { TrackClick } from '../tracking/track-click'
-import { Badge } from '../ui/badge'
+import { AnimateIn } from '../ui/animate-in'
 import { HeroCTA } from './hero-cta'
 
 export function Hero() {
     return (
-        <div className='relative -mt-16 overflow-hidden pt-16'>
-            <section id='hero' className='container max-w-7xl pt-16 md:pt-28 lg:pt-36'>
-                <div className='flex flex-col items-center gap-8 text-center'>
-                    {/* Tagline */}
-                    <div className='flex items-center gap-6'>
-                        <Badge>Completely Free</Badge>
+        <section className='dot-grid'>
+            <div className='mx-auto flex max-w-content flex-col items-center px-6 py-20 md:pt-28'>
+                {/* Announcement badge */}
+                <AnimateIn delay={0}>
+                    <div className='mb-6 flex items-center gap-4'>
+                        <span className='inline-flex items-center rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-primary shadow-subtle'>
+                            Completely Free
+                        </span>
                         <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
                             <Link
-                                className='inline-flex items-center space-x-1 text-sm text-muted-foreground'
+                                className='inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1 text-xs font-medium text-neutral-600 shadow-subtle transition-colors hover:border-neutral-300 hover:text-neutral-900'
                                 href={ExternalLinks.GitHub}>
-                                <Icons.github className='size-4' />
+                                <Icons.github className='size-3.5' />
                                 <span>View Source</span>
                             </Link>
                         </TrackClick>
                     </div>
+                </AnimateIn>
 
-                    {/* Headline */}
-                    <div className='flex flex-col gap-4'>
-                        <h1 className='text-balance font-heading text-4xl font-bold tracking-wide md:text-6xl lg:text-7xl'>
-                            Format and Preview your{' '}
-                            <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
-                                LinkedIn
-                            </span>{' '}
-                            Posts
-                        </h1>
-                        <p className='mx-auto max-w-2xl text-balance text-muted-foreground md:text-xl'>
-                            A free tool to Write, Format, and Preview your LinkedIn posts. Improve your LinkedIn
-                            presence and engagement.
-                        </p>
+                {/* Headline */}
+                <AnimateIn delay={0.1}>
+                    <h1 className='mb-5 text-center font-heading text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl lg:text-6xl'>
+                        Format and Preview your <span className='text-primary'>LinkedIn</span> Posts
+                    </h1>
+                </AnimateIn>
+
+                <AnimateIn delay={0.2}>
+                    <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
+                        A free tool to write, format, and preview your LinkedIn posts. Improve your presence and
+                        engagement.
+                    </p>
+                </AnimateIn>
+
+                {/* Rating */}
+                <AnimateIn delay={0.3}>
+                    <div className='mb-8 flex items-center gap-1'>
+                        <span className='pr-2 text-sm font-medium text-neutral-500'>4.9/5</span>
+                        <Icons.star className='size-4 fill-amber-400 text-amber-400' />
+                        <Icons.star className='size-4 fill-amber-400 text-amber-400' />
+                        <Icons.star className='size-4 fill-amber-400 text-amber-400' />
+                        <Icons.star className='size-4 fill-amber-400 text-amber-400' />
+                        <Icons.star className='size-4 fill-amber-400 text-amber-400' />
+                        <span className='pl-2 text-sm font-medium text-neutral-500'>from 3,342 reviews</span>
                     </div>
+                </AnimateIn>
 
-                    {/* Rating */}
-                    <div className='flex items-center space-x-1'>
-                        <span className='pr-2 text-sm font-semibold text-muted-foreground'>4.9/5</span>
-                        {Array.from({ length: 5 }).map((_, i) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <Icons.star key={i} className='mb-0.5 size-5 fill-yellow-500 text-yellow-500' />
-                        ))}
-                        <span className='pl-2 text-sm font-semibold text-muted-foreground'>from 3342 Reviews</span>
-                    </div>
-
-                    {/* CTA */}
+                {/* CTA */}
+                <AnimateIn delay={0.4}>
                     <HeroCTA />
-                </div>
-            </section>
-            <Background />
-        </div>
-    )
-}
-
-function Background() {
-    return (
-        <>
-            <Image
-                alt='Decorative background pattern for LinkedIn Post Preview tool'
-                className='absolute inset-0 -z-10 size-full animate-pulse object-cover opacity-30'
-                src={HeroBG}
-                priority
-            />
-            <div className='absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/85 via-20% to-background to-80%' />
-        </>
+                </AnimateIn>
+            </div>
+        </section>
     )
 }

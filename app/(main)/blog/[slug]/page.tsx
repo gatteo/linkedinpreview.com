@@ -143,7 +143,7 @@ export default async function Page({ params }: Props) {
     const howToSchema = generateHowToSchema(post)
 
     return (
-        <main className='container max-w-6xl pb-16'>
+        <main className='mx-auto max-w-content px-6 pb-16'>
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
             {howToSchema && (

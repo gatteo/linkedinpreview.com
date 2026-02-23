@@ -71,10 +71,20 @@ const patchedRuntime = {
     jsxDEV: (runtime as any).jsx,
 }
 
+// Some contentlayer-compiled MDX bundles inline a copy of the React dev JSX
+// runtime that calls `ReactSharedInternals.A.getOwner()`. This method doesn't
+// exist in React 19 production, causing `t.getOwner is not a function`.
+// We patch the code string to make the getOwner call safe before evaluation.
+function patchContentlayerCode(code: string): string {
+    // Replace `.getOwner()` with `.getOwner?.()` to safely handle the missing method
+    return code.replace(/\.getOwner\(\)/g, '.getOwner?.()')
+}
+
 function useMDXComponent(code: string) {
     return React.useMemo(() => {
         const scope = { React, ReactDOM, _jsx_runtime: patchedRuntime }
-        const fn = new Function(...Object.keys(scope), code)
+        const patched = patchContentlayerCode(code)
+        const fn = new Function(...Object.keys(scope), patched)
         return fn(...Object.values(scope)).default
     }, [code])
 }

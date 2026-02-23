@@ -15,7 +15,7 @@ export default function MainLayout({
         <>
             <ProgressProvider>
                 <Header />
-                <main className='py-16'>{children}</main>
+                <main className='pt-[60px]'>{children}</main>
                 <Footer />
             </ProgressProvider>
             <Toaster />

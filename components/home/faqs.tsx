@@ -64,25 +64,37 @@ export function FAQs() {
     }
 
     return (
-        <section id='faqs' className='container max-w-6xl py-16 md:py-24'>
-            <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-            <div className='space-y-6'>
-                <div className='space-y-4'>
-                    <h2 className='font-heading text-2xl sm:text-4xl md:text-5xl'>Frequently Asked Questions</h2>
-                    <p className='text-balance text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed'>
-                        Find answers to common questions about LinkedInPreview.com and how it can help you create better
-                        LinkedIn posts.
-                    </p>
-                </div>
+        <section id='faqs' className='border-t border-border'>
+            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+                <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-                <Accordion type='multiple'>
-                    {FAQList.map((faq) => (
-                        <AccordionItem key={faq.question} value={faq.question}>
-                            <AccordionTrigger className='gap-4 text-start'>{faq.question}</AccordionTrigger>
-                            <AccordionContent className=''>{faq.answer}</AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                <div className='flex flex-col gap-12 md:flex-row'>
+                    {/* Left heading */}
+                    <div className='md:w-1/3'>
+                        <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                            Frequently asked questions
+                        </h2>
+                        <p className='text-lg leading-7 text-neutral-500'>
+                            Find answers to common questions about LinkedInPreview.com.
+                        </p>
+                    </div>
+
+                    {/* Right accordion */}
+                    <div className='md:w-2/3'>
+                        <Accordion type='multiple'>
+                            {FAQList.map((faq) => (
+                                <AccordionItem key={faq.question} value={faq.question} className='border-border'>
+                                    <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
+                                        {faq.question}
+                                    </AccordionTrigger>
+                                    <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
+                                        {faq.answer}
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
+                </div>
             </div>
         </section>
     )

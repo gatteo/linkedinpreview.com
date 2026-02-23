@@ -50,18 +50,18 @@ export function HeroCTA() {
     const copy = CTA_VARIANTS[variantKey] || CONTROL
 
     return (
-        <div className='flex gap-2'>
+        <div className='flex items-center gap-3'>
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
-                <Button asChild>
+                <Button asChild className='rounded-lg px-5 py-2.5'>
                     <Link href={Routes.Tool}>{copy.primary}</Link>
                 </Button>
             </TrackClick>
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                <Button variant='secondary' asChild>
+                <Button variant='outline' asChild className='rounded-lg border-border bg-white px-5 py-2.5'>
                     <Link href={Routes.MainFeatures}>{copy.secondary}</Link>
                 </Button>
             </TrackClick>

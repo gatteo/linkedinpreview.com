@@ -45,28 +45,32 @@ export function FilteredPosts({ posts }: { posts: BlogPostPreview[] }) {
     }, [])
 
     return (
-        <section id='reason' className='container max-w-6xl py-16 md:py-24'>
-            <div className='relative mb-8'>
-                <Input
-                    type='text'
-                    value={searchValue}
-                    onChange={handleSearchChange}
-                    placeholder='Search for an article'
-                    aria-label='Search for an article'
-                    className='pl-12'
-                    id='search'
-                />
-                <Label htmlFor='search'>
-                    <IconSearch className='absolute left-4 top-1/2 -translate-y-1/2' size={20} />
-                </Label>
-            </div>
+        <section className='border-t border-border'>
+            <div className='mx-auto max-w-content px-6 py-16 md:py-24'>
+                <div className='relative mb-10'>
+                    <Input
+                        type='text'
+                        value={searchValue}
+                        onChange={handleSearchChange}
+                        placeholder='Search for an article...'
+                        aria-label='Search for an article'
+                        className='h-12 rounded-xl border-border pl-12 text-base shadow-subtle'
+                        id='search'
+                    />
+                    <Label htmlFor='search'>
+                        <IconSearch className='absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400' size={20} />
+                    </Label>
+                </div>
 
-            {filteredPosts.length === 0 && <div className='text-center text-xl'>No results at the moment</div>}
+                {filteredPosts.length === 0 && (
+                    <div className='py-16 text-center text-lg text-neutral-500'>No articles found</div>
+                )}
 
-            <div className='-mx-4 grid gap-4 sm:grid-cols-2'>
-                {filteredPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                ))}
+                <div className='grid gap-6 sm:grid-cols-2'>
+                    {filteredPosts.map((post) => (
+                        <PostCard key={post.id} post={post} />
+                    ))}
+                </div>
             </div>
         </section>
     )

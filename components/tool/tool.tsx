@@ -169,7 +169,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
     }
 
     return (
-        <section id='tool' className='container max-w-7xl py-16 md:py-24'>
+        <section id='tool' className='mx-auto max-w-content px-6 py-16 md:py-24'>
             {inner}
         </section>
     )

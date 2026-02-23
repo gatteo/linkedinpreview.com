@@ -8,17 +8,21 @@ import { Button } from '../ui/button'
 
 export function OpenSource() {
     return (
-        <section id='opensource' className='w-full bg-muted py-12 md:py-16 lg:py-24'>
-            <div className='container flex flex-col items-center space-y-6 px-4 text-center md:px-6'>
-                <Icons.github className='size-10' />
-                <h2 className='font-heading text-2xl sm:text-4xl md:text-5xl'>Proudly Open Source</h2>
-                <p className='mx-auto max-w-[600px] text-balance text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed'>
-                    Our product is open source and we encourage contributions from our community. You can support us by
-                    starring the repository and contributing to the codebase.
-                </p>
-                <div className='flex items-center justify-center space-x-4'>
+        <section id='opensource' className='border-t border-border bg-neutral-50'>
+            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+                <div className='flex flex-col items-center text-center'>
+                    <div className='mb-6 flex size-12 items-center justify-center rounded-xl border border-border bg-white shadow-subtle'>
+                        <Icons.github className='size-6' />
+                    </div>
+                    <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                        Proudly open source
+                    </h2>
+                    <p className='mx-auto mb-8 max-w-[520px] text-lg leading-7 text-neutral-500'>
+                        Our product is open source and we encourage contributions from our community. Support us by
+                        starring the repository.
+                    </p>
                     <TrackClick event='github_link_clicked' properties={{ source: 'opensource_section' }}>
-                        <Button asChild>
+                        <Button asChild className='rounded-lg'>
                             <Link href={ExternalLinks.GitHub}>Support us on GitHub</Link>
                         </Button>
                     </TrackClick>

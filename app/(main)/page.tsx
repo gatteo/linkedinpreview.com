@@ -1,6 +1,7 @@
 import { type Organization, type SoftwareApplication, type WebSite, type WithContext } from 'schema-dts'
 
 import { site } from '@/config/site'
+import { CtaSection } from '@/components/home/cta-section'
 import { EmbedSection } from '@/components/home/embed-section'
 import { FAQs } from '@/components/home/faqs'
 import { Features } from '@/components/home/features'
@@ -48,7 +49,7 @@ export default function Page() {
         'operatingSystem': 'Web Browser',
         'url': `${site.url}/#tool`,
         'description':
-            'Free online tool to write, format, and preview LinkedIn posts with bold, italic, underline text, and lists. See how posts look on desktop and mobile before publishing.',
+            'Free online tool to write, format, and preview LinkedIn posts with bold, italic, lists and see exactly how they will look on mobile and desktop before publishing. Improve engagement and professionalism.',
         'offers': {
             '@type': 'Offer',
             'price': '0',
@@ -78,13 +79,14 @@ export default function Page() {
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
             <Hero />
             <Tool />
-            <HowToUse />
             <MainFeatures />
-            <OpenSource />
+            <HowToUse />
             <Reason />
             <Features />
+            <OpenSource />
             <EmbedSection />
             <FAQs />
+            <CtaSection />
         </>
     )
 }

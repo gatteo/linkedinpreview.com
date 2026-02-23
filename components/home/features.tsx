@@ -1,5 +1,7 @@
+'use client'
+
 import { Icon, Icons } from '../icon'
-import { Card, CardDescription, CardTitle } from '../ui/card'
+import { AnimateIn, StaggerChildren, StaggerItem } from '../ui/animate-in'
 
 const AllFeatures = [
     {
@@ -30,7 +32,7 @@ const AllFeatures = [
     {
         icon: 'underline',
         title: 'Underline Formatting',
-        body: 'You can use underline formatting to highlight important information and draw the reader’s eye.',
+        body: "You can use underline formatting to highlight important information and draw the reader's eye.",
     },
     {
         icon: 'italic',
@@ -51,30 +53,33 @@ const AllFeatures = [
 
 export function Features() {
     return (
-        <section id='all-features' className='w-full bg-muted py-12 md:py-16 lg:py-24'>
-            <div className='container flex max-w-6xl flex-col gap-16 '>
-                <div className='space-y-6 text-center'>
-                    <h2 className='font-heading text-2xl sm:text-4xl md:text-5xl'>All the Features you Need</h2>
-                    <p className='mx-auto max-w-[600px] text-balance text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed'>
+        <section id='all-features' className='border-t border-border bg-neutral-50'>
+            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+                <AnimateIn className='mx-auto mb-16 max-w-2xl text-center'>
+                    <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                        All the features you need
+                    </h2>
+                    <p className='text-lg leading-7 text-neutral-500'>
                         From formatting options to real-time previews, this tool has everything you need to create
                         perfect LinkedIn posts.
                     </p>
-                </div>
-                <div className='grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-3'>
+                </AnimateIn>
+
+                <StaggerChildren className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
                     {AllFeatures.map((feature) => (
-                        <Card key={feature.title} className='group relative transition hover:z-[1] hover:shadow-2xl'>
-                            <div className='relative space-y-4 p-6 py-8'>
+                        <StaggerItem key={feature.title}>
+                            <div className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated'>
                                 <Icon
                                     name={feature.icon as keyof typeof Icons}
-                                    className='size-9 rounded-md bg-primary/10 p-1.5 text-primary'
+                                    className='mb-4 size-8 rounded-lg bg-primary/10 p-1.5 text-primary'
                                     aria-hidden='true'
                                 />
-                                <CardTitle className='font-heading text-xl tracking-wide'>{feature.title}</CardTitle>
-                                <CardDescription className='text-md mt-2'>{feature.body}</CardDescription>
+                                <h3 className='mb-2 text-base font-semibold text-neutral-900'>{feature.title}</h3>
+                                <p className='text-sm leading-relaxed text-neutral-500'>{feature.body}</p>
                             </div>
-                        </Card>
+                        </StaggerItem>
                     ))}
-                </div>
+                </StaggerChildren>
             </div>
         </section>
     )
