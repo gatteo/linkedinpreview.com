@@ -15,13 +15,22 @@ create table public.post_analyses (
     emoji_count       int not null,
     has_formatting    boolean not null default false,
     has_image         boolean not null default false,
-    -- AI-generated analysis
+    -- AI-generated scores
     score             int not null,
     hook_score        int not null,
     readability_score int not null,
     cta_score         int not null,
+    engagement_score  int not null,
     strengths         text[] not null,
     improvements      text[] not null,
+    -- AI-generated classification
+    topics            text[] not null,
+    sentiment         text not null check (sentiment in ('positive', 'neutral', 'negative')),
+    category          text not null check (category in ('thought_leadership', 'storytelling', 'educational', 'promotional', 'engagement', 'personal')),
+    tone              text not null check (tone in ('professional', 'casual', 'inspirational')),
+    has_hook          boolean not null,
+    has_cta           boolean not null,
+    hook_quality      text not null check (hook_quality in ('weak', 'moderate', 'strong')),
     created_at        timestamptz not null default now()
 );
 
