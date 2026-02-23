@@ -11,7 +11,7 @@ import { HeroCTA } from './hero-cta'
 
 export function Hero() {
     return (
-        <>
+        <div className='relative -mt-16 overflow-hidden pt-16'>
             <section id='hero' className='container max-w-7xl pt-16 md:pt-28 lg:pt-36'>
                 <div className='flex flex-col items-center gap-8 text-center'>
                     {/* Tagline */}
@@ -57,7 +57,7 @@ export function Hero() {
                 </div>
             </section>
             <Background />
-        </>
+        </div>
     )
 }
 

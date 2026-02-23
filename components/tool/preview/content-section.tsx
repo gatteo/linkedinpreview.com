@@ -9,7 +9,7 @@ interface ContentSectionProps {
     content: string
 }
 
-function renderWithHashtags(text: string): React.ReactNode {
+export function renderWithHashtags(text: string): React.ReactNode {
     const parts = text.split(/(#[\w\u00C0-\u024F]+)/g)
     if (parts.length === 1) return text
     return parts.map((part, i) =>
@@ -51,6 +51,16 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
             checkContentOverflow()
         }
     }, [processedContent, checkContentOverflow])
+
+    if (!processedContent) {
+        return (
+            <div className='mt-5 whitespace-pre-line text-sm'>
+                {'Start writing and your post will appear here..\nYou can add images, links, '}
+                <span className='font-semibold text-[#0a66c2]'>#hashtags</span>
+                {' and emojis 🤩'}
+            </div>
+        )
+    }
 
     return (
         <div className='relative mt-5'>

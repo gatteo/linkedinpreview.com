@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -9,9 +8,11 @@ import { Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
+import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
+import { AIGenerateSheet } from '../ai-chat/sheet'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { EditorLoading } from './editor-loading'
@@ -47,6 +48,7 @@ export function EditorPanel({
     const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
+    const [generateOpen, setGenerateOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
 
     const handleMediaChangeWrapper = React.useCallback(
@@ -72,9 +74,6 @@ export function EditorPanel({
                 },
             }),
             Underline,
-            Placeholder.configure({
-                placeholder: 'Write something …',
-            }),
         ],
         editorProps: {
             attributes: {
@@ -216,6 +215,17 @@ export function EditorPanel({
             <div className='grow overflow-y-auto px-4 py-5 sm:px-6'>
                 <div className='not-prose relative text-sm font-normal'>
                     <EditorContent editor={editor} />
+                    {!text.trim() && (
+                        <div className='pointer-events-none absolute inset-x-0 -top-0.5 flex items-center text-sm text-muted-foreground/60'>
+                            Write something… or{' '}
+                            <button
+                                onClick={() => setGenerateOpen(true)}
+                                className='text-shimmer pointer-events-auto ml-1.5 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-sm font-medium transition-all hover:border-primary/40 hover:bg-primary/10'>
+                                <Icons.magic className='size-3.5 text-primary' />
+                                <span>Generate with AI</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -276,17 +286,14 @@ export function EditorPanel({
                             </span>
                         </div> */}
 
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
+                        <div className='group relative'>
+                            <Button variant='outline' size='icon' onClick={() => setGenerateOpen(true)}>
                                 <Icons.magic className='size-4' />
                             </Button>
                             <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Rewrite with AI
+                                Generate with AI
                             </span>
-                        </div> */}
+                        </div>
                     </div>
                     <div className='flex flex-1 items-center justify-end gap-2 sm:gap-4'>
                         {onShare && (
@@ -325,6 +332,17 @@ export function EditorPanel({
                     </div>
                 </div>
             </div>
+
+            <AIGenerateSheet
+                open={generateOpen}
+                onOpenChange={setGenerateOpen}
+                onInsert={(text) => {
+                    if (!editor) return
+                    const paragraphs = toTipTapParagraphs(text)
+                    editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
+                    onChange(editor.getJSON())
+                }}
+            />
         </div>
     )
 }
