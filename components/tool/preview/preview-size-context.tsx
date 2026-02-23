@@ -10,8 +10,11 @@ interface PreviewSizeContextType {
 
 const PreviewSizeContext = createContext<PreviewSizeContextType | undefined>(undefined)
 
-export const ScreenSizeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [screenSize, setScreenSize] = useState<ScreenSize>('desktop')
+export const ScreenSizeProvider: React.FC<{ children: React.ReactNode; initialSize?: ScreenSize }> = ({
+    children,
+    initialSize = 'desktop',
+}) => {
+    const [screenSize, setScreenSize] = useState<ScreenSize>(initialSize)
 
     return <PreviewSizeContext.Provider value={{ screenSize, setScreenSize }}>{children}</PreviewSizeContext.Provider>
 }

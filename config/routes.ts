@@ -1,4 +1,8 @@
-export const ApiRoutes = {}
+export const ApiRoutes = {
+    Chat: '/api/chat',
+    Suggestions: '/api/suggestions',
+    Analyze: '/api/analyze',
+}
 
 export const Routes = {
     Home: '',

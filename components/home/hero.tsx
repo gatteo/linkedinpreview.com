@@ -2,17 +2,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import HeroBG from '@/public/images/bg-pattern-filled.png'
 
-import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
 
 import { Icons } from '../icon'
 import { TrackClick } from '../tracking/track-click'
 import { Badge } from '../ui/badge'
-import { Button } from '../ui/button'
+import { HeroCTA } from './hero-cta'
 
 export function Hero() {
     return (
-        <>
+        <div className='relative -mt-16 overflow-hidden pt-16'>
             <section id='hero' className='container max-w-7xl pt-16 md:pt-28 lg:pt-36'>
                 <div className='flex flex-col items-center gap-8 text-center'>
                     {/* Tagline */}
@@ -54,26 +53,11 @@ export function Hero() {
                     </div>
 
                     {/* CTA */}
-                    <div className='flex gap-2'>
-                        <TrackClick
-                            event='cta_button_clicked'
-                            properties={{ button_name: 'get_started', source: 'hero' }}>
-                            <Button asChild>
-                                <Link href={Routes.Tool}>Get Started</Link>
-                            </Button>
-                        </TrackClick>
-                        <TrackClick
-                            event='cta_button_clicked'
-                            properties={{ button_name: 'learn_more', source: 'hero' }}>
-                            <Button variant='secondary' asChild>
-                                <Link href={Routes.MainFeatures}>Learn more</Link>
-                            </Button>
-                        </TrackClick>
-                    </div>
+                    <HeroCTA />
                 </div>
             </section>
             <Background />
-        </>
+        </div>
     )
 }
 

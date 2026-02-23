@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils'
 import { EditorPanel } from './editor-panel'
 import { PreviewPanel } from './preview/preview-panel'
 
+export type Media = { type: 'image' | 'video'; src: string }
+
 type ToolProps = {
     variant?: 'default' | 'embed'
 }
@@ -50,7 +52,7 @@ function useDraftPersistence(content: any) {
 
 export function Tool({ variant = 'default' }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
-    const [image, setImage] = React.useState<string | null>(null)
+    const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
     const [initialContent, setInitialContent] = React.useState<any>(undefined)
     const [isLoading, setIsLoading] = React.useState(true)
@@ -90,8 +92,8 @@ export function Tool({ variant = 'default' }: ToolProps) {
         setContent(json)
     }
 
-    const handleImageChange = (imageSrc: string | null) => {
-        setImage(imageSrc)
+    const handleMediaChange = (newMedia: Media | null) => {
+        setMedia(newMedia)
     }
 
     const handleShare = React.useCallback(async (): Promise<string | null> => {
@@ -147,7 +149,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     <EditorPanel
                         initialContent={initialContent}
                         onChange={handleContentChange}
-                        onImageChange={handleImageChange}
+                        onMediaChange={handleMediaChange}
                         onShare={handleShare}
                     />
                 </div>
@@ -156,7 +158,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         'w-full flex-1 flex-col md:max-w-[600px] md:border-l',
                         mobileTab === 'preview' ? 'flex' : 'hidden md:flex',
                     )}>
-                    <PreviewPanel content={content} image={image} />
+                    <PreviewPanel content={content} media={media} />
                 </div>
             </div>
         </div>

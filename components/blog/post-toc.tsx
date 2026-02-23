@@ -10,6 +10,27 @@ type TableOfContentsProps = {
     toc: TOC[]
 }
 
+type Section = {
+    item: TOC
+    children: TOC[]
+}
+
+/** Group flat ToC into sections: each top-level item with its nested children. */
+function groupSections(toc: TOC[]): Section[] {
+    const minDepth = Math.min(...toc.map((t) => t.depth))
+    const sections: Section[] = []
+
+    for (const item of toc) {
+        if (item.depth === minDepth) {
+            sections.push({ item, children: [] })
+        } else if (sections.length > 0) {
+            sections[sections.length - 1].children.push(item)
+        }
+    }
+
+    return sections
+}
+
 const TableOfContents = (props: TableOfContentsProps) => {
     const { toc } = props
     const activeId = useScrollspy(
@@ -17,30 +38,76 @@ const TableOfContents = (props: TableOfContentsProps) => {
         { rootMargin: '0% 0% -80% 0%' },
     )
 
+    const sections = React.useMemo(() => groupSections(toc), [toc])
+    const minDepth = Math.min(...toc.map((t) => t.depth))
+
+    /** Find which section the active item belongs to. */
+    const activeSectionUrl = React.useMemo(() => {
+        for (const section of sections) {
+            if (section.item.url === activeId) return section.item.url
+            if (section.children.some((c) => c.url === activeId)) return section.item.url
+        }
+        return null
+    }, [sections, activeId])
+
     return (
-        <div className=''>
-            <div className='mb-4 flex items-center gap-4'>On this page</div>
+        <nav aria-label='Table of contents'>
+            <div className='mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground/70'>
+                On this page
+            </div>
             <div>
-                {toc.map((item) => {
-                    const { title, url, depth } = item
+                {sections.map((section) => {
+                    const { item, children } = section
+                    const isExpanded = activeSectionUrl === item.url
 
                     return (
-                        <a
-                            key={url}
-                            href={`#${url}`}
-                            className={cn(
-                                'block border-l-2 py-2 pr-2.5 text-sm leading-normal text-muted-foreground transition-all hover:text-foreground',
-                                url === activeId && 'text-foreground border-foreground',
+                        <div key={item.url}>
+                            <a
+                                href={`#${item.url}`}
+                                className={cn(
+                                    'block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug text-muted-foreground/80 transition-colors hover:text-foreground',
+                                    item.url === activeId
+                                        ? 'border-foreground text-foreground font-medium'
+                                        : 'border-transparent',
+                                )}
+                                title={item.title}
+                                style={{
+                                    paddingLeft: (item.depth - minDepth) * 16 + 8,
+                                }}>
+                                {item.title}
+                            </a>
+                            {children.length > 0 && (
+                                <div
+                                    className='grid transition-[grid-template-rows] duration-200 ease-in-out'
+                                    style={{
+                                        gridTemplateRows: isExpanded ? '1fr' : '0fr',
+                                    }}>
+                                    <div className='overflow-hidden'>
+                                        {children.map((child) => (
+                                            <a
+                                                key={child.url}
+                                                href={`#${child.url}`}
+                                                className={cn(
+                                                    'block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug text-muted-foreground/80 transition-colors hover:text-foreground',
+                                                    child.url === activeId
+                                                        ? 'border-foreground text-foreground font-medium'
+                                                        : 'border-transparent',
+                                                )}
+                                                title={child.title}
+                                                style={{
+                                                    paddingLeft: (child.depth - minDepth) * 16 + 8,
+                                                }}>
+                                                {child.title}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
                             )}
-                            style={{
-                                paddingLeft: depth * 16,
-                            }}>
-                            {title}
-                        </a>
+                        </div>
                     )
                 })}
             </div>
-        </div>
+        </nav>
     )
 }
 
