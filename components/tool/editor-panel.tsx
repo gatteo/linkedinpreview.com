@@ -8,8 +8,10 @@ import { Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
+import { ApiRoutes } from '@/config/routes'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
+import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
 import { AIGenerateSheet } from '../ai-chat/sheet'
@@ -50,6 +52,7 @@ export function EditorPanel({
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
+    const { ensureSession } = useAnonymousAuth()
 
     const handleMediaChangeWrapper = React.useCallback(
         (media: Media | null) => {
@@ -96,13 +99,41 @@ export function EditorPanel({
         return { json, text }
     }, [editor])
 
+    const analyzePost = React.useCallback(
+        async (json: any, text: string) => {
+            try {
+                await ensureSession()
+                const analytics = getPostAnalytics(json, text, !!currentMedia)
+                const res = await fetch(ApiRoutes.Analyze, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postText: text,
+                        hasImage: analytics.has_image,
+                        hasFormatting: analytics.has_formatting,
+                        contentLength: analytics.content_length,
+                        lineCount: analytics.line_count,
+                        hashtagCount: analytics.hashtag_count,
+                        emojiCount: analytics.emoji_count,
+                    }),
+                })
+                if (!res.ok) return
+                posthog.capture('post_analyzed', { content_length: text.length })
+            } catch {
+                // silently fail — background analytics
+            }
+        },
+        [ensureSession, currentMedia],
+    )
+
     const onCopied = React.useCallback(
         (json: any, text: string) => {
             toast.success('Text copied to clipboard')
             notifyCopy(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
+            analyzePost(json, text) // fire-and-forget
         },
-        [notifyCopy, currentMedia],
+        [notifyCopy, currentMedia, analyzePost],
     )
 
     const handleCopy = React.useCallback(() => {
