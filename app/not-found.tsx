@@ -14,14 +14,16 @@ export default function NotFound() {
             <div className='text-center'>
                 <p className='mb-2 text-sm font-medium uppercase tracking-wider text-neutral-400'>404</p>
                 <h1 className='mb-4 font-heading text-4xl font-bold text-neutral-900'>Page not found</h1>
-                <p className='text-lg text-neutral-500'>Sorry, we couldn't find the page you're looking for.</p>
+                <p className='text-lg text-neutral-500'>
+                    Sorry, we couldn&apos;t find the page you&apos;re looking for.
+                </p>
             </div>
             <Link
                 href={UtmUrl('/', {
                     medium: UtmMediums.Homepage,
                     content: '404',
                 })}
-                className='rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800'>
+                className='rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-subtle transition-colors hover:bg-primary/90'>
                 Go to Home
             </Link>
         </div>

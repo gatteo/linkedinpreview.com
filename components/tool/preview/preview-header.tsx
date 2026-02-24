@@ -21,7 +21,7 @@ export const PreviewHeader: React.FC = () => {
     }
 
     return (
-        <div className='flex h-16 border-b px-4 sm:px-6'>
+        <div className='flex h-14 border-b border-border px-4 sm:px-6'>
             <div className='flex grow items-center justify-between'>
                 <h2 className='text-base font-semibold'>Post Preview</h2>
                 <Tabs value={screenSize} onValueChange={(v) => handleSizeChange(v as typeof screenSize)}>

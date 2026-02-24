@@ -32,7 +32,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('bold') ? 'default' : 'outline'}
                 size='icon'>
-                <Bold className='size-5' />
+                <Bold className='size-4' />
             </Button>
 
             <Button
@@ -42,7 +42,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('italic') ? 'default' : 'outline'}
                 size='icon'>
-                <Italic className='size-5' />
+                <Italic className='size-4' />
             </Button>
 
             <Button
@@ -52,7 +52,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('strike') ? 'default' : 'outline'}
                 size='icon'>
-                <Strikethrough className='size-5' />
+                <Strikethrough className='size-4' />
             </Button>
 
             <Button
@@ -62,7 +62,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('underline') ? 'default' : 'outline'}
                 size='icon'>
-                <Underline className='size-5' />
+                <Underline className='size-4' />
             </Button>
 
             <Separator orientation='vertical' className='h-full' />
@@ -74,7 +74,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('bulletList') ? 'default' : 'outline'}
                 size='icon'>
-                <List className='size-5' />
+                <List className='size-4' />
             </Button>
 
             <Button
@@ -84,7 +84,7 @@ const Toolbar = ({ editor }: Props) => {
                 }}
                 variant={editor.isActive('orderedList') ? 'default' : 'outline'}
                 size='icon'>
-                <ListOrdered className='size-5' />
+                <ListOrdered className='size-4' />
             </Button>
 
             <Separator orientation='vertical' className='h-full' />
@@ -94,7 +94,7 @@ const Toolbar = ({ editor }: Props) => {
                 disabled={!editor.can().undo()}
                 variant='outline'
                 size='icon'>
-                <Undo className='size-5' />
+                <Undo className='size-4' />
             </Button>
 
             <Button
@@ -102,7 +102,7 @@ const Toolbar = ({ editor }: Props) => {
                 disabled={!editor.can().redo()}
                 variant='outline'
                 size='icon'>
-                <Redo className='size-5' />
+                <Redo className='size-4' />
             </Button>
         </div>
     )

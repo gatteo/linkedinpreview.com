@@ -38,7 +38,7 @@ const components: MDXComponents = {
         <>
             <ImageZoom>
                 <Image
-                    className='rounded-md border shadow-md transition-transform hover:scale-[102%]'
+                    className='rounded-xl border border-border shadow-elevated transition-transform hover:scale-[1.02]'
                     alt={alt}
                     {...rest}
                 />

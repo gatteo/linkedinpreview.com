@@ -63,7 +63,7 @@ export function ChatPhase({
             </ScrollArea>
 
             {!isLoading && latestPostText && (
-                <div className='border-t px-6 py-3'>
+                <div className='border-t border-border px-6 py-3'>
                     <Button onClick={onOpenInEditor} className='w-full'>
                         Open in Editor
                     </Button>

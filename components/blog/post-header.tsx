@@ -61,7 +61,9 @@ export function Header({ createdAt, title, slug, summary, image, author, tags }:
 
             {image && (
                 <div className='my-6'>
-                    <AspectRatio ratio={16 / 9} className='overflow-hidden rounded-lg border shadow-xl'>
+                    <AspectRatio
+                        ratio={16 / 9}
+                        className='overflow-hidden rounded-xl border border-border shadow-prominent'>
                         <Image
                             src={image}
                             alt={`Featured image for: ${title}`}

@@ -28,7 +28,7 @@ export function EmbedTool() {
             <div className='flex-1'>
                 <Tool variant='embed' />
             </div>
-            <div className='border-t px-4 py-2 text-center text-xs text-muted-foreground'>
+            <div className='border-t border-border px-4 py-2 text-center text-xs text-muted-foreground'>
                 Powered by{' '}
                 <Link
                     href='https://linkedinpreview.com?utm_source=linkedinpreview.com&utm_medium=embed&utm_content=powered_by'

@@ -112,11 +112,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const inner = (
         <div
             className={cn(
-                'flex min-h-[520px] flex-1 flex-col rounded-sm border',
-                variant === 'embed' && 'h-full border-0',
+                'flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-elevated',
+                variant === 'embed' && 'h-full rounded-none border-0 shadow-none',
             )}>
             {/* Mobile tab bar — hidden on desktop where both panels are visible */}
-            <div className='flex border-b md:hidden'>
+            <div className='flex border-b border-border md:hidden'>
                 <button
                     type='button'
                     onClick={() => setMobileTab('editor')}
@@ -155,7 +155,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                 </div>
                 <div
                     className={cn(
-                        'w-full flex-1 flex-col md:max-w-[600px] md:border-l',
+                        'w-full flex-1 flex-col md:max-w-[600px] md:border-l md:border-border',
                         mobileTab === 'preview' ? 'flex' : 'hidden md:flex',
                     )}>
                     <PreviewPanel content={content} media={media} />
@@ -169,8 +169,8 @@ export function Tool({ variant = 'default' }: ToolProps) {
     }
 
     return (
-        <section id='tool' className='mx-auto max-w-content px-6 py-16 md:py-24'>
-            {inner}
+        <section id='tool' className='border-t border-border'>
+            <div className='mx-auto max-w-content px-6 py-16 md:py-24'>{inner}</div>
         </section>
     )
 }

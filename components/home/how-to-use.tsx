@@ -1,3 +1,5 @@
+import { AnimateIn } from '../ui/animate-in'
+
 const Steps = [
     {
         title: 'Write or Paste your Content',
@@ -26,7 +28,7 @@ export function HowToUse() {
             <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
                 <div className='flex flex-col gap-16 md:flex-row'>
                     {/* Left text */}
-                    <div className='md:w-5/12'>
+                    <AnimateIn from='left' className='md:w-5/12'>
                         <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
                             How to use the tool
                         </h2>
@@ -51,10 +53,10 @@ export function HowToUse() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </AnimateIn>
 
                     {/* Right video */}
-                    <div className='flex items-center md:w-7/12'>
+                    <AnimateIn from='right' className='flex items-center md:w-7/12'>
                         <div className='dot-grid w-full overflow-hidden rounded-2xl border border-border bg-neutral-50 shadow-hero'>
                             <div className='p-4'>
                                 <video
@@ -67,7 +69,7 @@ export function HowToUse() {
                                 </video>
                             </div>
                         </div>
-                    </div>
+                    </AnimateIn>
                 </div>
             </div>
         </section>

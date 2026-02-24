@@ -73,7 +73,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className={cn(
-                        'text-sm font-semibold text-gray-500 hover:text-gray-700',
+                        'text-sm font-semibold text-neutral-500 hover:text-neutral-700',
                         isExpanded ? 'mt-2' : 'absolute bottom-0 right-0 bg-white pl-1',
                     )}>
                     {isExpanded ? '...less' : '...more'}

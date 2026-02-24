@@ -14,7 +14,7 @@ export const ActionButtons: React.FC = () => {
                 <div
                     key={action}
                     className={cn(
-                        'flex items-center justify-center rounded-lg px-1.5 py-2 font-semibold text-gray-500 hover:bg-gray-100',
+                        'flex items-center justify-center rounded-lg px-1.5 py-2 font-semibold text-neutral-500 hover:bg-neutral-100',
                         screenSize === 'mobile' ? 'flex-col text-[10px]' : 'flex-row gap-1.5 text-sm',
                     )}>
                     <Icon

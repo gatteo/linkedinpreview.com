@@ -6,7 +6,7 @@ export function EditorLoading() {
     return (
         <div className='flex size-full flex-col'>
             {/** Panel title */}
-            <div className='flex h-16 border-b px-4 sm:px-6'>
+            <div className='flex h-14 border-b border-border px-4 sm:px-6'>
                 <div className='flex grow items-center justify-between'>
                     <div className='flex flex-none flex-wrap items-center justify-start gap-2'>
                         {Array.from({ length: 8 }).map((_, index) => (
@@ -24,7 +24,7 @@ export function EditorLoading() {
             </div>
 
             {/** Actions */}
-            <div className='border-t px-4 py-3 sm:px-6'>
+            <div className='border-t border-border px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
                         {Array.from({ length: 4 }).map((_, index) => (

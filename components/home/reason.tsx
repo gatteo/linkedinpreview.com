@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Routes } from '@/config/routes'
 
 import { Icons } from '../icon'
+import { AnimateIn, StaggerChildren, StaggerItem } from '../ui/animate-in'
 import { Button } from '../ui/button'
 
 const Reasons = [
@@ -31,7 +32,7 @@ export function Reason() {
         <section id='reason' className='border-t border-border'>
             <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
                 <div className='grid gap-12 lg:grid-cols-2 lg:place-items-center'>
-                    <div>
+                    <AnimateIn from='left'>
                         <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
                             Why format and preview your LinkedIn posts?
                         </h2>
@@ -40,27 +41,27 @@ export function Reason() {
                             and how much engagement your content receives.
                         </p>
                         <Button asChild className='rounded-lg'>
-                            <Link href={Routes.Tool}>Get Started, It's Free</Link>
+                            <Link href={Routes.Tool}>Get Started, It&apos;s Free</Link>
                         </Button>
-                    </div>
+                    </AnimateIn>
 
-                    <div className='flex flex-col gap-4'>
+                    <StaggerChildren className='flex flex-col gap-4'>
                         {Reasons.map(({ icon, title, description }) => (
-                            <div
-                                key={title}
-                                className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-shadow hover:shadow-elevated'>
-                                <div className='flex items-start gap-4'>
-                                    <div className='flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10'>
-                                        {icon}
-                                    </div>
-                                    <div>
-                                        <h3 className='mb-1 text-base font-semibold text-neutral-900'>{title}</h3>
-                                        <p className='text-sm leading-relaxed text-neutral-500'>{description}</p>
+                            <StaggerItem key={title}>
+                                <div className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-shadow hover:shadow-elevated'>
+                                    <div className='flex items-start gap-4'>
+                                        <div className='flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10'>
+                                            {icon}
+                                        </div>
+                                        <div>
+                                            <h3 className='mb-1 text-base font-semibold text-neutral-900'>{title}</h3>
+                                            <p className='text-sm leading-relaxed text-neutral-500'>{description}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </StaggerChildren>
                 </div>
             </div>
         </section>

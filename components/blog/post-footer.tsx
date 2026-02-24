@@ -18,7 +18,7 @@ type Props = {
 export function Footer({ slug, title, author }: Props) {
     return (
         <div>
-            <div className='mt-10 flex w-full flex-col items-center gap-4 border-t pt-4 md:flex-row md:justify-between'>
+            <div className='mt-10 flex w-full flex-col items-center gap-4 border-t border-border pt-4 md:flex-row md:justify-between'>
                 <div className='flex flex-row items-center gap-2'>
                     <Avatar className='size-6'>
                         <AvatarImage src={author.image} />

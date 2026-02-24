@@ -30,7 +30,7 @@ export function CtaCard({
     align = 'center',
 }: Props) {
     return (
-        <Card className={cn('w-full not-prose overflow-hidden rounded-xl', shineAnimation)}>
+        <Card className={cn('w-full not-prose overflow-hidden rounded-xl border-border shadow-subtle', shineAnimation)}>
             <div className='relative'>
                 <div
                     className={cn(

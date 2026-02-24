@@ -80,7 +80,7 @@ export function EditorPanel({
         ],
         editorProps: {
             attributes: {
-                class: 'prose-md focus:outline-none resize-none block w-full p-0 text-gray-900 border-none appearance-none placeholder:text-gray-500 focus:ring-0 overflow-y-auto h-full',
+                class: 'prose-md focus:outline-none resize-none block w-full p-0 text-neutral-900 border-none appearance-none placeholder:text-neutral-500 focus:ring-0 overflow-y-auto h-full',
             },
         },
         onCreate: ({ editor }) => {
@@ -236,7 +236,7 @@ export function EditorPanel({
         <div className='flex size-full flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='flex h-16 border-b'>
+            <div className='flex h-14 border-b border-border'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>
@@ -268,7 +268,7 @@ export function EditorPanel({
             </div>
 
             {/** Actions */}
-            <div className='border-t px-4 py-3 sm:px-6'>
+            <div className='border-t border-border px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
                         {/* <div className='group relative'>
@@ -278,7 +278,7 @@ export function EditorPanel({
                                 onClick={() => toast.info('Feature not available yet')}>
                                 <Icons.emoji className='size-4' />
                             </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Insert Emoji
                             </span>
                         </div> */}
@@ -300,7 +300,7 @@ export function EditorPanel({
                                     <Icons.image className='size-4' />
                                 </Button>
                             )}
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 {currentMedia ? 'Remove Media' : 'Add Image or Video'}
                             </span>
                         </div>
@@ -312,7 +312,7 @@ export function EditorPanel({
                                 onClick={() => toast.info('Feature not available yet')}>
                                 <Icons.carousel className='size-4' />
                             </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Add Carousel
                             </span>
                         </div> */}
@@ -321,7 +321,7 @@ export function EditorPanel({
                             <Button variant='outline' size='icon' onClick={() => setGenerateOpen(true)}>
                                 <Icons.magic className='size-4' />
                             </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Generate with AI
                             </span>
                         </div>
@@ -347,7 +347,7 @@ export function EditorPanel({
                                         }}>
                                         <Share2 className='size-4' />
                                     </Button>
-                                    <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                                    <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                         Share Draft
                                     </span>
                                 </div>

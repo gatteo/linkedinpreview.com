@@ -18,22 +18,22 @@ export function LinkCard({ title, description, icon, image, href }: Props) {
         <Link
             href={href}
             target='_blank'
-            className='group relative flex flex-row space-x-4 rounded-md border bg-muted p-4 transition-all duration-150 hover:bg-accent'>
-            {icon && <Icon name={icon} className='size-7' />}
+            className='group relative flex flex-row space-x-4 rounded-xl border border-border bg-white p-5 shadow-subtle transition-all duration-200 hover:shadow-elevated'>
+            {icon && <Icon name={icon} className='size-7 text-primary' />}
 
             {image && (
                 <Image src={image} height={40} width={80} alt='Logo' className='mt-2 h-fit w-[80px] opacity-70' />
             )}
 
             <div className='flex-1 flex-row'>
-                <h2 className='text-xl font-bold'>{title}</h2>
-                <div className='mt-2 text-sm leading-tight text-muted-foreground md:text-base'>{description}</div>
-                <Button variant='link' className='mt-3 p-0' size='sm'>
-                    scopri di più
+                <h2 className='text-lg font-semibold text-neutral-900'>{title}</h2>
+                <div className='mt-1.5 text-sm leading-relaxed text-neutral-500'>{description}</div>
+                <Button variant='link' className='mt-3 p-0 text-primary' size='sm'>
+                    Learn more
                 </Button>
             </div>
 
-            <IconExternalLink className='absolute right-4 text-accent-foreground opacity-0 transition-opacity group-hover:opacity-100' />
+            <IconExternalLink className='absolute right-4 top-5 size-4 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100' />
         </Link>
     )
 }

@@ -22,12 +22,12 @@ export const UserInfo: React.FC = () => {
                         </span>
                     </span>
                     <div className='min-w-0 flex-1'>
-                        <p className='truncate text-sm font-semibold text-gray-900'>Matteo Giardino</p>
-                        <p className='truncate text-xs font-normal text-gray-500'>Founder @ devv.it</p>
+                        <p className='truncate text-sm font-semibold text-neutral-900'>Matteo Giardino</p>
+                        <p className='truncate text-xs font-normal text-neutral-500'>Founder @ devv.it</p>
                         <div className='flex items-center gap-1'>
-                            <span className='text-xs font-normal text-gray-500'>Now</span>
-                            <span className='text-xs font-normal text-gray-500'>•</span>
-                            <Icon name='linkedInVisibility' className='size-4 text-gray-500' />
+                            <span className='text-xs font-normal text-neutral-500'>Now</span>
+                            <span className='text-xs font-normal text-neutral-500'>•</span>
+                            <Icon name='linkedInVisibility' className='size-4 text-neutral-500' />
                         </div>
                     </div>
                 </div>

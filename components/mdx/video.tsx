@@ -15,7 +15,7 @@ export const Video = (props: VideoProps) => {
     return (
         <AspectRatio ratio={16 / 9}>
             <video
-                className={cn('object-fit my-4 rounded-lg shadow-lg', className)}
+                className={cn('object-fit my-4 rounded-xl shadow-elevated', className)}
                 loop
                 muted
                 src={src}

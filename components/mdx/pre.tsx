@@ -57,9 +57,9 @@ export const Pre = (props: PreProps) => {
     }, [])
 
     return (
-        <figure className='not-prose group relative my-6 overflow-hidden rounded-lg border bg-secondary/50 text-sm'>
+        <figure className='not-prose group relative my-6 overflow-hidden rounded-xl border border-border bg-secondary/50 text-sm'>
             {title ? (
-                <div className='flex flex-row items-center gap-2 border-b bg-muted py-2 pl-4 pr-2'>
+                <div className='flex flex-row items-center gap-2 border-b border-border bg-muted py-2 pl-4 pr-2'>
                     {lang && <div className='text-muted-foreground'>{getLanguageIcon(lang)}</div>}
                     <figcaption className='flex-1 truncate text-muted-foreground'>{title}</figcaption>
                     <CopyButton text={text} />

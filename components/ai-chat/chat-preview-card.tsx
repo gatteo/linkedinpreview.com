@@ -25,17 +25,17 @@ export function ChatPreviewCard({ text, isStreaming }: ChatPreviewCardProps) {
 
     return (
         <ScreenSizeProvider initialSize='mobile'>
-            <div className='overflow-hidden rounded-lg border bg-white shadow-sm'>
+            <div className='overflow-hidden rounded-lg border border-border bg-white shadow-subtle'>
                 <div className='px-4 pt-3'>
                     <UserInfo />
                 </div>
                 <div className='px-4 py-3'>
-                    <div className='whitespace-pre-line text-sm text-gray-900'>
+                    <div className='whitespace-pre-line text-sm text-neutral-900'>
                         {renderWithHashtags(processedText)}
-                        {isStreaming && <span className='ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-900' />}
+                        {isStreaming && <span className='ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-neutral-900' />}
                     </div>
                 </div>
-                <div className='border-t px-4 py-2'>
+                <div className='border-t border-border px-4 py-2'>
                     <Reactions />
                     <ActionButtons />
                 </div>

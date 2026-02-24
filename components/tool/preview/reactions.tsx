@@ -19,7 +19,8 @@ export const Reactions: React.FC = () => {
                     className='h-5 w-auto'
                     src='/images/home/post-reactions.svg'
                 />
-                <span className={cn('mt-1 font-medium text-gray-500', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
+                <span
+                    className={cn('mt-1 font-medium text-neutral-500', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
                     John Doe and 169 others
                 </span>
             </div>
@@ -28,7 +29,7 @@ export const Reactions: React.FC = () => {
                     <span
                         key={text}
                         className={cn(
-                            'font-medium text-gray-500',
+                            'font-medium text-neutral-500',
                             screenSize === 'mobile' ? 'text-[10px]' : 'text-xs',
                         )}>
                         {text}

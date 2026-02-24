@@ -34,7 +34,7 @@ export function ShareIcons({ url, title, className }: { url: string; title: stri
             <EmailShareButton
                 url={url}
                 subject={title}
-                body={'Leggi questo post di Matteo Giardino, ne vale la pena!'}
+                body={'Check out this article from LinkedIn Post Preview!'}
                 onClick={() => trackShare('email')}>
                 <div className={buttonVariants({ size: 'icon', variant: 'outline' })}>
                     <IconMail className='size-4' />
@@ -43,7 +43,7 @@ export function ShareIcons({ url, title, className }: { url: string; title: stri
             <LinkedinShareButton
                 url={url}
                 title={title}
-                summary={'Leggi questo post di Matteo Giardino, ne vale la pena!'}
+                summary={'Check out this article from LinkedIn Post Preview!'}
                 source={'Matteo Giardino'}
                 onClick={() => trackShare('linkedin')}>
                 <div className={buttonVariants({ size: 'icon', variant: 'outline' })}>
