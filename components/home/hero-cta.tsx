@@ -54,14 +54,14 @@ export function HeroCTA() {
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
-                <Button asChild className='rounded-lg px-5 py-2.5'>
+                <Button asChild size='default' className='rounded-lg'>
                     <Link href={Routes.Tool}>{copy.primary}</Link>
                 </Button>
             </TrackClick>
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                <Button variant='outline' asChild className='rounded-lg border-border bg-white px-5 py-2.5'>
+                <Button variant='outline' asChild size='default' className='rounded-lg border-border bg-white'>
                     <Link href={Routes.MainFeatures}>{copy.secondary}</Link>
                 </Button>
             </TrackClick>

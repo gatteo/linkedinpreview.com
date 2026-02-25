@@ -53,13 +53,14 @@ const AllFeatures = [
 
 export function Features() {
     return (
-        <section id='all-features' className='border-t border-border bg-neutral-50'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
-                <AnimateIn className='mx-auto mb-16 max-w-2xl text-center'>
-                    <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+        <section id='all-features' className='border-t border-border bg-neutral-50/30'>
+            <div className='px-6 py-20 md:py-28'>
+                {/* Left-aligned header */}
+                <AnimateIn className='mb-12'>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
                         All the features you need
                     </h2>
-                    <p className='text-lg leading-7 text-neutral-500'>
+                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
                         From formatting options to real-time previews, this tool has everything you need to create
                         perfect LinkedIn posts.
                     </p>

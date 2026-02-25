@@ -65,7 +65,7 @@ export function FAQs() {
 
     return (
         <section id='faqs' className='border-t border-border'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+            <div className='px-6 py-20 md:py-28'>
                 <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
                 <div className='flex flex-col gap-12 md:flex-row'>

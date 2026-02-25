@@ -77,15 +77,21 @@ export default function Page() {
             />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
-            <Hero />
-            <Tool />
-            <MainFeatures />
-            <HowToUse />
-            <Reason />
-            <Features />
-            <OpenSource />
-            <EmbedSection />
-            <FAQs />
+
+            {/* Contained sections with border-x like dub.co */}
+            <div className='mx-auto max-w-content border-x border-border'>
+                <Hero />
+                <Tool />
+                <MainFeatures />
+                <HowToUse />
+                <Reason />
+                <Features />
+                <OpenSource />
+                <EmbedSection />
+                <FAQs />
+            </div>
+
+            {/* CTA breaks out of container for full-width dark section */}
             <CtaSection />
         </>
     )

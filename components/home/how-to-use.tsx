@@ -24,28 +24,30 @@ const Steps = [
 
 export function HowToUse() {
     return (
-        <section id='how-it-works' className='border-t border-border'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
-                <div className='flex flex-col gap-16 md:flex-row'>
-                    {/* Left text */}
-                    <AnimateIn from='left' className='md:w-5/12'>
-                        <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
-                            How to use the tool
-                        </h2>
-                        <p className='mb-10 text-lg leading-7 text-neutral-500'>
-                            Just follow these simple steps to make your LinkedIn post look great.
-                        </p>
+        <section id='how-it-works' className='dot-grid border-t border-border'>
+            <div className='px-6 py-20 md:py-28'>
+                {/* Left-aligned header */}
+                <AnimateIn className='mb-12'>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                        How to use the tool
+                    </h2>
+                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
+                        Just follow these simple steps to make your LinkedIn post look great.
+                    </p>
+                </AnimateIn>
 
-                        {/* Timeline */}
-                        <div className='relative border-l border-border pl-8'>
+                <div className='flex flex-col gap-16 md:flex-row'>
+                    {/* Left timeline */}
+                    <AnimateIn from='left' className='md:w-5/12'>
+                        <div className='relative border-l-2 border-border pl-8'>
                             {Steps.map((step, index) => (
                                 <div key={step.title} className='relative pb-10 last:pb-0'>
                                     {/* Circle */}
                                     <div
-                                        className='absolute flex size-[10px] items-center justify-center rounded-full border-2 border-primary bg-white'
-                                        style={{ left: 'calc(-2rem - 5px)' }}
+                                        className='absolute flex size-3 items-center justify-center rounded-full border-2 border-primary bg-white'
+                                        style={{ left: 'calc(-2rem - 7px)' }}
                                     />
-                                    <span className='mb-1 block text-xs font-medium uppercase tracking-wider text-neutral-400'>
+                                    <span className='mb-1 block text-xs font-semibold uppercase tracking-wider text-primary/70'>
                                         Step {index + 1}
                                     </span>
                                     <h3 className='mb-1 text-base font-semibold text-neutral-900'>{step.title}</h3>
@@ -57,7 +59,7 @@ export function HowToUse() {
 
                     {/* Right video */}
                     <AnimateIn from='right' className='flex items-center md:w-7/12'>
-                        <div className='dot-grid w-full overflow-hidden rounded-2xl border border-border bg-neutral-50 shadow-hero'>
+                        <div className='w-full overflow-hidden rounded-2xl border border-border bg-white shadow-hero'>
                             <div className='p-4'>
                                 <video
                                     autoPlay

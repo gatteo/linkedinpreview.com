@@ -30,17 +30,21 @@ const Reasons = [
 export function Reason() {
     return (
         <section id='reason' className='border-t border-border'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+            <div className='px-6 py-20 md:py-28'>
+                {/* Left-aligned header */}
+                <AnimateIn className='mb-12'>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+                        Why format and preview your LinkedIn posts?
+                    </h2>
+                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
+                        The appearance of posts on LinkedIn can significantly influence your professional reputation and
+                        how much engagement your content receives.
+                    </p>
+                </AnimateIn>
+
                 <div className='grid gap-12 lg:grid-cols-2 lg:place-items-center'>
                     <AnimateIn from='left'>
-                        <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
-                            Why format and preview your LinkedIn posts?
-                        </h2>
-                        <p className='mb-8 max-w-[520px] text-lg leading-7 text-neutral-500'>
-                            The appearance of posts on LinkedIn can significantly influence your professional reputation
-                            and how much engagement your content receives.
-                        </p>
-                        <Button asChild className='rounded-lg'>
+                        <Button asChild size='default' className='rounded-lg'>
                             <Link href={Routes.Tool}>Get Started, It&apos;s Free</Link>
                         </Button>
                     </AnimateIn>
@@ -48,7 +52,7 @@ export function Reason() {
                     <StaggerChildren className='flex flex-col gap-4'>
                         {Reasons.map(({ icon, title, description }) => (
                             <StaggerItem key={title}>
-                                <div className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-shadow hover:shadow-elevated'>
+                                <div className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated'>
                                     <div className='flex items-start gap-4'>
                                         <div className='flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10'>
                                             {icon}

@@ -8,8 +8,8 @@ import { Button } from '../ui/button'
 
 export function OpenSource() {
     return (
-        <section id='opensource' className='border-t border-border bg-neutral-50'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
+        <section id='opensource' className='border-t border-border'>
+            <div className='px-6 py-20 md:py-28'>
                 <div className='flex flex-col items-center text-center'>
                     <div className='mb-6 flex size-12 items-center justify-center rounded-xl border border-border bg-white shadow-subtle'>
                         <Icons.github className='size-6' />
@@ -22,7 +22,7 @@ export function OpenSource() {
                         starring the repository.
                     </p>
                     <TrackClick event='github_link_clicked' properties={{ source: 'opensource_section' }}>
-                        <Button asChild className='rounded-lg'>
+                        <Button asChild size='default' className='rounded-lg'>
                             <Link href={ExternalLinks.GitHub}>Support us on GitHub</Link>
                         </Button>
                     </TrackClick>

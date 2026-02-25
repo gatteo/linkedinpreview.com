@@ -24,12 +24,13 @@ const Features = [
 export function MainFeatures() {
     return (
         <section id='main-features' className='border-t border-border'>
-            <div className='mx-auto max-w-content px-6 py-20 md:py-28'>
-                <AnimateIn className='mx-auto mb-16 max-w-2xl text-center'>
-                    <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
+            <div className='px-6 py-20 md:py-28'>
+                {/* Left-aligned header */}
+                <AnimateIn className='mb-12'>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
                         The key features of this tool
                     </h2>
-                    <p className='text-lg leading-7 text-neutral-500'>
+                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
                         From intuitive formatting to real-time preview — everything you need to create perfect LinkedIn
                         posts.
                     </p>
