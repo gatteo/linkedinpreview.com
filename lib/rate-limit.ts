@@ -24,7 +24,7 @@ export async function checkRateLimit(
 
         if (error) {
             console.error('Rate limit check failed:', error.message)
-            // Fail open — allow the request if DB is unreachable
+            // Fail open - allow the request if DB is unreachable
             return { allowed: true, remaining: 0, resetAt: null }
         }
 

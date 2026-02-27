@@ -31,8 +31,8 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
             <PreviewHeader />
             <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-neutral-50 py-5'>
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
-                    <div className='font-system overflow-hidden rounded-lg bg-white shadow ring-1 ring-inset ring-neutral-200'>
-                        <div className='py-5 pl-4 pr-6'>
+                    <div className='font-system overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]'>
+                        <div className='pt-3 pr-4 pb-1 pl-4'>
                             <UserInfo />
                             <ContentSection content={content} />
                         </div>
@@ -58,7 +58,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
                                 )}
                             </div>
                         )}
-                        <div className='py-3 pl-4 pr-6'>
+                        <div className='py-2 pr-4 pl-4'>
                             <Reactions />
                             <hr className='mt-3 border-neutral-200' />
                             <ActionButtons />

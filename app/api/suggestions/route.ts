@@ -43,7 +43,7 @@ export async function POST(request: Request) {
             }),
             system: `You suggest short refinement prompts for a LinkedIn post.
 Each suggestion must be 4-8 words and start with a verb.
-Make them specific to the post content — reference actual topics, themes, or points from the post.
+Make them specific to the post content - reference actual topics, themes, or points from the post.
 Cover different aspects: one about content, one about structure or length, one about style or tone.`,
             prompt: `Suggest 3 ways to refine this LinkedIn post:\n\n${parsed.data.postText}`,
         })

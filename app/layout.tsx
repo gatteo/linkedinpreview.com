@@ -5,6 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import { site, siteBaseMetadata } from '@/config/site'
 import { cn } from '@/lib/utils'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { GTM } from '@/components/gtm'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 
@@ -12,12 +13,12 @@ import '../styles/globals.css'
 
 const sans = Inter({
     subsets: ['latin'],
-    variable: '--font-sans',
+    variable: '--font-inter',
 })
 
 const cal = localFont({
     src: '../public/fonts/CalSans-SemiBold.woff2',
-    variable: '--font-heading',
+    variable: '--font-cal',
 })
 
 export const metadata: Metadata = {
@@ -48,9 +49,9 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html lang='en' className={cn(sans.variable, cal.variable)}>
+        <html lang='en' className={cn(sans.variable, cal.variable)} suppressHydrationWarning>
             <body>
-                {children}
+                <TooltipProvider>{children}</TooltipProvider>
                 <GTM />
                 <SpeedInsights />
                 <TailwindIndicator />

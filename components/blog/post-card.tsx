@@ -26,7 +26,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
                 content: 'post_card',
             })}
             onClick={handleClick}
-            className='group flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-subtle transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated'>
+            className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white transition-all duration-200 hover:-translate-y-0.5'>
             <Image
                 src={post.image ?? '/images/blog-post-placeholder.png'}
                 width={1280}
@@ -36,7 +36,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
             />
 
             <div className='flex flex-1 flex-col p-5'>
-                <h2 className='mb-2 text-lg font-semibold text-neutral-900 transition-colors group-hover:text-primary'>
+                <h2 className='group-hover:text-primary mb-2 text-lg font-semibold text-neutral-900 transition-colors'>
                     {post.title}
                 </h2>
                 <p className='mb-4 flex-1 text-sm leading-relaxed text-neutral-500'>

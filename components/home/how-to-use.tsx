@@ -1,3 +1,7 @@
+'use client'
+
+import { cn } from '@/lib/utils'
+
 import { AnimateIn } from '../ui/animate-in'
 
 const Steps = [
@@ -24,30 +28,27 @@ const Steps = [
 
 export function HowToUse() {
     return (
-        <section id='how-it-works' className='dot-grid border-t border-border'>
-            <div className='px-6 py-20 md:py-28'>
-                {/* Left-aligned header */}
-                <AnimateIn className='mb-12'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
-                        How to use the tool
+        <section id='how-it-works' className='border-border border-t'>
+            <div className='pt-20 md:pt-24'>
+                <AnimateIn className='mb-6 px-6'>
+                    <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>How it works</p>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                        How to Use <span className='text-primary'>LinkedIn Preview </span>
+                        Tool
                     </h2>
-                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
-                        Just follow these simple steps to make your LinkedIn post look great.
+                    <p className='mt-3 text-base text-neutral-500'>
+                        Just follow these simple steps to make your LinkedIn post look great
                     </p>
                 </AnimateIn>
 
-                <div className='flex flex-col gap-16 md:flex-row'>
-                    {/* Left timeline */}
-                    <AnimateIn from='left' className='md:w-5/12'>
-                        <div className='relative border-l-2 border-border pl-8'>
+                {/* Blueprint grid - wide dashes */}
+                <AnimateIn>
+                    <div className='dash-top grid lg:grid-cols-[2fr_3fr]'>
+                        {/* Left: step rows */}
+                        <div className='dash-bottom-mobile'>
                             {Steps.map((step, index) => (
-                                <div key={step.title} className='relative pb-10 last:pb-0'>
-                                    {/* Circle */}
-                                    <div
-                                        className='absolute flex size-3 items-center justify-center rounded-full border-2 border-primary bg-white'
-                                        style={{ left: 'calc(-2rem - 7px)' }}
-                                    />
-                                    <span className='mb-1 block text-xs font-semibold uppercase tracking-wider text-primary/70'>
+                                <div key={step.title} className={cn('p-6', index < Steps.length - 1 && 'dash-bottom')}>
+                                    <span className='text-primary/70 mb-1 block text-xs font-semibold tracking-wider uppercase'>
                                         Step {index + 1}
                                     </span>
                                     <h3 className='mb-1 text-base font-semibold text-neutral-900'>{step.title}</h3>
@@ -55,24 +56,27 @@ export function HowToUse() {
                                 </div>
                             ))}
                         </div>
-                    </AnimateIn>
 
-                    {/* Right video */}
-                    <AnimateIn from='right' className='flex items-center md:w-7/12'>
-                        <div className='w-full overflow-hidden rounded-2xl border border-border bg-white shadow-hero'>
-                            <div className='p-4'>
-                                <video
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    className='w-full rounded-xl border border-border shadow-elevated'>
-                                    <source src='/images/home/screen-rec.mov' />
-                                </video>
-                            </div>
+                        {/* Right: video with diagonal lines bg */}
+                        <div className='dash-left relative flex items-center p-6'>
+                            <div
+                                className='pointer-events-none absolute inset-0 text-neutral-100'
+                                style={{
+                                    backgroundImage:
+                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
+                                }}
+                            />
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className='border-border shadow-elevated relative w-full rounded-xl border'>
+                                <source src='/images/home/screen-rec.mov' />
+                            </video>
                         </div>
-                    </AnimateIn>
-                </div>
+                    </div>
+                </AnimateIn>
             </div>
         </section>
     )

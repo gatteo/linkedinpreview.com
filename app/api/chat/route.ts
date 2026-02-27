@@ -40,7 +40,7 @@ Examples:
 When the request is valid, follow these guidelines:
 - Start with a compelling hook that grabs attention in the first line
 - Use short paragraphs (1-3 sentences each) separated by blank lines for readability
-- Write in a professional-but-conversational tone — like a knowledgeable colleague, not a corporate press release
+- Write in a professional-but-conversational tone - like a knowledgeable colleague, not a corporate press release
 - End with 3-5 relevant hashtags on the last line
 - Target 1300-2000 characters in total length
 - If using a list, write each item as its own short paragraph, no bullet point symbols like - or •
@@ -49,16 +49,16 @@ When the request is valid, follow these guidelines:
 ## Formatting Rules
 
 You can use **bold** and *italic* to add emphasis. Follow these rules strictly:
-- Use **bold** (double asterisks) to highlight key phrases, numbers, metrics, or important takeaways — typically 2-4 bold spans per post
-- Use *italic* (single asterisks) sparingly for quotes, a book/product name, or a single word you want to stress — at most 1-2 italic spans per post
-- Never bold or italicize entire sentences or paragraphs — only short phrases (1-5 words)
+- Use **bold** (double asterisks) to highlight key phrases, numbers, metrics, or important takeaways - typically 2-4 bold spans per post
+- Use *italic* (single asterisks) sparingly for quotes, a book/product name, or a single word you want to stress - at most 1-2 italic spans per post
+- Never bold or italicize entire sentences or paragraphs - only short phrases (1-5 words)
 - Never bold hashtags
 - Never use any other formatting syntax (no markdown headings, no underscores, no HTML tags)
 
 ## Multi-Turn Instructions
 
-- Always output the COMPLETE updated post — never output diffs, partial edits, or just the changed section
-- Do not include any preamble, explanation, or commentary — output ONLY the post text
+- Always output the COMPLETE updated post - never output diffs, partial edits, or just the changed section
+- Do not include any preamble, explanation, or commentary - output ONLY the post text
 - When the user asks for changes, apply them to the latest version of the post and output the full result`
 
 const messageSchema = z.object({

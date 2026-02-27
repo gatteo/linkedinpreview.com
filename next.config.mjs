@@ -39,7 +39,7 @@ const nextConfig = {
     // Next.js 16 uses Turbopack by default; empty config opts in explicitly.
     turbopack: {},
 
-    // Webpack fallback config — used when building with --webpack flag.
+    // Webpack fallback config - used when building with --webpack flag.
     // Required for contentlayer's ESM/CJS interop.
     webpack: (config) => {
         config.infrastructureLogging = {

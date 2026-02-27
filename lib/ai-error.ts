@@ -23,7 +23,7 @@ export function parseAIError(error: Error): AIError {
             return parsed as AuthError
         }
     } catch {
-        // Not a JSON error — regular network/parse error
+        // Not a JSON error - regular network/parse error
     }
     return null
 }

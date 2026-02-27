@@ -40,7 +40,7 @@ function useDraftPersistence(content: any) {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
             } catch {
-                // localStorage full or unavailable — silently ignore
+                // localStorage full or unavailable - silently ignore
             }
         }, SAVE_DELAY_MS)
 
@@ -112,18 +112,18 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const inner = (
         <div
             className={cn(
-                'flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-elevated',
-                variant === 'embed' && 'h-full rounded-none border-0 shadow-none',
+                'border-border flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border bg-white',
+                variant === 'embed' && 'h-full rounded-none border-0',
             )}>
-            {/* Mobile tab bar — hidden on desktop where both panels are visible */}
-            <div className='flex border-b border-border md:hidden'>
+            {/* Mobile tab bar - hidden on desktop where both panels are visible */}
+            <div className='border-border flex border-b md:hidden'>
                 <button
                     type='button'
                     onClick={() => setMobileTab('editor')}
                     className={cn(
                         'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
                         mobileTab === 'editor'
-                            ? 'border-b-2 border-foreground text-foreground'
+                            ? 'border-foreground text-foreground border-b-2'
                             : 'text-muted-foreground hover:text-foreground',
                     )}>
                     <PenLine className='size-4' />
@@ -135,7 +135,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     className={cn(
                         'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
                         mobileTab === 'preview'
-                            ? 'border-b-2 border-foreground text-foreground'
+                            ? 'border-foreground text-foreground border-b-2'
                             : 'text-muted-foreground hover:text-foreground',
                     )}>
                     <Eye className='size-4' />
@@ -143,7 +143,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                 </button>
             </div>
 
-            {/* Panels — on mobile only the active tab is visible; on desktop both show side-by-side */}
+            {/* Panels - on mobile only the active tab is visible; on desktop both show side-by-side */}
             <div className='flex flex-1'>
                 <div className={cn('min-w-0 flex-1 flex-col', mobileTab === 'editor' ? 'flex' : 'hidden md:flex')}>
                     <EditorPanel
@@ -155,7 +155,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                 </div>
                 <div
                     className={cn(
-                        'w-full flex-1 flex-col md:max-w-[600px] md:border-l md:border-border',
+                        'md:border-border w-full flex-1 flex-col md:max-w-[600px] md:border-l',
                         mobileTab === 'preview' ? 'flex' : 'hidden md:flex',
                     )}>
                     <PreviewPanel content={content} media={media} />
@@ -169,8 +169,8 @@ export function Tool({ variant = 'default' }: ToolProps) {
     }
 
     return (
-        <section id='tool' className='border-t border-border'>
-            <div className='mx-auto max-w-content px-6 py-16 md:py-24'>{inner}</div>
+        <section id='tool' className='border-border scroll-mt-[var(--header-height)] border-t'>
+            <div className='max-w-content mx-auto p-2 md:p-3'>{inner}</div>
         </section>
     )
 }

@@ -13,14 +13,14 @@ type BreadcrumbsProps = {
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
     return (
         <nav aria-label='Breadcrumb' className='my-6'>
-            <ol className='flex items-center space-x-2 text-sm text-muted-foreground'>
+            <ol className='text-muted-foreground flex items-center space-x-2 text-sm'>
                 {items.map((item, index) => (
                     <li key={item.href} className='flex items-center'>
                         {index > 0 && <IconChevronRight className='mx-1 size-4' />}
                         {index === items.length - 1 ? (
-                            <span className='font-medium text-foreground'>{item.label}</span>
+                            <span className='text-foreground font-medium'>{item.label}</span>
                         ) : (
-                            <Link href={item.href} className='transition-colors hover:text-foreground'>
+                            <Link href={item.href} className='hover:text-foreground transition-colors'>
                                 {item.label}
                             </Link>
                         )}

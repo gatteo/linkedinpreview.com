@@ -32,7 +32,7 @@ export const LinkCard = (props: LinkCardProps) => {
                 />
                 <div>
                     <div>{title}</div>
-                    <div className='text-sm text-muted-foreground'>{href}</div>
+                    <div className='text-muted-foreground text-sm'>{href}</div>
                 </div>
                 <IconExternalLink size={22} data-testid='external-link-icon' />
             </a>

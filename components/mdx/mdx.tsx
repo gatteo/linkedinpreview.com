@@ -38,7 +38,7 @@ const components: MDXComponents = {
         <>
             <ImageZoom>
                 <Image
-                    className='rounded-xl border border-border shadow-elevated transition-transform hover:scale-[1.02]'
+                    className='border-border shadow-elevated rounded-xl border transition-transform hover:scale-[1.02]'
                     alt={alt}
                     {...rest}
                 />
@@ -94,7 +94,7 @@ const Mdx = ({ code }: MdxProps) => {
     const Component = useMDXComponent(code)
 
     return (
-        <div className='prose w-full max-w-none dark:prose-invert'>
+        <div className='prose dark:prose-invert w-full max-w-none'>
             <Component components={{ ...components }} />
         </div>
     )

@@ -7,7 +7,6 @@ import { FAQs } from '@/components/home/faqs'
 import { Features } from '@/components/home/features'
 import { Hero } from '@/components/home/hero'
 import { HowToUse } from '@/components/home/how-to-use'
-import { MainFeatures } from '@/components/home/main-features'
 import { OpenSource } from '@/components/home/opensource'
 import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
@@ -78,20 +77,21 @@ export default function Page() {
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
 
-            {/* Contained sections with border-x like dub.co */}
-            <div className='mx-auto max-w-content border-x border-border'>
+            <div className='max-w-content border-border mx-auto border-x'>
                 <Hero />
                 <Tool />
-                <MainFeatures />
                 <HowToUse />
+            </div>
+
+            <OpenSource />
+
+            <div className='max-w-content border-border mx-auto border-x'>
                 <Reason />
                 <Features />
-                <OpenSource />
                 <EmbedSection />
                 <FAQs />
             </div>
 
-            {/* CTA breaks out of container for full-width dark section */}
             <CtaSection />
         </>
     )

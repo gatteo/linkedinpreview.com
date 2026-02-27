@@ -1,7 +1,9 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+
 import { Icon, Icons } from '../icon'
-import { AnimateIn, StaggerChildren, StaggerItem } from '../ui/animate-in'
+import { AnimateIn } from '../ui/animate-in'
 
 const AllFeatures = [
     {
@@ -51,36 +53,63 @@ const AllFeatures = [
     },
 ]
 
+const row1 = AllFeatures.slice(0, 3)
+const row2 = AllFeatures.slice(3, 6)
+const row3 = AllFeatures.slice(6, 9)
+
+function FeatureCell({ feature, showLeft }: { feature: (typeof AllFeatures)[number]; showLeft?: boolean }) {
+    return (
+        <div className={cn('relative p-6', showLeft && 'dash-left')}>
+            <Icon
+                name={feature.icon as keyof typeof Icons}
+                className='bg-primary/10 text-primary mb-4 size-8 rounded-lg p-1.5'
+                aria-hidden='true'
+            />
+            <h3 className='mb-2 text-base font-semibold text-neutral-900'>{feature.title}</h3>
+            <p className='text-sm leading-relaxed text-neutral-500'>{feature.body}</p>
+        </div>
+    )
+}
+
 export function Features() {
     return (
-        <section id='all-features' className='border-t border-border bg-neutral-50/30'>
-            <div className='px-6 py-20 md:py-28'>
-                {/* Left-aligned header */}
-                <AnimateIn className='mb-12'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
-                        All the features you need
+        <section id='all-features' className='border-border border-t'>
+            <div className='pt-20 md:pt-24'>
+                <AnimateIn className='mb-6 px-6'>
+                    <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>
+                        Everything you need
+                    </p>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                        All the Features you Need
                     </h2>
-                    <p className='mt-3 max-w-[500px] text-lg text-neutral-500'>
+                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
                         From formatting options to real-time previews, this tool has everything you need to create
                         perfect LinkedIn posts.
                     </p>
                 </AnimateIn>
 
-                <StaggerChildren className='grid gap-4 sm:grid-cols-2 md:grid-cols-3'>
-                    {AllFeatures.map((feature) => (
-                        <StaggerItem key={feature.title}>
-                            <div className='rounded-xl border border-border bg-white p-6 shadow-subtle transition-all duration-200 hover:-translate-y-0.5 hover:shadow-elevated'>
-                                <Icon
-                                    name={feature.icon as keyof typeof Icons}
-                                    className='mb-4 size-8 rounded-lg bg-primary/10 p-1.5 text-primary'
-                                    aria-hidden='true'
-                                />
-                                <h3 className='mb-2 text-base font-semibold text-neutral-900'>{feature.title}</h3>
-                                <p className='text-sm leading-relaxed text-neutral-500'>{feature.body}</p>
-                            </div>
-                        </StaggerItem>
-                    ))}
-                </StaggerChildren>
+                <AnimateIn>
+                    <div className='dash-top'>
+                        {/* Row 1 */}
+                        <div className='dash-bottom grid sm:grid-cols-2 md:grid-cols-3'>
+                            {row1.map((feature, i) => (
+                                <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
+                            ))}
+                        </div>
+                        {/* Row 2 */}
+                        <div className='dash-bottom grid sm:grid-cols-2 md:grid-cols-3'>
+                            {row2.map((feature, i) => (
+                                <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
+                            ))}
+                        </div>
+                        {/* Row 3 */}
+                        <div className='grid sm:grid-cols-2 md:grid-cols-3'>
+                            {row3.map((feature, i) => (
+                                <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
+                            ))}
+                        </div>
+                    </div>
+                </AnimateIn>
             </div>
         </section>
     )

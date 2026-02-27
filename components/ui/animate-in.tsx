@@ -3,8 +3,6 @@
 import { useRef, type ReactNode } from 'react'
 import { motion, useInView } from 'framer-motion'
 
-import { cn } from '@/lib/utils'
-
 type AnimateInProps = {
     children: ReactNode
     className?: string
@@ -47,7 +45,7 @@ export function AnimateIn({
     return (
         <motion.div
             ref={ref}
-            className={cn(className)}
+            className={className}
             initial='hidden'
             animate={isInView ? 'visible' : 'hidden'}
             variants={variants[from]}
@@ -76,7 +74,7 @@ export function StaggerChildren({
     return (
         <motion.div
             ref={ref}
-            className={cn(className)}
+            className={className}
             initial='hidden'
             animate={isInView ? 'visible' : 'hidden'}
             variants={{
@@ -95,7 +93,7 @@ export function StaggerChildren({
 export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
     return (
         <motion.div
-            className={cn(className)}
+            className={className}
             variants={{
                 hidden: { opacity: 0, y: 16 },
                 visible: { opacity: 1, y: 0 },

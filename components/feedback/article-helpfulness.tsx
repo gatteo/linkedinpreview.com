@@ -42,7 +42,7 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
     }
 
     return (
-        <div className='my-12 rounded-xl border border-border bg-neutral-50 p-6 text-center shadow-subtle'>
+        <div className='border-border shadow-subtle my-12 rounded-xl border bg-neutral-50 p-6 text-center'>
             {vote ? (
                 <p className='text-sm font-medium text-neutral-500'>Thanks for your feedback!</p>
             ) : (
@@ -51,13 +51,13 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
                     <div className='flex items-center justify-center gap-4'>
                         <button
                             onClick={() => handleVote('yes')}
-                            className='flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm text-neutral-700 shadow-subtle transition-colors hover:bg-neutral-50'>
+                            className='border-border shadow-subtle flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50'>
                             <ThumbsUp className='size-4' />
                             Yes
                         </button>
                         <button
                             onClick={() => handleVote('no')}
-                            className='flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm text-neutral-700 shadow-subtle transition-colors hover:bg-neutral-50'>
+                            className='border-border shadow-subtle flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50'>
                             <ThumbsDown className='size-4' />
                             No
                         </button>

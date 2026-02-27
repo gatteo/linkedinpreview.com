@@ -27,7 +27,7 @@ export function FeedbackFab() {
     return (
         <button
             onClick={handleClick}
-            className='fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-primary p-3 text-sm font-medium text-primary-foreground shadow-prominent transition-transform hover:scale-105 active:scale-95 sm:px-4'
+            className='bg-primary text-primary-foreground shadow-prominent fixed right-6 bottom-6 z-50 flex items-center gap-2 rounded-full p-3 text-sm font-medium transition-transform hover:scale-105 active:scale-95 sm:px-4'
             aria-label='Send feedback'>
             <MessageSquarePlus className='size-5' />
             <span className='hidden sm:inline'>Feedback</span>

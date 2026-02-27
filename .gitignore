@@ -47,3 +47,4 @@ next-env.d.ts
 dev
 
 .claude
+.mcp.json

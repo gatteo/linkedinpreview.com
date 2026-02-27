@@ -19,8 +19,7 @@ export const Reactions: React.FC = () => {
                     className='h-5 w-auto'
                     src='/images/home/post-reactions.svg'
                 />
-                <span
-                    className={cn('mt-1 font-medium text-neutral-500', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
+                <span className={cn('font-normal text-[#666]', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
                     John Doe and 169 others
                 </span>
             </div>
@@ -28,10 +27,7 @@ export const Reactions: React.FC = () => {
                 {['4 comments', '•', '1 repost'].map((text) => (
                     <span
                         key={text}
-                        className={cn(
-                            'font-medium text-neutral-500',
-                            screenSize === 'mobile' ? 'text-[10px]' : 'text-xs',
-                        )}>
+                        className={cn('font-normal text-[#666]', screenSize === 'mobile' ? 'text-[10px]' : 'text-xs')}>
                         {text}
                     </span>
                 ))}

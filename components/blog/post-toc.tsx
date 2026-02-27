@@ -52,7 +52,7 @@ const TableOfContents = (props: TableOfContentsProps) => {
 
     return (
         <nav aria-label='Table of contents'>
-            <div className='mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground/70'>
+            <div className='text-muted-foreground/70 mb-3 text-xs font-medium tracking-wider uppercase'>
                 On this page
             </div>
             <div>
@@ -65,7 +65,7 @@ const TableOfContents = (props: TableOfContentsProps) => {
                             <a
                                 href={`#${item.url}`}
                                 className={cn(
-                                    'block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug text-muted-foreground/80 transition-colors hover:text-foreground',
+                                    'text-muted-foreground/80 hover:text-foreground block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug transition-colors',
                                     item.url === activeId
                                         ? 'border-foreground text-foreground font-medium'
                                         : 'border-transparent',
@@ -88,7 +88,7 @@ const TableOfContents = (props: TableOfContentsProps) => {
                                                 key={child.url}
                                                 href={`#${child.url}`}
                                                 className={cn(
-                                                    'block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug text-muted-foreground/80 transition-colors hover:text-foreground',
+                                                    'text-muted-foreground/80 hover:text-foreground block truncate border-l-2 py-1 pr-2.5 text-[13px] leading-snug transition-colors',
                                                     child.url === activeId
                                                         ? 'border-foreground text-foreground font-medium'
                                                         : 'border-transparent',

@@ -7,6 +7,7 @@ import posthog from 'posthog-js'
 
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 type Props = {
     editor: Editor | null
@@ -25,85 +26,125 @@ const Toolbar = ({ editor }: Props) => {
 
     return (
         <div className='flex flex-none items-center justify-start gap-2 px-4 sm:px-6'>
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleBold().run()
-                    trackFormatting('bold')
-                }}
-                variant={editor.isActive('bold') ? 'default' : 'outline'}
-                size='icon'>
-                <Bold className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleBold().run()
+                            trackFormatting('bold')
+                        }}
+                        variant={editor.isActive('bold') ? 'default' : 'outline'}
+                        size='icon'>
+                        <Bold className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Bold</TooltipContent>
+            </Tooltip>
 
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleItalic().run()
-                    trackFormatting('italic')
-                }}
-                variant={editor.isActive('italic') ? 'default' : 'outline'}
-                size='icon'>
-                <Italic className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleItalic().run()
+                            trackFormatting('italic')
+                        }}
+                        variant={editor.isActive('italic') ? 'default' : 'outline'}
+                        size='icon'>
+                        <Italic className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Italic</TooltipContent>
+            </Tooltip>
 
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleStrike().run()
-                    trackFormatting('strikethrough')
-                }}
-                variant={editor.isActive('strike') ? 'default' : 'outline'}
-                size='icon'>
-                <Strikethrough className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleStrike().run()
+                            trackFormatting('strikethrough')
+                        }}
+                        variant={editor.isActive('strike') ? 'default' : 'outline'}
+                        size='icon'>
+                        <Strikethrough className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Strikethrough</TooltipContent>
+            </Tooltip>
 
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleUnderline().run()
-                    trackFormatting('underline')
-                }}
-                variant={editor.isActive('underline') ? 'default' : 'outline'}
-                size='icon'>
-                <Underline className='size-4' />
-            </Button>
-
-            <Separator orientation='vertical' className='h-full' />
-
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleBulletList().run()
-                    trackFormatting('bullet_list')
-                }}
-                variant={editor.isActive('bulletList') ? 'default' : 'outline'}
-                size='icon'>
-                <List className='size-4' />
-            </Button>
-
-            <Button
-                onClick={() => {
-                    editor.chain().focus().toggleOrderedList().run()
-                    trackFormatting('ordered_list')
-                }}
-                variant={editor.isActive('orderedList') ? 'default' : 'outline'}
-                size='icon'>
-                <ListOrdered className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleUnderline().run()
+                            trackFormatting('underline')
+                        }}
+                        variant={editor.isActive('underline') ? 'default' : 'outline'}
+                        size='icon'>
+                        <Underline className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Underline</TooltipContent>
+            </Tooltip>
 
             <Separator orientation='vertical' className='h-full' />
 
-            <Button
-                onClick={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().undo()}
-                variant='outline'
-                size='icon'>
-                <Undo className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleBulletList().run()
+                            trackFormatting('bullet_list')
+                        }}
+                        variant={editor.isActive('bulletList') ? 'default' : 'outline'}
+                        size='icon'>
+                        <List className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Bullet List</TooltipContent>
+            </Tooltip>
 
-            <Button
-                onClick={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().redo()}
-                variant='outline'
-                size='icon'>
-                <Redo className='size-4' />
-            </Button>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => {
+                            editor.chain().focus().toggleOrderedList().run()
+                            trackFormatting('ordered_list')
+                        }}
+                        variant={editor.isActive('orderedList') ? 'default' : 'outline'}
+                        size='icon'>
+                        <ListOrdered className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Ordered List</TooltipContent>
+            </Tooltip>
+
+            <Separator orientation='vertical' className='h-full' />
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => editor.chain().focus().undo().run()}
+                        disabled={!editor.can().undo()}
+                        variant='outline'
+                        size='icon'>
+                        <Undo className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Undo</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        onClick={() => editor.chain().focus().redo().run()}
+                        disabled={!editor.can().redo()}
+                        variant='outline'
+                        size='icon'>
+                        <Redo className='size-4' />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>Redo</TooltipContent>
+            </Tooltip>
         </div>
     )
 }

@@ -10,17 +10,14 @@ import { Navbar } from './navbar'
 
 export function Header() {
     return (
-        <header className='fixed inset-x-0 top-0 z-40 border-b border-border bg-white/80 backdrop-blur-2xl'>
-            <div className='mx-auto flex h-[60px] max-w-content items-center justify-between px-6'>
+        <header className='border-border fixed inset-x-0 top-0 z-40 border-b bg-white/80 backdrop-blur-2xl'>
+            <div className='max-w-content mx-auto flex h-[var(--header-height)] items-center justify-between px-6'>
                 <div className='flex items-center gap-8'>
                     <Logo />
                     <Navbar />
                 </div>
                 <div className='flex items-center gap-3'>
-                    <Button asChild size='sm' variant='outline' className='hidden rounded-lg md:flex'>
-                        <Link href={Routes.Blog}>Blog</Link>
-                    </Button>
-                    <Button asChild size='sm' className='hidden rounded-lg md:flex'>
+                    <Button asChild size='lg' className='hidden rounded-lg md:flex'>
                         <Link href={Routes.Tool}>Get Started</Link>
                     </Button>
                     <MobileNav />

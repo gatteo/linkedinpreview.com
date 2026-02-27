@@ -15,7 +15,7 @@ export default function MainLayout({
         <>
             <ProgressProvider>
                 <Header />
-                <main className='pt-[60px]'>{children}</main>
+                <main className='pt-[var(--header-height)]'>{children}</main>
                 <Footer />
             </ProgressProvider>
             <Toaster />

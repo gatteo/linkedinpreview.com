@@ -105,7 +105,7 @@ ${parsed.data.postText}
         return Response.json({ error: 'Failed to analyze post' }, { status: 500 })
     }
 
-    // Store the result — fail silently if the insert fails
+    // Store the result - fail silently if the insert fails
     const { error: insertError } = await supabase.from('post_analyses').insert({
         user_id: user.id,
         post_text: parsed.data.postText,

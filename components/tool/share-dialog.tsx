@@ -70,7 +70,7 @@ export function ShareDialog({
                 <Separator />
 
                 <div className='flex items-center gap-3'>
-                    <p className='shrink-0 text-sm font-medium text-muted-foreground'>Share via</p>
+                    <p className='text-muted-foreground shrink-0 text-sm font-medium'>Share via</p>
                     <div className='flex gap-2'>
                         <EmailShareButton url={url} subject={SHARE_TITLE} onClick={() => trackShare('email')}>
                             <div className={buttonVariants({ size: 'icon', variant: 'outline' })}>

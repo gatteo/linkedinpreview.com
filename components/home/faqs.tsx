@@ -1,6 +1,9 @@
+'use client'
+
 import { type FAQPage, type WithContext } from 'schema-dts'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
+import { AnimateIn } from '../ui/animate-in'
 
 const FAQList = [
     {
@@ -28,10 +31,6 @@ const FAQList = [
         answer: 'Well-formatted posts are more appealing and easier to read, which can lead to higher engagement rates. Using formatting tools like those provided by LinkedInPreview.com can help highlight important information and organize your content effectively.',
     },
     {
-        question: 'Why should I preview my LinkedIn post before publishing?',
-        answer: 'Previewing your post helps catch errors, adjust formatting, and ensure the content looks good on all devices. This step can greatly enhance the professionalism of your posts and increase viewer engagement.',
-    },
-    {
         question: 'How do I use LinkedInPreview.com to format my LinkedIn posts?',
         answer: 'Simply type or paste your content into the editor on LinkedInPreview.com, use the formatting tools to style your text, and use the preview function to check the appearance on different devices before publishing.',
     },
@@ -42,6 +41,10 @@ const FAQList = [
     {
         question: 'How can I ensure my LinkedIn posts are engaging?',
         answer: 'To create engaging posts, focus on clear, impactful content. Use formatting tools to make important text stand out, structure your content with lists, and always preview your posts to ensure they look perfect across all platforms.',
+    },
+    {
+        question: 'Why should I preview my LinkedIn post before publishing?',
+        answer: 'Previewing your post helps catch errors, adjust formatting, and ensure the content looks good on all devices. This step can greatly enhance the professionalism of your posts and increase viewer engagement.',
     },
     {
         question: 'Can I embed the LinkedIn preview tool on my own website?',
@@ -64,37 +67,52 @@ export function FAQs() {
     }
 
     return (
-        <section id='faqs' className='border-t border-border'>
-            <div className='px-6 py-20 md:py-28'>
+        <section id='faqs' className='border-border border-t'>
+            <div className='pt-20 md:pt-24'>
                 <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
-                <div className='flex flex-col gap-12 md:flex-row'>
-                    {/* Left heading */}
-                    <div className='md:w-1/3'>
-                        <h2 className='mb-4 font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl'>
-                            Frequently asked questions
-                        </h2>
-                        <p className='text-lg leading-7 text-neutral-500'>
-                            Find answers to common questions about LinkedInPreview.com.
-                        </p>
-                    </div>
+                {/* Header */}
+                <AnimateIn className='mb-6 px-6'>
+                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                        Frequently Asked Questions
+                    </h2>
+                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                        Find answers to common questions about LinkedInPreview.com and how it can help you create better
+                        LinkedIn posts.
+                    </p>
+                </AnimateIn>
 
-                    {/* Right accordion */}
-                    <div className='md:w-2/3'>
-                        <Accordion type='multiple'>
-                            {FAQList.map((faq) => (
-                                <AccordionItem key={faq.question} value={faq.question} className='border-border'>
-                                    <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
-                                        {faq.question}
-                                    </AccordionTrigger>
-                                    <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
-                                        {faq.answer}
-                                    </AccordionContent>
-                                </AccordionItem>
-                            ))}
-                        </Accordion>
+                {/* Blueprint grid */}
+                <AnimateIn>
+                    <div className='dash-top grid lg:grid-cols-[5fr_3fr]'>
+                        {/* Accordion */}
+                        <div className='dash-right p-6 max-lg:pl-0'>
+                            <Accordion type='multiple'>
+                                {FAQList.map((faq) => (
+                                    <AccordionItem key={faq.question} value={faq.question} className='border-border'>
+                                        <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
+                                            {faq.question}
+                                        </AccordionTrigger>
+                                        <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
+                                            {faq.answer}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        </div>
+
+                        {/* Empty with diagonal lines */}
+                        <div className='dash-left relative hidden lg:block'>
+                            <div
+                                className='pointer-events-none absolute inset-0 text-neutral-100'
+                                style={{
+                                    backgroundImage:
+                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
+                </AnimateIn>
             </div>
         </section>
     )
