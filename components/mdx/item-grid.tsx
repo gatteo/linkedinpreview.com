@@ -32,7 +32,7 @@ export const ItemGrid = (props: ItemGridProps) => {
                     })}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='flex gap-6 rounded-lg border bg-muted p-4 no-underline transition-colors duration-200 hover:bg-accent sm:flex-col sm:gap-3'>
+                    className='bg-muted hover:bg-accent flex gap-6 rounded-lg border p-4 no-underline transition-colors duration-200 sm:flex-col sm:gap-3'>
                     <Image
                         src={item.image}
                         width={256}
@@ -42,7 +42,7 @@ export const ItemGrid = (props: ItemGridProps) => {
                     />
                     <div className='flex flex-col justify-center gap-2'>
                         <div className='text-lg font-extrabold'>{item.name}</div>
-                        <div className='text-sm text-muted-foreground'>{item.description}</div>
+                        <div className='text-muted-foreground text-sm'>{item.description}</div>
                     </div>
                 </a>
             ))}

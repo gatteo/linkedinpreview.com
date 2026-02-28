@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
             title: post.title,
             siteName: site.title,
             description: post.summary,
-            locale: 'it-IT',
+            locale: 'en-US',
             publishedTime: ISOPublishedTime,
             modifiedTime: ISOModifiedTime,
             authors: site.url,
@@ -143,7 +143,7 @@ export default async function Page({ params }: Props) {
     const howToSchema = generateHowToSchema(post)
 
     return (
-        <main className='container max-w-6xl pb-16'>
+        <main className='max-w-content mx-auto px-6 pb-16'>
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
             {howToSchema && (

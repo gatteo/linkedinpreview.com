@@ -57,18 +57,18 @@ export const Pre = (props: PreProps) => {
     }, [])
 
     return (
-        <figure className='not-prose group relative my-6 overflow-hidden rounded-lg border bg-secondary/50 text-sm'>
+        <figure className='not-prose group border-border bg-secondary/50 relative my-6 overflow-hidden rounded-xl border text-sm'>
             {title ? (
-                <div className='flex flex-row items-center gap-2 border-b bg-muted py-2 pl-4 pr-2'>
+                <div className='border-border bg-muted flex flex-row items-center gap-2 border-b py-2 pr-2 pl-4'>
                     {lang && <div className='text-muted-foreground'>{getLanguageIcon(lang)}</div>}
-                    <figcaption className='flex-1 truncate text-muted-foreground'>{title}</figcaption>
+                    <figcaption className='text-muted-foreground flex-1 truncate'>{title}</figcaption>
                     <CopyButton text={text} />
                 </div>
             ) : (
-                <CopyButton className='absolute right-3 top-3 z-10' text={text} />
+                <CopyButton className='absolute top-3 right-3 z-10' text={text} />
             )}
 
-            <pre ref={textInput} className={cn('py-4 overflow-scroll', className)} {...rest}>
+            <pre ref={textInput} className={cn('overflow-scroll py-4', className)} {...rest}>
                 {children}
             </pre>
         </figure>

@@ -54,7 +54,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
 
     if (!processedContent) {
         return (
-            <div className='mt-5 whitespace-pre-line text-sm'>
+            <div className='mt-3 text-sm whitespace-pre-line'>
                 {'Start writing and your post will appear here..\nYou can add images, links, '}
                 <span className='font-semibold text-[#0a66c2]'>#hashtags</span>
                 {' and emojis 🤩'}
@@ -63,18 +63,21 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
     }
 
     return (
-        <div className='relative mt-5'>
+        <div className='relative mt-3'>
             <div
                 ref={contentRef}
-                className={cn('relative whitespace-pre-line text-sm', !isExpanded && 'line-clamp-3 overflow-hidden')}>
+                className={cn(
+                    'relative text-sm leading-5 whitespace-pre-line',
+                    !isExpanded && 'line-clamp-3 overflow-hidden',
+                )}>
                 {renderWithHashtags(processedContent)}
             </div>
             {showMoreButton && (
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className={cn(
-                        'text-sm font-semibold text-gray-500 hover:text-gray-700',
-                        isExpanded ? 'mt-2' : 'absolute bottom-0 right-0 bg-white pl-1',
+                        'text-sm font-normal text-neutral-500 hover:text-neutral-700 hover:underline',
+                        isExpanded ? 'mt-2' : 'absolute right-0 bottom-0 bg-white pl-1',
                     )}>
                     {isExpanded ? '...less' : '...more'}
                 </button>

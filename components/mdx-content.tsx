@@ -24,7 +24,7 @@ export async function Content({ title, body, url }: Props) {
                 <article className='w-full lg:w-[670px]'>
                     <Mdx code={body.code} />
                 </article>
-                <aside className='hidden lg:block lg:min-w-[270px] lg:max-w-[270px]'>
+                <aside className='hidden lg:block lg:max-w-[270px] lg:min-w-[270px]'>
                     <div className='sticky top-24 will-change-[transform,opacity]'>
                         {toc && toc.length > 0 && <TableOfContents toc={toc} />}
                         <div className='mt-6 flex justify-start'>

@@ -46,7 +46,7 @@ export function ChatInput({ onSend, isLoading, onStop }: ChatInputProps) {
     }, [])
 
     return (
-        <div className='flex items-end gap-2 border-t px-4 py-3'>
+        <div className='border-border flex items-end gap-2 border-t px-4 py-3'>
             <textarea
                 ref={textareaRef}
                 value={value}
@@ -57,7 +57,7 @@ export function ChatInput({ onSend, isLoading, onStop }: ChatInputProps) {
                 onKeyDown={handleKeyDown}
                 placeholder='Ask for changes...'
                 rows={1}
-                className='flex-1 resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
+                className='border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring flex-1 resize-none rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50'
                 disabled={isLoading}
             />
             {isLoading ? (

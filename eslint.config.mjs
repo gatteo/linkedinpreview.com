@@ -1,13 +1,11 @@
 import nextConfig from 'eslint-config-next'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import react from 'eslint-plugin-react'
-import tailwindcss from 'eslint-plugin-tailwindcss'
 import unusedImports from 'eslint-plugin-unused-imports'
 
 const config = [
     ...nextConfig,
     prettierRecommended,
-    ...tailwindcss.configs['flat/recommended'],
     {
         plugins: {
             react,
@@ -31,8 +29,6 @@ const config = [
                     argsIgnorePattern: '^_',
                 },
             ],
-            'tailwindcss/no-custom-classname': 'off',
-            'tailwindcss/classnames-order': 'error',
             '@next/next/no-html-link-for-pages': 'off',
             'jsx-a11y/click-events-have-key-events': 'off',
         },

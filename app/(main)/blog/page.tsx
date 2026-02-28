@@ -12,7 +12,7 @@ const description =
 
 type Props = {
     params: Record<string, never>
-    searchParams: Record<string, never>
+    searchParams: Promise<{ q?: string }>
 }
 
 export async function generateMetadata(_: Props, parent: ResolvingMetadata): Promise<Metadata> {
@@ -39,13 +39,14 @@ export async function generateMetadata(_: Props, parent: ResolvingMetadata): Pro
     }
 }
 
-export default async function Page() {
+export default async function Page({ searchParams }: Props) {
     const posts = await getAllBlogPosts()
+    const { q } = await searchParams
 
     return (
         <main>
             <Hero />
-            <FilteredPosts posts={posts} />
+            <FilteredPosts posts={posts} initialSearch={q} />
         </main>
     )
 }

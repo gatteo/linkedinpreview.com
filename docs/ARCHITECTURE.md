@@ -4,8 +4,8 @@
 
 LinkedIn Post Preview is a Next.js 16 application deployed on Vercel. It consists of two main parts:
 
-1. **The Tool** — A client-side rich text editor with a live LinkedIn post preview
-2. **The Blog** — SEO-optimized MDX articles about LinkedIn best practices
+1. **The Tool** - A client-side rich text editor with a live LinkedIn post preview
+2. **The Blog** - SEO-optimized MDX articles about LinkedIn best practices
 
 ## Tech Stack
 
@@ -14,7 +14,7 @@ LinkedIn Post Preview is a Next.js 16 application deployed on Vercel. It consist
 | Framework           | Next.js 16 (App Router, Turbopack)          |
 | Runtime             | React 19                                    |
 | Language            | TypeScript (strict)                         |
-| Styling             | Tailwind CSS 3, tailwindcss-animate         |
+| Styling             | Tailwind CSS 4, tw-animate-css              |
 | UI Components       | shadcn/ui (Radix UI primitives)             |
 | Rich Text Editor    | TipTap (StarterKit, Underline, Placeholder) |
 | Blog/MDX            | Contentlayer 0.3.4 + next-contentlayer      |
@@ -97,17 +97,17 @@ Initialized via `instrumentation-client.ts` (Next.js 16 client instrumentation).
 
 Tracked events:
 
-- `post_copied` — user copies formatted text
-- `image_added` / `image_removed` — image actions
-- `formatting_applied` — toolbar formatting (bold, italic, etc.)
-- `preview_size_changed` — mobile/tablet/desktop toggle
-- `feedback_button_clicked` — feedback FAB click
-- `article_helpful_voted` — blog helpfulness vote
-- `blog_article_shared` — social share button click
-- `blog_search_performed` — blog search (debounced)
-- `blog_article_clicked` — blog post card click
-- `github_link_clicked` — GitHub link click
-- `cta_button_clicked` / `cta_card_clicked` — CTA interactions
+- `post_copied` - user copies formatted text
+- `image_added` / `image_removed` - image actions
+- `formatting_applied` - toolbar formatting (bold, italic, etc.)
+- `preview_size_changed` - mobile/tablet/desktop toggle
+- `feedback_button_clicked` - feedback FAB click
+- `article_helpful_voted` - blog helpfulness vote
+- `blog_article_shared` - social share button click
+- `blog_search_performed` - blog search (debounced)
+- `blog_article_clicked` - blog post card click
+- `github_link_clicked` - GitHub link click
+- `cta_button_clicked` / `cta_card_clicked` - CTA interactions
 
 ### Google Tag Manager
 
@@ -117,10 +117,10 @@ Loaded via the `<GTM>` component in the root layout.
 
 A single Tally.so form (star rating + optional comment) is used across four touchpoints:
 
-1. **Post-Copy Rating** — popup after 2nd+ copy action (1.5s delay, session + 7-day cooldowns)
-2. **Floating FAB** — fixed bottom-right button on all pages
-3. **Article Helpfulness** — thumbs up/down on blog posts with per-slug localStorage cooldown
-4. **Footer Link** — "Share Feedback" in the footer
+1. **Post-Copy Rating** - popup after 2nd+ copy action (1.5s delay, session + 7-day cooldowns)
+2. **Floating FAB** - fixed bottom-right button on all pages
+3. **Article Helpfulness** - thumbs up/down on blog posts with per-slug localStorage cooldown
+4. **Footer Link** - "Share Feedback" in the footer
 
 Each touchpoint passes hidden fields (`source`, `pageUrl`, `copyCount`) to identify context. Configuration is centralized in `config/feedback.ts`. The Tally SDK is loaded lazily via `next/script` in `components/feedback/tally-script.tsx`.
 

@@ -1,68 +1,258 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tw-animate-css';
+@import 'tailwindcss';
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 200 100% 17%;
-        --card: 0 0% 100%;
-        --card-foreground: 200 100% 17%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 200 100% 17%;
-        --primary: 200 100% 37%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 200 100% 37%;
-        --radius: 0.75rem;
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+@utility container {
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+    max-width: 1200px;
+}
+
+@theme {
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading: var(--font-cal), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-prominent: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-hero: 0 20px 20px rgba(0, 0, 0, 0.09);
+
+    --max-width-content: 1200px;
+    --max-width-prose-narrow: 700px;
+    --max-width-narrow: 576px;
+
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+    --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-fade-in: fade-in 0.5s ease both;
+    --animate-slide-in-right: slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    @keyframes accordion-down {
+        from {
+            height: 0;
+        }
+        to {
+            height: var(--radix-accordion-content-height);
+        }
     }
-
-    .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 48%;
+    @keyframes accordion-up {
+        from {
+            height: var(--radix-accordion-content-height);
+        }
+        to {
+            height: 0;
+        }
+    }
+    @keyframes fade-up {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    @keyframes slide-in-right {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 }
 
 @layer base {
+    :root {
+        --header-height: 60px;
+
+        /* Dub.co-inspired monochrome palette with LinkedIn blue accent */
+        --background: oklch(1 0 0);
+        --foreground: oklch(0.145 0 0);
+        --card: oklch(1 0 0);
+        --card-foreground: oklch(0.145 0 0);
+        --popover: oklch(1 0 0);
+        --popover-foreground: oklch(0.145 0 0);
+        --primary: oklch(0.546 0.13 242.3);
+        --primary-foreground: oklch(0.985 0 0);
+        --secondary: oklch(0.97 0 0);
+        --secondary-foreground: oklch(0.205 0 0);
+        --muted: oklch(0.97 0 0);
+        --muted-foreground: oklch(0.556 0 0);
+        --accent: oklch(0.97 0 0);
+        --accent-foreground: oklch(0.205 0 0);
+        --destructive: oklch(0.58 0.22 27);
+        --destructive-foreground: oklch(0.985 0 0);
+        --border: oklch(0.922 0 0);
+        --input: oklch(0.922 0 0);
+        --ring: oklch(0.546 0.13 242.3);
+        --radius: 0.625rem;
+        --chart-1: oklch(0.809 0.105 251.813);
+        --chart-2: oklch(0.623 0.214 259.815);
+        --chart-3: oklch(0.546 0.245 262.881);
+        --chart-4: oklch(0.488 0.243 264.376);
+        --chart-5: oklch(0.424 0.199 265.638);
+        --sidebar: oklch(0.985 0 0);
+        --sidebar-foreground: oklch(0.145 0 0);
+        --sidebar-primary: oklch(0.205 0 0);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.97 0 0);
+        --sidebar-accent-foreground: oklch(0.205 0 0);
+        --sidebar-border: oklch(0.922 0 0);
+        --sidebar-ring: oklch(0.708 0 0);
+    }
+
+    .dark {
+        --background: oklch(0.145 0 0);
+        --foreground: oklch(0.985 0 0);
+        --card: oklch(0.205 0 0);
+        --card-foreground: oklch(0.985 0 0);
+        --popover: oklch(0.205 0 0);
+        --popover-foreground: oklch(0.985 0 0);
+        --primary: oklch(0.654 0.154 241.7);
+        --primary-foreground: oklch(0.145 0 0);
+        --secondary: oklch(0.269 0 0);
+        --secondary-foreground: oklch(0.985 0 0);
+        --muted: oklch(0.269 0 0);
+        --muted-foreground: oklch(0.708 0 0);
+        --accent: oklch(0.371 0 0);
+        --accent-foreground: oklch(0.985 0 0);
+        --destructive: oklch(0.704 0.191 22.216);
+        --destructive-foreground: oklch(0.985 0 0);
+        --border: oklch(1 0 0 / 10%);
+        --input: oklch(1 0 0 / 15%);
+        --ring: oklch(0.654 0.154 241.7);
+        --chart-1: oklch(0.809 0.105 251.813);
+        --chart-2: oklch(0.623 0.214 259.815);
+        --chart-3: oklch(0.546 0.245 262.881);
+        --chart-4: oklch(0.488 0.243 264.376);
+        --chart-5: oklch(0.424 0.199 265.638);
+        --sidebar: oklch(0.205 0 0);
+        --sidebar-foreground: oklch(0.985 0 0);
+        --sidebar-primary: oklch(0.488 0.243 264.376);
+        --sidebar-primary-foreground: oklch(0.985 0 0);
+        --sidebar-accent: oklch(0.269 0 0);
+        --sidebar-accent-foreground: oklch(0.985 0 0);
+        --sidebar-border: oklch(1 0 0 / 10%);
+        --sidebar-ring: oklch(0.556 0 0);
+    }
     * {
-        @apply border-border;
+        @apply border-border outline-ring/50;
+    }
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+        cursor: pointer;
     }
     html {
         overflow-y: scroll;
     }
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
+    }
     body {
-        @apply bg-background text-foreground font-sans;
+        @apply bg-background text-foreground font-sans antialiased;
     }
 }
 
-/* Shine animation */
+/* ─── Dashed borders (Attio-style: 4px dash, 6px gap) ─── */
+.dash-top {
+    background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.dash-bottom {
+    background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: bottom;
+}
+.dash-left {
+    background-image: repeating-linear-gradient(0deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+    background-position: left;
+}
+@media (max-width: 1023px) {
+    .dash-bottom-mobile {
+        background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+        background-size: 100% 1px;
+        background-repeat: no-repeat;
+        background-position: bottom;
+    }
+}
 
+/* ─── Dot Grid Background (dub.co pattern) ─── */
+.dot-grid {
+    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* ─── Gentle arrow bounce ─── */
+@keyframes bounce-down {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(3px);
+    }
+}
+
+.animate-bounce-down {
+    animation: bounce-down 2s ease-in-out infinite;
+}
+
+/* ─── Shine animation ─── */
 @keyframes shine {
     0% {
         background-position: 200% 0;
@@ -76,8 +266,7 @@
     animation: shine 3s ease-in-out infinite;
 }
 
-/* Text shimmer — sweeps a bright highlight across text */
-
+/* ─── Text shimmer ─── */
 @keyframes text-shimmer {
     0% {
         background-position: 100% 50%;
@@ -91,11 +280,11 @@
     color: transparent;
     background: linear-gradient(
         90deg,
-        hsl(var(--primary)) 0%,
-        hsl(var(--primary)) 40%,
-        hsl(var(--primary) / 0.4) 50%,
-        hsl(var(--primary)) 60%,
-        hsl(var(--primary)) 100%
+        var(--primary) 0%,
+        var(--primary) 40%,
+        oklch(from var(--primary) l c h / 0.4) 50%,
+        var(--primary) 60%,
+        var(--primary) 100%
     );
     background-size: 250% 100%;
     -webkit-background-clip: text;
@@ -103,8 +292,7 @@
     animation: text-shimmer 3s ease-in-out infinite;
 }
 
-/* Text bg fill animation */
-
+/* ─── Text highlight animation ─── */
 .text-highlight {
     background: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #6dd5ed 51%, #2193b0 100%);
     background-size: 200% 100%;
@@ -112,8 +300,23 @@
     -webkit-text-fill-color: transparent;
 }
 
-/** Code Highlighting */
+/* ─── Scroll-triggered entrance animation ─── */
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
+.animate-fade-up {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ─── Code Highlighting ─── */
 .shiki span {
     color: var(--shiki-light);
 }
@@ -124,17 +327,16 @@
 
 pre.shiki .line {
     font-size: 13px;
-    padding: 0 theme(spacing.4);
+    padding: 0 1rem;
 }
 
 pre.shiki .highlighted {
     width: 100%;
     display: inline-block;
-    background-color: theme('colors.primary.DEFAULT / 10%');
+    background-color: color-mix(in oklch, var(--color-primary) 10%, transparent);
 }
 
-/* Tiptap */
-
+/* ─── Tiptap ─── */
 .tiptap .is-editor-empty:first-child::before {
     color: #adb5bd;
     content: attr(data-placeholder);
@@ -149,4 +351,13 @@ pre.shiki .highlighted {
     float: left;
     height: 0;
     pointer-events: none;
+}
+
+/* ─── Scrollbar hidden ─── */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

@@ -1,76 +1,91 @@
-import Image from 'next/image'
 import Link from 'next/link'
-import HeroBG from '@/public/images/bg-pattern-filled.png'
+import { ArrowUpRight } from 'lucide-react'
 
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { ExternalLinks } from '@/config/urls'
 
 import { Icons } from '../icon'
 import { TrackClick } from '../tracking/track-click'
-import { Badge } from '../ui/badge'
+import { AnimateIn } from '../ui/animate-in'
+import { Avatar, AvatarFallback } from '../ui/avatar'
+import { DotBackground } from '../ui/dot-background'
 import { HeroCTA } from './hero-cta'
+import { StarRating } from './star-rating'
+
+const AVATARS = [{ fallback: 'JD' }, { fallback: 'MK' }, { fallback: 'AS' }]
 
 export function Hero() {
     return (
-        <div className='relative -mt-16 overflow-hidden pt-16'>
-            <section id='hero' className='container max-w-7xl pt-16 md:pt-28 lg:pt-36'>
-                <div className='flex flex-col items-center gap-8 text-center'>
-                    {/* Tagline */}
-                    <div className='flex items-center gap-6'>
-                        <Badge>Completely Free</Badge>
-                        <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
-                            <Link
-                                className='inline-flex items-center space-x-1 text-sm text-muted-foreground'
-                                href={ExternalLinks.GitHub}>
-                                <Icons.github className='size-4' />
-                                <span>View Source</span>
-                            </Link>
-                        </TrackClick>
-                    </div>
+        <DotBackground className='overflow-hidden'>
+            <div className='mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
+                {/* Announcement chip - single pill with GitHub link inside */}
+                <AnimateIn delay={0}>
+                    <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
+                        <Link
+                            href={ExternalLinks.GitHub}
+                            className='group border-border shadow-subtle mb-6 flex items-center gap-2 rounded-full border bg-white py-1 pr-1 pl-4 text-sm text-neutral-600 transition-colors hover:border-neutral-300'>
+                            <span>Forever free and open source</span>
+                            <span className='border-border flex items-center gap-1 rounded-full border bg-neutral-50 px-3 py-0.5 text-sm font-medium text-neutral-800 transition-colors group-hover:bg-neutral-100'>
+                                <Icons.github className='size-3.5' />
+                                GitHub
+                                <ArrowUpRight className='size-3' />
+                            </span>
+                        </Link>
+                    </TrackClick>
+                </AnimateIn>
 
-                    {/* Headline */}
-                    <div className='flex flex-col gap-4'>
-                        <h1 className='text-balance font-heading text-4xl font-bold tracking-wide md:text-6xl lg:text-7xl'>
-                            Format and Preview your{' '}
-                            <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
-                                LinkedIn
-                            </span>{' '}
-                            Posts
-                        </h1>
-                        <p className='mx-auto max-w-2xl text-balance text-muted-foreground md:text-xl'>
-                            A free tool to Write, Format, and Preview your LinkedIn posts. Improve your LinkedIn
-                            presence and engagement.
-                        </p>
-                    </div>
+                {/* Headline - bigger, bolder */}
+                <AnimateIn delay={0.1}>
+                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
+                        Format and Preview your{' '}
+                        <span className='text-primary inline-flex items-baseline whitespace-nowrap'>
+                            <Icons.linkedinLogo
+                                aria-hidden='true'
+                                className='bg-primary mr-1 inline-block size-8 translate-y-0.5 rotate-[-6deg] self-center rounded-sm p-1 text-white md:mr-1.5 md:size-11 md:translate-y-1 md:rounded-xl md:p-1.5 lg:mr-2 lg:size-14 lg:p-2'
+                            />
+                            LinkedIn
+                        </span>{' '}
+                        Posts
+                    </h1>
+                </AnimateIn>
 
-                    {/* Rating */}
-                    <div className='flex items-center space-x-1'>
-                        <span className='pr-2 text-sm font-semibold text-muted-foreground'>4.9/5</span>
-                        {Array.from({ length: 5 }).map((_, i) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <Icons.star key={i} className='mb-0.5 size-5 fill-yellow-500 text-yellow-500' />
-                        ))}
-                        <span className='pl-2 text-sm font-semibold text-muted-foreground'>from 3342 Reviews</span>
-                    </div>
+                <AnimateIn delay={0.2}>
+                    <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
+                        A free tool to write, format, and preview your LinkedIn posts. Improve your Linkedin presence
+                        and engagement.
+                    </p>
+                </AnimateIn>
 
-                    {/* CTA */}
+                {/* Social proof - avatar group + stars + review count */}
+                <AnimateIn delay={0.3}>
+                    <div className='mb-8 flex items-center gap-3 rounded-full bg-neutral-50 px-4 py-2'>
+                        {/* Avatar group */}
+                        <div className='flex items-center'>
+                            {AVATARS.map((avatar) => (
+                                <Avatar
+                                    key={avatar.fallback}
+                                    className='-ml-4 size-8 border-2 border-white shadow-xs first:ml-0'>
+                                    <AvatarFallback className='text-[10px] font-medium'>
+                                        {avatar.fallback}
+                                    </AvatarFallback>
+                                </Avatar>
+                            ))}
+                        </div>
+
+                        {/* Stars */}
+                        <StarRating />
+
+                        <span className='text-sm font-medium text-neutral-500'>
+                            {SOCIAL_PROOF.rating} from {SOCIAL_PROOF.count} reviews
+                        </span>
+                    </div>
+                </AnimateIn>
+
+                {/* CTA */}
+                <AnimateIn delay={0.4}>
                     <HeroCTA />
-                </div>
-            </section>
-            <Background />
-        </div>
-    )
-}
-
-function Background() {
-    return (
-        <>
-            <Image
-                alt='Decorative background pattern for LinkedIn Post Preview tool'
-                className='absolute inset-0 -z-10 size-full animate-pulse object-cover opacity-30'
-                src={HeroBG}
-                priority
-            />
-            <div className='absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/85 via-20% to-background to-80%' />
-        </>
+                </AnimateIn>
+            </div>
+        </DotBackground>
     )
 }

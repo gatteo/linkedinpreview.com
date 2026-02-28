@@ -32,6 +32,7 @@ import {
     MessageCircleHeart,
     RemoveFormatting,
     ScanEye,
+    Share2,
     Smile,
     StarIcon,
     Strikethrough,
@@ -57,73 +58,23 @@ export const Icons = {
     commentHeart: MessageCircleHeart,
 
     linkedInSend: ({ ...props }: LucideProps) => (
-        <svg
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 26 26'
-            {...props}>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M21.354 3.644 2.43 8.98a.812.812 0 0 0-.128 1.517l8.695 4.118c.17.08.306.217.387.387l4.118 8.695a.812.812 0 0 0 1.517-.128l5.337-18.924a.813.813 0 0 0-1.002-1.002ZM11.26 14.74l4.596-4.596'></path>
+        <svg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' {...props}>
+            <path d='M14 2L0 6.67l5 2.64 5.67-3.98L6.7 11l2.63 5L14 2z' />
         </svg>
     ),
-    linkedInShare: ({ ...props }: LucideProps) => (
-        <svg
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 26 26'
-            {...props}>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='m18.208 15.438 4.875-4.876-4.875-4.874'></path>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M3.583 20.313a9.75 9.75 0 0 1 9.75-9.75h9.75'></path>
+    linkedInRepost: ({ ...props }: LucideProps) => (
+        <svg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' {...props}>
+            <path d='M4 10H2V5c0-1.66 1.34-3 3-3h3.85L7.42 0h2.44L12 3 9.86 6H7.42l1.43-2H5c-.55 0-1 .45-1 1v5zm8-4v5c0 .55-.45 1-1 1H7.15l1.43-2H6.14L4 13l2.14 3h2.44l-1.43-2H11c1.66 0 3-1.34 3-3V6h-2z' />
         </svg>
     ),
     linkedInComment: ({ ...props }: LucideProps) => (
-        <svg
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 26 26'
-            {...props}>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M5.28 17.976a9.746 9.746 0 1 1 3.41 3.41h0l-3.367.962a.813.813 0 0 1-1.005-1.004l.963-3.368h0ZM10.417 11.375h6.5M10.417 14.625h6.5'></path>
+        <svg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' {...props}>
+            <path d='M5 8h5v1H5zm11-.5v.08a6 6 0 01-2.75 5L8 16v-3H5.5A5.51 5.51 0 010 7.5 5.62 5.62 0 015.74 2h4.76A5.5 5.5 0 0116 7.5zm-2 0A3.5 3.5 0 0010.5 4H5.74A3.62 3.62 0 002 7.5 3.53 3.53 0 005.5 11H10v1.33l2.17-1.39A4 4 0 0014 7.58zM5 7h6V6H5z' />
         </svg>
     ),
     linkedInLike: ({ ...props }: LucideProps) => (
-        <svg
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 26 26'
-            {...props}>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M22.75 10.563h-4.874v10.562h4.875a.812.812 0 0 0 .812-.813v-8.937a.812.812 0 0 0-.812-.813v0Z'></path>
-            <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='m17.876 10.563-4.063-8.126a3.25 3.25 0 0 0-3.25 3.25v2.438H4.28a1.625 1.625 0 0 0-1.613 1.827l1.22 9.75a1.625 1.625 0 0 0 1.612 1.423h12.378'></path>
+        <svg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='currentColor' {...props}>
+            <path d='M12.91 7l-2.25-2.57a8.21 8.21 0 01-1.5-2.55L9 1.37A2.08 2.08 0 007 0a2.08 2.08 0 00-2.06 2.08v1.17a5.81 5.81 0 00.31 1.89l.28.86H2.38A1.47 1.47 0 001 7.47a1.45 1.45 0 00.64 1.21 1.48 1.48 0 00-.37 2.06 1.54 1.54 0 00.62.51h.05a1.6 1.6 0 00-.19.71A1.47 1.47 0 003 13.42v.1A1.46 1.46 0 004.4 15h4.83a5.61 5.61 0 002.48-.58l1-.42H14V7zM12 12.11l-1.19.52a3.59 3.59 0 01-1.58.37H5.1a.55.55 0 01-.53-.4l-.14-.48-.49-.21a.56.56 0 01-.34-.6l.09-.56-.42-.42a.56.56 0 01-.09-.68L3.55 9l-.4-.61A.28.28 0 013.3 8h5L7.14 4.51a4.15 4.15 0 01-.2-1.26V2.08A.09.09 0 017 2a.11.11 0 01.08 0l.18.51a10 10 0 001.9 3.24l2.84 3z' />
         </svg>
     ),
     linkedInVisibility: ({ ...props }: LucideProps) => (
@@ -181,6 +132,7 @@ export const Icons = {
     formatting: RemoveFormatting,
     preview: ScanEye,
     dollar: DollarSign,
+    share: Share2,
 
     instagram: IconBrandInstagram,
     tiktok: IconBrandTiktok,

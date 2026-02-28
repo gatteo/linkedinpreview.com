@@ -18,7 +18,7 @@ export function useAnonymousAuth() {
         })
     }, [])
 
-    // Idempotent — returns immediately if already authed
+    // Idempotent - returns immediately if already authed
     const ensureSession = useCallback(async () => {
         if (isReady) return
 

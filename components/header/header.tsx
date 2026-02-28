@@ -10,19 +10,18 @@ import { Navbar } from './navbar'
 
 export function Header() {
     return (
-        <header className='fixed inset-x-0 top-0 z-40 bg-white/80 shadow-sm backdrop-blur-[10px]'>
-            <div className='mx-auto flex h-[60px] max-w-6xl items-center justify-between px-8'>
-                <Logo className='pr-20' />
-                <div className='flex items-center gap-2'>
+        <header className='border-border fixed inset-x-0 top-0 z-40 border-b bg-white/80 backdrop-blur-2xl'>
+            <div className='max-w-content mx-auto flex h-[var(--header-height)] items-center justify-between px-6'>
+                <div className='flex items-center gap-8'>
+                    <Logo />
                     <Navbar />
-                    <Button asChild size='sm' className='md:hidden'>
-                        <Link href={Routes.Tool}>Get Started, It's Free</Link>
+                </div>
+                <div className='flex items-center gap-3'>
+                    <Button asChild size='lg' className='hidden rounded-lg md:flex'>
+                        <Link href={Routes.Tool}>Get Started</Link>
                     </Button>
                     <MobileNav />
                 </div>
-                <Button asChild size='sm' className='hidden md:flex'>
-                    <Link href={Routes.Tool}>Get Started, It's Free</Link>
-                </Button>
             </div>
         </header>
     )

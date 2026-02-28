@@ -30,7 +30,11 @@ export function CtaCard({
     align = 'center',
 }: Props) {
     return (
-        <Card className={cn('w-full not-prose overflow-hidden rounded-xl', shineAnimation)}>
+        <Card
+            className={cn(
+                'not-prose border-border shadow-subtle w-full overflow-hidden rounded-xl p-0',
+                shineAnimation,
+            )}>
             <div className='relative'>
                 <div
                     className={cn(
@@ -83,7 +87,7 @@ export function CtaCard({
                     </div>
                 </div>
 
-                <div className='absolute inset-0 bg-background/5' />
+                <div className='bg-background/5 absolute inset-0' />
 
                 <div
                     className='absolute inset-0 bg-cover bg-center opacity-5'

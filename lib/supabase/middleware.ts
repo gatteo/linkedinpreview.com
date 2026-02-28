@@ -19,7 +19,7 @@ export async function updateSession(request: NextRequest) {
         },
     })
 
-    // Refresh session if it exists — do not use supabase.auth.getSession()
+    // Refresh session if it exists - do not use supabase.auth.getSession()
     // as it does not trigger a token refresh.
     await supabase.auth.getUser()
 

@@ -1,70 +1,142 @@
 import Link from 'next/link'
 
 import { Routes } from '@/config/routes'
+import { ExternalLinks } from '@/config/urls'
 
 import { FeedbackLink } from './feedback/feedback-link'
+import { Icons } from './icon'
 import { Logo } from './logo'
 
 export function Footer() {
     return (
-        <footer className='container mx-auto max-w-6xl py-12'>
-            <div className='row-gap-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4'>
-                <div className='col-span-2 space-y-2'>
-                    <div className='flex items-center'>
-                        <Logo className='size-6' />
-                        <span className='ml-2 text-xl font-bold'>LinkedIn Post Preview</span>
+        <footer className='border-border border-t bg-white'>
+            <div className='max-w-content mx-auto px-6 py-16'>
+                <div className='flex flex-col gap-12 md:flex-row md:justify-between'>
+                    {/* Logo & description */}
+                    <div className='max-w-md'>
+                        <div className='flex items-center gap-2'>
+                            <Logo className='size-7' />
+                            <span className='text-lg font-bold text-neutral-900'>LinkedIn Post Preview</span>
+                        </div>
+                        <p className='mt-3 text-sm leading-relaxed text-neutral-500'>
+                            LinkedInPreview.com is a free online tool that allows you to write, format, and preview your
+                            LinkedIn posts before publishing them.
+                        </p>
+                        {/* Social */}
+                        <div className='mt-6 flex items-center gap-4'>
+                            <Link
+                                href={ExternalLinks.GitHub}
+                                aria-label='View source on GitHub'
+                                className='text-neutral-500 transition-colors hover:text-neutral-900'>
+                                <Icons.github className='size-5' />
+                            </Link>
+                            <Link
+                                href='https://www.linkedin.com/in/matteo-giardino'
+                                aria-label='LinkedIn profile'
+                                className='text-neutral-500 transition-colors hover:text-neutral-900'>
+                                <Icons.linkedin className='size-5' />
+                            </Link>
+                        </div>
                     </div>
-                    <p className='text-balance text-sm text-muted-foreground'>
-                        LinkedInPreview.com is a free online tool that allows you to write, format, and preview your
-                        LinkedIn posts before publishing them.
-                    </p>
-                </div>
-                <div className='flex flex-col space-y-2'>
-                    <h3 className='text-sm font-semibold'>Useful Links</h3>
-                    <Link className='text-sm text-muted-foreground hover:underline' href={Routes.Tool}>
-                        Preview & Formatting Tool
-                    </Link>
-                    <Link className='text-sm text-muted-foreground hover:underline' href={Routes.AllFeatures}>
-                        All the Features
-                    </Link>
-                    <Link className='text-sm text-muted-foreground hover:underline' href={Routes.HowItWorks}>
-                        How It Works
-                    </Link>
-                    <Link className='text-sm text-muted-foreground hover:underline' href={Routes.Embed}>
-                        Embed this tool on your website
-                    </Link>
-                    <FeedbackLink />
+
+                    {/* Link columns */}
+                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3'>
+                        <div>
+                            <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Product</h4>
+                            <ul className='space-y-2.5'>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.Tool}>
+                                        Linkedin Preview Tool
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.AllFeatures}>
+                                        All Features
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.HowItWorks}>
+                                        How It Works
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.EmbedSection}>
+                                        Embed this Tool
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Resources</h4>
+                            <ul className='space-y-2.5'>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.Blog}>
+                                        Blog & Guides
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.Faqs}>
+                                        FAQ
+                                    </Link>
+                                </li>
+                                <li>
+                                    <FeedbackLink />
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Guides</h4>
+                            <ul className='space-y-2.5'>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.BlogPost('linkedin-algorithm-tips-increase-post-reach')}>
+                                        Linkedin Algorithm Tips
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.BlogPost('linkedin-profile-optimization-complete-guide')}>
+                                        Linkedin Profile Optimization
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.BlogPost('how-to-write-linkedin-posts-that-get-comments')}>
+                                        Hot Get More Comments
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div className='flex flex-col space-y-2'>
-                    <h3 className='text-sm font-semibold'>Guides & Resources</h3>
-                    <Link
-                        className='text-sm text-muted-foreground hover:underline'
-                        href={Routes.BlogPost('linkedin-algorithm-tips-increase-post-reach')}>
-                        LinkedIn Algorithm Tips
-                    </Link>
-                    <Link
-                        className='text-sm text-muted-foreground hover:underline'
-                        href={Routes.BlogPost('linkedin-profile-optimization-complete-guide')}>
-                        LinkedIn Profile Optimization
-                    </Link>
-                    <Link
-                        className='text-sm text-muted-foreground hover:underline'
-                        href={Routes.BlogPost('how-to-write-linkedin-posts-that-get-comments')}>
-                        How to Get More Comments
-                    </Link>
+                {/* Bottom bar */}
+                <div className='border-border mt-16 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row'>
+                    <p className='text-sm text-neutral-500'>
+                        Created by{' '}
+                        <Link
+                            className='font-medium text-neutral-700 transition-colors hover:text-neutral-900'
+                            href='https://matteogiardino.com?utm_source=linkedinpreview.com&utm_content=footer'>
+                            Matteo Giardino
+                        </Link>
+                    </p>
+                    <p className='text-sm text-neutral-500'>&copy; {new Date().getFullYear()} LinkedIn Post Preview</p>
                 </div>
-            </div>
-            <div className='mt-10 space-y-4 border-t pt-10'>
-                <p className='text-sm text-muted-foreground '>
-                    Created by{' '}
-                    <Link
-                        className='font-semibold'
-                        href='https://matteogiardino.com?utm_source=linkedinpreview.com&utm_content=footer'>
-                        Matteo Giardino
-                    </Link>{' '}
-                    - Copywright &copy; {new Date().getFullYear()}
-                </p>
             </div>
         </footer>
     )

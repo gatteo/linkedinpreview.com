@@ -10,17 +10,20 @@ export const metadata = {
 
 export default function NotFound() {
     return (
-        <div className='mb-40 mt-52 flex flex-col items-center justify-center gap-12'>
-            <h1 className='text-center text-6xl font-bold'>Page Not Found</h1>
-            <p className='text-center text-xl text-muted-foreground'>
-                Sorry, we couldn't find the page you're looking for.
-            </p>
+        <div className='flex min-h-[80vh] flex-col items-center justify-center gap-8 px-6'>
+            <div className='text-center'>
+                <p className='mb-2 text-sm font-medium tracking-wider text-neutral-400 uppercase'>404</p>
+                <h1 className='font-heading mb-4 text-4xl font-bold text-neutral-900'>Page not found</h1>
+                <p className='text-lg text-neutral-500'>
+                    Sorry, we couldn&apos;t find the page you&apos;re looking for.
+                </p>
+            </div>
             <Link
                 href={UtmUrl('/', {
                     medium: UtmMediums.Homepage,
                     content: '404',
                 })}
-                className='rounded-lg border px-3 py-2 transition-colors duration-150'>
+                className='bg-primary text-primary-foreground shadow-subtle hover:bg-primary/90 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors'>
                 Go to Home
             </Link>
         </div>

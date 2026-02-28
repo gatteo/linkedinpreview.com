@@ -5,7 +5,7 @@ interface SuggestionChipsProps {
 }
 
 function SkeletonChip({ width }: { width: string }) {
-    return <div className={`h-7 animate-pulse rounded-full bg-muted ${width}`} />
+    return <div className={`bg-muted h-7 animate-pulse rounded-full ${width}`} />
 }
 
 export function SuggestionChips({ suggestions, loading, onSelect }: SuggestionChipsProps) {
@@ -28,7 +28,7 @@ export function SuggestionChips({ suggestions, loading, onSelect }: SuggestionCh
                     key={suggestion}
                     type='button'
                     onClick={() => onSelect(suggestion)}
-                    className='rounded-full border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground'>
+                    className='border-border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full border px-3 py-1.5 text-xs transition-colors'>
                     {suggestion}
                 </button>
             ))}

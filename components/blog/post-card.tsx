@@ -26,35 +26,40 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
                 content: 'post_card',
             })}
             onClick={handleClick}
-            className='flex flex-col rounded-lg p-4 transition-all duration-150 hover:bg-muted'>
+            className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white transition-all duration-200 hover:-translate-y-0.5'>
             <Image
                 src={post.image ?? '/images/blog-post-placeholder.png'}
                 width={1280}
                 height={720}
                 alt={post.title}
-                className='aspect-video rounded-sm border object-cover object-center shadow-lg'
+                className='aspect-video object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]'
             />
 
-            <div className='mt-4 grow items-start space-y-2'>
-                <h2 className='text-xl font-bold'>{post.title}</h2>
-                <div className='text-muted-foreground'>
+            <div className='flex flex-1 flex-col p-5'>
+                <h2 className='group-hover:text-primary mb-2 text-lg font-semibold text-neutral-900 transition-colors'>
+                    {post.title}
+                </h2>
+                <p className='mb-4 flex-1 text-sm leading-relaxed text-neutral-500'>
                     {post.summary.slice(0, 120)}
                     {post.summary.length > 120 && '...'}
-                </div>
-            </div>
+                </p>
 
-            <div className='mt-3 flex flex-wrap items-center gap-2 text-xs sm:text-sm'>
-                <div>{formatDate(post.date)}</div>
-                {post.tags && post.tags.length > 0 && (
-                    <>
-                        <div className='text-muted-foreground'>•</div>
-                        {post.tags.map((t) => (
-                            <Badge key={t} variant={'outline'}>
-                                {t}
-                            </Badge>
-                        ))}
-                    </>
-                )}
+                <div className='flex flex-wrap items-center gap-2 text-xs text-neutral-400'>
+                    <span>{formatDate(post.date)}</span>
+                    {post.tags && post.tags.length > 0 && (
+                        <>
+                            <span>·</span>
+                            {post.tags.map((t) => (
+                                <Badge
+                                    key={t}
+                                    variant='outline'
+                                    className='border-border text-xs font-normal text-neutral-500'>
+                                    {t}
+                                </Badge>
+                            ))}
+                        </>
+                    )}
+                </div>
             </div>
         </Link>
     )

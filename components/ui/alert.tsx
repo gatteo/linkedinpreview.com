@@ -4,13 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const alertVariants = cva(
-    'relative w-full rounded-lg border p-4 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7',
+    "grid gap-0.5 rounded-lg border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4 w-full relative group/alert",
     {
         variants: {
             variant: {
-                default: 'bg-background text-foreground',
-                destructive: 'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
-                warning: 'border-yellow-300/50 text-yellow-300 dark:border-yellow-300/50 [&>svg]:text-yellow-300',
+                default: 'bg-card text-card-foreground',
+                destructive:
+                    'text-destructive bg-card *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current',
+                warning: 'border-yellow-300/50 text-yellow-300 dark:border-yellow-300/50 *:[svg]:text-yellow-300',
             },
         },
         defaultVariants: {
@@ -19,28 +20,38 @@ const alertVariants = cva(
     },
 )
 
-const Alert = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-    <div ref={ref} role='alert' className={cn(alertVariants({ variant }), className)} {...props} />
-))
-Alert.displayName = 'Alert'
+function Alert({ className, variant, ...props }: React.ComponentProps<'div'> & VariantProps<typeof alertVariants>) {
+    return <div data-slot='alert' role='alert' className={cn(alertVariants({ variant }), className)} {...props} />
+}
 
-const AlertTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-    ({ className, children, ...props }, ref) => (
-        <h5 ref={ref} className={cn('mb-1 font-medium leading-none tracking-tight', className)} {...props}>
-            {children}
-        </h5>
-    ),
-)
-AlertTitle.displayName = 'AlertTitle'
+function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
+    return (
+        <div
+            data-slot='alert-title'
+            className={cn(
+                '[&_a]:hover:text-foreground font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3',
+                className,
+            )}
+            {...props}
+        />
+    )
+}
 
-const AlertDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-    ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn('text-sm [&_p]:leading-relaxed', className)} {...props} />
-    ),
-)
-AlertDescription.displayName = 'AlertDescription'
+function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) {
+    return (
+        <div
+            data-slot='alert-description'
+            className={cn(
+                'text-muted-foreground [&_a]:hover:text-foreground text-sm text-balance md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4',
+                className,
+            )}
+            {...props}
+        />
+    )
+}
 
-export { Alert, AlertTitle, AlertDescription }
+function AlertAction({ className, ...props }: React.ComponentProps<'div'>) {
+    return <div data-slot='alert-action' className={cn('absolute top-2 right-2', className)} {...props} />
+}
+
+export { Alert, AlertTitle, AlertDescription, AlertAction }

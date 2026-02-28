@@ -69,8 +69,8 @@ The app will be available at `localhost:3000`.
 
 See the `docs/` folder for detailed documentation:
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — System architecture, tech decisions, and build pipeline
-- **[FEATURES.md](docs/FEATURES.md)** — Detailed feature descriptions and user flows
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, tech decisions, and build pipeline
+- **[FEATURES.md](docs/FEATURES.md)** - Detailed feature descriptions and user flows
 
 ## Author
 

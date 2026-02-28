@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -14,14 +15,18 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
-import { AIGenerateSheet } from '../ai-chat/sheet'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { EditorLoading } from './editor-loading'
 import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
 import Toolbar from './toolbar'
 import { processNodes, toPlainText } from './utils'
+
+const AIGenerateSheet = dynamic(() => import('../ai-chat/sheet').then((mod) => ({ default: mod.AIGenerateSheet })), {
+    ssr: false,
+})
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {
@@ -80,7 +85,7 @@ export function EditorPanel({
         ],
         editorProps: {
             attributes: {
-                class: 'prose-md focus:outline-none resize-none block w-full p-0 text-gray-900 border-none appearance-none placeholder:text-gray-500 focus:ring-0 overflow-y-auto h-full',
+                class: 'prose-md focus:outline-hidden resize-none block w-full p-0 text-neutral-900 border-none appearance-none placeholder:text-neutral-500 focus:ring-0 overflow-y-auto h-full',
             },
         },
         onCreate: ({ editor }) => {
@@ -120,7 +125,7 @@ export function EditorPanel({
                 if (!res.ok) return
                 posthog.capture('post_analyzed', { content_length: text.length })
             } catch {
-                // silently fail — background analytics
+                // silently fail - background analytics
             }
         },
         [ensureSession, currentMedia],
@@ -155,8 +160,9 @@ export function EditorPanel({
             if (!content) return
             event.preventDefault()
 
-            // Use synchronous clipboardData API — navigator.clipboard.writeText()
-            // requires transient user activation which Firefox denies in copy events
+            // Clear ProseMirror's text/html so paste targets (e.g. LinkedIn's
+            // contenteditable) fall back to text/plain with our Unicode-styled text.
+            event.clipboardData?.clearData()
             event.clipboardData?.setData('text/plain', content.text)
             onCopied(content.json, content.text)
         }
@@ -233,26 +239,26 @@ export function EditorPanel({
     const charCount = text.length
 
     return (
-        <div className='flex size-full flex-col'>
+        <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='flex h-16 border-b'>
+            <div className='border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>
             </div>
 
             {/** Editor */}
-            <div className='grow overflow-y-auto px-4 py-5 sm:px-6'>
+            <div className='min-h-0 grow overflow-y-auto px-4 py-5 sm:px-6'>
                 <div className='not-prose relative text-sm font-normal'>
                     <EditorContent editor={editor} />
                     {!text.trim() && (
-                        <div className='pointer-events-none absolute inset-x-0 -top-0.5 flex items-center text-sm text-muted-foreground/60'>
+                        <div className='text-muted-foreground/60 pointer-events-none absolute inset-x-0 -top-0.5 flex items-center text-sm'>
                             Write something… or{' '}
                             <button
                                 onClick={() => setGenerateOpen(true)}
-                                className='text-shimmer pointer-events-auto ml-1.5 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-sm font-medium transition-all hover:border-primary/40 hover:bg-primary/10'>
-                                <Icons.magic className='size-3.5 text-primary' />
+                                className='text-shimmer border-primary/20 bg-primary/5 hover:border-primary/40 hover:bg-primary/10 pointer-events-auto ml-1.5 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-sm font-medium transition-all'>
+                                <Icons.magic className='text-primary size-3.5' />
                                 <span>Generate with AI</span>
                             </button>
                         </div>
@@ -261,14 +267,14 @@ export function EditorPanel({
             </div>
 
             {/** Character count */}
-            <div className='px-4 pb-1 sm:px-6'>
-                <span className='text-xs tabular-nums text-muted-foreground'>
+            <div className='shrink-0 px-4 pb-1 sm:px-6'>
+                <span className='text-muted-foreground text-xs tabular-nums'>
                     {charCount} {charCount === 1 ? 'char' : 'chars'}
                 </span>
             </div>
 
             {/** Actions */}
-            <div className='border-t px-4 py-3 sm:px-6'>
+            <div className='border-border shrink-0 border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
                         {/* <div className='group relative'>
@@ -278,32 +284,32 @@ export function EditorPanel({
                                 onClick={() => toast.info('Feature not available yet')}>
                                 <Icons.emoji className='size-4' />
                             </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Insert Emoji
                             </span>
                         </div> */}
 
-                        <div className='group relative'>
-                            <input
-                                ref={fileInputRef}
-                                type='file'
-                                accept='image/*,video/mp4,video/quicktime,video/webm'
-                                className='hidden'
-                                onChange={handleFileChange}
-                            />
-                            {currentMedia ? (
-                                <Button variant='outline' size='icon' onClick={handleRemoveMedia} title='Remove Media'>
-                                    <Icons.image className='size-4' />
-                                </Button>
-                            ) : (
-                                <Button variant='outline' size='icon' onClick={handleImageUpload}>
-                                    <Icons.image className='size-4' />
-                                </Button>
-                            )}
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                {currentMedia ? 'Remove Media' : 'Add Image or Video'}
-                            </span>
-                        </div>
+                        <input
+                            ref={fileInputRef}
+                            type='file'
+                            accept='image/*,video/mp4,video/quicktime,video/webm'
+                            className='hidden'
+                            onChange={handleFileChange}
+                        />
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                {currentMedia ? (
+                                    <Button variant='outline' size='icon' onClick={handleRemoveMedia}>
+                                        <Icons.image className='size-4' />
+                                    </Button>
+                                ) : (
+                                    <Button variant='outline' size='icon' onClick={handleImageUpload}>
+                                        <Icons.image className='size-4' />
+                                    </Button>
+                                )}
+                            </TooltipTrigger>
+                            <TooltipContent>{currentMedia ? 'Remove Media' : 'Add Image or Video'}</TooltipContent>
+                        </Tooltip>
 
                         {/* <div className='group relative'>
                             <Button
@@ -312,54 +318,59 @@ export function EditorPanel({
                                 onClick={() => toast.info('Feature not available yet')}>
                                 <Icons.carousel className='size-4' />
                             </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
+                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
                                 Add Carousel
                             </span>
                         </div> */}
 
-                        <div className='group relative'>
-                            <Button variant='outline' size='icon' onClick={() => setGenerateOpen(true)}>
-                                <Icons.magic className='size-4' />
-                            </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Generate with AI
-                            </span>
-                        </div>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant='outline' size='icon' onClick={() => setGenerateOpen(true)}>
+                                    <Icons.magic className='size-4' />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Generate with AI</TooltipContent>
+                        </Tooltip>
                     </div>
                     <div className='flex flex-1 items-center justify-end gap-2 sm:gap-4'>
                         {onShare && (
                             <>
-                                <div className='group relative'>
-                                    <Button
-                                        variant='outline'
-                                        size='icon'
-                                        onClick={() => {
-                                            onShare()
-                                                .then((url) => {
-                                                    if (url) {
-                                                        setShareUrl(url)
-                                                        setShareOpen(true)
-                                                    }
-                                                })
-                                                .catch(() => {
-                                                    toast.error('Failed to create share link')
-                                                })
-                                        }}>
-                                        <Share2 className='size-4' />
-                                    </Button>
-                                    <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                        Share Draft
-                                    </span>
-                                </div>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant='outline'
+                                            size='icon'
+                                            onClick={() => {
+                                                onShare()
+                                                    .then((url) => {
+                                                        if (url) {
+                                                            setShareUrl(url)
+                                                            setShareOpen(true)
+                                                        }
+                                                    })
+                                                    .catch(() => {
+                                                        toast.error('Failed to create share link')
+                                                    })
+                                            }}>
+                                            <Share2 className='size-4' />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Share Draft</TooltipContent>
+                                </Tooltip>
                                 {shareUrl && (
                                     <ShareDialog url={shareUrl} open={shareOpen} onOpenChange={setShareOpen} />
                                 )}
                             </>
                         )}
-                        <Button variant='default' onClick={handleCopy}>
-                            <Icons.copy className='mr-2 size-4' />
-                            Copy Text
-                        </Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant='default' onClick={handleCopy}>
+                                    <Icons.copy className='mr-1 size-4' />
+                                    Copy Text
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Copy to Clipboard</TooltipContent>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

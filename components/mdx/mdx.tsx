@@ -38,7 +38,7 @@ const components: MDXComponents = {
         <>
             <ImageZoom>
                 <Image
-                    className='rounded-md border shadow-md transition-transform hover:scale-[102%]'
+                    className='border-border shadow-elevated rounded-xl border transition-transform hover:scale-[1.02]'
                     alt={alt}
                     {...rest}
                 />
@@ -71,10 +71,20 @@ const patchedRuntime = {
     jsxDEV: (runtime as any).jsx,
 }
 
+// Some contentlayer-compiled MDX bundles inline a copy of the React dev JSX
+// runtime that calls `ReactSharedInternals.A.getOwner()`. This method doesn't
+// exist in React 19 production, causing `t.getOwner is not a function`.
+// We patch the code string to make the getOwner call safe before evaluation.
+function patchContentlayerCode(code: string): string {
+    // Replace `.getOwner()` with `.getOwner?.()` to safely handle the missing method
+    return code.replace(/\.getOwner\(\)/g, '.getOwner?.()')
+}
+
 function useMDXComponent(code: string) {
     return React.useMemo(() => {
         const scope = { React, ReactDOM, _jsx_runtime: patchedRuntime }
-        const fn = new Function(...Object.keys(scope), code)
+        const patched = patchContentlayerCode(code)
+        const fn = new Function(...Object.keys(scope), patched)
         return fn(...Object.values(scope)).default
     }, [code])
 }
@@ -84,7 +94,7 @@ const Mdx = ({ code }: MdxProps) => {
     const Component = useMDXComponent(code)
 
     return (
-        <div className='prose w-full max-w-none dark:prose-invert'>
+        <div className='prose dark:prose-invert w-full max-w-none'>
             <Component components={{ ...components }} />
         </div>
     )

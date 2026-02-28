@@ -2,7 +2,7 @@
 
 ## LinkedIn Post Preview Tool
 
-The main product — a free online tool at `/#tool` on the home page.
+The main product - a free online tool at `/#tool` on the home page.
 
 ### Editor Panel (`components/tool/editor-panel.tsx`)
 
@@ -31,12 +31,12 @@ A pixel-accurate LinkedIn post preview that updates in real time as the user typ
 
 **Components:**
 
-- `preview-header.tsx` — "Post Preview" title + mobile/tablet/desktop size toggle
-- `preview-size-context.tsx` — React context for screen size state
-- `user-info.tsx` — Mock LinkedIn user profile (avatar, name, title, visibility icon)
-- `content-section.tsx` — Renders processed text with 3-line clamp and "...more" expand button
-- `reactions.tsx` — Static LinkedIn reaction icons and counts
-- `action-buttons.tsx` — Static Like/Comment/Share/Send buttons
+- `preview-header.tsx` - "Post Preview" title + mobile/tablet/desktop size toggle
+- `preview-size-context.tsx` - React context for screen size state
+- `user-info.tsx` - Mock LinkedIn user profile (avatar, name, title, visibility icon)
+- `content-section.tsx` - Renders processed text with 3-line clamp and "...more" expand button
+- `reactions.tsx` - Static LinkedIn reaction icons and counts
+- `action-buttons.tsx` - Static Like/Comment/Share/Send buttons
 
 **Screen sizes:**
 
@@ -62,16 +62,15 @@ A pixel-accurate LinkedIn post preview that updates in real time as the user typ
 
 The home page (`app/page.tsx`) is a single-page layout with these sections:
 
-| Section       | Component                | Description                          |
-| ------------- | ------------------------ | ------------------------------------ |
-| Hero          | `home/hero.tsx`          | Title, subtitle, rating, CTA buttons |
-| Tool          | `tool/tool.tsx`          | The editor + preview side-by-side    |
-| How to Use    | `home/how-to-use.tsx`    | Step-by-step usage guide             |
-| Main Features | `home/main-features.tsx` | Key feature highlights               |
-| Open Source   | `home/opensource.tsx`    | GitHub CTA                           |
-| Reason        | `home/reason.tsx`        | Why use this tool                    |
-| Features      | `home/features.tsx`      | Full feature grid                    |
-| FAQs          | `home/faqs.tsx`          | Accordion FAQ section                |
+| Section     | Component             | Description                          |
+| ----------- | --------------------- | ------------------------------------ |
+| Hero        | `home/hero.tsx`       | Title, subtitle, rating, CTA buttons |
+| Tool        | `tool/tool.tsx`       | The editor + preview side-by-side    |
+| How to Use  | `home/how-to-use.tsx` | Step-by-step usage guide             |
+| Reason      | `home/reason.tsx`     | Why use this tool                    |
+| Features    | `home/features.tsx`   | Full feature grid                    |
+| Open Source | `home/opensource.tsx` | GitHub CTA                           |
+| FAQs        | `home/faqs.tsx`       | Accordion FAQ section                |
 
 JSON-LD schemas (Organization, WebSite, SoftwareApplication) are embedded for SEO.
 

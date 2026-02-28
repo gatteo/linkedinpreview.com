@@ -42,7 +42,8 @@ export function RelatedArticles({ currentPost, limit = 3 }: Props) {
     }
 
     return (
-        <div className='mt-16  pt-8'>
+        <div className='border-border mt-16 border-t pt-8'>
+            <h2 className='font-heading mb-8 text-2xl font-bold tracking-tight text-neutral-900'>Related articles</h2>
             <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
                 {relatedPosts.map((post) => (
                     <PostCard key={post.slug} post={post} />

@@ -1,12 +1,12 @@
 import { type Organization, type SoftwareApplication, type WebSite, type WithContext } from 'schema-dts'
 
 import { site } from '@/config/site'
+import { CtaSection } from '@/components/home/cta-section'
 import { EmbedSection } from '@/components/home/embed-section'
 import { FAQs } from '@/components/home/faqs'
 import { Features } from '@/components/home/features'
 import { Hero } from '@/components/home/hero'
 import { HowToUse } from '@/components/home/how-to-use'
-import { MainFeatures } from '@/components/home/main-features'
 import { OpenSource } from '@/components/home/opensource'
 import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
@@ -48,7 +48,7 @@ export default function Page() {
         'operatingSystem': 'Web Browser',
         'url': `${site.url}/#tool`,
         'description':
-            'Free online tool to write, format, and preview LinkedIn posts with bold, italic, underline text, and lists. See how posts look on desktop and mobile before publishing.',
+            'Free LinkedIn post preview tool. Free online tool to write, format, and preview LinkedIn posts with bold, italic, underline text and lists. See how Linkedin posts will look on mobile and desktop before publishing. Improve engagement and professionalism.',
         'offers': {
             '@type': 'Offer',
             'price': '0',
@@ -76,15 +76,23 @@ export default function Page() {
             />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
-            <Hero />
-            <Tool />
-            <HowToUse />
-            <MainFeatures />
+
+            <div className='max-w-content border-border mx-auto border-x'>
+                <Hero />
+                <Tool />
+                <HowToUse />
+            </div>
+
             <OpenSource />
-            <Reason />
-            <Features />
-            <EmbedSection />
-            <FAQs />
+
+            <div className='max-w-content border-border mx-auto border-x'>
+                <Reason />
+                <Features />
+                <EmbedSection />
+                <FAQs />
+            </div>
+
+            <CtaSection />
         </>
     )
 }

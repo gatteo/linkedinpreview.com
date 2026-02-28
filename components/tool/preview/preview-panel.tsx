@@ -29,10 +29,10 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
     return (
         <div className='flex h-full flex-col'>
             <PreviewHeader />
-            <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-gray-50 py-5'>
+            <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-neutral-50 py-5'>
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
-                    <div className='font-system overflow-hidden rounded-lg bg-white shadow ring-1 ring-inset ring-gray-200'>
-                        <div className='py-5 pl-4 pr-6'>
+                    <div className='font-system overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]'>
+                        <div className='pt-3 pr-4 pb-1 pl-4'>
                             <UserInfo />
                             <ContentSection content={content} />
                         </div>
@@ -58,9 +58,9 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
                                 )}
                             </div>
                         )}
-                        <div className='py-3 pl-4 pr-6'>
+                        <div className='py-2 pr-4 pl-4'>
                             <Reactions />
-                            <hr className='mt-3 border-gray-200' />
+                            <hr className='mt-3 border-neutral-200' />
                             <ActionButtons />
                         </div>
                     </div>
@@ -71,7 +71,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
                             hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
                         })
                     }
-                    className='flex items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-600'>
+                    className='flex items-center gap-1 text-xs text-neutral-400 transition-colors hover:text-neutral-600'>
                     <CircleHelp className='size-3.5' />
                     <span>Bug or feature request? Let us know</span>
                 </button>

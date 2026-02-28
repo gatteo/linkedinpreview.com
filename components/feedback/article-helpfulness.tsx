@@ -42,22 +42,22 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
     }
 
     return (
-        <div className='my-12 rounded-lg border bg-muted/50 p-6 text-center'>
+        <div className='border-border shadow-subtle my-12 rounded-xl border bg-neutral-50 p-6 text-center'>
             {vote ? (
-                <p className='text-sm font-medium text-muted-foreground'>Thanks for your feedback!</p>
+                <p className='text-sm font-medium text-neutral-500'>Thanks for your feedback!</p>
             ) : (
                 <>
-                    <p className='mb-4 text-sm font-medium'>Was &quot;{title}&quot; helpful?</p>
+                    <p className='mb-4 text-sm font-medium text-neutral-900'>Was &quot;{title}&quot; helpful?</p>
                     <div className='flex items-center justify-center gap-4'>
                         <button
                             onClick={() => handleVote('yes')}
-                            className='flex items-center gap-2 rounded-md border px-4 py-2 text-sm transition-colors hover:bg-muted'>
+                            className='border-border shadow-subtle flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50'>
                             <ThumbsUp className='size-4' />
                             Yes
                         </button>
                         <button
                             onClick={() => handleVote('no')}
-                            className='flex items-center gap-2 rounded-md border px-4 py-2 text-sm transition-colors hover:bg-muted'>
+                            className='border-border shadow-subtle flex items-center gap-2 rounded-lg border bg-white px-4 py-2 text-sm text-neutral-700 transition-colors hover:bg-neutral-50'>
                             <ThumbsDown className='size-4' />
                             No
                         </button>

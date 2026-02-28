@@ -10,7 +10,7 @@
  * Variant keys and their intended copy:
  *   control     → "Get Started"        / "Learn more"           (current copy, default)
  *   free-tool   → "Use Free Tool"      / "See How It Works"
- *   try-free    → "Try It Free — No Login" / "See Features"
+ *   try-free    → "Try It Free - No Login" / "See Features"
  *   open-editor → "Open Free Editor"  / "Learn More"
  *
  * Steps to configure in PostHog:
@@ -24,6 +24,7 @@
  * tracking is needed to know which variant each user saw.
  */
 import Link from 'next/link'
+import { ArrowDown } from 'lucide-react'
 import { useFeatureFlagVariantKey } from 'posthog-js/react'
 
 import { Routes } from '@/config/routes'
@@ -38,7 +39,7 @@ const CONTROL: CtaCopy = { primary: 'Get Started', secondary: 'Learn more' }
 const CTA_VARIANTS: Record<string, CtaCopy> = {
     'control': CONTROL,
     'free-tool': { primary: 'Use Free Tool', secondary: 'See How It Works' },
-    'try-free': { primary: 'Try It Free — No Login', secondary: 'See Features' },
+    'try-free': { primary: 'Try It Free - No Login', secondary: 'See Features' },
     'open-editor': { primary: 'Open Free Editor', secondary: 'Learn More' },
 }
 
@@ -50,19 +51,22 @@ export function HeroCTA() {
     const copy = CTA_VARIANTS[variantKey] || CONTROL
 
     return (
-        <div className='flex gap-2'>
+        <div className='flex items-center gap-3'>
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
-                <Button asChild>
-                    <Link href={Routes.Tool}>{copy.primary}</Link>
+                <Button asChild size='lg' className='rounded-lg'>
+                    <Link href={Routes.Tool}>
+                        {copy.primary}
+                        <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
+                    </Link>
                 </Button>
             </TrackClick>
             <TrackClick
                 event='cta_button_clicked'
                 properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                <Button variant='secondary' asChild>
-                    <Link href={Routes.MainFeatures}>{copy.secondary}</Link>
+                <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
+                    <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
                 </Button>
             </TrackClick>
         </div>

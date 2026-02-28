@@ -3,9 +3,6 @@
 import React from 'react'
 import type { UIMessage } from 'ai'
 
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-
 import { ChatInput } from './chat-input'
 import { ChatMessage } from './chat-message'
 import { SuggestionChips } from './suggestion-chips'
@@ -42,13 +39,14 @@ export function ChatPhase({
 
     return (
         <div className='flex min-h-0 flex-1 flex-col'>
-            <ScrollArea className='flex-1'>
+            <div className='min-h-0 flex-1 overflow-y-auto'>
                 <div className='flex flex-col gap-4 px-6 py-4'>
                     {messages.map((message, index) => (
                         <ChatMessage
                             key={message.id}
                             message={message}
                             isStreaming={isLoading && message.role === 'assistant' && index === messages.length - 1}
+                            onOpenInEditor={!isLoading && latestPostText ? onOpenInEditor : undefined}
                         />
                     ))}
                     {!isLoading && (suggestionsLoading || suggestions.length > 0) && (
@@ -60,15 +58,7 @@ export function ChatPhase({
                     )}
                     <div ref={bottomRef} />
                 </div>
-            </ScrollArea>
-
-            {!isLoading && latestPostText && (
-                <div className='border-t px-6 py-3'>
-                    <Button onClick={onOpenInEditor} className='w-full'>
-                        Open in Editor
-                    </Button>
-                </div>
-            )}
+            </div>
 
             <ChatInput onSend={onSendMessage} isLoading={isLoading} onStop={onStop} />
         </div>

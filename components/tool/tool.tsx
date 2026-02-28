@@ -1,13 +1,21 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 import { Eye, PenLine } from 'lucide-react'
+import { Group, Panel } from 'react-resizable-panels'
 
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
 
-import { EditorPanel } from './editor-panel'
+import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
+import { ResizeHandle } from './resize-handle'
+
+const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ default: mod.EditorPanel })), {
+    loading: () => <EditorLoading />,
+    ssr: false,
+})
 
 export type Media = { type: 'image' | 'video'; src: string }
 
@@ -19,6 +27,21 @@ type MobileTab = 'editor' | 'preview'
 
 const STORAGE_KEY = 'linkedinpreview-draft'
 const SAVE_DELAY_MS = 2000
+const DESKTOP_BREAKPOINT = 768
+
+function useIsDesktop() {
+    const [isDesktop, setIsDesktop] = React.useState(false)
+
+    React.useEffect(() => {
+        const mql = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`)
+        const onChange = () => setIsDesktop(mql.matches)
+        onChange()
+        mql.addEventListener('change', onChange)
+        return () => mql.removeEventListener('change', onChange)
+    }, [])
+
+    return isDesktop
+}
 
 function loadLocalDraft(): any | null {
     try {
@@ -40,7 +63,7 @@ function useDraftPersistence(content: any) {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
             } catch {
-                // localStorage full or unavailable — silently ignore
+                // localStorage full or unavailable - silently ignore
             }
         }, SAVE_DELAY_MS)
 
@@ -56,6 +79,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
     const [initialContent, setInitialContent] = React.useState<any>(undefined)
     const [isLoading, setIsLoading] = React.useState(true)
+    const isDesktop = useIsDesktop()
 
     // Load draft: URL ?draft= param takes priority over localStorage
     React.useEffect(() => {
@@ -112,55 +136,73 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const inner = (
         <div
             className={cn(
-                'flex min-h-[520px] flex-1 flex-col rounded-sm border',
-                variant === 'embed' && 'h-full border-0',
+                'border-border flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border bg-white',
+                variant === 'embed' && 'h-full rounded-none border-0',
             )}>
-            {/* Mobile tab bar — hidden on desktop where both panels are visible */}
-            <div className='flex border-b md:hidden'>
-                <button
-                    type='button'
-                    onClick={() => setMobileTab('editor')}
-                    className={cn(
-                        'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
-                        mobileTab === 'editor'
-                            ? 'border-b-2 border-foreground text-foreground'
-                            : 'text-muted-foreground hover:text-foreground',
-                    )}>
-                    <PenLine className='size-4' />
-                    Editor
-                </button>
-                <button
-                    type='button'
-                    onClick={() => setMobileTab('preview')}
-                    className={cn(
-                        'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
-                        mobileTab === 'preview'
-                            ? 'border-b-2 border-foreground text-foreground'
-                            : 'text-muted-foreground hover:text-foreground',
-                    )}>
-                    <Eye className='size-4' />
-                    Preview
-                </button>
-            </div>
+            {/* Mobile tab bar */}
+            {!isDesktop && (
+                <div className='border-border flex border-b'>
+                    <button
+                        type='button'
+                        onClick={() => setMobileTab('editor')}
+                        className={cn(
+                            'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                            mobileTab === 'editor'
+                                ? 'border-foreground text-foreground border-b-2'
+                                : 'text-muted-foreground hover:text-foreground',
+                        )}>
+                        <PenLine className='size-4' />
+                        Editor
+                    </button>
+                    <button
+                        type='button'
+                        onClick={() => setMobileTab('preview')}
+                        className={cn(
+                            'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                            mobileTab === 'preview'
+                                ? 'border-foreground text-foreground border-b-2'
+                                : 'text-muted-foreground hover:text-foreground',
+                        )}>
+                        <Eye className='size-4' />
+                        Preview
+                    </button>
+                </div>
+            )}
 
-            {/* Panels — on mobile only the active tab is visible; on desktop both show side-by-side */}
-            <div className='flex flex-1'>
-                <div className={cn('min-w-0 flex-1 flex-col', mobileTab === 'editor' ? 'flex' : 'hidden md:flex')}>
-                    <EditorPanel
-                        initialContent={initialContent}
-                        onChange={handleContentChange}
-                        onMediaChange={handleMediaChange}
-                        onShare={handleShare}
-                    />
+            {/* Panels */}
+            {isDesktop ? (
+                <Group orientation='horizontal' className='min-h-0 flex-1'>
+                    <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col'>
+                        <EditorPanel
+                            initialContent={initialContent}
+                            onChange={handleContentChange}
+                            onMediaChange={handleMediaChange}
+                            onShare={handleShare}
+                        />
+                    </Panel>
+                    <ResizeHandle />
+                    <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col'>
+                        <PreviewPanel content={content} media={media} />
+                    </Panel>
+                </Group>
+            ) : (
+                <div className='flex min-h-0 flex-1'>
+                    {mobileTab === 'editor' ? (
+                        <div className='flex min-w-0 flex-1 flex-col'>
+                            <EditorPanel
+                                initialContent={initialContent}
+                                onChange={handleContentChange}
+                                onMediaChange={handleMediaChange}
+                                onShare={handleShare}
+                            />
+                        </div>
+                    ) : (
+                        <div className='flex w-full flex-1 flex-col'>
+                            <PreviewPanel content={content} media={media} />
+                        </div>
+                    )}
                 </div>
-                <div
-                    className={cn(
-                        'w-full flex-1 flex-col md:max-w-[600px] md:border-l',
-                        mobileTab === 'preview' ? 'flex' : 'hidden md:flex',
-                    )}>
-                    <PreviewPanel content={content} media={media} />
-                </div>
-            </div>
+            )}
         </div>
     )
 
@@ -169,8 +211,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
     }
 
     return (
-        <section id='tool' className='container max-w-7xl py-16 md:py-24'>
-            {inner}
+        <section
+            id='tool'
+            className='border-border scroll-mt-[var(--header-height)] border-t'
+            style={{ height: 'calc(100vh - var(--header-height))' }}>
+            <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
         </section>
     )
 }

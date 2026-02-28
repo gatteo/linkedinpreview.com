@@ -1,6 +1,4 @@
-import Image from 'next/image'
 import Link from 'next/link'
-import HeroBG from '@/public/images/bg-pattern-filled.png'
 
 import { Routes } from '@/config/routes'
 
@@ -8,42 +6,21 @@ import { Button } from '../ui/button'
 
 export function Hero() {
     return (
-        <>
-            <section id='hero' className='container max-w-7xl pt-16 md:pt-28'>
-                <div className='flex flex-col items-center gap-8 text-center'>
-                    <div className='flex flex-col gap-4'>
-                        <h1 className='text-balance font-heading text-4xl font-bold tracking-wide md:text-6xl lg:text-7xl'>
-                            Tips & Guides to Write Great{' '}
-                            <span className='bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent'>
-                                LinkedIn
-                            </span>{' '}
-                            Posts
-                        </h1>
-                        <p className='mx-auto max-w-2xl text-balance text-muted-foreground md:text-xl'>
-                            Useful Tips and Guides to write better LinkedIn posts, get more engagement, and grow your
-                            audience.
-                        </p>
-                    </div>
-
-                    <Button asChild>
-                        <Link href={Routes.Tool}>Get Started with Our Free Tool</Link>
-                    </Button>
-                </div>
-            </section>
-            <Background />
-        </>
-    )
-}
-
-function Background() {
-    return (
-        <>
-            <Image
-                alt='Background'
-                className='absolute inset-0 -z-10 size-full animate-pulse object-cover opacity-30'
-                src={HeroBG}
-            />
-            <div className='absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/85 via-20% to-background to-80%' />
-        </>
+        <section className='dot-grid'>
+            <div className='max-w-content mx-auto flex flex-col items-center px-6 pt-20 pb-16 md:pt-28'>
+                <span className='border-border text-primary shadow-subtle mb-4 inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                    Blog & Guides
+                </span>
+                <h1 className='font-heading mb-5 text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl'>
+                    Tips & guides to write great <span className='text-primary'>LinkedIn</span> posts
+                </h1>
+                <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500'>
+                    Useful tips and guides to write better LinkedIn posts, get more engagement, and grow your audience.
+                </p>
+                <Button asChild className='rounded-lg'>
+                    <Link href={Routes.Tool}>Get Started with Our Free Tool</Link>
+                </Button>
+            </div>
+        </section>
     )
 }

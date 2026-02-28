@@ -6,7 +6,7 @@ export function EditorLoading() {
     return (
         <div className='flex size-full flex-col'>
             {/** Panel title */}
-            <div className='flex h-16 border-b px-4 sm:px-6'>
+            <div className='border-border flex h-14 border-b px-4 sm:px-6'>
                 <div className='flex grow items-center justify-between'>
                     <div className='flex flex-none flex-wrap items-center justify-start gap-2'>
                         {Array.from({ length: 8 }).map((_, index) => (
@@ -18,13 +18,13 @@ export function EditorLoading() {
 
             {/** Editor */}
             <div className='grow overflow-y-auto px-4 py-5 sm:px-6'>
-                <div className='not-prose relative text-muted-foreground'>
+                <div className='not-prose text-muted-foreground relative'>
                     Loading editor <Icons.spinner className='mb-0.5 ml-1 inline size-4 animate-spin' />
                 </div>
             </div>
 
             {/** Actions */}
-            <div className='border-t px-4 py-3 sm:px-6'>
+            <div className='border-border border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
                         {Array.from({ length: 4 }).map((_, index) => (
