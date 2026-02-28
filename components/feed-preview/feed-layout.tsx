@@ -58,7 +58,7 @@ export const FeedLayout: React.FC<FeedLayoutProps> = ({ children, mode }) => {
         <div className='min-h-full w-full' style={{ backgroundColor: LINKEDIN_BG }}>
             <div className='mx-auto flex max-w-[1128px] items-start gap-4 px-4 py-4'>
                 {/* Left sidebar */}
-                <div className='sticky top-[72px]'>
+                <div className='sticky top-[124px]'>
                     <LeftSidebar />
                 </div>
 
@@ -72,7 +72,7 @@ export const FeedLayout: React.FC<FeedLayoutProps> = ({ children, mode }) => {
                 </div>
 
                 {/* Right sidebar */}
-                <div className='sticky top-[72px]'>
+                <div className='sticky top-[124px]'>
                     <RightSidebar />
                 </div>
             </div>

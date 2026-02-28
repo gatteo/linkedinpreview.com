@@ -2,15 +2,18 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Share2 } from 'lucide-react'
 
 import { decodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Icon } from '@/components/icon'
+import { ShareDialog } from '@/components/tool/share-dialog'
 
 import { LINKEDIN_BG } from './constants'
 import { FeedLayout } from './feed-layout'
 import { FeedPostCard } from './feed-post-card'
+import { LinkedInHeader } from './linkedin-header'
 
 type Mode = 'desktop' | 'mobile'
 
@@ -26,6 +29,7 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
     )
     const [content, setContent] = React.useState<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [shareOpen, setShareOpen] = React.useState(false)
     const postRef = React.useRef<HTMLDivElement>(null)
     const hasScrolled = React.useRef(false)
 
@@ -51,9 +55,11 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
 
     const backHref = encodedDraft ? `/?draft=${encodedDraft}#tool` : '/#tool'
 
+    const shareUrl = encodedDraft ? `${window.location.origin}/preview?draft=${encodedDraft}` : ''
+
     return (
         <div className='flex min-h-screen flex-col'>
-            {/* Top bar */}
+            {/* Tool header */}
             <div className='sticky top-0 z-10 border-b border-black/8 bg-white'>
                 <div className='mx-auto flex h-14 max-w-5xl items-center justify-between px-4'>
                     <Link
@@ -62,8 +68,6 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                         <ArrowLeft className='size-4' />
                         Back to Editor
                     </Link>
-
-                    <h1 className='text-base font-semibold'>Feed Preview</h1>
 
                     <div className='flex items-center gap-1'>
                         <button
@@ -90,9 +94,31 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                             aria-label='Mobile view'>
                             <Icon name='mobile' className='size-4' />
                         </button>
+
+                        {encodedDraft && (
+                            <>
+                                <div className='bg-border mx-1.5 h-4 w-px' />
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <button
+                                            type='button'
+                                            onClick={() => setShareOpen(true)}
+                                            className='text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-1.5 transition-colors'
+                                            aria-label='Share'>
+                                            <Share2 className='size-4' />
+                                        </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Share Preview</TooltipContent>
+                                </Tooltip>
+                                <ShareDialog url={shareUrl} open={shareOpen} onOpenChange={setShareOpen} />
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* LinkedIn header simulation */}
+            <LinkedInHeader />
 
             {/* Body */}
             <div className='flex flex-1 justify-center' style={{ backgroundColor: LINKEDIN_BG }}>
