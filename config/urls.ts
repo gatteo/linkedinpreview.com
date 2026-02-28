@@ -39,6 +39,11 @@ export const HeaderLinks: HeaderLinksT = [
         href: Routes.Blog,
         text: 'Blog & Guides',
     },
+    {
+        icon: 'projectsPage',
+        href: Routes.Changelog,
+        text: 'Changelog',
+    },
 ]
 
 export const FooterLinkGroups: FooterLinkGroupsT = [
