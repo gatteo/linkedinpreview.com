@@ -68,6 +68,7 @@ export function Header({ createdAt, title, slug, summary, image, author, tags }:
                             src={image}
                             alt={`Featured image for: ${title}`}
                             fill
+                            sizes='(max-width: 768px) 100vw, 768px'
                             className='object-cover'
                             priority
                         />

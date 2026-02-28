@@ -71,8 +71,12 @@ export function HowToUse() {
                                 loop
                                 muted
                                 playsInline
+                                poster='/images/home/screen-rec-poster.jpg'
+                                preload='metadata'
+                                width={1568}
+                                height={944}
                                 className='border-border shadow-elevated relative w-full rounded-xl border'>
-                                <source src='/images/home/screen-rec.mov' />
+                                <source src='/images/home/screen-rec.mp4' type='video/mp4' />
                             </video>
                         </div>
                     </div>

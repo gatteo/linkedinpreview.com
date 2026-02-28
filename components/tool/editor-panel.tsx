@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -14,7 +15,6 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 
-import { AIGenerateSheet } from '../ai-chat/sheet'
 import { Icons } from '../icon'
 import { Button } from '../ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
@@ -23,6 +23,10 @@ import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
 import Toolbar from './toolbar'
 import { processNodes, toPlainText } from './utils'
+
+const AIGenerateSheet = dynamic(() => import('../ai-chat/sheet').then((mod) => ({ default: mod.AIGenerateSheet })), {
+    ssr: false,
+})
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {

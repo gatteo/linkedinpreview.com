@@ -1,15 +1,21 @@
 'use client'
 
 import React from 'react'
+import dynamic from 'next/dynamic'
 import { Eye, PenLine } from 'lucide-react'
 import { Group, Panel } from 'react-resizable-panels'
 
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
 
-import { EditorPanel } from './editor-panel'
+import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
 import { ResizeHandle } from './resize-handle'
+
+const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ default: mod.EditorPanel })), {
+    loading: () => <EditorLoading />,
+    ssr: false,
+})
 
 export type Media = { type: 'image' | 'video'; src: string }
 

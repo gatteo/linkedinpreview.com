@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { IconSearch } from '@tabler/icons-react'
 import posthog from 'posthog-js'
 
@@ -10,9 +11,17 @@ import { Label } from '@/components/ui/label'
 
 import { PostCard } from './post-card'
 
-export function FilteredPosts({ posts }: { posts: BlogPostPreview[] }) {
-    const [searchValue, setSearchValue] = React.useState('')
-    const searchTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+const URL_DEBOUNCE_MS = 300
+const TRACK_DEBOUNCE_MS = 500
+
+export function FilteredPosts({ posts, initialSearch }: { posts: BlogPostPreview[]; initialSearch?: string }) {
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+
+    const [searchValue, setSearchValue] = React.useState(initialSearch ?? searchParams.get('q') ?? '')
+    const urlTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+    const trackTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const filteredPosts = posts.filter((post) => post.title.toLowerCase().includes(searchValue.toLowerCase()))
 
@@ -20,27 +29,38 @@ export function FilteredPosts({ posts }: { posts: BlogPostPreview[] }) {
         const value = e.target.value
         setSearchValue(value)
 
-        // Debounce tracking to avoid excessive events
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current)
-        }
+        // Debounce URL update
+        if (urlTimeoutRef.current) clearTimeout(urlTimeoutRef.current)
+        urlTimeoutRef.current = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString())
+            if (value) {
+                params.set('q', value)
+            } else {
+                params.delete('q')
+            }
+            const qs = params.toString()
+            React.startTransition(() => {
+                router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+            })
+        }, URL_DEBOUNCE_MS)
 
+        // Debounce PostHog tracking
+        if (trackTimeoutRef.current) clearTimeout(trackTimeoutRef.current)
         if (value.length >= 2) {
-            searchTimeoutRef.current = setTimeout(() => {
+            trackTimeoutRef.current = setTimeout(() => {
                 posthog.capture('blog_search_performed', {
                     search_query: value,
                     results_count: posts.filter((post) => post.title.toLowerCase().includes(value.toLowerCase()))
                         .length,
                 })
-            }, 500)
+            }, TRACK_DEBOUNCE_MS)
         }
     }
 
     React.useEffect(() => {
         return () => {
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current)
-            }
+            if (urlTimeoutRef.current) clearTimeout(urlTimeoutRef.current)
+            if (trackTimeoutRef.current) clearTimeout(trackTimeoutRef.current)
         }
     }, [])
 

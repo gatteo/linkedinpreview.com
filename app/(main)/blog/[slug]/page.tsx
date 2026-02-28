@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
             title: post.title,
             siteName: site.title,
             description: post.summary,
-            locale: 'it-IT',
+            locale: 'en-US',
             publishedTime: ISOPublishedTime,
             modifiedTime: ISOModifiedTime,
             authors: site.url,

@@ -48,7 +48,7 @@ export default function Page() {
         'operatingSystem': 'Web Browser',
         'url': `${site.url}/#tool`,
         'description':
-            'Free online tool to write, format, and preview LinkedIn posts with bold, italic, lists and see exactly how they will look on mobile and desktop before publishing. Improve engagement and professionalism.',
+            'Free LinkedIn post preview tool. Free online tool to write, format, and preview LinkedIn posts with bold, italic, underline text and lists. See how Linkedin posts will look on mobile and desktop before publishing. Improve engagement and professionalism.',
         'offers': {
             '@type': 'Offer',
             'price': '0',
