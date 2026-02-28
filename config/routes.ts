@@ -15,6 +15,8 @@ export const Routes = {
     BlogPost: (slug: string) => `/blog/${slug}`,
     Changelog: '/changelog',
     Preview: '/preview',
+    Compare: '/compare',
+    ComparePost: (slug: string) => `/compare/${slug}`,
     Embed: '/embed',
     EmbedSection: '/#embed',
 }
