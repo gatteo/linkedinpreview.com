@@ -31,16 +31,26 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
                 </div>
-                <button
-                    onClick={() =>
-                        window.Tally?.openPopup(feedbackConfig.formId, {
-                            hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
-                        })
-                    }
-                    className='flex items-center gap-1 text-xs text-neutral-400 transition-colors hover:text-neutral-600'>
-                    <CircleHelp className='size-3.5' />
-                    <span>Bug or feature request? Let us know</span>
-                </button>
+                <div className='flex items-center gap-1.5 text-xs text-neutral-400'>
+                    <button
+                        type='button'
+                        onClick={() =>
+                            window.Tally?.openPopup(feedbackConfig.formId, {
+                                hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
+                            })
+                        }
+                        className='flex items-center gap-1 transition-colors hover:text-neutral-600'>
+                        <CircleHelp className='size-3.5' />
+                        <span>Bug or feature request? Let us know</span>
+                    </button>
+                    <span aria-hidden='true'>·</span>
+                    <button
+                        type='button'
+                        onClick={onOpenFeedPreview}
+                        className='transition-colors hover:text-neutral-600'>
+                        See in real preview
+                    </button>
+                </div>
             </div>
         </div>
     )

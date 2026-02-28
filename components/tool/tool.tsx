@@ -221,7 +221,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
         <section
             id='tool'
             className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{ height: 'calc(100vh - var(--header-height))' }}>
+            style={{
+                minHeight: 'min(50vh, 520px)',
+                maxHeight: 'calc(100vh - var(--header-height))',
+                overflow: 'hidden',
+            }}>
             <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
         </section>
     )

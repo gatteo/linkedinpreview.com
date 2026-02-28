@@ -3,10 +3,11 @@
 import React from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Share2 } from 'lucide-react'
+import posthog from 'posthog-js'
 
 import { decodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/icon'
 import { ShareDialog } from '@/components/tool/share-dialog'
 
@@ -34,6 +35,10 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
     const hasScrolled = React.useRef(false)
 
     React.useEffect(() => {
+        posthog.capture('feed_preview_page_viewed')
+    }, [])
+
+    React.useEffect(() => {
         async function decode() {
             if (!encodedDraft) {
                 setIsLoading(false)
@@ -55,19 +60,20 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
 
     const backHref = encodedDraft ? `/?draft=${encodedDraft}#tool` : '/#tool'
 
-    const shareUrl = encodedDraft ? `${window.location.origin}/preview?draft=${encodedDraft}` : ''
+    const shareUrl =
+        typeof window !== 'undefined' && encodedDraft ? `${window.location.origin}/preview?draft=${encodedDraft}` : ''
 
     return (
         <div className='flex min-h-screen flex-col'>
             {/* Tool header */}
             <div className='sticky top-0 z-10 border-b border-black/8 bg-white'>
-                <div className='mx-auto flex h-14 max-w-5xl items-center justify-between px-4'>
-                    <Link
-                        href={backHref}
-                        className='text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors'>
-                        <ArrowLeft className='size-4' />
-                        Back to Editor
-                    </Link>
+                <div className='mx-auto flex h-14 max-w-[1128px] items-center justify-between px-4'>
+                    <Button variant='outline' size='sm' asChild>
+                        <Link href={backHref}>
+                            <ArrowLeft className='size-4' />
+                            Back to Editor
+                        </Link>
+                    </Button>
 
                     <div className='flex items-center gap-1'>
                         <button
@@ -98,18 +104,10 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                         {encodedDraft && (
                             <>
                                 <div className='bg-border mx-1.5 h-4 w-px' />
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <button
-                                            type='button'
-                                            onClick={() => setShareOpen(true)}
-                                            className='text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-1.5 transition-colors'
-                                            aria-label='Share'>
-                                            <Share2 className='size-4' />
-                                        </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Share Preview</TooltipContent>
-                                </Tooltip>
+                                <Button type='button' variant='outline' size='sm' onClick={() => setShareOpen(true)}>
+                                    <Share2 className='size-4' />
+                                    Share this preview
+                                </Button>
                                 <ShareDialog url={shareUrl} open={shareOpen} onOpenChange={setShareOpen} />
                             </>
                         )}

@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { ExternalLink } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import posthog from 'posthog-js'
 
 import { cn } from '@/lib/utils'
@@ -39,21 +39,19 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview 
     return (
         <div className='border-border flex h-14 border-b px-4 sm:px-6'>
             <div className='flex grow items-center justify-between'>
-                <h2 className='text-base font-semibold'>Post Preview</h2>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-3'>
+                    <h2 className='text-base font-semibold'>Post Preview</h2>
                     {onOpenFeedPreview && (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <button
-                                    type='button'
-                                    onClick={handleOpenFeedPreview}
-                                    className='text-muted-foreground hover:text-foreground hover:bg-muted rounded-md p-1.5 transition-colors'>
-                                    <ExternalLink className='size-4' />
-                                </button>
-                            </TooltipTrigger>
-                            <TooltipContent>See in feed</TooltipContent>
-                        </Tooltip>
+                        <button
+                            type='button'
+                            onClick={handleOpenFeedPreview}
+                            className='flex items-center gap-1.5 rounded-full bg-[#0a66c2]/10 px-2.5 py-1 text-xs font-medium text-[#0a66c2] transition-colors hover:bg-[#0a66c2]/20'>
+                            <Sparkles className='size-3' />
+                            See in real feed
+                        </button>
                     )}
+                </div>
+                <div className='flex items-center gap-2'>
                     <div className='flex items-center gap-1'>
                         {sizes.map((size) => (
                             <Tooltip key={size.value}>

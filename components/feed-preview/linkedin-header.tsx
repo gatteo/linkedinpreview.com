@@ -1,10 +1,16 @@
 import type React from 'react'
 import { IconBrandLinkedin } from '@tabler/icons-react'
+import { Bell, Briefcase, Home, MessageSquare, Search, Users } from 'lucide-react'
 
-const NavIcon: React.FC<{ width?: string }> = ({ width = '24px' }) => (
-    <div className='flex flex-col items-center gap-0.5 opacity-40'>
-        <div className='size-5 rounded bg-neutral-400' style={{ filter: 'blur(1px)' }} />
-        <div className='h-2 rounded bg-neutral-400' style={{ width, filter: 'blur(2px)' }} />
+interface NavItemProps {
+    icon: React.ReactNode
+    label: string
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon, label }) => (
+    <div className='flex flex-col items-center gap-0.5 opacity-60'>
+        <div className='size-5'>{icon}</div>
+        <span className='text-[10px] text-neutral-500'>{label}</span>
     </div>
 )
 
@@ -14,23 +20,22 @@ export const LinkedInHeader: React.FC = () => (
             {/* Left: logo + search */}
             <div className='flex items-center gap-2'>
                 <IconBrandLinkedin className='size-8 text-[#0a66c2]' />
-                <div
-                    className='hidden items-center rounded bg-[#edf3f8] px-3 py-1.5 sm:flex'
-                    style={{ filter: 'blur(0.5px)' }}>
-                    <div className='h-3 w-40 rounded bg-neutral-300' style={{ filter: 'blur(2px)' }} />
+                <div className='hidden items-center gap-2 rounded bg-[#edf3f8] px-3 py-1.5 sm:flex'>
+                    <Search className='size-3.5 shrink-0 text-neutral-500' />
+                    <span className='text-xs text-neutral-400'>Search</span>
                 </div>
             </div>
 
-            {/* Right: nav icons */}
+            {/* Right: nav items */}
             <div className='flex items-center gap-5 sm:gap-6'>
-                <NavIcon width='22px' />
-                <NavIcon width='28px' />
-                <NavIcon width='18px' />
-                <NavIcon width='32px' />
-                <NavIcon width='38px' />
-                <div className='flex flex-col items-center gap-0.5 opacity-40'>
-                    <div className='size-5 rounded-full bg-neutral-400' style={{ filter: 'blur(1px)' }} />
-                    <div className='h-2 w-6 rounded bg-neutral-400' style={{ filter: 'blur(2px)' }} />
+                <NavItem icon={<Home className='size-5' />} label='Home' />
+                <NavItem icon={<Users className='size-5' />} label='My Network' />
+                <NavItem icon={<Briefcase className='size-5' />} label='Jobs' />
+                <NavItem icon={<MessageSquare className='size-5' />} label='Messaging' />
+                <NavItem icon={<Bell className='size-5' />} label='Notifications' />
+                <div className='flex flex-col items-center gap-0.5 opacity-60'>
+                    <div className='size-5 rounded-full bg-neutral-300' />
+                    <span className='text-[10px] text-neutral-500'>Me</span>
                 </div>
             </div>
         </div>
