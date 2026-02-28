@@ -5,19 +5,17 @@ import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
 
 import type { Media } from '../tool'
-import { ActionButtons } from './action-buttons'
-import { ContentSection } from './content-section'
+import { PostCard } from './post-card'
 import { PreviewHeader } from './preview-header'
 import { ScreenSizeProvider, useScreenSize } from './preview-size-context'
-import { Reactions } from './reactions'
-import { UserInfo } from './user-info'
 
 interface PreviewPanelProps {
     content: any
     media: Media | null
+    onOpenFeedPreview?: () => void
 }
 
-const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) => {
+const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview }) => {
     const { screenSize } = useScreenSize()
 
     const containerWidth = {
@@ -28,42 +26,10 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
 
     return (
         <div className='flex h-full flex-col'>
-            <PreviewHeader />
+            <PreviewHeader onOpenFeedPreview={onOpenFeedPreview} />
             <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-neutral-50 py-5'>
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
-                    <div className='font-system overflow-hidden rounded-lg border border-black/8 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.06)]'>
-                        <div className='pt-3 pr-4 pb-1 pl-4'>
-                            <UserInfo />
-                            <ContentSection content={content} />
-                        </div>
-                        {media && (
-                            <div className='relative w-full'>
-                                {media.type === 'video' ? (
-                                    <video
-                                        src={media.src}
-                                        controls
-                                        playsInline
-                                        loop
-                                        className='w-full'
-                                        style={{ maxHeight: '600px' }}
-                                    />
-                                ) : (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={media.src}
-                                        alt='Post'
-                                        className='w-full object-cover'
-                                        style={{ maxHeight: '600px', objectFit: 'contain' }}
-                                    />
-                                )}
-                            </div>
-                        )}
-                        <div className='py-2 pr-4 pl-4'>
-                            <Reactions />
-                            <hr className='mt-3 border-neutral-200' />
-                            <ActionButtons />
-                        </div>
-                    </div>
+                    <PostCard content={content} media={media} />
                 </div>
                 <button
                     onClick={() =>
@@ -80,10 +46,10 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media }) =>
     )
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media }) => {
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview }) => {
     return (
         <ScreenSizeProvider>
-            <PreviewPanelContent content={content} media={media} />
+            <PreviewPanelContent content={content} media={media} onOpenFeedPreview={onOpenFeedPreview} />
         </ScreenSizeProvider>
     )
 }

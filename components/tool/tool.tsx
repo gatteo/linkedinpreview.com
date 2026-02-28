@@ -129,6 +129,13 @@ export function Tool({ variant = 'default' }: ToolProps) {
         return `${window.location.origin}${window.location.pathname}?draft=${encoded}${hash}`
     }, [content, variant])
 
+    const handleOpenFeedPreview = React.useCallback(async () => {
+        if (!content) return
+        const encoded = await encodeDraft(content)
+        if (!encoded) return
+        window.open(`/preview?draft=${encoded}`, '_blank')
+    }, [content])
+
     if (isLoading) {
         return null
     }
@@ -182,7 +189,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     </Panel>
                     <ResizeHandle />
                     <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col'>
-                        <PreviewPanel content={content} media={media} />
+                        <PreviewPanel content={content} media={media} onOpenFeedPreview={handleOpenFeedPreview} />
                     </Panel>
                 </Group>
             ) : (
@@ -198,7 +205,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         </div>
                     ) : (
                         <div className='flex w-full flex-1 flex-col'>
-                            <PreviewPanel content={content} media={media} />
+                            <PreviewPanel content={content} media={media} onOpenFeedPreview={handleOpenFeedPreview} />
                         </div>
                     )}
                 </div>
