@@ -40,7 +40,7 @@ export function Footer() {
                     </div>
 
                     {/* Link columns */}
-                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3 md:max-w-[520px]'>
+                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3'>
                         <div>
                             <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Product</h4>
                             <ul className='space-y-2.5'>
@@ -48,7 +48,7 @@ export function Footer() {
                                     <Link
                                         className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.Tool}>
-                                        Preview Tool
+                                        Linkedin Preview Tool
                                     </Link>
                                 </li>
                                 <li>
@@ -69,7 +69,7 @@ export function Footer() {
                                     <Link
                                         className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.EmbedSection}>
-                                        Embed Tool
+                                        Embed this Tool
                                     </Link>
                                 </li>
                             </ul>
@@ -103,21 +103,21 @@ export function Footer() {
                                     <Link
                                         className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('linkedin-algorithm-tips-increase-post-reach')}>
-                                        Algorithm Tips
+                                        Linkedin Algorithm Tips
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('linkedin-profile-optimization-complete-guide')}>
-                                        Profile Optimization
+                                        Linkedin Profile Optimization
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('how-to-write-linkedin-posts-that-get-comments')}>
-                                        Get More Comments
+                                        Hot Get More Comments
                                     </Link>
                                 </li>
                             </ul>

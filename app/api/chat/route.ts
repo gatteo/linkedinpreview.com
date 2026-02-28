@@ -53,6 +53,7 @@ You can use **bold** and *italic* to add emphasis. Follow these rules strictly:
 - Use *italic* (single asterisks) sparingly for quotes, a book/product name, or a single word you want to stress - at most 1-2 italic spans per post
 - Never bold or italicize entire sentences or paragraphs - only short phrases (1-5 words)
 - Never bold hashtags
+- Never use em dashes (—). Use commas, semicolons, colons, or separate sentences instead
 - Never use any other formatting syntax (no markdown headings, no underscores, no HTML tags)
 
 ## Multi-Turn Instructions

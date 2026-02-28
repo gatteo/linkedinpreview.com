@@ -11,8 +11,10 @@ import { ApiRoutes } from '@/config/routes'
 import { formatResetTime, isRateLimitError, parseAIError } from '@/lib/ai-error'
 import { fetchSuggestions } from '@/lib/ai-suggestions'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 
 import { ChatPhase } from './chat-phase'
 import { ConfigPhase } from './config-phase'
@@ -31,6 +33,7 @@ interface AIGenerateSheetProps {
 }
 
 export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateSheetProps) {
+    const isMobile = useIsMobile()
     const [phase, setPhase] = React.useState<'config' | 'chat'>('config')
     const [topic, setTopic] = React.useState('')
     const [tone, setTone] = React.useState<Tone>('professional')
@@ -186,46 +189,97 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
 
     const isLoading = !isAuthReady || status === 'submitted' || status === 'streaming'
 
+    const configHeader = isMobile ? (
+        <>
+            <DrawerTitle className='sr-only'>Generate with AI</DrawerTitle>
+            <DrawerDescription className='sr-only'>
+                Choose a topic and tone, then generate your LinkedIn post.
+            </DrawerDescription>
+        </>
+    ) : (
+        <>
+            <SheetTitle className='sr-only'>Generate with AI</SheetTitle>
+            <SheetDescription className='sr-only'>
+                Choose a topic and tone, then generate your LinkedIn post.
+            </SheetDescription>
+        </>
+    )
+
+    const chatHeaderContent = (Title: React.ElementType, Description: React.ElementType) => (
+        <div className='border-border flex items-center gap-3 border-b px-4 py-3 pr-12'>
+            <div className='min-w-0 flex-1'>
+                <Title className='text-sm font-medium'>AI Assistant</Title>
+                <Description className='text-muted-foreground text-xs'>Refine and perfect your post</Description>
+            </div>
+            <Button variant='outline' size='sm' className='h-7 shrink-0 px-2.5 text-xs' onClick={handleReset}>
+                New post
+            </Button>
+        </div>
+    )
+
+    const chatHeader = isMobile
+        ? chatHeaderContent(DrawerTitle, DrawerDescription)
+        : chatHeaderContent(SheetTitle, SheetDescription)
+
+    const header = phase === 'config' ? configHeader : chatHeader
+
+    const body =
+        phase === 'config' ? (
+            <ConfigPhase
+                topic={topic}
+                onTopicChange={setTopic}
+                tone={tone}
+                onToneChange={setTone}
+                onGenerate={handleGenerate}
+                isLoading={isLoading}
+            />
+        ) : (
+            <ChatPhase
+                messages={messages}
+                status={status}
+                onSendMessage={handleSendRefinement}
+                onStop={stop}
+                onOpenInEditor={handleOpenInEditor}
+                latestPostText={latestPostText}
+                suggestions={suggestions}
+                suggestionsLoading={suggestionsLoading}
+                onSuggestionSelect={handleSuggestionSelect}
+            />
+        )
+
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={handleOpenChange}>
+                <DrawerContent>
+                    {phase === 'config' ? (
+                        <>
+                            {header}
+                            <div className='h-[90vh] overflow-y-auto pb-6'>{body}</div>
+                        </>
+                    ) : (
+                        <>
+                            {header}
+                            <div className='flex h-[70vh] flex-col overflow-hidden'>{body}</div>
+                        </>
+                    )}
+                </DrawerContent>
+            </Drawer>
+        )
+    }
+
     return (
         <Sheet open={open} onOpenChange={handleOpenChange}>
-            <SheetContent className='flex flex-col sm:max-w-2xl'>
-                <SheetHeader>
-                    <div className='flex items-center justify-between pr-8'>
-                        <SheetTitle>Generate with AI</SheetTitle>
-                        {phase === 'chat' && (
-                            <Button variant='ghost' size='sm' onClick={handleReset}>
-                                New post
-                            </Button>
-                        )}
-                    </div>
-                    <SheetDescription>
-                        {phase === 'config'
-                            ? 'Choose a topic and tone, then generate your LinkedIn post.'
-                            : 'Refine your post by chatting with AI.'}
-                    </SheetDescription>
-                </SheetHeader>
-
+            <SheetContent className='flex flex-col gap-0 overflow-hidden data-[side=right]:sm:max-w-2xl'>
                 {phase === 'config' ? (
-                    <ConfigPhase
-                        topic={topic}
-                        onTopicChange={setTopic}
-                        tone={tone}
-                        onToneChange={setTone}
-                        onGenerate={handleGenerate}
-                        isLoading={isLoading}
-                    />
+                    <>
+                        {header}
+                        <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>{body}</div>
+                    </>
                 ) : (
-                    <ChatPhase
-                        messages={messages}
-                        status={status}
-                        onSendMessage={handleSendRefinement}
-                        onStop={stop}
-                        onOpenInEditor={handleOpenInEditor}
-                        latestPostText={latestPostText}
-                        suggestions={suggestions}
-                        suggestionsLoading={suggestionsLoading}
-                        onSuggestionSelect={handleSuggestionSelect}
-                    />
+                    <>
+                        {header}
+                        {body}
+                    </>
                 )}
             </SheetContent>
         </Sheet>

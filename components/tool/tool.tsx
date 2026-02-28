@@ -144,7 +144,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
             </div>
 
             {/* Panels - on mobile only the active tab is visible; on desktop both show side-by-side */}
-            <div className='flex flex-1'>
+            <div className='flex min-h-0 flex-1'>
                 <div className={cn('min-w-0 flex-1 flex-col', mobileTab === 'editor' ? 'flex' : 'hidden md:flex')}>
                     <EditorPanel
                         initialContent={initialContent}
@@ -169,8 +169,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
     }
 
     return (
-        <section id='tool' className='border-border scroll-mt-[var(--header-height)] border-t'>
-            <div className='max-w-content mx-auto p-2 md:p-3'>{inner}</div>
+        <section
+            id='tool'
+            className='border-border scroll-mt-[var(--header-height)] border-t'
+            style={{ height: 'calc(100vh - var(--header-height))' }}>
+            <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
         </section>
     )
 }

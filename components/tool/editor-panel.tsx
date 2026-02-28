@@ -234,17 +234,17 @@ export function EditorPanel({
     const charCount = text.length
 
     return (
-        <div className='flex size-full flex-col'>
+        <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='border-border flex h-14 border-b'>
+            <div className='border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>
             </div>
 
             {/** Editor */}
-            <div className='grow overflow-y-auto px-4 py-5 sm:px-6'>
+            <div className='min-h-0 grow overflow-y-auto px-4 py-5 sm:px-6'>
                 <div className='not-prose relative text-sm font-normal'>
                     <EditorContent editor={editor} />
                     {!text.trim() && (
@@ -262,14 +262,14 @@ export function EditorPanel({
             </div>
 
             {/** Character count */}
-            <div className='px-4 pb-1 sm:px-6'>
+            <div className='shrink-0 px-4 pb-1 sm:px-6'>
                 <span className='text-muted-foreground text-xs tabular-nums'>
                     {charCount} {charCount === 1 ? 'char' : 'chars'}
                 </span>
             </div>
 
             {/** Actions */}
-            <div className='border-border border-t px-4 py-3 sm:px-6'>
+            <div className='border-border shrink-0 border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
                         {/* <div className='group relative'>

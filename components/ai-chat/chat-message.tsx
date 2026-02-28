@@ -15,9 +15,10 @@ import {
 interface ChatMessageProps {
     message: UIMessage
     isStreaming: boolean
+    onOpenInEditor?: () => void
 }
 
-export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
+export function ChatMessage({ message, isStreaming, onOpenInEditor }: ChatMessageProps) {
     const text = extractTextFromMessage(message)
 
     if (message.role === 'user') {
@@ -67,7 +68,7 @@ export function ChatMessage({ message, isStreaming }: ChatMessageProps) {
 
     return (
         <div className='w-full'>
-            <ChatPreviewCard text={text} isStreaming={isStreaming} />
+            <ChatPreviewCard text={text} isStreaming={isStreaming} onOpenInEditor={onOpenInEditor} />
         </div>
     )
 }
