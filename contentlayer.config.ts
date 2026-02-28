@@ -65,9 +65,30 @@ const Pages = defineDocumentType(() => ({
     },
 }))
 
+const Comparison = defineDocumentType(() => ({
+    name: 'Comparison',
+    filePathPattern: 'compare/**/*.mdx',
+    contentType: 'mdx',
+    fields: {
+        title: { type: 'string', required: true },
+        competitor: { type: 'string', required: true },
+        competitorUrl: { type: 'string', required: true },
+        summary: { type: 'string', required: true },
+        image: { type: 'string', required: false },
+        createdAt: { type: 'string', required: true },
+        modifiedAt: { type: 'string', required: true },
+    },
+    computedFields: {
+        slug: {
+            type: 'string',
+            resolve: (doc) => doc._raw.sourceFileName.replace(/\.mdx$/, ''),
+        },
+    },
+}))
+
 export default makeSource({
     contentDirPath: 'contents',
-    documentTypes: [BlogPost, Pages],
+    documentTypes: [BlogPost, Pages, Comparison],
     mdx: {
         remarkPlugins: remarkPlugins,
         rehypePlugins: rehypePlugins,

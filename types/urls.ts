@@ -8,6 +8,7 @@ export type HeaderLinks = {
 
 export type FooterLinkGroups = {
     id: number
+    label?: string
     links: {
         href: string
         title: string
