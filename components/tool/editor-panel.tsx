@@ -160,8 +160,9 @@ export function EditorPanel({
             if (!content) return
             event.preventDefault()
 
-            // Use synchronous clipboardData API - navigator.clipboard.writeText()
-            // requires transient user activation which Firefox denies in copy events
+            // Clear ProseMirror's text/html so paste targets (e.g. LinkedIn's
+            // contenteditable) fall back to text/plain with our Unicode-styled text.
+            event.clipboardData?.clearData()
             event.clipboardData?.setData('text/plain', content.text)
             onCopied(content.json, content.text)
         }
