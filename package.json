@@ -65,6 +65,7 @@
         "react": "19.2.4",
         "react-dom": "19.2.4",
         "react-medium-image-zoom": "^5.4.0",
+        "react-resizable-panels": "^4.6.5",
         "react-share": "^5.1.2",
         "remark": "^15.0.1",
         "remark-gfm": "^3.0.1",
