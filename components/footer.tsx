@@ -2,12 +2,15 @@ import Link from 'next/link'
 
 import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
+import { getAllComparisons } from '@/lib/compare'
 
 import { FeedbackLink } from './feedback/feedback-link'
 import { Icons } from './icon'
 import { Logo } from './logo'
 
 export function Footer() {
+    const comparisons = getAllComparisons()
+
     return (
         <footer className='border-border border-t bg-white'>
             <div className='max-w-content mx-auto px-6 py-16'>
@@ -40,7 +43,7 @@ export function Footer() {
                     </div>
 
                     {/* Link columns */}
-                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3'>
+                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4'>
                         <div>
                             <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Product</h4>
                             <ul className='space-y-2.5'>
@@ -120,6 +123,20 @@ export function Footer() {
                                         Hot Get More Comments
                                     </Link>
                                 </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className='mb-4 text-sm font-semibold text-neutral-900'>Compare</h4>
+                            <ul className='space-y-2.5'>
+                                {comparisons.map((comparison) => (
+                                    <li key={comparison.slug}>
+                                        <Link
+                                            className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                            href={comparison.url}>
+                                            vs {comparison.competitor}
+                                        </Link>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
