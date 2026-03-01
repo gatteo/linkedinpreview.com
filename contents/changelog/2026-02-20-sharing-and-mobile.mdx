@@ -1,0 +1,18 @@
+---
+title: 'Sharing & Mobile'
+date: '2026-02-20'
+summary: 'Embeddable tool route, draft persistence, share via URL, and mobile editor tabs'
+---
+
+Four features shipped in a single day focused on portability - making the tool easier to use on mobile, shareable, embeddable, and persistent across sessions.
+
+## What's New
+
+- **Embed Route** - Added a `/embed` path with a minimal layout that strips the header and footer, intended for embedding the tool in third-party sites and blog posts. A new homepage section explains how to use it
+- **Mobile Editor Tabs** - On small screens, the editor and preview panels now switch via tabs instead of stacking. Toolbar overflow is also handled correctly on mobile
+- **Draft Persistence** - The editor now saves your draft to `localStorage` automatically. Closing the tab and returning later restores your content exactly as you left it
+- **Share via URL** - Added a share button that encodes the current draft into a compressed URL. Anyone with the link can open the draft in their browser - no account required, nothing stored server-side
+
+## Improvements
+
+- **Embed Guide Blog Post** - Published a step-by-step guide on how to embed the LinkedIn Preview tool in a website or blog post

@@ -1,0 +1,25 @@
+---
+title: 'Platform Modernization'
+date: '2026-02-19'
+summary: 'Next.js 16 migration, Tally.so feedback system, PostHog analytics, and character count'
+---
+
+A significant infrastructure update covering the platform upgrade to Next.js 16, a new user feedback system, analytics, and several editor improvements.
+
+## What's New
+
+- **Tally.so Feedback System** - Integrated Tally.so for collecting user feedback across the tool - a feedback button appears after copying a post, and an article helpfulness widget appears on blog posts
+- **Character Count** - The editor panel now displays a live character count, helping you stay within LinkedIn's 3,000 character post limit
+- **PostHog Analytics** - Added PostHog for product analytics, reverse-proxied through `/ingest` to avoid ad blockers
+
+## Improvements
+
+- **Next.js 16 Migration** - Upgraded from Next.js 15 to 16, adopting the new `proxy.ts` convention and updated App Router patterns
+- **ESLint 9 Flat Config** - Migrated to the ESLint 9 flat config format (`eslint.config.mjs`) for cleaner linting setup
+- **Pre-commit Hook** - Added husky + lint-staged to enforce formatting and linting before every commit
+
+## Fixes
+
+- **React 19 Build Crash** - Resolved a contentlayer + React 19 incompatibility where `jsxDEV` called `getOwner()` in the production dispatcher, crashing the build. Fixed by running `contentlayer build` separately with `NODE_ENV=production`
+- **Node.js Version Pin** - Pinned Node.js to `<25` to prevent Vercel from auto-upgrading to a version that breaks the build
+- **PostHog Initialization** - Fixed PostHog not initializing correctly via `instrumentation-client.ts`

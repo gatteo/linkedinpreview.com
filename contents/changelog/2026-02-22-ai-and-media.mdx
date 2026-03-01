@@ -1,0 +1,22 @@
+---
+title: 'AI & Media'
+date: '2026-02-22'
+summary: 'AI post generation with streaming, video upload, hashtag highlighting, and background post analysis'
+---
+
+The largest feature release to date. AI-assisted writing, video support, improved preview fidelity, and automated post analysis all landed in a single sprint.
+
+## What's New
+
+- **AI Post Generation** - Added an AI side sheet accessible from the editor toolbar. Describe a topic or paste talking points and get a full LinkedIn post draft with streaming output. Includes topic suggestions to help with blank-page situations
+- **Background Post Analysis** - When you copy a post, the tool silently runs an analysis in the background covering topics, sentiment, category, tone, hook quality, and CTA classification. Results are stored for future analytics features
+- **Video Upload** - The editor now accepts video uploads in addition to images. The preview renders the video with LinkedIn's standard player UI, including the play button overlay
+- **Hashtag Highlighting** - Hashtags in the preview panel now render in LinkedIn blue, matching how LinkedIn itself displays them in the feed
+- **A/B Test on Hero CTA** - Integrated a PostHog feature flag to run an A/B test on the hero CTA button copy
+
+## Improvements
+
+- **Rate Limiting** - AI generation requests are rate-limited per user to prevent abuse
+- **AI Blog Posts** - Published blog content covering how to use AI to write LinkedIn posts
+- **Editor Placeholder** - Added a placeholder prompt to the empty editor state to reduce blank-page friction
+- **Collapsible Table of Contents** - Blog post table of contents is now collapsible on smaller screens
