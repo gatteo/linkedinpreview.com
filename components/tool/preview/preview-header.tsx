@@ -41,7 +41,7 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview,
         <div className='border-border flex h-14 border-b px-4 sm:px-6'>
             <div className='flex grow items-center justify-between'>
                 <div className='flex items-center gap-3'>
-                    <h2 className='text-base font-semibold'>Post Preview</h2>
+                    <h2 className='hidden text-base font-semibold sm:block'>Post Preview</h2>
                     {onOpenFeedPreview && hasContent && (
                         <button
                             type='button'
