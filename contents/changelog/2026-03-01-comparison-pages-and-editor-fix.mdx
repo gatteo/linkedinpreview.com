@@ -1,0 +1,25 @@
+---
+title: 'Comparison Pages & Editor Stability'
+date: '2026-03-01'
+summary: 'Enhanced comparison pages with table of contents, share buttons, and inline CTAs, plus a critical editor overflow fix'
+---
+
+Comparison pages received a major upgrade with navigation, sharing, and engagement improvements. We also fixed a bug where long posts could break the editor layout.
+
+## What's New
+
+- **Table of Contents on Comparisons** - Each comparison article now has a sticky table of contents on the right side, matching the blog layout. Scroll position is highlighted as you read
+- **Share Buttons** - Comparison pages now include social share buttons (LinkedIn, X, Email, Telegram, WhatsApp) alongside the table of contents
+- **Reading Progress Indicator** - A progress bar at the top of the page shows how far you have scrolled through a comparison article
+- **Inline CTAs** - Added calls-to-action after the feature comparison table in every article, not just at the bottom
+
+## Improvements
+
+- **Table Styling** - Markdown tables now have borders around all cells with rounded corners, replacing the previous minimal separator-only style
+- **Product Naming** - Consistently use "LinkedInPreview.com" as the product name across all comparison pages
+- **Comparison Index Cards** - Removed the "vs" badge and replaced with full descriptive titles
+- **llms.txt** - Added the comparison hub and all individual comparison pages for better LLM discoverability
+
+## Fixes
+
+- **Editor Overflow** - Fixed a bug where entering a very long post would cause the editor to grow beyond its container, hiding the toolbar and action bar. The editor now has a fixed height of 70vh and scrolls internally
