@@ -71,7 +71,7 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                     <Button variant='outline' size='sm' asChild>
                         <Link href={backHref}>
                             <ArrowLeft className='size-4' />
-                            Back to Editor
+                            Back to post editor
                         </Link>
                     </Button>
 

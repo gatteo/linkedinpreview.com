@@ -1,6 +1,7 @@
 import type React from 'react'
-import { IconBrandLinkedin } from '@tabler/icons-react'
 import { Bell, Briefcase, Home, MessageSquare, Search, Users } from 'lucide-react'
+
+import { Icons } from '@/components/icon'
 
 interface NavItemProps {
     icon: React.ReactNode
@@ -19,8 +20,8 @@ export const LinkedInHeader: React.FC = () => (
         <div className='mx-auto flex h-[52px] max-w-[1128px] items-center justify-between px-4'>
             {/* Left: logo + search */}
             <div className='flex items-center gap-2'>
-                <IconBrandLinkedin className='size-8 text-[#0a66c2]' />
-                <div className='hidden items-center gap-2 rounded bg-[#edf3f8] px-3 py-1.5 sm:flex'>
+                <Icons.linkedinLogo className='size-8 text-[#0a66c2]' />
+                <div className='hidden min-w-[300px] items-center gap-2 rounded bg-[#edf3f8] px-3 py-1.5 sm:flex'>
                     <Search className='size-3.5 shrink-0 text-neutral-500' />
                     <span className='text-xs text-neutral-400'>Search</span>
                 </div>
