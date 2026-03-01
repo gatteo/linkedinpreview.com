@@ -32,6 +32,7 @@ This tool helps LinkedIn users improve their content creation workflow by provid
 - [How It Works](${absoluteUrl(Routes.HowItWorks)}): Step-by-step guide on using the tool
 - [FAQs](${absoluteUrl(Routes.Faqs)}): Frequently asked questions about LinkedIn post formatting
 - [Blog](${absoluteUrl(Routes.Blog)}): Tips and guides for writing better LinkedIn posts
+- [Changelog](${absoluteUrl(Routes.Changelog)}): Product updates, new features, and improvements
 
 ## Blog Posts
 
