@@ -40,7 +40,6 @@ export const LeftSidebar: React.FC = () => {
                     { label: '72px', value: '40px' },
                     { label: '80px', value: '40px' },
                 ].map((item, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <div key={i} className='flex items-center justify-between'>
                         <BlurredLine width={item.label} />
                         <BlurredLine width={item.value} height='h-3.5' />
