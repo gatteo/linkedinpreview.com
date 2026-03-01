@@ -67,11 +67,11 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
         <div className='flex min-h-screen flex-col'>
             {/* Tool header */}
             <div className='sticky top-0 z-10 border-b border-black/8 bg-white'>
-                <div className='mx-auto flex h-14 max-w-[1128px] items-center justify-between px-4'>
+                <div className='mx-auto flex h-14 max-w-[1128px] items-center justify-between gap-2 px-4'>
                     <Button variant='outline' size='sm' asChild>
-                        <Link href={backHref}>
+                        <Link href={backHref} aria-label='Back to post editor'>
                             <ArrowLeft className='size-4' />
-                            Back to post editor
+                            <span className='hidden sm:inline'>Back to post editor</span>
                         </Link>
                     </Button>
 
@@ -104,9 +104,14 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                         {encodedDraft && (
                             <>
                                 <div className='bg-border mx-1.5 h-4 w-px' />
-                                <Button type='button' variant='outline' size='sm' onClick={() => setShareOpen(true)}>
+                                <Button
+                                    type='button'
+                                    variant='outline'
+                                    size='sm'
+                                    aria-label='Share this preview'
+                                    onClick={() => setShareOpen(true)}>
                                     <Share2 className='size-4' />
-                                    Share this preview
+                                    <span className='hidden sm:inline'>Share this preview</span>
                                 </Button>
                                 <ShareDialog url={shareUrl} open={shareOpen} onOpenChange={setShareOpen} />
                             </>
@@ -139,6 +144,15 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                     </FeedLayout>
                 )}
             </div>
+
+            {/* Footer */}
+            <footer className='border-border border-t bg-white py-4'>
+                <div className='mx-auto max-w-[1128px] px-4 text-center'>
+                    <Link href='/' className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'>
+                        &copy; {new Date().getFullYear()} LinkedIn Post Preview
+                    </Link>
+                </div>
+            </footer>
         </div>
     )
 }

@@ -11,7 +11,7 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon, label }) => (
     <div className='flex flex-col items-center gap-0.5 opacity-60'>
         <div className='size-5'>{icon}</div>
-        <span className='text-[10px] text-neutral-500'>{label}</span>
+        <span className='hidden text-[10px] text-neutral-500 sm:block'>{label}</span>
     </div>
 )
 
@@ -21,6 +21,7 @@ export const LinkedInHeader: React.FC = () => (
             {/* Left: logo + search */}
             <div className='flex items-center gap-2'>
                 <Icons.linkedinLogo className='size-8 text-[#0a66c2]' />
+                <Search className='size-5 text-neutral-500 sm:hidden' />
                 <div className='hidden min-w-[300px] items-center gap-2 rounded bg-[#edf3f8] px-3 py-1.5 sm:flex'>
                     <Search className='size-3.5 shrink-0 text-neutral-500' />
                     <span className='text-xs text-neutral-400'>Search</span>
@@ -28,7 +29,7 @@ export const LinkedInHeader: React.FC = () => (
             </div>
 
             {/* Right: nav items */}
-            <div className='flex items-center gap-5 sm:gap-6'>
+            <div className='flex items-center gap-3 sm:gap-5 md:gap-6'>
                 <NavItem icon={<Home className='size-5' />} label='Home' />
                 <NavItem icon={<Users className='size-5' />} label='My Network' />
                 <NavItem icon={<Briefcase className='size-5' />} label='Jobs' />
@@ -36,7 +37,7 @@ export const LinkedInHeader: React.FC = () => (
                 <NavItem icon={<Bell className='size-5' />} label='Notifications' />
                 <div className='flex flex-col items-center gap-0.5 opacity-60'>
                     <div className='size-5 rounded-full bg-neutral-300' />
-                    <span className='text-[10px] text-neutral-500'>Me</span>
+                    <span className='hidden text-[10px] text-neutral-500 sm:block'>Me</span>
                 </div>
             </div>
         </div>
