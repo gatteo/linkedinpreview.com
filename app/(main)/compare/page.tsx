@@ -75,11 +75,8 @@ export default function Page() {
                                 href={comparison.url}
                                 className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white p-6 transition-all duration-200 hover:-translate-y-0.5'>
                                 <div className='mb-3 flex items-center gap-2'>
-                                    <span className='bg-primary/10 text-primary rounded-md px-2.5 py-1 text-xs font-semibold'>
-                                        vs
-                                    </span>
                                     <h2 className='group-hover:text-primary text-lg font-semibold text-neutral-900 transition-colors'>
-                                        {comparison.competitor}
+                                        LinkedIn Preview vs {comparison.competitor}
                                     </h2>
                                 </div>
                                 <p className='mb-5 flex-1 text-sm leading-relaxed text-neutral-500'>

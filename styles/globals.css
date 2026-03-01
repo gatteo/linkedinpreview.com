@@ -353,6 +353,31 @@ pre.shiki .highlighted {
     pointer-events: none;
 }
 
+/* ─── Prose table borders ─── */
+.prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.prose :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.prose :where(thead th):not(:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    border-right: 1px solid var(--color-border);
+}
+
+.prose :where(tbody td):not(:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    border-right: 1px solid var(--color-border);
+}
+
+.prose :where(tbody tr):not(:last-child):not(:where([class~='not-prose'], [class~='not-prose'] *)) td {
+    border-bottom: 1px solid var(--color-border);
+}
+
 /* ─── Scrollbar hidden ─── */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
