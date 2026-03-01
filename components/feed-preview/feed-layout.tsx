@@ -20,7 +20,7 @@ const StartAPostBar: React.FC = () => (
             <div
                 className='flex flex-1 items-center rounded-full border border-neutral-300 px-4 py-2.5 opacity-50'
                 style={{ filter: 'blur(0.5px)' }}>
-                <div className='h-3 w-32 rounded bg-neutral-300' style={{ filter: 'blur(2px)' }} />
+                <div className='h-3 w-32 rounded bg-neutral-300' style={{ filter: 'blur(0.5px)' }} />
             </div>
         </div>
 
@@ -29,10 +29,10 @@ const StartAPostBar: React.FC = () => (
             {[70, 65, 80, 75].map((w, i) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <div key={i} className='flex items-center gap-1.5 rounded px-2 py-1 opacity-40'>
-                    <div className='size-4 rounded bg-neutral-400' style={{ filter: 'blur(1px)' }} />
+                    <div className='size-4 rounded bg-neutral-400' style={{ filter: 'blur(0.5px)' }} />
                     <div
                         className='h-3 rounded bg-neutral-400'
-                        style={{ width: `${w * 0.6}px`, filter: 'blur(2px)' }}
+                        style={{ width: `${w * 0.6}px`, filter: 'blur(0.5px)' }}
                     />
                 </div>
             ))}

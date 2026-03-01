@@ -1,7 +1,7 @@
 import type React from 'react'
 
 const BlurredLine: React.FC<{ width: string; height?: string }> = ({ width, height = 'h-3' }) => (
-    <div className={`${height} rounded bg-neutral-300 opacity-60`} style={{ width, filter: 'blur(2px)' }} />
+    <div className={`${height} rounded bg-neutral-300 opacity-60`} style={{ width, filter: 'blur(0.5px)' }} />
 )
 
 const followItems = [
@@ -40,7 +40,7 @@ export const RightSidebar: React.FC = () => {
                         <div
                             className='flex items-center gap-1 rounded-full border border-neutral-400 px-3 py-1 opacity-50'
                             style={{ filter: 'blur(0.5px)' }}>
-                            <div className='h-3 w-8 rounded bg-neutral-400' style={{ filter: 'blur(1px)' }} />
+                            <div className='h-3 w-8 rounded bg-neutral-400' style={{ filter: 'blur(0.5px)' }} />
                         </div>
                     </div>
                     {i < followItems.length - 1 && <hr className='mx-3 border-neutral-100' />}

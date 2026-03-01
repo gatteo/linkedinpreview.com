@@ -1,7 +1,7 @@
 import type React from 'react'
 
 const BlurredLine: React.FC<{ width: string; height?: string }> = ({ width, height = 'h-3' }) => (
-    <div className={`${height} rounded bg-neutral-300 opacity-60`} style={{ width, filter: 'blur(2px)' }} />
+    <div className={`${height} rounded bg-neutral-300 opacity-60`} style={{ width, filter: 'blur(0.5px)' }} />
 )
 
 export const LeftSidebar: React.FC = () => {

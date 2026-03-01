@@ -28,11 +28,11 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
     return (
         <div className='flex h-full flex-col'>
             <PreviewHeader onOpenFeedPreview={onOpenFeedPreview} hasContent={hasContent} />
-            <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-neutral-50 py-5'>
+            <div className='flex flex-1 flex-col items-center gap-5 overflow-auto bg-neutral-50 py-5'>
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
                 </div>
-                <div className='flex w-full items-center justify-center gap-1.5 border px-4 text-xs text-neutral-400'>
+                <div className='flex w-full gap-1.5 px-4 text-xs whitespace-nowrap text-neutral-400 sm:justify-center'>
                     <button
                         type='button'
                         onClick={() =>

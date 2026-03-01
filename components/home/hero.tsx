@@ -23,7 +23,7 @@ export function Hero() {
                     <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
                         <Link
                             href={ExternalLinks.GitHub}
-                            className='group border-border shadow-subtle mb-6 flex items-center gap-2 rounded-full border bg-white py-1 pr-1 pl-4 text-sm text-neutral-600 transition-colors hover:border-neutral-300'>
+                            className='group border-border shadow-subtle mb-6 flex items-center gap-2 rounded-full border bg-white py-1 pr-1 pl-4 text-xs text-neutral-600 transition-colors hover:border-neutral-300 sm:text-sm'>
                             <span>Forever free and open source</span>
                             <span className='border-border flex items-center gap-1 rounded-full border bg-neutral-50 px-3 py-0.5 text-sm font-medium text-neutral-800 transition-colors group-hover:bg-neutral-100'>
                                 <Icons.github className='size-3.5' />
@@ -58,7 +58,7 @@ export function Hero() {
 
                 {/* Social proof - avatar group + stars + review count */}
                 <AnimateIn delay={0.3}>
-                    <div className='mb-8 flex items-center gap-3 rounded-full bg-neutral-50 px-4 py-2'>
+                    <div className='mb-8 flex items-center gap-1 rounded-full bg-neutral-50 px-4 py-2 sm:gap-3'>
                         {/* Avatar group */}
                         <div className='flex items-center'>
                             {AVATARS.map((avatar) => (
@@ -75,7 +75,7 @@ export function Hero() {
                         {/* Stars */}
                         <StarRating />
 
-                        <span className='text-sm font-medium text-neutral-500'>
+                        <span className='text-xs font-medium text-neutral-500 sm:text-sm'>
                             {SOCIAL_PROOF.rating} from {SOCIAL_PROOF.count} reviews
                         </span>
                     </div>

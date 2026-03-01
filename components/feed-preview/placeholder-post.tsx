@@ -7,7 +7,7 @@ interface PlaceholderPostProps {
 }
 
 const BlurredLine: React.FC<{ width: string; height?: string }> = ({ width, height = 'h-3' }) => (
-    <div className={`${height} rounded bg-neutral-200 opacity-60`} style={{ width, filter: 'blur(2px)' }} />
+    <div className={`${height} rounded bg-neutral-200 opacity-60`} style={{ width, filter: 'blur(0.5px)' }} />
 )
 
 export const PlaceholderPost: React.FC<PlaceholderPostProps> = ({
@@ -80,8 +80,8 @@ export const PlaceholderPost: React.FC<PlaceholderPostProps> = ({
                 <div className='mt-1 flex items-center justify-around opacity-40'>
                     {['Like', 'Comment', 'Repost', 'Send'].map((action) => (
                         <div key={action} className='flex items-center gap-1.5 rounded-lg px-2 py-2'>
-                            <div className='size-4 rounded bg-neutral-300' style={{ filter: 'blur(1px)' }} />
-                            <div className='h-3 w-10 rounded bg-neutral-300' style={{ filter: 'blur(2px)' }} />
+                            <div className='size-4 rounded bg-neutral-300' style={{ filter: 'blur(0.5px)' }} />
+                            <div className='h-3 w-10 rounded bg-neutral-300' style={{ filter: 'blur(0.5px)' }} />
                         </div>
                     ))}
                 </div>
