@@ -154,7 +154,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
     const inner = (
         <div
             className={cn(
-                'border-border flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border bg-white',
+                'border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-white',
                 variant === 'embed' && 'h-full rounded-none border-0',
             )}>
             {/* Mobile tab bar */}
@@ -242,11 +242,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
         <section
             id='tool'
             className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{
-                minHeight: 'min(50vh, 520px)',
-                maxHeight: 'calc(100vh - var(--header-height))',
-                overflow: 'hidden',
-            }}>
+            style={{ height: 'max(60vh, 520px)' }}>
             <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
         </section>
     )
