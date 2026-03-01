@@ -362,6 +362,11 @@ pre.shiki .highlighted {
     overflow: hidden;
 }
 
+.prose :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)),
+.prose :where(tbody td):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+    padding: 0.625rem 0.875rem;
+}
+
 .prose :where(thead th):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
     border-bottom: 1px solid var(--color-border);
 }
