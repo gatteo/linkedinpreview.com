@@ -32,7 +32,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
                 </div>
-                <div className='flex items-center gap-1.5 text-xs text-neutral-400'>
+                <div className='flex shrink-0 items-center gap-1.5 text-xs whitespace-nowrap text-neutral-400'>
                     <button
                         type='button'
                         onClick={() =>
