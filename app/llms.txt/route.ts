@@ -4,9 +4,11 @@ import { absoluteUrl } from '@/utils/urls'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { getAllBlogPosts } from '@/lib/blog'
+import { getAllComparisons } from '@/lib/compare'
 
 export const GET = async () => {
     const allBlogPosts = await getAllBlogPosts()
+    const allComparisons = getAllComparisons()
 
     const content = `# ${site.title}
 
@@ -34,12 +36,21 @@ This tool helps LinkedIn users improve their content creation workflow by provid
 - [Blog](${absoluteUrl(Routes.Blog)}): Tips and guides for writing better LinkedIn posts
 - [Changelog](${absoluteUrl(Routes.Changelog)}): Product updates, new features, and improvements
 - [Feed Preview](${absoluteUrl(Routes.Preview)}): See your LinkedIn post in a realistic feed layout on desktop and mobile
+- [Compare](${absoluteUrl(Routes.Compare)}): Compare LinkedInPreview.com against popular alternatives
 
 ## Blog Posts
 
 ${allBlogPosts
     .map((post) => {
         return `- [${post.title}](${absoluteUrl(post.url)}): ${post.summary}`
+    })
+    .join('\n')}
+
+## Comparisons
+
+${allComparisons
+    .map((comparison) => {
+        return `- [${comparison.title}](${absoluteUrl(comparison.url)}): ${comparison.summary}`
     })
     .join('\n')}
 
