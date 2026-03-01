@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import { TableBody, TableCell, TableHead, TableHeader, TableRow, Table as UITable } from '@/components/ui/table'
 
 type TableProps = {
