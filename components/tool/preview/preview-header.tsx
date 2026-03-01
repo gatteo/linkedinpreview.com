@@ -48,7 +48,7 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview,
                             onClick={handleOpenFeedPreview}
                             className='flex items-center gap-1.5 rounded-full bg-[#0a66c2]/10 px-2.5 py-1 text-xs font-medium text-[#0a66c2] transition-colors hover:bg-[#0a66c2]/20'>
                             <ExternalLink className='size-3' />
-                            See in real feed
+                            Open realistic feed preview
                         </button>
                     )}
                 </div>
