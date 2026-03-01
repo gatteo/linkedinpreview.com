@@ -52,7 +52,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
                                 onClick={onOpenFeedPreview}
                                 className='flex items-center gap-1 transition-colors hover:text-neutral-600'>
                                 <Eye className='size-3.5' />
-                                <span>See in real preview</span>
+                                <span>See in a realistic LinkedIn feed</span>
                             </button>
                         </>
                     )}
