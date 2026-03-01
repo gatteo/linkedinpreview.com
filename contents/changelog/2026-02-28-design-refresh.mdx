@@ -1,0 +1,21 @@
+---
+title: 'Design Refresh & Performance'
+date: '2026-02-28'
+summary: 'Full visual redesign, resizable editor panels, performance optimizations, and a clipboard fix'
+---
+
+A comprehensive design refresh applied across the entire site, alongside resizable panels, significant performance work, and a clipboard fix that was causing formatted text to lose its styling on paste.
+
+## What's New
+
+- **Design Refresh** - Applied a new visual aesthetic across the tool, blog, embed route, and all remaining components. Design tokens - colors, spacing, typography, and radius values - are now unified. LinkedIn blue is used as the primary accent throughout. The homepage was elevated to a polished SaaS feel
+- **Resizable Editor/Preview Panels** - On desktop, the editor and preview panels are now resizable. Drag the divider to allocate more space to whichever side you need
+
+## Improvements
+
+- **Performance Optimizations** - Addressed P0 through P2 performance issues including bundle size, image optimization, Core Web Vitals, and server-side rendering bottlenecks
+- **SEO Comparison Pages** - Added dedicated comparison landing pages for users searching for alternatives to competing tools
+
+## Fixes
+
+- **Clipboard HTML Fix** - Fixed a bug where copying a post would write rich HTML to the clipboard alongside plain text. When pasting into LinkedIn, the HTML took precedence and formatting was applied incorrectly. The fix clears the HTML entry from the clipboard so `Cmd+C` followed by `Cmd+V` in LinkedIn preserves formatting as expected
