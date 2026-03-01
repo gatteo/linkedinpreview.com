@@ -7,7 +7,8 @@ import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { getAllComparisons, getComparison } from '@/lib/compare'
 import { Breadcrumbs } from '@/components/breadcrumbs'
-import Mdx from '@/components/mdx/mdx'
+import { Content } from '@/components/mdx-content'
+import { ScrollIndicator } from '@/components/scroll-indicator'
 
 type Props = {
     params: Promise<{
@@ -116,10 +117,13 @@ export default async function Page({ params }: Props) {
                 <p className='max-w-2xl text-lg leading-7 text-neutral-500'>{comparison.summary}</p>
             </header>
 
-            {/* MDX content */}
-            <article className='w-full lg:max-w-[670px]'>
-                <Mdx code={comparison.body.code} />
-            </article>
+            <Content
+                title={comparison.title}
+                body={{ code: comparison.body.code, raw: comparison.body.raw }}
+                url={absoluteUrl(Routes.ComparePost(slug))}
+            />
+
+            <ScrollIndicator />
         </main>
     )
 }
