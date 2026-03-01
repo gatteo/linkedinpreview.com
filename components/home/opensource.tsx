@@ -111,7 +111,7 @@ export function OpenSource() {
                     <div className='absolute right-0 bottom-0 size-64 rounded-full bg-blue-400/10 blur-[120px]' />
 
                     {/* Content constrained to match other sections */}
-                    <div className='max-w-content relative mx-auto grid items-center md:grid-cols-2'>
+                    <div className='max-w-content relative mx-auto grid items-center sm:grid-cols-2'>
                         <div
                             className='pointer-events-none absolute top-0 bottom-0 left-1/2 hidden md:block'
                             style={{
@@ -161,8 +161,8 @@ export function OpenSource() {
                         </div>
 
                         {/* Right: Blueprint GitHub illustration */}
-                        <div className='relative z-10 flex items-center justify-center px-6 py-12 text-white md:py-24'>
-                            <div className='w-full max-w-[320px]'>
+                        <div className='relative z-10 flex items-center justify-center px-6 pb-6 text-white md:py-24'>
+                            <div className='w-full max-w-[200px] sm:max-w-[320px]'>
                                 <BlueprintGithub />
                             </div>
                         </div>

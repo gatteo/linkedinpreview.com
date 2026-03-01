@@ -10,7 +10,7 @@ const sitemap = async () => {
     const cmsPages = allPages.map((page) => `/${page.slug}`)
 
     // Static pages (without images)
-    const staticPages = [Routes.Home, Routes.Blog, Routes.Changelog, ...cmsPages].map((route) => ({
+    const staticPages = [Routes.Home, Routes.Blog, Routes.Changelog, Routes.Preview, ...cmsPages].map((route) => ({
         url: absoluteUrl(route),
         lastModified: new Date().toISOString().split('T')[0],
     }))

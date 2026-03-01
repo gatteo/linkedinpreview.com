@@ -86,7 +86,7 @@ export function FAQs() {
                 <AnimateIn>
                     <div className='dash-top grid lg:grid-cols-[5fr_3fr]'>
                         {/* Accordion */}
-                        <div className='dash-right p-6 max-lg:pl-0'>
+                        <div className='dash-right p-6'>
                             <Accordion type='multiple'>
                                 {FAQList.map((faq) => (
                                     <AccordionItem key={faq.question} value={faq.question} className='border-border'>

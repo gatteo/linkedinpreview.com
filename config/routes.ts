@@ -14,6 +14,7 @@ export const Routes = {
     Blog: '/blog',
     BlogPost: (slug: string) => `/blog/${slug}`,
     Changelog: '/changelog',
+    Preview: '/preview',
     Embed: '/embed',
     EmbedSection: '/#embed',
 }

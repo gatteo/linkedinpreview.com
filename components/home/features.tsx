@@ -91,19 +91,19 @@ export function Features() {
                 <AnimateIn>
                     <div className='dash-top'>
                         {/* Row 1 */}
-                        <div className='dash-bottom grid sm:grid-cols-2 md:grid-cols-3'>
+                        <div className='dash-bottom grid md:grid-cols-3'>
                             {row1.map((feature, i) => (
                                 <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
                             ))}
                         </div>
                         {/* Row 2 */}
-                        <div className='dash-bottom grid sm:grid-cols-2 md:grid-cols-3'>
+                        <div className='dash-bottom grid md:grid-cols-3'>
                             {row2.map((feature, i) => (
                                 <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
                             ))}
                         </div>
                         {/* Row 3 */}
-                        <div className='grid sm:grid-cols-2 md:grid-cols-3'>
+                        <div className='grid md:grid-cols-3'>
                             {row3.map((feature, i) => (
                                 <FeatureCell key={feature.title} feature={feature} showLeft={i > 0} />
                             ))}

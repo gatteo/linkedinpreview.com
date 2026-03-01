@@ -15,7 +15,7 @@ function BlueprintEmbed() {
     return (
         <svg viewBox='0 0 400 300' fill='none' xmlns='http://www.w3.org/2000/svg' className='size-full'>
             {/* Browser window outline */}
-            <rect x='40' y='30' width='320' height='220' rx='8' stroke='currentColor' strokeWidth='1.5' opacity='0.5' />
+            <rect x='40' y='30' width='320' height='220' rx='8' stroke='currentColor' strokeWidth='1.5' opacity='0.2' />
 
             {/* Dashed offset (blueprint depth) */}
             <rect
@@ -58,7 +58,8 @@ function BlueprintEmbed() {
                 strokeWidth='2'
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                opacity='0.45'
+                strokeDasharray='4 3'
+                opacity='0.2'
             />
             <path
                 d='M235 125 L260 148 L235 171'
@@ -66,7 +67,8 @@ function BlueprintEmbed() {
                 strokeWidth='2'
                 strokeLinecap='round'
                 strokeLinejoin='round'
-                opacity='0.45'
+                strokeDasharray='4 3'
+                opacity='0.2'
             />
             <line
                 x1='210'
@@ -75,51 +77,10 @@ function BlueprintEmbed() {
                 y2='178'
                 stroke='currentColor'
                 strokeWidth='1.5'
+                strokeDasharray='4 3'
                 strokeLinecap='round'
-                opacity='0.35'
+                opacity='0.2'
             />
-
-            {/* Content placeholder lines */}
-            <line
-                x1='100'
-                y1='205'
-                x2='240'
-                y2='205'
-                stroke='currentColor'
-                strokeWidth='1'
-                strokeDasharray='4 3'
-                opacity='0.18'
-            />
-            <line
-                x1='100'
-                y1='218'
-                x2='200'
-                y2='218'
-                stroke='currentColor'
-                strokeWidth='1'
-                strokeDasharray='4 3'
-                opacity='0.13'
-            />
-
-            {/* Dimension ticks */}
-            <line x1='40' y1='262' x2='40' y2='274' stroke='currentColor' strokeWidth='0.5' opacity='0.2' />
-            <line x1='360' y1='262' x2='360' y2='274' stroke='currentColor' strokeWidth='0.5' opacity='0.2' />
-            <line
-                x1='40'
-                y1='270'
-                x2='360'
-                y2='270'
-                stroke='currentColor'
-                strokeWidth='0.5'
-                strokeDasharray='4 3'
-                opacity='0.15'
-            />
-
-            {/* Annotation dots at corners */}
-            <circle cx='40' cy='30' r='2' fill='currentColor' opacity='0.2' />
-            <circle cx='360' cy='30' r='2' fill='currentColor' opacity='0.2' />
-            <circle cx='40' cy='250' r='2' fill='currentColor' opacity='0.2' />
-            <circle cx='360' cy='250' r='2' fill='currentColor' opacity='0.2' />
         </svg>
     )
 }
@@ -130,7 +91,7 @@ export function EmbedSection() {
     const handleCopy = async () => {
         await navigator.clipboard.writeText(EMBED_SNIPPET)
         setCopied(true)
-        toast.success('Copied to clipboard!')
+        toast.success('Copied embed script')
         setTimeout(() => setCopied(false), 2000)
     }
 
@@ -173,7 +134,7 @@ export function EmbedSection() {
                             posts without leaving your site.
                         </p>
                         <div className='border-border relative mt-8 max-w-md overflow-hidden rounded-lg border bg-white'>
-                            <pre className='no-scrollbar overflow-x-auto p-3 pr-24 text-xs leading-relaxed text-neutral-600'>
+                            <pre className='no-scrollbar overflow-x-auto p-3 pr-24 text-xs leading-relaxed text-neutral-400'>
                                 <code>{EMBED_SNIPPET}</code>
                             </pre>
                             <Button
@@ -192,7 +153,7 @@ export function EmbedSection() {
                     </div>
 
                     {/* Right: Blueprint embed illustration */}
-                    <div className='relative z-10 flex items-center justify-center px-6 py-12 text-neutral-900 md:py-24'>
+                    <div className='relative z-10 hidden items-center justify-center px-6 py-12 text-neutral-900 md:flex md:py-24'>
                         <div className='w-full max-w-[380px]'>
                             <BlueprintEmbed />
                         </div>
