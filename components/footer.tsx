@@ -16,7 +16,7 @@ export function Footer() {
             <div className='max-w-content mx-auto px-6 py-16'>
                 <div className='flex flex-col gap-12 md:flex-row md:justify-between'>
                     {/* Logo & description */}
-                    <div className='max-w-md'>
+                    <div className='max-w-xs'>
                         <div className='flex items-center gap-2'>
                             <Logo className='size-7' />
                             <span className='text-lg font-bold text-neutral-900'>LinkedIn Post Preview</span>
@@ -49,28 +49,28 @@ export function Footer() {
                             <ul className='space-y-2.5'>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.Tool}>
                                         Linkedin Preview Tool
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.AllFeatures}>
                                         All Features
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.HowItWorks}>
                                         How It Works
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.EmbedSection}>
                                         Embed this Tool
                                     </Link>
@@ -82,14 +82,14 @@ export function Footer() {
                             <ul className='space-y-2.5'>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.Blog}>
                                         Blog & Guides
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.Faqs}>
                                         FAQ
                                     </Link>
@@ -104,21 +104,21 @@ export function Footer() {
                             <ul className='space-y-2.5'>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('linkedin-algorithm-tips-increase-post-reach')}>
                                         Linkedin Algorithm Tips
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('linkedin-profile-optimization-complete-guide')}>
                                         Linkedin Profile Optimization
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
-                                        className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.BlogPost('how-to-write-linkedin-posts-that-get-comments')}>
                                         Hot Get More Comments
                                     </Link>
@@ -131,9 +131,9 @@ export function Footer() {
                                 {comparisons.map((comparison) => (
                                     <li key={comparison.slug}>
                                         <Link
-                                            className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'
+                                            className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                             href={comparison.url}>
-                                            vs {comparison.competitor}
+                                            {comparison.competitor}
                                         </Link>
                                     </li>
                                 ))}
