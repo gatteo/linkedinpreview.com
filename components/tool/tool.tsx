@@ -19,6 +19,17 @@ const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ defa
 
 export type Media = { type: 'image' | 'video'; src: string }
 
+// Helper to check if TipTap JSON has actual text content
+function hasTextContent(doc: any): boolean {
+    if (!doc?.content) return false
+    return doc.content.some((node: any) => {
+        if (node.content) {
+            return node.content.some((child: any) => child.text?.trim())
+        }
+        return false
+    })
+}
+
 type ToolProps = {
     variant?: 'default' | 'embed'
 }
@@ -189,7 +200,12 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     </Panel>
                     <ResizeHandle />
                     <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col'>
-                        <PreviewPanel content={content} media={media} onOpenFeedPreview={handleOpenFeedPreview} />
+                        <PreviewPanel
+                            content={content}
+                            media={media}
+                            onOpenFeedPreview={handleOpenFeedPreview}
+                            hasContent={hasTextContent(content)}
+                        />
                     </Panel>
                 </Group>
             ) : (
@@ -205,7 +221,12 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         </div>
                     ) : (
                         <div className='flex w-full flex-1 flex-col'>
-                            <PreviewPanel content={content} media={media} onOpenFeedPreview={handleOpenFeedPreview} />
+                            <PreviewPanel
+                                content={content}
+                                media={media}
+                                onOpenFeedPreview={handleOpenFeedPreview}
+                                hasContent={hasTextContent(content)}
+                            />
                         </div>
                     )}
                 </div>

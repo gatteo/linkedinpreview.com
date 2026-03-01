@@ -1,5 +1,5 @@
 import type React from 'react'
-import { CircleHelp } from 'lucide-react'
+import { CircleHelp, Eye } from 'lucide-react'
 
 import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
@@ -13,9 +13,10 @@ interface PreviewPanelProps {
     content: any
     media: Media | null
     onOpenFeedPreview?: () => void
+    hasContent: boolean
 }
 
-const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview }) => {
+const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview, hasContent }) => {
     const { screenSize } = useScreenSize()
 
     const containerWidth = {
@@ -26,7 +27,7 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
 
     return (
         <div className='flex h-full flex-col'>
-            <PreviewHeader onOpenFeedPreview={onOpenFeedPreview} />
+            <PreviewHeader onOpenFeedPreview={onOpenFeedPreview} hasContent={hasContent} />
             <div className='flex flex-1 flex-col items-center gap-5 overflow-y-auto bg-neutral-50 py-5'>
                 <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
@@ -43,23 +44,33 @@ const PreviewPanelContent: React.FC<PreviewPanelProps> = ({ content, media, onOp
                         <CircleHelp className='size-3.5' />
                         <span>Bug or feature request? Let us know</span>
                     </button>
-                    <span aria-hidden='true'>·</span>
-                    <button
-                        type='button'
-                        onClick={onOpenFeedPreview}
-                        className='transition-colors hover:text-neutral-600'>
-                        See in real preview
-                    </button>
+                    {hasContent && onOpenFeedPreview && (
+                        <>
+                            <span aria-hidden='true'>·</span>
+                            <button
+                                type='button'
+                                onClick={onOpenFeedPreview}
+                                className='flex items-center gap-1 transition-colors hover:text-neutral-600'>
+                                <Eye className='size-3.5' />
+                                <span>See in real preview</span>
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>
     )
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview }) => {
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview, hasContent }) => {
     return (
         <ScreenSizeProvider>
-            <PreviewPanelContent content={content} media={media} onOpenFeedPreview={onOpenFeedPreview} />
+            <PreviewPanelContent
+                content={content}
+                media={media}
+                onOpenFeedPreview={onOpenFeedPreview}
+                hasContent={hasContent}
+            />
         </ScreenSizeProvider>
     )
 }

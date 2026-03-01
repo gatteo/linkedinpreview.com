@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { Sparkles } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import posthog from 'posthog-js'
 
 import { cn } from '@/lib/utils'
@@ -18,9 +18,10 @@ const sizes = [
 
 interface PreviewHeaderProps {
     onOpenFeedPreview?: () => void
+    hasContent: boolean
 }
 
-export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview }) => {
+export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview, hasContent }) => {
     const { screenSize, setScreenSize } = useScreenSize()
 
     const handleSizeChange = (newSize: typeof screenSize) => {
@@ -41,12 +42,12 @@ export const PreviewHeader: React.FC<PreviewHeaderProps> = ({ onOpenFeedPreview 
             <div className='flex grow items-center justify-between'>
                 <div className='flex items-center gap-3'>
                     <h2 className='text-base font-semibold'>Post Preview</h2>
-                    {onOpenFeedPreview && (
+                    {onOpenFeedPreview && hasContent && (
                         <button
                             type='button'
                             onClick={handleOpenFeedPreview}
                             className='flex items-center gap-1.5 rounded-full bg-[#0a66c2]/10 px-2.5 py-1 text-xs font-medium text-[#0a66c2] transition-colors hover:bg-[#0a66c2]/20'>
-                            <Sparkles className='size-3' />
+                            <ExternalLink className='size-3' />
                             See in real feed
                         </button>
                     )}
