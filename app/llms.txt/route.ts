@@ -33,6 +33,7 @@ This tool helps LinkedIn users improve their content creation workflow by provid
 - [FAQs](${absoluteUrl(Routes.Faqs)}): Frequently asked questions about LinkedIn post formatting
 - [Blog](${absoluteUrl(Routes.Blog)}): Tips and guides for writing better LinkedIn posts
 - [Changelog](${absoluteUrl(Routes.Changelog)}): Product updates, new features, and improvements
+- [Feed Preview](${absoluteUrl(Routes.Preview)}): See your LinkedIn post in a realistic feed layout on desktop and mobile
 
 ## Blog Posts
 

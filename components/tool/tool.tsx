@@ -19,6 +19,17 @@ const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ defa
 
 export type Media = { type: 'image' | 'video'; src: string }
 
+// Helper to check if TipTap JSON has actual text content
+function hasTextContent(doc: any): boolean {
+    if (!doc?.content) return false
+    return doc.content.some((node: any) => {
+        if (node.content) {
+            return node.content.some((child: any) => child.text?.trim())
+        }
+        return false
+    })
+}
+
 type ToolProps = {
     variant?: 'default' | 'embed'
 }
@@ -129,6 +140,13 @@ export function Tool({ variant = 'default' }: ToolProps) {
         return `${window.location.origin}${window.location.pathname}?draft=${encoded}${hash}`
     }, [content, variant])
 
+    const handleOpenFeedPreview = React.useCallback(async () => {
+        if (!content) return
+        const encoded = await encodeDraft(content)
+        if (!encoded) return
+        window.open(`/preview?draft=${encoded}`, '_blank')
+    }, [content])
+
     if (isLoading) {
         return null
     }
@@ -182,7 +200,12 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     </Panel>
                     <ResizeHandle />
                     <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col'>
-                        <PreviewPanel content={content} media={media} />
+                        <PreviewPanel
+                            content={content}
+                            media={media}
+                            onOpenFeedPreview={handleOpenFeedPreview}
+                            hasContent={hasTextContent(content)}
+                        />
                     </Panel>
                 </Group>
             ) : (
@@ -198,7 +221,12 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         </div>
                     ) : (
                         <div className='flex w-full flex-1 flex-col'>
-                            <PreviewPanel content={content} media={media} />
+                            <PreviewPanel
+                                content={content}
+                                media={media}
+                                onOpenFeedPreview={handleOpenFeedPreview}
+                                hasContent={hasTextContent(content)}
+                            />
                         </div>
                     )}
                 </div>
@@ -214,7 +242,11 @@ export function Tool({ variant = 'default' }: ToolProps) {
         <section
             id='tool'
             className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{ height: 'calc(100vh - var(--header-height))' }}>
+            style={{
+                minHeight: 'min(50vh, 520px)',
+                maxHeight: 'calc(100vh - var(--header-height))',
+                overflow: 'hidden',
+            }}>
             <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
         </section>
     )
