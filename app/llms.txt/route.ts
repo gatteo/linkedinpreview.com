@@ -36,7 +36,7 @@ This tool helps LinkedIn users improve their content creation workflow by provid
 - [Blog](${absoluteUrl(Routes.Blog)}): Tips and guides for writing better LinkedIn posts
 - [Changelog](${absoluteUrl(Routes.Changelog)}): Product updates, new features, and improvements
 - [Feed Preview](${absoluteUrl(Routes.Preview)}): See your LinkedIn post in a realistic feed layout on desktop and mobile
-- [Compare](${absoluteUrl(Routes.Compare)}): Compare LinkedIn Preview against popular alternatives
+- [Compare](${absoluteUrl(Routes.Compare)}): Compare LinkedInPreview.com against popular alternatives
 
 ## Blog Posts
 

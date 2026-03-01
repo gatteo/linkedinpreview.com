@@ -8,9 +8,9 @@ import { site } from '@/config/site'
 import { getAllComparisons } from '@/lib/compare'
 import { Button } from '@/components/ui/button'
 
-const title = 'Compare LinkedIn Preview vs Alternatives'
+const title = 'Compare LinkedInPreview.com vs Alternatives'
 const description =
-    'See how LinkedIn Preview compares to Taplio, AuthoredUp, Supergrow, Typefully, Publer, and other LinkedIn tools. Free, no sign-up, and fully featured.'
+    'See how LinkedInPreview.com compares to Taplio, AuthoredUp, Supergrow, Typefully, Publer, and other LinkedIn tools. Free, no sign-up, and fully featured.'
 
 type Props = {
     params: Record<string, never>
@@ -53,14 +53,14 @@ export default function Page() {
                         Comparisons
                     </span>
                     <h1 className='font-heading mb-5 text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl'>
-                        LinkedIn Preview vs <span className='text-primary'>Alternatives</span>
+                        LinkedInPreview.com vs <span className='text-primary'>Alternatives</span>
                     </h1>
                     <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500'>
-                        See how LinkedIn Preview stacks up against popular LinkedIn tools. Spoiler: it is free, requires
-                        no sign-up, and includes AI generation at no cost.
+                        See how LinkedInPreview.com stacks up against popular LinkedIn tools. Spoiler: it is free,
+                        requires no sign-up, and includes AI generation at no cost.
                     </p>
                     <Button asChild className='rounded-lg'>
-                        <Link href={Routes.Tool}>Try LinkedIn Preview Free</Link>
+                        <Link href={Routes.Tool}>Try LinkedInPreview.com Free</Link>
                     </Button>
                 </div>
             </section>
@@ -76,7 +76,7 @@ export default function Page() {
                                 className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white p-6 transition-all duration-200 hover:-translate-y-0.5'>
                                 <div className='mb-3 flex items-center gap-2'>
                                     <h2 className='group-hover:text-primary text-lg font-semibold text-neutral-900 transition-colors'>
-                                        LinkedIn Preview vs {comparison.competitor}
+                                        LinkedInPreview.com vs {comparison.competitor}
                                     </h2>
                                 </div>
                                 <p className='mb-5 flex-1 text-sm leading-relaxed text-neutral-500'>

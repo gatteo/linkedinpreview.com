@@ -100,7 +100,7 @@ export default async function Page({ params }: Props) {
                 items={[
                     { label: 'Home', href: '/' },
                     { label: 'Compare', href: Routes.Compare },
-                    { label: `LinkedIn Preview vs ${comparison.competitor}`, href: Routes.ComparePost(slug) },
+                    { label: `LinkedInPreview.com vs ${comparison.competitor}`, href: Routes.ComparePost(slug) },
                 ]}
             />
 
