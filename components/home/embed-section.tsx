@@ -192,7 +192,7 @@ export function EmbedSection() {
                     </div>
 
                     {/* Right: Blueprint embed illustration */}
-                    <div className='relative z-10 flex items-center justify-center px-6 py-12 text-neutral-900 md:py-24'>
+                    <div className='relative z-10 hidden items-center justify-center px-6 py-12 text-neutral-900 md:flex md:py-24'>
                         <div className='w-full max-w-[380px]'>
                             <BlueprintEmbed />
                         </div>
