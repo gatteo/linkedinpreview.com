@@ -56,14 +56,14 @@ export const FeedLayout: React.FC<FeedLayoutProps> = ({ children, mode }) => {
 
     return (
         <div className='min-h-full w-full' style={{ backgroundColor: LINKEDIN_BG }}>
-            <div className='mx-auto flex max-w-[1128px] items-start gap-4 px-4 py-4'>
-                {/* Left sidebar */}
-                <div className='sticky top-[124px]'>
+            <div className='mx-auto flex max-w-[1128px] items-start justify-center gap-4 px-4 py-4'>
+                {/* Left sidebar - hidden below lg */}
+                <div className='sticky top-[124px] hidden lg:block'>
                     <LeftSidebar />
                 </div>
 
-                {/* Center feed */}
-                <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                {/* Center feed - constrained width when sidebars hidden */}
+                <div className='flex max-w-[555px] min-w-0 flex-1 flex-col gap-2 lg:max-w-none'>
                     <StartAPostBar />
                     <PlaceholderPost variant='with-image' initials='AK' avatarColor='#788fa5' />
                     {children}
@@ -71,8 +71,8 @@ export const FeedLayout: React.FC<FeedLayoutProps> = ({ children, mode }) => {
                     <PlaceholderPost variant='short' initials='ML' avatarColor='#9db3c8' />
                 </div>
 
-                {/* Right sidebar */}
-                <div className='sticky top-[124px]'>
+                {/* Right sidebar - hidden below lg */}
+                <div className='sticky top-[124px] hidden lg:block'>
                     <RightSidebar />
                 </div>
             </div>

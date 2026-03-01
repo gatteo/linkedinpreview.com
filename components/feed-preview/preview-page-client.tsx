@@ -25,14 +25,20 @@ interface PreviewPageClientProps {
 }
 
 export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
-    const [mode, setMode] = React.useState<Mode>(() =>
-        typeof window !== 'undefined' && window.innerWidth < DESKTOP_BREAKPOINT ? 'mobile' : 'desktop',
-    )
+    const [mode, setMode] = React.useState<Mode>('desktop')
     const [content, setContent] = React.useState<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [shareOpen, setShareOpen] = React.useState(false)
     const postRef = React.useRef<HTMLDivElement>(null)
     const hasScrolled = React.useRef(false)
+
+    // Sync mode with actual viewport width on mount + resize
+    React.useEffect(() => {
+        const update = () => setMode(window.innerWidth < DESKTOP_BREAKPOINT ? 'mobile' : 'desktop')
+        update()
+        window.addEventListener('resize', update)
+        return () => window.removeEventListener('resize', update)
+    }, [])
 
     React.useEffect(() => {
         posthog.capture('feed_preview_page_viewed')
