@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation'
 import { FileTextIcon, PlusIcon, SearchIcon } from 'lucide-react'
 
 import { Routes } from '@/config/routes'
-import { type DraftStatus } from '@/lib/drafts'
+import { POST_LABELS, type DraftStatus } from '@/lib/drafts'
 import { useDrafts } from '@/hooks/use-drafts'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { NewPostDialog } from '@/components/dashboard/new-post-dialog'
+import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
+import { labelColor } from '@/components/dashboard/label-picker'
 import { PostsTable } from '@/components/dashboard/posts-table'
 
 // ---------------------------------------------------------------------------
@@ -90,12 +92,17 @@ export function PostsList() {
     const [newPostOpen, setNewPostOpen] = React.useState(false)
     const [search, setSearch] = React.useState('')
     const [filterStatus, setFilterStatus] = React.useState<FilterStatus>('all')
+    const [filterLabel, setFilterLabel] = React.useState<string | null>(null)
 
     const filteredDrafts = React.useMemo(() => {
         let result = [...drafts]
 
         if (filterStatus !== 'all') {
             result = result.filter((d) => d.status === filterStatus)
+        }
+
+        if (filterLabel !== null) {
+            result = result.filter((d) => d.label === filterLabel)
         }
 
         if (search.trim()) {
@@ -106,7 +113,7 @@ export function PostsList() {
         result.sort((a, b) => b.updatedAt - a.updatedAt)
 
         return result
-    }, [drafts, filterStatus, search])
+    }, [drafts, filterStatus, filterLabel, search])
 
     const handleDuplicate = async (id: string) => {
         const newDraft = await duplicateDraft(id)
@@ -119,7 +126,7 @@ export function PostsList() {
         await deleteDraft(id)
     }
 
-    const hasActiveFilter = filterStatus !== 'all' || search.trim().length > 0
+    const hasActiveFilter = filterStatus !== 'all' || filterLabel !== null || search.trim().length > 0
 
     return (
         <div className='flex flex-col gap-6 p-4 lg:p-6'>
@@ -145,14 +152,41 @@ export function PostsList() {
                         </Button>
                     ))}
                 </div>
-                <div className='relative w-full sm:w-60'>
-                    <SearchIcon className='text-muted-foreground absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2' />
-                    <Input
-                        placeholder='Search posts...'
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className='pl-8'
-                    />
+                <div className='flex items-center gap-2'>
+                    <Select
+                        value={filterLabel ?? '__all__'}
+                        onValueChange={(v) => setFilterLabel(v === '__all__' ? null : v)}>
+                        <SelectTrigger className='w-44' size='sm'>
+                            {filterLabel ? (
+                                <div className='flex items-center gap-1.5'>
+                                    <div className={`size-2 shrink-0 rounded-full ${labelColor(filterLabel)}`} />
+                                    <span className='truncate'>{filterLabel}</span>
+                                </div>
+                            ) : (
+                                <SelectValue placeholder='All labels' />
+                            )}
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value='__all__'>All labels</SelectItem>
+                            {POST_LABELS.map((label) => (
+                                <SelectItem key={label} value={label}>
+                                    <div className='flex items-center gap-1.5'>
+                                        <div className={`size-2 shrink-0 rounded-full ${labelColor(label)}`} />
+                                        <span>{label}</span>
+                                    </div>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className='relative w-full sm:w-60'>
+                        <SearchIcon className='text-muted-foreground absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2' />
+                        <Input
+                            placeholder='Search posts...'
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className='pl-8'
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -165,7 +199,7 @@ export function PostsList() {
                 <PostsTable data={filteredDrafts} onDuplicate={handleDuplicate} onDelete={handleDelete} />
             )}
 
-            <NewPostDialog open={newPostOpen} onOpenChange={setNewPostOpen} />
+            <CreationWizard open={newPostOpen} onOpenChange={setNewPostOpen} />
         </div>
     )
 }

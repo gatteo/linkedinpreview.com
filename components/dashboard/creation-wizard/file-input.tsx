@@ -9,12 +9,6 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 const ACCEPTED_TYPES = ['.pdf', '.docx', '.txt', '.md']
-const ACCEPTED_MIME = [
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain',
-    'text/markdown',
-]
 const MAX_BYTES = 5 * 1024 * 1024
 
 interface FileInputProps {
@@ -133,11 +127,6 @@ export function FileInput({ onSubmit, onBack }: FileInputProps) {
                 {extractedText.length > 0 && (
                     <Button onClick={() => onSubmit(extractedText)} disabled={extractedText.trim().length === 0}>
                         Use this text
-                    </Button>
-                )}
-                {extractedText.length === 0 && (
-                    <Button variant='ghost' onClick={onBack}>
-                        Back
                     </Button>
                 )}
             </div>

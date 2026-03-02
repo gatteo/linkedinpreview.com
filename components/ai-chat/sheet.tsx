@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { Tone } from '@/config/ai'
 import { ApiRoutes } from '@/config/routes'
 import { formatResetTime, isRateLimitError, parseAIError } from '@/lib/ai-error'
-import { fetchSuggestions } from '@/lib/ai-suggestions'
+import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
     const [phase, setPhase] = React.useState<'config' | 'chat'>('config')
     const [topic, setTopic] = React.useState('')
     const [tone, setTone] = React.useState<Tone>('professional')
-    const [suggestions, setSuggestions] = React.useState<string[]>([])
+    const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
     const [suggestionsLoading, setSuggestionsLoading] = React.useState(false)
     const { isAuthReady, ensureSession } = useAnonymousAuth()
 

@@ -47,6 +47,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { labelColor } from '@/components/dashboard/label-picker'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -198,6 +199,20 @@ function createColumns(
                     {row.original.status}
                 </Badge>
             ),
+        },
+        {
+            accessorKey: 'label',
+            header: 'Label',
+            cell: ({ row }) => {
+                const label = row.original.label
+                if (!label) return <span className='text-muted-foreground text-xs'>-</span>
+                return (
+                    <div className='flex items-center gap-1.5'>
+                        <div className={cn('size-2 rounded-full', labelColor(label))} />
+                        <span className='text-xs'>{label}</span>
+                    </div>
+                )
+            },
         },
         {
             accessorKey: 'wordCount',

@@ -2,25 +2,51 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeftIcon } from 'lucide-react'
+import { ChevronLeftIcon, Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { ApiRoutes, Routes } from '@/config/routes'
+import { assembleBrandingContext } from '@/lib/ai-branding'
+import { cn } from '@/lib/utils'
+import { useBranding } from '@/hooks/use-branding'
 import { useDrafts } from '@/hooks/use-drafts'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 import { FileInput } from './file-input'
+import { HookPicker } from './hook-picker'
 import { NotesInput } from './notes-input'
 import { SourcePicker, type SourceType } from './source-picker'
 import { UrlInput } from './url-input'
+import { VariantPicker } from './variant-picker'
 import { VoiceInput } from './voice-input'
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 type WizardStep = 'source' | 'input' | 'hooks' | 'variants'
+
+interface Hook {
+    text: string
+    category: string
+    type: string
+}
+
+interface Variant {
+    text: string
+    wordCount: number
+    label?: string
+}
 
 interface CreationWizardProps {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 const STEP_TITLES: Record<WizardStep, string> = {
     source: 'Create a new post',
@@ -36,18 +62,44 @@ const STEP_DESCRIPTIONS: Record<WizardStep, string> = {
     variants: 'Pick the version you like most',
 }
 
+// ---------------------------------------------------------------------------
+// Helper
+// ---------------------------------------------------------------------------
+
+function textToTipTapJson(text: string) {
+    const paragraphs = text.split(/\n\n+/).filter(Boolean)
+    return {
+        type: 'doc',
+        content: paragraphs.map((p) => ({
+            type: 'paragraph',
+            content: [{ type: 'text', text: p.replace(/\n/g, ' ') }],
+        })),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
     const router = useRouter()
-    const { createDraft } = useDrafts()
+    const { createDraft, updateDraft } = useDrafts()
+    const { branding } = useBranding()
 
     const [step, setStep] = React.useState<WizardStep>('source')
     const [source, setSource] = React.useState<SourceType | null>(null)
     const [sourceText, setSourceText] = React.useState('')
+    const [hooks, setHooks] = React.useState<Hook[]>([])
+    const [variants, setVariants] = React.useState<Variant[]>([])
+    const [isGenerating, setIsGenerating] = React.useState(false)
 
     const reset = () => {
         setStep('source')
         setSource(null)
         setSourceText('')
+        setHooks([])
+        setVariants([])
+        setIsGenerating(false)
     }
 
     const handleOpenChange = (value: boolean) => {
@@ -61,7 +113,7 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
                 const draft = await createDraft()
                 onOpenChange(false)
                 reset()
-                router.push(`/dashboard/editor?draft=${draft.id}`)
+                router.push(Routes.DashboardEditor(draft.id))
             } catch {
                 toast.error('Failed to create draft')
             }
@@ -71,19 +123,74 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
         setStep('input')
     }
 
+    const fetchHooks = async (text: string) => {
+        setIsGenerating(true)
+        try {
+            const brandingContext = assembleBrandingContext(branding)
+            const res = await fetch(ApiRoutes.Generate, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'hooks', sourceText: text, brandingContext }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                throw new Error((data as { error?: string }).error ?? 'Failed to generate hooks')
+            }
+            const data = await res.json()
+            setHooks(data.hooks)
+            setStep('hooks')
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Failed to generate hooks')
+        } finally {
+            setIsGenerating(false)
+        }
+    }
+
     const handleInputSubmit = (text: string) => {
         setSourceText(text)
-        // TODO (Task 8): trigger hook generation API call here and advance to 'hooks' step
-        // For now, just create a blank draft and navigate
-        createDraft()
-            .then((draft) => {
-                onOpenChange(false)
-                reset()
-                router.push(`/dashboard/editor?draft=${draft.id}`)
+        fetchHooks(text)
+    }
+
+    const handleRegenerate = () => {
+        fetchHooks(sourceText)
+    }
+
+    const handleHookSelect = async (hookText: string) => {
+        setIsGenerating(true)
+        try {
+            const brandingContext = assembleBrandingContext(branding)
+            const res = await fetch(ApiRoutes.Generate, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'posts', sourceText, hook: hookText, brandingContext }),
             })
-            .catch(() => {
-                toast.error('Failed to create draft')
-            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                throw new Error((data as { error?: string }).error ?? 'Failed to generate posts')
+            }
+            const data = await res.json()
+            setVariants(data.posts)
+            setStep('variants')
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Failed to generate posts')
+        } finally {
+            setIsGenerating(false)
+        }
+    }
+
+    const handleVariantSelect = async (variant: Variant) => {
+        try {
+            const content = textToTipTapJson(variant.text)
+            const draft = await createDraft(content)
+            if (variant.label) {
+                await updateDraft(draft.id, { label: variant.label })
+            }
+            onOpenChange(false)
+            reset()
+            router.push(Routes.DashboardEditor(draft.id))
+        } catch {
+            toast.error('Failed to create draft')
+        }
     }
 
     const handleBack = () => {
@@ -97,11 +204,12 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
         }
     }
 
-    const showBack = step !== 'source'
+    const showBack = step !== 'source' && !isGenerating
+    const isWide = step === 'hooks' || step === 'variants'
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className='sm:max-w-md'>
+            <DialogContent className={cn('sm:max-w-md', isWide && 'sm:max-w-2xl')}>
                 <DialogHeader>
                     <div className='flex items-center gap-2'>
                         {showBack && (
@@ -136,13 +244,34 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
                     )}
 
                     {step === 'hooks' && (
-                        <div className='text-muted-foreground py-8 text-center text-sm'>Hook picker coming soon...</div>
+                        <>
+                            {isGenerating ? (
+                                <div className='text-muted-foreground flex items-center justify-center gap-2 py-12 text-sm'>
+                                    <Loader2Icon className='size-4 animate-spin' />
+                                    Generating hooks...
+                                </div>
+                            ) : (
+                                <HookPicker
+                                    hooks={hooks}
+                                    onSelect={handleHookSelect}
+                                    onRegenerate={handleRegenerate}
+                                    isRegenerating={isGenerating}
+                                />
+                            )}
+                        </>
                     )}
 
                     {step === 'variants' && (
-                        <div className='text-muted-foreground py-8 text-center text-sm'>
-                            Variant picker coming soon...
-                        </div>
+                        <>
+                            {isGenerating ? (
+                                <div className='text-muted-foreground flex items-center justify-center gap-2 py-12 text-sm'>
+                                    <Loader2Icon className='size-4 animate-spin' />
+                                    Generating variants...
+                                </div>
+                            ) : (
+                                <VariantPicker variants={variants} onSelect={handleVariantSelect} />
+                            )}
+                        </>
                     )}
                 </div>
             </DialogContent>
