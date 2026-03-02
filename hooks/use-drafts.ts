@@ -87,14 +87,15 @@ export function useDrafts() {
     )
 
     const updateDraft = React.useCallback(
-        async (id: string, updates: { content?: any; media?: any; status?: DraftStatus }) => {
+        async (id: string, updates: { content?: any; media?: any; status?: DraftStatus; label?: string | null }) => {
             // Optimistic update for local state
-            if (updates.content !== undefined || updates.status !== undefined) {
+            if (updates.content !== undefined || updates.status !== undefined || updates.label !== undefined) {
                 setDrafts((prev) =>
                     prev.map((d) => {
                         if (d.id !== id) return d
                         const updated = { ...d, updatedAt: Date.now() }
                         if (updates.status !== undefined) updated.status = updates.status
+                        if (updates.label !== undefined) updated.label = updates.label
                         return updated
                     }),
                 )

@@ -13,6 +13,7 @@ interface DraftRow {
     content: any
     media: any
     status: DraftStatus
+    label: string | null
     word_count: number
     char_count: number
     created_at: string
@@ -28,6 +29,7 @@ function rowToEntry(row: DraftRow): DraftManifestEntry {
         id: row.id,
         title: row.title,
         status: row.status,
+        label: row.label ?? null,
         createdAt: new Date(row.created_at).getTime(),
         updatedAt: new Date(row.updated_at).getTime(),
         charCount: row.char_count,
@@ -52,7 +54,7 @@ function rowToContent(row: DraftRow): DraftContent {
 export async function fetchDrafts(client: SupabaseClient): Promise<DraftManifestEntry[]> {
     const { data, error } = await client
         .from('drafts')
-        .select('id, title, status, word_count, char_count, created_at, updated_at')
+        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
         .order('updated_at', { ascending: false })
 
     if (error) throw error
@@ -84,6 +86,7 @@ export async function createDraft(
     client: SupabaseClient,
     userId: string,
     initialContent?: any,
+    label?: string | null,
 ): Promise<DraftManifestEntry> {
     const id = crypto.randomUUID()
     const title = extractTitle(initialContent)
@@ -99,12 +102,13 @@ export async function createDraft(
             content: initialContent ?? null,
             media: null,
             status: 'draft',
+            label: label ?? null,
             word_count: stats.wordCount,
             char_count: stats.charCount,
             created_at: now,
             updated_at: now,
         })
-        .select('id, title, status, word_count, char_count, created_at, updated_at')
+        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
         .single()
 
     if (error) throw error
@@ -118,7 +122,7 @@ export async function createDraft(
 export async function updateDraft(
     client: SupabaseClient,
     id: string,
-    updates: { content?: any; media?: any; status?: DraftStatus },
+    updates: { content?: any; media?: any; status?: DraftStatus; label?: string | null },
 ): Promise<void> {
     const patch: Record<string, any> = { updated_at: new Date().toISOString() }
 
@@ -134,6 +138,9 @@ export async function updateDraft(
     }
     if (updates.status !== undefined) {
         patch.status = updates.status
+    }
+    if (updates.label !== undefined) {
+        patch.label = updates.label
     }
 
     const { error } = await client.from('drafts').update(patch).eq('id', id)
@@ -171,12 +178,13 @@ export async function duplicateDraft(
             content: source.content.content,
             media: source.content.media,
             status: 'draft',
+            label: source.entry.label ?? null,
             word_count: source.entry.wordCount,
             char_count: source.entry.charCount,
             created_at: now,
             updated_at: now,
         })
-        .select('id, title, status, word_count, char_count, created_at, updated_at')
+        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
         .single()
 
     if (error) throw error

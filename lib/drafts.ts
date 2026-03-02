@@ -30,11 +30,30 @@ export interface DraftManifestEntry {
     id: string
     title: string
     status: DraftStatus
+    label: string | null
     createdAt: number
     updatedAt: number
     charCount: number
     wordCount: number
 }
+
+// ---------------------------------------------------------------------------
+// Post labels
+// ---------------------------------------------------------------------------
+
+export const POST_LABELS = [
+    'Personal Milestones',
+    'Mindset & Motivation',
+    'Career Before & After',
+    'Tool & Resource Insights',
+    'Case Studies',
+    'Actionable Guides',
+    'Culture Moments',
+    'Offer Highlight',
+    'Client Success Story',
+] as const
+
+export type PostLabel = (typeof POST_LABELS)[number]
 
 /** Full content blob stored per-draft */
 export interface DraftContent {
