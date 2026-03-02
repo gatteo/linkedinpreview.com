@@ -39,12 +39,23 @@ export async function POST(request: Request) {
         const { object } = await generateObject({
             model: openai(env.LLM_MODEL ?? 'gpt-4o-mini'),
             schema: z.object({
-                suggestions: z.array(z.string()).length(3),
+                suggestions: z
+                    .array(
+                        z.object({
+                            text: z.string(),
+                            type: z.enum(['content', 'structure', 'tone', 'engagement']),
+                        }),
+                    )
+                    .length(3),
             }),
             system: `You suggest short refinement prompts for a LinkedIn post.
 Each suggestion must be 4-8 words and start with a verb.
 Make them specific to the post content - reference actual topics, themes, or points from the post.
-Cover different aspects: one about content, one about structure or length, one about style or tone.`,
+Return each suggestion as an object with "text" (the suggestion) and "type" (one of: content, structure, tone, engagement).
+- content: about what information or ideas to add/change
+- structure: about length, formatting, or organization
+- tone: about writing style, voice, or emotion
+- engagement: about hooks, calls-to-action, or audience interaction`,
             prompt: `Suggest 3 ways to refine this LinkedIn post:\n\n${parsed.data.postText}`,
         })
 

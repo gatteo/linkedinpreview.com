@@ -3,6 +3,7 @@ export const ApiRoutes = {
     Suggestions: '/api/suggestions',
     Analyze: '/api/analyze',
     Generate: '/api/generate',
+    Extract: '/api/extract',
 }
 
 export const Routes = {
