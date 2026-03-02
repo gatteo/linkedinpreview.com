@@ -256,9 +256,6 @@ importers:
       '@types/node':
         specifier: ^22
         version: 22.12.0
-      '@types/pdf-parse':
-        specifier: ^1.1.5
-        version: 1.1.5
       '@types/react':
         specifier: 19.2.14
         version: 19.2.14
@@ -3196,9 +3193,6 @@ packages:
 
   '@types/parse5@6.0.3':
     resolution: {integrity: sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==}
-
-  '@types/pdf-parse@1.1.5':
-    resolution: {integrity: sha512-kBfrSXsloMnUJOKi25s3+hRmkycHfLK6A09eRGqF/N8BkQoPUmaCr+q8Cli5FnfohEz/rsv82zAiPz/LXtOGhA==}
 
   '@types/phoenix@1.6.7':
     resolution: {integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q==}
@@ -10159,10 +10153,6 @@ snapshots:
       undici-types: 6.20.0
 
   '@types/parse5@6.0.3': {}
-
-  '@types/pdf-parse@1.1.5':
-    dependencies:
-      '@types/node': 22.12.0
 
   '@types/phoenix@1.6.7': {}
 

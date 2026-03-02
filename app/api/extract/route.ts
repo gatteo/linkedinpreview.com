@@ -1,7 +1,7 @@
 import { Readability } from '@mozilla/readability'
 import { parseHTML } from 'linkedom'
 import mammoth from 'mammoth'
-import pdfParse from 'pdf-parse'
+import { PDFParse } from 'pdf-parse'
 import { z } from 'zod'
 
 import { AI_ERROR_CODES } from '@/config/ai'
@@ -60,8 +60,10 @@ async function extractFromFile(file: File): Promise<{ text: string; title?: stri
     let text: string
 
     if (ext === '.pdf') {
-        const result = await pdfParse(Buffer.from(await file.arrayBuffer()))
+        const pdf = new PDFParse({ data: new Uint8Array(await file.arrayBuffer()) })
+        const result = await pdf.getText()
         text = result.text
+        await pdf.destroy()
     } else if (ext === '.docx') {
         const result = await mammoth.extractRawText({ buffer: Buffer.from(await file.arrayBuffer()) })
         text = result.value
