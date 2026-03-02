@@ -33,7 +33,7 @@ import {
     SidebarRail,
     SidebarSeparator,
 } from '@/components/ui/sidebar'
-import { NewPostDialog } from '@/components/dashboard/new-post-dialog'
+import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
 import { Icons } from '@/components/icon'
 
 export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -216,7 +216,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
             <SidebarFooter />
             <SidebarRail />
 
-            <NewPostDialog open={newPostOpen} onOpenChange={setNewPostOpen} />
+            <CreationWizard open={newPostOpen} onOpenChange={setNewPostOpen} />
         </Sidebar>
     )
 }
