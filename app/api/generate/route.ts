@@ -76,7 +76,7 @@ const postsSchema = z.object({
             z.object({
                 text: z.string(),
                 wordCount: z.number(),
-                label: z.string().optional(),
+                label: z.string(),
             }),
         )
         .length(2),
@@ -87,6 +87,8 @@ const resultSchema = z.object({ result: z.string() })
 // ---------------------------------------------------------------------------
 // Route handler
 // ---------------------------------------------------------------------------
+
+export const maxDuration = 30
 
 export async function POST(request: Request) {
     let body: unknown
@@ -232,7 +234,9 @@ ${postText}`,
         }
 
         return Response.json({ error: 'Unknown action' }, { status: 400 })
-    } catch {
-        return Response.json({ error: 'Failed to generate content' }, { status: 500 })
+    } catch (err) {
+        console.error('[/api/generate] action:', action, err)
+        const message = err instanceof Error ? err.message : 'Failed to generate content'
+        return Response.json({ error: message }, { status: 500 })
     }
 }
