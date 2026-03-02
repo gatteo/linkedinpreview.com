@@ -36,7 +36,7 @@ export function Hero() {
 
                 {/* Headline - bigger, bolder */}
                 <AnimateIn delay={0.1}>
-                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
+                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-red-600 md:text-6xl lg:text-7xl'>
                         Format and Preview your{' '}
                         <span className='text-primary inline-flex items-baseline whitespace-nowrap'>
                             <Icons.linkedinLogo
