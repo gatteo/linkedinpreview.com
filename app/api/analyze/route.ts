@@ -135,5 +135,5 @@ ${parsed.data.postText}
         console.error('Failed to store analysis:', insertError.message)
     }
 
-    return Response.json({ success: true })
+    return Response.json({ success: true, analysis: object })
 }

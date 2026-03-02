@@ -45,11 +45,15 @@ export function EditorPanel({
     onChange,
     onMediaChange,
     onShare,
+    contentReplace,
+    onContentReplaceApplied,
 }: {
     initialContent?: any
     onChange: (json: any) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
+    contentReplace?: string | null
+    onContentReplaceApplied?: () => void
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
@@ -230,6 +234,14 @@ export function EditorPanel({
 
         posthog.capture('media_removed', { media_type: mediaType })
     }, [handleMediaChangeWrapper, currentMedia])
+
+    React.useEffect(() => {
+        if (!contentReplace || !editor) return
+        const paragraphs = toTipTapParagraphs(contentReplace)
+        editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
+        onChange(editor.getJSON())
+        onContentReplaceApplied?.()
+    }, [contentReplace]) // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!editor) {
         return <EditorLoading />
