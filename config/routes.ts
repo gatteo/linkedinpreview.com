@@ -2,6 +2,7 @@ export const ApiRoutes = {
     Chat: '/api/chat',
     Suggestions: '/api/suggestions',
     Analyze: '/api/analyze',
+    Generate: '/api/generate',
 }
 
 export const Routes = {
@@ -19,4 +20,9 @@ export const Routes = {
     ComparePost: (slug: string) => `/compare/${slug}`,
     Embed: '/embed',
     EmbedSection: '/#embed',
+    Dashboard: '/dashboard',
+    DashboardEditor: (draftId?: string) => (draftId ? `/dashboard/editor?draft=${draftId}` : '/dashboard/editor'),
+    DashboardPosts: '/dashboard',
+    DashboardBranding: '/dashboard/branding',
+    DashboardSettings: '/dashboard/settings',
 }

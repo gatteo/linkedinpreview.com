@@ -23,7 +23,7 @@ const Features = [
 
 export function MainFeatures() {
     return (
-        <section id='main-features' className='border-t border-border'>
+        <section id='main-features' className='border-border border-t'>
             <div className='px-6 py-20 md:py-28'>
                 {/* Left-aligned header */}
                 <AnimateIn className='mb-12'>
@@ -36,13 +36,13 @@ export function MainFeatures() {
                     </p>
                 </AnimateIn>
 
-                <StaggerChildren className='grid gap-0 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-white shadow-subtle sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
+                <StaggerChildren className='divide-border border-border shadow-subtle grid gap-0 divide-y overflow-hidden rounded-2xl border bg-white sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
                     {Features.map((feature) => (
                         <StaggerItem key={feature.title}>
                             <div className='group relative p-8 transition-colors hover:bg-neutral-50/50'>
                                 <Icon
                                     name={feature.icon as keyof typeof Icons}
-                                    className='mb-4 size-8 text-primary'
+                                    className='text-primary mb-4 size-8'
                                     aria-hidden='true'
                                 />
                                 <h3 className='mb-2 text-base font-semibold text-neutral-900'>{feature.title}</h3>

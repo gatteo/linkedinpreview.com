@@ -4,6 +4,20 @@ import react from 'eslint-plugin-react'
 import unusedImports from 'eslint-plugin-unused-imports'
 
 const config = [
+    // Global ignores - must be first and standalone to skip directory traversal
+    {
+        ignores: [
+            '.next/',
+            '.contentlayer/',
+            '.claude/',
+            'node_modules/',
+            'public/',
+            'dev/',
+            'docs/',
+            'contents/',
+            'supabase/',
+        ],
+    },
     ...nextConfig,
     prettierRecommended,
     {
@@ -31,9 +45,6 @@ const config = [
             '@next/next/no-html-link-for-pages': 'off',
             'jsx-a11y/click-events-have-key-events': 'off',
         },
-    },
-    {
-        ignores: ['.next/', '.contentlayer/', 'node_modules/'],
     },
 ]
 

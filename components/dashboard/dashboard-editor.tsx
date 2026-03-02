@@ -5,117 +5,52 @@ import dynamic from 'next/dynamic'
 import { Eye, PenLine } from 'lucide-react'
 import { Group, Panel } from 'react-resizable-panels'
 
-import { Routes } from '@/config/routes'
-import { decodeDraft, encodeDraft } from '@/lib/draft-url'
+import { encodeDraft } from '@/lib/draft-url'
 import { hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
+import { useCurrentDraft } from '@/hooks/use-current-draft'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
+import { Skeleton } from '@/components/ui/skeleton'
+import { EditorLoading } from '@/components/tool/editor-loading'
+import { PreviewPanel } from '@/components/tool/preview/preview-panel'
+import { ResizeHandle } from '@/components/tool/resize-handle'
 
-import { EditorLoading } from './editor-loading'
-import { PreviewPanel } from './preview/preview-panel'
-import { ResizeHandle } from './resize-handle'
+const EditorPanel = dynamic(
+    () => import('@/components/tool/editor-panel').then((mod) => ({ default: mod.EditorPanel })),
+    { loading: () => <EditorLoading />, ssr: false },
+)
 
-const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ default: mod.EditorPanel })), {
-    loading: () => <EditorLoading />,
-    ssr: false,
-})
-
-export type Media = { type: 'image' | 'video'; src: string }
-
-type ToolProps = {
-    variant?: 'default' | 'embed'
-}
-
+type Media = { type: 'image' | 'video'; src: string }
 type MobileTab = 'editor' | 'preview'
 
-const STORAGE_KEY = 'linkedinpreview-draft'
-const SAVE_DELAY_MS = 2000
-
-function loadLocalDraft(): any | null {
-    try {
-        const raw = localStorage.getItem(STORAGE_KEY)
-        return raw ? JSON.parse(raw) : null
-    } catch {
-        return null
-    }
-}
-
-function useDraftPersistence(content: any) {
-    const timerRef = React.useRef<ReturnType<typeof setTimeout>>(null)
-
-    React.useEffect(() => {
-        if (!content) return
-
-        if (timerRef.current) clearTimeout(timerRef.current)
-        timerRef.current = setTimeout(() => {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
-            } catch {
-                // localStorage full or unavailable - silently ignore
-            }
-        }, SAVE_DELAY_MS)
-
-        return () => {
-            if (timerRef.current) clearTimeout(timerRef.current)
-        }
-    }, [content])
-}
-
-export function Tool({ variant = 'default' }: ToolProps) {
+export function DashboardEditor() {
+    const { initialContent, initialMedia, isLoading, saveContent, saveMedia } = useCurrentDraft()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
-    const [initialContent, setInitialContent] = React.useState<any>(undefined)
-    const [isLoading, setIsLoading] = React.useState(true)
     const isDesktop = useIsDesktop()
 
-    // Load draft: URL ?draft= param takes priority over localStorage
+    // Sync initial media from loaded draft
     React.useEffect(() => {
-        async function loadDraft() {
-            const params = new URLSearchParams(window.location.search)
-            const draftParam = params.get('draft')
-
-            if (draftParam) {
-                const decoded = await decodeDraft(draftParam)
-                if (decoded) {
-                    setInitialContent(decoded)
-                    setIsLoading(false)
-                    return
-                }
-            }
-
-            const local = loadLocalDraft()
-            if (local) setInitialContent(local)
-            setIsLoading(false)
-        }
-        loadDraft()
-    }, [])
-
-    // Browser processes #hash before React mounts, so re-scroll after loading
-    React.useEffect(() => {
-        if (!isLoading && window.location.hash) {
-            document.querySelector(window.location.hash)?.scrollIntoView()
-        }
-    }, [isLoading])
-
-    useDraftPersistence(content)
+        if (initialMedia) setMedia(initialMedia)
+    }, [initialMedia])
 
     const handleContentChange = (json: any) => {
         setContent(json)
+        saveContent(json)
     }
 
     const handleMediaChange = (newMedia: Media | null) => {
         setMedia(newMedia)
+        saveMedia(newMedia)
     }
 
     const handleShare = React.useCallback(async (): Promise<string | null> => {
         if (!content) return null
         const encoded = await encodeDraft(content)
         if (!encoded) return null
-
-        const hash = variant === 'default' ? '#tool' : ''
-        return `${window.location.origin}${window.location.pathname}?draft=${encoded}${hash}`
-    }, [content, variant])
+        return `${window.location.origin}/?draft=${encoded}#tool`
+    }, [content])
 
     const handleOpenFeedPreview = React.useCallback(async () => {
         if (!content) return
@@ -124,26 +59,24 @@ export function Tool({ variant = 'default' }: ToolProps) {
         window.open(`/preview?draft=${encoded}`, '_blank')
     }, [content])
 
-    const handleOpenDashboard = React.useCallback(async () => {
-        if (!content) return
-        const encoded = await encodeDraft(content)
-        if (!encoded) {
-            window.location.href = Routes.Dashboard
-            return
-        }
-        window.location.href = `/dashboard/editor?import=${encoded}`
-    }, [content])
-
     if (isLoading) {
-        return null
+        return (
+            <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row'>
+                <div className='flex min-w-0 flex-1 flex-col'>
+                    <EditorLoading />
+                </div>
+                <div className='hidden flex-col border-l lg:flex lg:flex-1'>
+                    <div className='flex flex-col gap-4 p-6'>
+                        <Skeleton className='h-6 w-32' />
+                        <Skeleton className='aspect-[9/16] w-full max-w-sm rounded-xl' />
+                    </div>
+                </div>
+            </div>
+        )
     }
 
-    const inner = (
-        <div
-            className={cn(
-                'border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-white',
-                variant === 'embed' && 'h-full rounded-none border-0',
-            )}>
+    return (
+        <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
             {/* Mobile tab bar */}
             {!isDesktop && (
                 <div className='border-border flex border-b'>
@@ -176,7 +109,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
 
             {/* Panels */}
             {isDesktop ? (
-                <Group orientation='horizontal' className='min-h-0 flex-1'>
+                <Group orientation='horizontal' className='min-h-0 w-full flex-1 overflow-hidden'>
                     <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col'>
                         <EditorPanel
                             initialContent={initialContent}
@@ -218,32 +151,6 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     )}
                 </div>
             )}
-
-            {/* Dashboard prompt - shown when user has written content */}
-            {variant === 'default' && hasTextContent(content) && (
-                <div className='border-border bg-muted/30 text-muted-foreground flex items-center justify-center gap-2 border-t px-4 py-2 text-xs'>
-                    <span>Want to save and manage drafts?</span>
-                    <button
-                        type='button'
-                        onClick={handleOpenDashboard}
-                        className='text-primary hover:text-primary/80 font-medium underline underline-offset-2'>
-                        Open full editor
-                    </button>
-                </div>
-            )}
         </div>
-    )
-
-    if (variant === 'embed') {
-        return inner
-    }
-
-    return (
-        <section
-            id='tool'
-            className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{ height: 'max(70vh, 520px)' }}>
-            <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
-        </section>
     )
 }
