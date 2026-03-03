@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import {
@@ -13,11 +14,12 @@ import {
     PaletteIcon,
     PlusIcon,
     SettingsIcon,
-    SlidersHorizontalIcon,
+    TargetIcon,
 } from 'lucide-react'
 
 import { feedbackConfig } from '@/config/feedback'
 import { useDrafts } from '@/hooks/use-drafts'
+import { Button } from '@/components/ui/button'
 import {
     Sidebar,
     SidebarContent,
@@ -34,7 +36,7 @@ import {
     SidebarSeparator,
 } from '@/components/ui/sidebar'
 import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
-import { Icons } from '@/components/icon'
+import { GettingStartedChecklist } from '@/components/dashboard/getting-started-checklist'
 
 export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
@@ -52,7 +54,13 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:p-1.5!'>
                             <Link href='/'>
-                                <Icons.linkedinLogo className='size-5! text-[#0077B5]' />
+                                <Image
+                                    src='/images/logo-rounded-rectangle.png'
+                                    alt='LinkedInPreview'
+                                    width={20}
+                                    height={20}
+                                    className='size-5 rounded'
+                                />
                                 <span className='text-base font-semibold'>LinkedInPreview</span>
                             </Link>
                         </SidebarMenuButton>
@@ -61,26 +69,15 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
             </SidebarHeader>
 
             <SidebarContent>
-                {/* New Post CTA */}
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton
-                                    tooltip='New Post'
-                                    onClick={() => setNewPostOpen(true)}
-                                    className='bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground'>
-                                    <PlusIcon />
-                                    <span>New Post</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
                 {/* Posts */}
                 <SidebarGroup>
-                    <SidebarGroupLabel>Posts</SidebarGroupLabel>
+                    <div className='flex items-center justify-between px-2'>
+                        <SidebarGroupLabel className='text-muted-foreground p-0'>Posts</SidebarGroupLabel>
+                        <Button variant='outline' size='icon' className='size-6' onClick={() => setNewPostOpen(true)}>
+                            <PlusIcon className='size-3.5' />
+                            <span className='sr-only'>New Post</span>
+                        </Button>
+                    </div>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {recentDrafts.length === 0 ? (
@@ -117,7 +114,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
 
                 {/* Tools */}
                 <SidebarGroup>
-                    <SidebarGroupLabel>Tools</SidebarGroupLabel>
+                    <SidebarGroupLabel className='text-muted-foreground'>Tools</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -156,7 +153,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
 
                 {/* Personalization */}
                 <SidebarGroup>
-                    <SidebarGroupLabel>Personalization</SidebarGroupLabel>
+                    <SidebarGroupLabel className='text-muted-foreground'>Personalization</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -172,7 +169,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton disabled tooltip='Content Strategy'>
-                                    <SlidersHorizontalIcon />
+                                    <TargetIcon />
                                     <span>Content Strategy</span>
                                 </SidebarMenuButton>
                                 <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
@@ -213,7 +210,9 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter />
+            <SidebarFooter className='p-0'>
+                <GettingStartedChecklist />
+            </SidebarFooter>
             <SidebarRail />
 
             <CreationWizard open={newPostOpen} onOpenChange={setNewPostOpen} />
