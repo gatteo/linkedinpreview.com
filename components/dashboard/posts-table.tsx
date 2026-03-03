@@ -224,6 +224,7 @@ function createColumns(
         {
             accessorKey: 'updatedAt',
             header: 'Modified',
+            size: 100,
             cell: ({ row }) => (
                 <span className='text-muted-foreground text-sm'>{formatRelativeDate(row.original.updatedAt)}</span>
             ),

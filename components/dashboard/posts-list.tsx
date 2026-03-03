@@ -161,7 +161,7 @@ export function PostsList() {
                         <Select
                             value={filterLabel ?? '__all__'}
                             onValueChange={(v) => setFilterLabel(v === '__all__' ? null : v)}>
-                            <SelectTrigger className='h-9 w-44'>
+                            <SelectTrigger className='w-44 data-[size=default]:h-9'>
                                 {filterLabel ? (
                                     <div className='flex items-center gap-1.5'>
                                         <div className={`size-2 shrink-0 rounded-full ${labelColor(filterLabel)}`} />

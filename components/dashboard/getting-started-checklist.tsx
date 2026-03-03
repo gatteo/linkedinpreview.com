@@ -15,41 +15,15 @@ type StepId = 'write-first-post' | 'set-up-branding' | 'try-ai-suggestions' | 'p
 interface Step {
     id: StepId
     label: string
-    description: string
     href: string
 }
 
 const STEPS: Step[] = [
-    {
-        id: 'write-first-post',
-        label: 'Write your first post',
-        description: 'Open the editor and start writing',
-        href: '/dashboard/editor',
-    },
-    {
-        id: 'set-up-branding',
-        label: 'Set up your branding',
-        description: 'Add your profile photo and name',
-        href: '/dashboard/branding',
-    },
-    {
-        id: 'try-ai-suggestions',
-        label: 'Try AI suggestions',
-        description: 'Let AI help you improve your post',
-        href: '/dashboard/editor',
-    },
-    {
-        id: 'preview-feed',
-        label: 'Preview in realistic feed',
-        description: 'See exactly how your post will look',
-        href: '/dashboard/editor',
-    },
-    {
-        id: 'copy-publish',
-        label: 'Copy and publish',
-        description: 'Copy your post and share it on LinkedIn',
-        href: '/dashboard/editor',
-    },
+    { id: 'write-first-post', label: 'Write your first post', href: '/dashboard/editor' },
+    { id: 'set-up-branding', label: 'Set up your branding', href: '/dashboard/branding' },
+    { id: 'try-ai-suggestions', label: 'Try AI suggestions', href: '/dashboard/editor' },
+    { id: 'preview-feed', label: 'Preview in realistic feed', href: '/dashboard/editor' },
+    { id: 'copy-publish', label: 'Copy and publish', href: '/dashboard/editor' },
 ]
 
 const STORAGE_KEY = 'lp-getting-started'
@@ -184,13 +158,10 @@ export function GettingStartedChecklist() {
                                 <Link href={step.href} className='group min-w-0 flex-1'>
                                     <p
                                         className={cn(
-                                            'group-hover:text-foreground text-sm leading-tight transition-colors',
+                                            'group-hover:text-foreground text-xs leading-tight transition-colors',
                                             done ? 'text-muted-foreground line-through' : 'text-foreground',
                                         )}>
                                         {step.label}
-                                    </p>
-                                    <p className='text-muted-foreground mt-0.5 text-xs leading-tight'>
-                                        {step.description}
                                     </p>
                                 </Link>
                             </li>

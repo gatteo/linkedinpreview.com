@@ -1,5 +1,5 @@
 import type React from 'react'
-import { MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react'
+import { CircleHelp, Eye, MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react'
 
 import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
@@ -34,52 +34,58 @@ function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: 
         <div className='flex h-full flex-col'>
             {/* Preview area */}
             <div className='bg-muted/30 flex flex-1 flex-col items-center overflow-auto dark:bg-neutral-900/30'>
-                {/* Size switcher */}
-                <div className='flex shrink-0 items-center gap-1 pt-3 pb-1'>
-                    {sizes.map((size) => {
-                        const Icon = sizeIcons[size]
-                        return (
-                            <button
-                                key={size}
-                                onClick={() => setScreenSize(size)}
-                                className={cn(
-                                    'rounded-md p-1.5 transition-colors',
-                                    screenSize === size
-                                        ? 'bg-accent text-foreground'
-                                        : 'text-muted-foreground hover:text-foreground',
-                                )}>
-                                <Icon className='size-4' />
-                            </button>
-                        )
-                    })}
+                {/* Size switcher - right aligned, tabs style */}
+                <div className='flex w-full justify-end px-3 pt-3 pb-1'>
+                    <div className='bg-muted inline-flex items-center rounded-lg p-1'>
+                        {sizes.map((size) => {
+                            const Icon = sizeIcons[size]
+                            return (
+                                <button
+                                    key={size}
+                                    onClick={() => setScreenSize(size)}
+                                    className={cn(
+                                        'rounded-md p-1.5 transition-colors',
+                                        screenSize === size
+                                            ? 'bg-background text-foreground shadow-sm'
+                                            : 'text-muted-foreground hover:text-foreground',
+                                    )}>
+                                    <Icon className='size-4' />
+                                </button>
+                            )
+                        })}
+                    </div>
                 </div>
                 {/* Card */}
                 <div className={cn('mx-auto pb-5 transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
                 </div>
-            </div>
-
-            {/* Bottom bar */}
-            {hasContent && (
-                <div className='border-border flex shrink-0 items-center justify-between border-t px-4 py-2'>
+                {/* Inline links below card */}
+                <div className='text-muted-foreground flex w-full gap-1.5 px-4 pb-4 text-xs whitespace-nowrap sm:justify-center'>
                     <button
                         type='button'
-                        data-tally-open={feedbackConfig.formId}
-                        data-tally-emoji-text='👋'
-                        data-tally-emoji-animation='wave'
-                        className='text-muted-foreground hover:text-foreground text-xs transition-colors'>
-                        Share feedback
+                        onClick={() =>
+                            window.Tally?.openPopup(feedbackConfig.formId, {
+                                hiddenFields: { source: 'preview-panel', pageUrl: window.location.href },
+                            })
+                        }
+                        className='hover:text-foreground flex items-center gap-1 transition-colors'>
+                        <CircleHelp className='size-3.5' />
+                        <span>Bug or feature request? Let us know</span>
                     </button>
-                    {onOpenFeedPreview && (
-                        <button
-                            type='button'
-                            onClick={onOpenFeedPreview}
-                            className='text-muted-foreground hover:text-foreground text-xs transition-colors'>
-                            See in a realistic LinkedIn feed
-                        </button>
+                    {hasContent && onOpenFeedPreview && (
+                        <>
+                            <span aria-hidden='true'>·</span>
+                            <button
+                                type='button'
+                                onClick={onOpenFeedPreview}
+                                className='hover:text-foreground flex items-center gap-1 transition-colors'>
+                                <Eye className='size-3.5' />
+                                <span>See in a realistic LinkedIn feed</span>
+                            </button>
+                        </>
                     )}
                 </div>
-            )}
+            </div>
         </div>
     )
 }
