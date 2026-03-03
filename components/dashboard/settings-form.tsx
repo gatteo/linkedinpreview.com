@@ -44,8 +44,6 @@ export function SettingsForm() {
 
     return (
         <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
-            <p className='text-muted-foreground text-sm'>Manage your preferences and account data.</p>
-
             {/* Appearance */}
             <Card>
                 <CardHeader>
