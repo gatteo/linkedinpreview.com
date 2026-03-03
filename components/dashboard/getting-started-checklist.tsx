@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { CheckCircle2Icon, ChevronDownIcon, ChevronUpIcon, CircleIcon, RocketIcon } from 'lucide-react'
+import { CheckCircle2Icon, ChevronDownIcon, CircleIcon, RocketIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -115,11 +115,12 @@ export function GettingStartedChecklist() {
                         {completedCount} of {totalCount} steps done
                     </p>
                 </div>
-                {collapsed ? (
-                    <ChevronUpIcon className='text-muted-foreground size-4 shrink-0' />
-                ) : (
-                    <ChevronDownIcon className='text-muted-foreground size-4 shrink-0' />
-                )}
+                <ChevronDownIcon
+                    className={cn(
+                        'text-muted-foreground size-4 shrink-0 transition-transform duration-200',
+                        collapsed && 'rotate-180',
+                    )}
+                />
             </button>
 
             {/* Progress bar */}
@@ -133,13 +134,14 @@ export function GettingStartedChecklist() {
             </div>
 
             {/* Steps list */}
-            {!collapsed && (
-                <ul className='px-2 pt-1 pb-2'>
+            <div
+                className='grid transition-[grid-template-rows] duration-200 ease-out'
+                style={{ gridTemplateRows: collapsed ? '0fr' : '1fr' }}>
+                <ul className='overflow-hidden px-2 pt-1 pb-2'>
                     {STEPS.map((step) => {
                         const done = checked.has(step.id)
                         return (
                             <li key={step.id} className='flex items-start gap-2 rounded-md px-1 py-1.5'>
-                                {/* Checkbox toggle */}
                                 <button
                                     type='button'
                                     onClick={() => toggleStep(step.id)}
@@ -153,8 +155,6 @@ export function GettingStartedChecklist() {
                                         <CircleIcon className='text-muted-foreground size-4' />
                                     )}
                                 </button>
-
-                                {/* Label + description */}
                                 <Link href={step.href} className='group min-w-0 flex-1'>
                                     <p
                                         className={cn(
@@ -168,7 +168,7 @@ export function GettingStartedChecklist() {
                         )
                     })}
                 </ul>
-            )}
+            </div>
         </div>
     )
 }
