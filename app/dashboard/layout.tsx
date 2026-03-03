@@ -6,7 +6,6 @@ import { Toaster } from 'sonner'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AuthGate } from '@/components/dashboard/auth-gate'
 import { AuthProvider } from '@/components/dashboard/auth-provider'
-import { DashboardHeader } from '@/components/dashboard/dashboard-header'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { TallyScript } from '@/components/feedback/tally-script'
 
@@ -37,8 +36,7 @@ export default function DashboardLayout({
                                 <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
                                     <DashboardSidebar variant='inset' />
                                 </Suspense>
-                                <SidebarInset>
-                                    <DashboardHeader />
+                                <SidebarInset className='border'>
                                     <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
                                 </SidebarInset>
                             </SidebarProvider>
