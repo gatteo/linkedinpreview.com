@@ -4,6 +4,8 @@
 @plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant data-active (&[data-active]);
+@custom-variant data-open (&[data-open]);
 
 @utility container {
     margin-inline: auto;
