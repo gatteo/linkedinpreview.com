@@ -107,7 +107,7 @@ export function GettingStartedChecklist() {
             <button
                 type='button'
                 onClick={toggleCollapsed}
-                className='hover:bg-muted/50 flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors'>
+                className='hover:bg-muted/50 flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left transition-colors'>
                 <RocketIcon className='text-primary size-4 shrink-0' />
                 <div className='min-w-0 flex-1'>
                     <p className='text-sm leading-none font-medium'>Getting started</p>
@@ -123,51 +123,55 @@ export function GettingStartedChecklist() {
                 />
             </button>
 
-            {/* Progress bar */}
-            <div className='px-3 pb-1'>
-                <div className='bg-muted h-1 w-full overflow-hidden rounded-full'>
-                    <div
-                        className='bg-primary h-full rounded-full transition-all duration-300'
-                        style={{ width: `${progressPct}%` }}
-                    />
-                </div>
-            </div>
-
-            {/* Steps list */}
+            {/* Collapsible content */}
             <div
                 className='grid transition-[grid-template-rows] duration-200 ease-out'
                 style={{ gridTemplateRows: collapsed ? '0fr' : '1fr' }}>
-                <ul className='overflow-hidden px-2 pt-1 pb-2'>
-                    {STEPS.map((step) => {
-                        const done = checked.has(step.id)
-                        return (
-                            <li key={step.id} className='flex items-start gap-2 rounded-md px-1 py-1.5'>
-                                <button
-                                    type='button'
-                                    onClick={() => toggleStep(step.id)}
-                                    className='focus-visible:ring-ring mt-0.5 shrink-0 rounded focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none'
-                                    aria-label={
-                                        done ? `Mark "${step.label}" as incomplete` : `Mark "${step.label}" as complete`
-                                    }>
-                                    {done ? (
-                                        <CheckCircle2Icon className='text-primary size-4' />
-                                    ) : (
-                                        <CircleIcon className='text-muted-foreground size-4' />
-                                    )}
-                                </button>
-                                <Link href={step.href} className='group min-w-0 flex-1'>
-                                    <p
-                                        className={cn(
-                                            'group-hover:text-foreground text-xs leading-tight transition-colors',
-                                            done ? 'text-muted-foreground line-through' : 'text-foreground',
-                                        )}>
-                                        {step.label}
-                                    </p>
-                                </Link>
-                            </li>
-                        )
-                    })}
-                </ul>
+                <div className='overflow-hidden'>
+                    {/* Progress bar */}
+                    <div className='px-3 pb-1'>
+                        <div className='bg-muted h-1 w-full overflow-hidden rounded-full'>
+                            <div
+                                className='bg-primary h-full rounded-full transition-all duration-300'
+                                style={{ width: `${progressPct}%` }}
+                            />
+                        </div>
+                    </div>
+                    {/* Steps */}
+                    <ul className='px-2 pt-1 pb-2'>
+                        {STEPS.map((step) => {
+                            const done = checked.has(step.id)
+                            return (
+                                <li key={step.id} className='flex items-start gap-2 rounded-md px-1 py-1.5'>
+                                    <button
+                                        type='button'
+                                        onClick={() => toggleStep(step.id)}
+                                        className='focus-visible:ring-ring mt-0.5 shrink-0 rounded focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none'
+                                        aria-label={
+                                            done
+                                                ? `Mark "${step.label}" as incomplete`
+                                                : `Mark "${step.label}" as complete`
+                                        }>
+                                        {done ? (
+                                            <CheckCircle2Icon className='text-primary size-4' />
+                                        ) : (
+                                            <CircleIcon className='text-muted-foreground size-4' />
+                                        )}
+                                    </button>
+                                    <Link href={step.href} className='group min-w-0 flex-1'>
+                                        <p
+                                            className={cn(
+                                                'group-hover:text-foreground text-xs leading-tight transition-colors',
+                                                done ? 'text-muted-foreground line-through' : 'text-foreground',
+                                            )}>
+                                            {step.label}
+                                        </p>
+                                    </Link>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </div>
             </div>
         </div>
     )
