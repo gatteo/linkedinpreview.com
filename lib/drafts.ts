@@ -38,10 +38,10 @@ export interface DraftManifestEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Post labels
+// Post formats
 // ---------------------------------------------------------------------------
 
-export const POST_LABELS = [
+export const POST_FORMATS = [
     'Personal Milestones',
     'Mindset & Motivation',
     'Career Before & After',
@@ -53,7 +53,12 @@ export const POST_LABELS = [
     'Client Success Story',
 ] as const
 
-export type PostLabel = (typeof POST_LABELS)[number]
+export type PostFormat = (typeof POST_FORMATS)[number]
+
+/** @deprecated Use POST_FORMATS */
+export const POST_LABELS = POST_FORMATS
+/** @deprecated Use PostFormat */
+export type PostLabel = PostFormat
 
 /** Full content blob stored per-draft */
 export interface DraftContent {

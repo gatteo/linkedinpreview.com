@@ -93,7 +93,7 @@ function ActionsCell({
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant='ghost' size='icon' className='text-muted-foreground size-8'>
+                    <Button variant='outline' size='icon' className='size-8'>
                         <EllipsisVerticalIcon className='size-4' />
                         <span className='sr-only'>Actions</span>
                     </Button>
@@ -202,7 +202,8 @@ function createColumns(
         },
         {
             accessorKey: 'label',
-            header: 'Label',
+            header: 'Format',
+            size: 140,
             cell: ({ row }) => {
                 const label = row.original.label
                 if (!label) return <span className='text-muted-foreground text-xs'>-</span>
@@ -215,9 +216,10 @@ function createColumns(
             },
         },
         {
-            accessorKey: 'wordCount',
-            header: () => <div className='text-right'>Words</div>,
-            cell: ({ row }) => <div className='text-right tabular-nums'>{row.original.wordCount}</div>,
+            accessorKey: 'score',
+            header: 'Score',
+            size: 60,
+            cell: () => <span className='text-muted-foreground text-sm'>-</span>,
         },
         {
             accessorKey: 'updatedAt',
@@ -228,7 +230,11 @@ function createColumns(
         },
         {
             id: 'actions',
-            cell: ({ row }) => <ActionsCell draft={row.original} onDuplicate={onDuplicate} onDelete={onDelete} />,
+            cell: ({ row }) => (
+                <div className='flex justify-end'>
+                    <ActionsCell draft={row.original} onDuplicate={onDuplicate} onDelete={onDelete} />
+                </div>
+            ),
             enableHiding: false,
         },
     ]

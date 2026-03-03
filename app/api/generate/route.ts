@@ -46,7 +46,7 @@ const bodySchema = z.object({
 // Output schemas per action
 // ---------------------------------------------------------------------------
 
-const POST_LABELS = [
+const POST_FORMATS = [
     'Personal Milestones',
     'Mindset & Motivation',
     'Career Before & After',
@@ -157,7 +157,7 @@ ${sourceText}`,
                 model: openai(model),
                 schema: postsSchema,
                 system: `You are an expert LinkedIn content writer. You write complete, engaging LinkedIn posts.${withBranding(brandingContext)}${FORMATTING_RULES}`,
-                prompt: `Write 2 full LinkedIn post variants using the hook and source material below. Each post should be different in structure or angle but both use the same hook. Count the words in each post and include the word count. Assign each post one of these content labels that best describes it: ${POST_LABELS.join(', ')}.
+                prompt: `Write 2 full LinkedIn post variants using the hook and source material below. Each post should be different in structure or angle but both use the same hook. Count the words in each post and include the word count. Assign each post one of these content formats that best describes it: ${POST_FORMATS.join(', ')}.
 
 Hook: ${hook}
 

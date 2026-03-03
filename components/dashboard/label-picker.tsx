@@ -1,6 +1,6 @@
 'use client'
 
-import { POST_LABELS } from '@/lib/drafts'
+import { POST_FORMATS } from '@/lib/drafts'
 import { cn } from '@/lib/utils'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -35,14 +35,14 @@ export function LabelPicker({ value, onChange, className }: LabelPickerProps) {
                         <span className='truncate'>{value}</span>
                     </div>
                 ) : (
-                    <SelectValue placeholder='No label' />
+                    <SelectValue placeholder='No format' />
                 )}
             </SelectTrigger>
             <SelectContent>
                 <SelectItem value='__none__'>
-                    <span className='text-muted-foreground'>No label</span>
+                    <span className='text-muted-foreground'>No format</span>
                 </SelectItem>
-                {POST_LABELS.map((label) => (
+                {POST_FORMATS.map((label) => (
                     <SelectItem key={label} value={label}>
                         <div className='flex items-center gap-1.5'>
                             <div className={cn('size-2 shrink-0 rounded-full', labelColor(label))} />
