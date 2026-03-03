@@ -74,6 +74,92 @@ The home page (`app/page.tsx`) is a single-page layout with these sections:
 
 JSON-LD schemas (Organization, WebSite, SoftwareApplication) are embedded for SEO.
 
+## Dashboard
+
+A full post management dashboard at `/dashboard` with Supabase-backed persistence. Users get an anonymous session on first visit - no sign-up required.
+
+### Posts List (`/dashboard`)
+
+The default dashboard landing page. Displays all drafts in a `@tanstack/react-table` data table.
+
+**Features:**
+
+- Columns: checkbox, title (link to editor), label, status badge, word count, modified date, actions dropdown
+- Search filter on title
+- Status filter tabs (All / Draft / Scheduled / Published)
+- Label filter dropdown
+- Bulk delete via checkbox selection
+- Pagination (10 rows per page)
+- Empty state with "New Post" button and creation wizard trigger
+
+### Editor (`/dashboard/editor`)
+
+The TipTap editor wrapped in a resizable panel layout with live LinkedIn preview.
+
+**Layout:** Two resizable panels side-by-side (`react-resizable-panels`):
+
+- Left: Editor with toolbar, AI actions, and analyze panel
+- Right: LinkedIn preview with mobile/tablet/desktop size switcher
+
+**Features:**
+
+- Auto-save with 2-second debounce to Supabase
+- Draft title auto-extracted from first line of content
+- Image upload with preview
+- Word/character count in real time
+- Label picker (color-coded categories)
+- Status management (draft/scheduled/published)
+
+### AI Features
+
+**Quick AI Actions** (`components/dashboard/ai-actions.tsx`):
+
+- Toolbar with one-click actions: improve, shorten, expand, fix grammar, change tone
+- Powered by `/api/chat` endpoint
+
+**Analyze Panel** (`components/dashboard/analyze-panel.tsx`):
+
+- Scores post on engagement potential (0-100)
+- Provides categorized suggestions (hook, structure, engagement, CTA, hashtags)
+- Stats: word count, reading time, emoji count, hashtag count
+- Powered by `/api/analyze` endpoint
+
+**Creation Wizard** (`components/dashboard/creation-wizard/`):
+
+- Multi-step guided flow: topic, tone, audience, key points
+- Can extract content from a URL (`/api/extract`)
+- Generates a full draft via `/api/generate`
+
+### Branding (`/dashboard/branding`)
+
+Configure how the LinkedIn preview card looks.
+
+**Fields:** Display name, headline, avatar upload, expertise tags, profile URL
+**Persistence:** Single JSONB row per user in `public.branding` table
+
+### Settings (`/dashboard/settings`)
+
+**Sections:**
+
+- Appearance: Light / Dark / System theme toggle
+- Export Data: Download all data as JSON (placeholder)
+- Import Data: Restore from backup file (placeholder)
+- Danger Zone: Reset all data with confirmation dialog (placeholder)
+
+### Getting Started Checklist
+
+Onboarding widget in the sidebar footer (`components/dashboard/getting-started-checklist.tsx`):
+
+- 5 steps: write first post, set up branding, try AI suggestions, preview in feed, copy and publish
+- Progress bar with percentage
+- Collapsible with smooth CSS grid height animation
+- State persisted in localStorage
+- Auto-hides when all steps complete
+
+### Tutorial Dialog
+
+First-visit tutorial modal (`components/dashboard/tutorial-dialog.tsx`) with overview of dashboard features.
+
 ## Blog
 
 A content marketing blog with 12 articles about LinkedIn best practices.
