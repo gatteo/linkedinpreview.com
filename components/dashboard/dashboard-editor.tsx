@@ -12,7 +12,6 @@ import { hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
 import { useCurrentDraft } from '@/hooks/use-current-draft'
-import { useDrafts } from '@/hooks/use-drafts'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -91,8 +90,7 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
 // ---------------------------------------------------------------------------
 
 export function DashboardEditor() {
-    const { draftId, initialContent, initialMedia, isLoading, saveContent, saveMedia } = useCurrentDraft()
-    const { drafts } = useDrafts()
+    const { initialContent, initialMedia, isLoading, saveContent, saveMedia } = useCurrentDraft()
     const { branding } = useBranding()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)

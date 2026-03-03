@@ -27,8 +27,8 @@ export type BrandingRole =
     | ''
 
 export interface BrandingExpertise {
-    /** Up to 4 areas of expertise */
-    topics: [string, string, string, string]
+    /** Areas of expertise */
+    topics: string[]
 }
 
 export interface BrandingWritingStyle {
@@ -61,6 +61,13 @@ export interface BrandingDosDonts {
     donts: string[]
 }
 
+export interface BrandingInspiration {
+    /** Inspirational LinkedIn posts to analyze for writing style */
+    posts: string[]
+    /** Creators whose writing style inspires you */
+    creators: Array<{ name: string; url: string }>
+}
+
 export interface BrandingData {
     profile: BrandingProfile
     positioning: BrandingPositioning
@@ -70,6 +77,7 @@ export interface BrandingData {
     footer: BrandingFooter
     knowledgeBase: BrandingKnowledgeBase
     dosDonts: BrandingDosDonts
+    inspiration: BrandingInspiration
 }
 
 // ---------------------------------------------------------------------------
@@ -87,7 +95,7 @@ export const DEFAULT_BRANDING: BrandingData = {
     },
     role: '',
     expertise: {
-        topics: ['', '', '', ''],
+        topics: [],
     },
     writingStyle: {
         language: 'english',
@@ -105,5 +113,9 @@ export const DEFAULT_BRANDING: BrandingData = {
     dosDonts: {
         dos: [],
         donts: [],
+    },
+    inspiration: {
+        posts: [],
+        creators: [],
     },
 }

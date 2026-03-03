@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { CheckIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { CheckIcon, InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { type BrandingData, type BrandingRole } from '@/lib/branding'
@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,6 +26,18 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 interface SectionProps {
     branding: BrandingData
     onUpdate: (updates: Partial<BrandingData>) => void
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function flagEmoji(code: string): string {
+    return code
+        .toUpperCase()
+        .split('')
+        .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
+        .join('')
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +123,7 @@ function ProfileSection({ branding, onUpdate }: SectionProps) {
                         value={branding.profile.name}
                         onChange={(e) => onUpdate({ profile: { ...branding.profile, name: e.target.value } })}
                         placeholder='Your full name'
+                        className='max-w-sm'
                     />
                 </div>
 
@@ -175,7 +189,7 @@ function RoleSection({ branding, onUpdate }: SectionProps) {
             </CardHeader>
             <CardContent>
                 <Select value={branding.role} onValueChange={(val) => onUpdate({ role: val as BrandingRole })}>
-                    <SelectTrigger className='w-full'>
+                    <SelectTrigger className='max-w-sm'>
                         <SelectValue placeholder='Select your role' />
                     </SelectTrigger>
                     <SelectContent>
@@ -196,41 +210,53 @@ function RoleSection({ branding, onUpdate }: SectionProps) {
 // ---------------------------------------------------------------------------
 
 function ExpertiseSection({ branding, onUpdate }: SectionProps) {
-    const updateTopic = (index: number, value: string) => {
-        const topics = [...branding.expertise.topics] as [string, string, string, string]
-        topics[index] = value
-        onUpdate({ expertise: { topics } })
+    const [input, setInput] = React.useState('')
+    const topics = branding.expertise.topics.filter(Boolean)
+
+    const addTopic = () => {
+        const trimmed = input.trim()
+        if (!trimmed) return
+        onUpdate({ expertise: { topics: [...topics, trimmed] } })
+        setInput('')
+    }
+
+    const removeTopic = (index: number) => {
+        const updated = topics.filter((_, i) => i !== index)
+        onUpdate({ expertise: { topics: updated } })
     }
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Areas of Expertise</CardTitle>
-                <CardDescription>The main topics you post about. First two are required.</CardDescription>
+                <CardDescription>Topics you write about on LinkedIn</CardDescription>
             </CardHeader>
             <CardContent className='space-y-3'>
-                {branding.expertise.topics.map((topic, i) => (
-                    <div key={i} className='space-y-1.5'>
-                        <Label htmlFor={`topic-${i}`}>
-                            Topic {i + 1}
-                            {i < 2 && <span className='text-muted-foreground ml-1'>*</span>}
-                        </Label>
-                        <Input
-                            id={`topic-${i}`}
-                            value={topic}
-                            onChange={(e) => updateTopic(i, e.target.value)}
-                            placeholder={
-                                i === 0
-                                    ? 'e.g. Growth Marketing'
-                                    : i === 1
-                                      ? 'e.g. SaaS Startups'
-                                      : i === 2
-                                        ? 'e.g. Product Strategy'
-                                        : 'e.g. Leadership'
-                            }
-                        />
+                {topics.map((topic, i) => (
+                    <div key={i} className='flex items-center gap-2 rounded-md border px-3 py-2'>
+                        <span className='flex-1 text-sm'>{topic}</span>
+                        <Button variant='ghost' size='icon' className='size-7' onClick={() => removeTopic(i)}>
+                            <Trash2Icon className='size-3.5' />
+                        </Button>
                     </div>
                 ))}
+                <div className='flex gap-0'>
+                    <Input
+                        placeholder='Add a topic...'
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTopic())}
+                        className='rounded-r-none'
+                    />
+                    <Button
+                        variant='outline'
+                        onClick={addTopic}
+                        disabled={!input.trim()}
+                        className='rounded-l-none border-l-0'>
+                        <PlusIcon className='size-4' />
+                        Add
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     )
@@ -241,14 +267,14 @@ function ExpertiseSection({ branding, onUpdate }: SectionProps) {
 // ---------------------------------------------------------------------------
 
 const LANGUAGES = [
-    { value: 'english', label: 'English' },
-    { value: 'german', label: 'German' },
-    { value: 'french', label: 'French' },
-    { value: 'spanish', label: 'Spanish' },
-    { value: 'italian', label: 'Italian' },
-    { value: 'portuguese', label: 'Portuguese' },
-    { value: 'dutch', label: 'Dutch' },
-]
+    { value: 'english', label: 'English', flag: 'us' },
+    { value: 'german', label: 'German', flag: 'de' },
+    { value: 'french', label: 'French', flag: 'fr' },
+    { value: 'spanish', label: 'Spanish', flag: 'es' },
+    { value: 'italian', label: 'Italian', flag: 'it' },
+    { value: 'portuguese', label: 'Portuguese', flag: 'pt' },
+    { value: 'dutch', label: 'Dutch', flag: 'nl' },
+] as const
 
 function WritingStyleSection({ branding, onUpdate }: SectionProps) {
     const { writingStyle } = branding
@@ -267,12 +293,13 @@ function WritingStyleSection({ branding, onUpdate }: SectionProps) {
                 <div className='space-y-2'>
                     <Label>Language</Label>
                     <Select value={writingStyle.language} onValueChange={(val) => update('language', val)}>
-                        <SelectTrigger className='w-full'>
+                        <SelectTrigger className='max-w-sm'>
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                             {LANGUAGES.map((l) => (
                                 <SelectItem key={l.value} value={l.value}>
+                                    <span className='mr-2'>{flagEmoji(l.flag)}</span>
                                     {l.label}
                                 </SelectItem>
                             ))}
@@ -281,60 +308,123 @@ function WritingStyleSection({ branding, onUpdate }: SectionProps) {
                 </div>
 
                 <div className='space-y-2'>
-                    <Label>Sentence length</Label>
+                    <div className='flex items-center gap-1.5'>
+                        <Label>Sentence length</Label>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <InfoIcon className='text-muted-foreground size-3.5' />
+                                </TooltipTrigger>
+                                <TooltipContent side='top' className='max-w-xs'>
+                                    <p>
+                                        Control the average length of each sentence. Short creates punchy, concise lines
+                                        while Long uses a more academic, detailed writing style.
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <ToggleGroup
                         type='single'
                         variant='outline'
                         value={writingStyle.sentenceLength}
                         onValueChange={(val) => val && update('sentenceLength', val)}
-                        className='w-full'>
-                        <ToggleGroupItem value='short' className='flex-1'>
+                        className='w-full gap-0'>
+                        <ToggleGroupItem
+                            value='short'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Short
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='standard' className='flex-1'>
+                        <ToggleGroupItem
+                            value='standard'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Standard
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='long' className='flex-1'>
+                        <ToggleGroupItem
+                            value='long'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Long
                         </ToggleGroupItem>
                     </ToggleGroup>
                 </div>
 
                 <div className='space-y-2'>
-                    <Label>Post length</Label>
+                    <div className='flex items-center gap-1.5'>
+                        <Label>Post length</Label>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <InfoIcon className='text-muted-foreground size-3.5' />
+                                </TooltipTrigger>
+                                <TooltipContent side='top' className='max-w-xs'>
+                                    <p>
+                                        Set the target length for your posts. Short posts are under 500 characters,
+                                        Standard is 500-1500, Long is 1500+.
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <ToggleGroup
                         type='single'
                         variant='outline'
                         value={writingStyle.postLength}
                         onValueChange={(val) => val && update('postLength', val)}
-                        className='w-full'>
-                        <ToggleGroupItem value='short' className='flex-1'>
+                        className='w-full gap-0'>
+                        <ToggleGroupItem
+                            value='short'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Short
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='standard' className='flex-1'>
+                        <ToggleGroupItem
+                            value='standard'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Standard
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='long' className='flex-1'>
+                        <ToggleGroupItem
+                            value='long'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Long
                         </ToggleGroupItem>
                     </ToggleGroup>
                 </div>
 
                 <div className='space-y-2'>
-                    <Label>Emoji frequency</Label>
+                    <div className='flex items-center gap-1.5'>
+                        <Label>Emoji frequency</Label>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <InfoIcon className='text-muted-foreground size-3.5' />
+                                </TooltipTrigger>
+                                <TooltipContent side='top' className='max-w-xs'>
+                                    <p>
+                                        How often emojis appear in your posts. None keeps it clean, Moderate adds
+                                        occasional emphasis, A lot uses them liberally.
+                                    </p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                     <ToggleGroup
                         type='single'
                         variant='outline'
                         value={writingStyle.emojiFrequency}
                         onValueChange={(val) => val && update('emojiFrequency', val)}
-                        className='w-full'>
-                        <ToggleGroupItem value='none' className='flex-1'>
+                        className='w-full gap-0'>
+                        <ToggleGroupItem
+                            value='none'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             None
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='moderate' className='flex-1'>
+                        <ToggleGroupItem
+                            value='moderate'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             Moderate
                         </ToggleGroupItem>
-                        <ToggleGroupItem value='a-lot' className='flex-1'>
+                        <ToggleGroupItem
+                            value='a-lot'
+                            className='flex-1 rounded-none border first:rounded-l-md last:rounded-r-md'>
                             A lot
                         </ToggleGroupItem>
                     </ToggleGroup>
@@ -465,14 +555,19 @@ function DosDontsSection({ branding, onUpdate }: SectionProps) {
                             ))}
                         </ul>
                     )}
-                    <div className='flex gap-2'>
+                    <div className='flex gap-0'>
                         <Input
                             value={newDo}
                             onChange={(e) => setNewDo(e.target.value)}
                             placeholder='e.g. Always include a clear CTA'
-                            onKeyDown={(e) => e.key === 'Enter' && addDo()}
+                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addDo())}
+                            className='rounded-r-none'
                         />
-                        <Button variant='outline' size='sm' onClick={addDo} disabled={!newDo.trim()}>
+                        <Button
+                            variant='outline'
+                            onClick={addDo}
+                            disabled={!newDo.trim()}
+                            className='rounded-l-none border-l-0'>
                             <PlusIcon className='size-4' />
                             Add
                         </Button>
@@ -497,18 +592,162 @@ function DosDontsSection({ branding, onUpdate }: SectionProps) {
                             ))}
                         </ul>
                     )}
-                    <div className='flex gap-2'>
+                    <div className='flex gap-0'>
                         <Input
                             value={newDont}
                             onChange={(e) => setNewDont(e.target.value)}
                             placeholder='e.g. Never use corporate jargon'
-                            onKeyDown={(e) => e.key === 'Enter' && addDont()}
+                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addDont())}
+                            className='rounded-r-none'
                         />
-                        <Button variant='outline' size='sm' onClick={addDont} disabled={!newDont.trim()}>
+                        <Button
+                            variant='outline'
+                            onClick={addDont}
+                            disabled={!newDont.trim()}
+                            className='rounded-l-none border-l-0'>
                             <PlusIcon className='size-4' />
                             Add
                         </Button>
                     </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Inspiration Posts Section
+// ---------------------------------------------------------------------------
+
+function InspirationPostsSection({ branding, onUpdate }: SectionProps) {
+    const [input, setInput] = React.useState('')
+    const posts = branding.inspiration?.posts ?? []
+
+    const addPost = () => {
+        const trimmed = input.trim()
+        if (!trimmed) return
+        onUpdate({ inspiration: { ...branding.inspiration, posts: [...posts, trimmed] } })
+        setInput('')
+    }
+
+    const removePost = (index: number) => {
+        onUpdate({ inspiration: { ...branding.inspiration, posts: posts.filter((_, i) => i !== index) } })
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Inspirational Posts</CardTitle>
+                <CardDescription>Paste LinkedIn posts you admire - we will analyze the writing style</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+                {posts.map((post, i) => (
+                    <div key={i} className='relative rounded-md border p-3'>
+                        <p className='line-clamp-3 pr-8 text-sm'>{post}</p>
+                        <Button
+                            variant='ghost'
+                            size='icon'
+                            className='absolute top-2 right-2 size-7'
+                            onClick={() => removePost(i)}>
+                            <Trash2Icon className='size-3.5' />
+                        </Button>
+                    </div>
+                ))}
+                <div className='flex gap-0'>
+                    <Textarea
+                        placeholder='Paste a LinkedIn post...'
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        className='min-h-20 rounded-r-none'
+                    />
+                    <Button
+                        variant='outline'
+                        onClick={addPost}
+                        disabled={!input.trim()}
+                        className='h-auto rounded-l-none border-l-0'>
+                        <PlusIcon className='size-4' />
+                        Add
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Inspiration Creators Section
+// ---------------------------------------------------------------------------
+
+function InspirationCreatorsSection({ branding, onUpdate }: SectionProps) {
+    const [name, setName] = React.useState('')
+    const [url, setUrl] = React.useState('')
+    const creators = branding.inspiration?.creators ?? []
+
+    const addCreator = () => {
+        const trimmedName = name.trim()
+        if (!trimmedName) return
+        onUpdate({
+            inspiration: {
+                ...branding.inspiration,
+                creators: [...creators, { name: trimmedName, url: url.trim() }],
+            },
+        })
+        setName('')
+        setUrl('')
+    }
+
+    const removeCreator = (index: number) => {
+        onUpdate({
+            inspiration: {
+                ...branding.inspiration,
+                creators: creators.filter((_, i) => i !== index),
+            },
+        })
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Inspirational Creators</CardTitle>
+                <CardDescription>Creators whose writing style inspires you</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-3'>
+                {creators.map((creator, i) => (
+                    <div key={i} className='flex items-center gap-2 rounded-md border px-3 py-2'>
+                        <span className='flex-1 text-sm'>{creator.name}</span>
+                        {creator.url && (
+                            <a
+                                href={creator.url}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='text-muted-foreground text-xs hover:underline'>
+                                Profile
+                            </a>
+                        )}
+                        <Button variant='ghost' size='icon' className='size-7' onClick={() => removeCreator(i)}>
+                            <Trash2Icon className='size-3.5' />
+                        </Button>
+                    </div>
+                ))}
+                <div className='flex gap-2'>
+                    <Input
+                        placeholder='Creator name'
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCreator())}
+                        className='flex-1'
+                    />
+                    <Input
+                        placeholder='LinkedIn URL (optional)'
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCreator())}
+                        className='flex-1'
+                    />
+                    <Button variant='outline' onClick={addCreator} disabled={!name.trim()}>
+                        <PlusIcon className='size-4' />
+                        Add
+                    </Button>
                 </div>
             </CardContent>
         </Card>
@@ -521,13 +760,7 @@ function DosDontsSection({ branding, onUpdate }: SectionProps) {
 
 function BrandingFormSkeleton() {
     return (
-        <div className='mx-auto max-w-2xl space-y-6 p-4 lg:p-6'>
-            <div className='flex items-start justify-between gap-4'>
-                <div className='space-y-2'>
-                    <Skeleton className='h-8 w-32' />
-                    <Skeleton className='h-4 w-64' />
-                </div>
-            </div>
+        <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
             {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className='space-y-4 rounded-xl border p-6'>
                     <Skeleton className='h-5 w-24' />
@@ -563,17 +796,8 @@ export function BrandingForm() {
     if (isLoading) return <BrandingFormSkeleton />
 
     return (
-        <div className='mx-auto max-w-2xl space-y-6 p-4 lg:p-6'>
-            <div className='flex items-start justify-between gap-4'>
-                <div>
-                    <h1 className='text-2xl font-semibold'>Branding</h1>
-                    <p className='text-muted-foreground text-sm'>
-                        Personalize your preview and guide AI content generation.
-                    </p>
-                </div>
-                <SaveIndicator visible={showSaved} />
-            </div>
-
+        <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
+            <SaveIndicator visible={showSaved} />
             <ProfileSection branding={branding} onUpdate={handleUpdate} />
             <PositioningSection branding={branding} onUpdate={handleUpdate} />
             <RoleSection branding={branding} onUpdate={handleUpdate} />
@@ -582,6 +806,8 @@ export function BrandingForm() {
             <FooterSection branding={branding} onUpdate={handleUpdate} />
             <KnowledgeBaseSection branding={branding} onUpdate={handleUpdate} />
             <DosDontsSection branding={branding} onUpdate={handleUpdate} />
+            <InspirationPostsSection branding={branding} onUpdate={handleUpdate} />
+            <InspirationCreatorsSection branding={branding} onUpdate={handleUpdate} />
         </div>
     )
 }

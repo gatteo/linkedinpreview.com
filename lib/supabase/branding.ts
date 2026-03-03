@@ -20,6 +20,7 @@ function mergeWithDefaults(stored: Partial<BrandingData>): BrandingData {
         footer: { ...DEFAULT_BRANDING.footer, ...stored.footer },
         knowledgeBase: { ...DEFAULT_BRANDING.knowledgeBase, ...stored.knowledgeBase },
         dosDonts: { ...DEFAULT_BRANDING.dosDonts, ...stored.dosDonts },
+        inspiration: { ...DEFAULT_BRANDING.inspiration, ...stored.inspiration },
     }
 }
 
