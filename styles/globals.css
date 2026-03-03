@@ -157,7 +157,7 @@
         --popover: oklch(0.205 0 0);
         --popover-foreground: oklch(0.985 0 0);
         --primary: oklch(0.654 0.154 241.7);
-        --primary-foreground: oklch(0.145 0 0);
+        --primary-foreground: oklch(0.98 0 0);
         --secondary: oklch(0.269 0 0);
         --secondary-foreground: oklch(0.985 0 0);
         --muted: oklch(0.269 0 0);
@@ -390,4 +390,13 @@ pre.shiki .highlighted {
 .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* ─── Tiptap dark mode ─── */
+.dark .tiptap {
+    color: var(--foreground);
+}
+
+.dark .ProseMirror {
+    color: var(--foreground);
 }
