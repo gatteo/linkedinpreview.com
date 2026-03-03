@@ -73,9 +73,13 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 <SidebarGroup>
                     <div className='flex items-center justify-between px-2'>
                         <SidebarGroupLabel className='text-muted-foreground p-0'>Posts</SidebarGroupLabel>
-                        <Button variant='outline' size='icon' className='size-6' onClick={() => setNewPostOpen(true)}>
-                            <PlusIcon className='size-3.5' />
-                            <span className='sr-only'>New Post</span>
+                        <Button
+                            variant='outline'
+                            size='sm'
+                            className='h-6 px-2 text-xs'
+                            onClick={() => setNewPostOpen(true)}>
+                            <PlusIcon className='size-3' />
+                            New
                         </Button>
                     </div>
                     <SidebarGroupContent>
@@ -178,10 +182,13 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                <SidebarSeparator />
+                {/* Getting started */}
+                <div className='mt-auto px-2 pb-2'>
+                    <GettingStartedChecklist />
+                </div>
 
                 {/* Bottom nav */}
-                <SidebarGroup className='mt-auto'>
+                <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -210,9 +217,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className='p-0'>
-                <GettingStartedChecklist />
-            </SidebarFooter>
+            <SidebarFooter />
             <SidebarRail />
 
             <CreationWizard open={newPostOpen} onOpenChange={setNewPostOpen} />

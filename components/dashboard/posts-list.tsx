@@ -171,7 +171,7 @@ export function PostsList() {
                                     <SelectValue placeholder='All formats' />
                                 )}
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className='p-1'>
                                 <SelectItem value='__all__' className='px-3 py-2'>
                                     All formats
                                 </SelectItem>

@@ -56,12 +56,12 @@ function extractPlainText(content: any): string {
 
 function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: RightTab) => void }) {
     return (
-        <div className='border-border flex h-10 shrink-0 border-b'>
+        <div className='border-border flex h-14 shrink-0 border-b'>
             <button
                 type='button'
                 onClick={() => onTabChange('preview')}
                 className={cn(
-                    'flex flex-1 items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors',
+                    'flex flex-1 items-center justify-center gap-1.5 py-4 text-xs font-medium transition-colors',
                     tab === 'preview'
                         ? 'border-foreground text-foreground border-b-2'
                         : 'text-muted-foreground hover:text-foreground',
@@ -73,7 +73,7 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
                 type='button'
                 onClick={() => onTabChange('analyze')}
                 className={cn(
-                    'flex flex-1 items-center justify-center gap-1.5 py-3 text-xs font-medium transition-colors',
+                    'flex flex-1 items-center justify-center gap-1.5 py-4 text-xs font-medium transition-colors',
                     tab === 'analyze'
                         ? 'border-foreground text-foreground border-b-2'
                         : 'text-muted-foreground hover:text-foreground',

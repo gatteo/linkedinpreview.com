@@ -26,7 +26,7 @@ export default function DashboardLayout({
             <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
                 <AuthProvider>
                     <AuthGate>
-                        <div className='mx-auto min-h-svh w-full max-w-[1500px]' style={{ transform: 'translateZ(0)' }}>
+                        <div className='mx-auto h-svh w-full max-w-[1500px]' style={{ transform: 'translateZ(0)' }}>
                             <SidebarProvider
                                 style={
                                     {

@@ -203,7 +203,7 @@ function createColumns(
         {
             accessorKey: 'label',
             header: 'Format',
-            size: 140,
+            size: 120,
             cell: ({ row }) => {
                 const label = row.original.label
                 if (!label) return <span className='text-muted-foreground text-xs'>-</span>
@@ -230,6 +230,7 @@ function createColumns(
         },
         {
             id: 'actions',
+            size: 52,
             cell: ({ row }) => (
                 <div className='flex justify-end'>
                     <ActionsCell draft={row.original} onDuplicate={onDuplicate} onDelete={onDelete} />
@@ -325,7 +326,15 @@ export function PostsTable({ data, onDuplicate, onDelete }: PostsTableProps) {
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} colSpan={header.colSpan}>
+                                    <TableHead
+                                        key={header.id}
+                                        colSpan={header.colSpan}
+                                        style={
+                                            header.column.columnDef.size !== undefined &&
+                                            header.column.columnDef.size !== 150
+                                                ? { width: header.column.columnDef.size }
+                                                : undefined
+                                        }>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(header.column.columnDef.header, header.getContext())}
@@ -339,7 +348,14 @@ export function PostsTable({ data, onDuplicate, onDelete }: PostsTableProps) {
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell
+                                            key={cell.id}
+                                            style={
+                                                cell.column.columnDef.size !== undefined &&
+                                                cell.column.columnDef.size !== 150
+                                                    ? { width: cell.column.columnDef.size }
+                                                    : undefined
+                                            }>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}

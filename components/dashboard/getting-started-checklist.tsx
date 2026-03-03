@@ -128,7 +128,7 @@ export function GettingStartedChecklist() {
     const progressPct = Math.round((completedCount / totalCount) * 100)
 
     return (
-        <div className='border-t'>
+        <div className='mx-2 mb-2 rounded-lg border'>
             {/* Header row */}
             <button
                 type='button'

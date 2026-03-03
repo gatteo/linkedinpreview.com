@@ -242,7 +242,7 @@ function ExpertiseSection({ branding, onUpdate }: SectionProps) {
                 ))}
                 <div className='flex gap-0'>
                     <Input
-                        placeholder='Add a topic...'
+                        placeholder='e.g. Create Mobile Apps'
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTopic())}
@@ -796,8 +796,10 @@ export function BrandingForm() {
     if (isLoading) return <BrandingFormSkeleton />
 
     return (
-        <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
-            <SaveIndicator visible={showSaved} />
+        <div className='relative max-w-2xl space-y-6 p-4 lg:p-6'>
+            <div className='absolute top-4 right-4 lg:top-6 lg:right-6'>
+                <SaveIndicator visible={showSaved} />
+            </div>
             <ProfileSection branding={branding} onUpdate={handleUpdate} />
             <PositioningSection branding={branding} onUpdate={handleUpdate} />
             <RoleSection branding={branding} onUpdate={handleUpdate} />

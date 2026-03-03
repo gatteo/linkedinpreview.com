@@ -1,8 +1,8 @@
 import type React from 'react'
-import { ExternalLinkIcon, MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react'
+import { MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react'
 
+import { feedbackConfig } from '@/config/feedback'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 
 import type { Media } from '../tool'
 import { PostCard } from './post-card'
@@ -32,9 +32,10 @@ function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: 
 
     return (
         <div className='flex h-full flex-col'>
-            {/* Compact controls bar */}
-            <div className='flex shrink-0 items-center justify-between px-4 py-2'>
-                <div className='flex items-center gap-1'>
+            {/* Preview area */}
+            <div className='bg-muted/30 flex flex-1 flex-col items-center overflow-auto dark:bg-neutral-900/30'>
+                {/* Size switcher */}
+                <div className='flex shrink-0 items-center gap-1 pt-3 pb-1'>
                     {sizes.map((size) => {
                         const Icon = sizeIcons[size]
                         return (
@@ -52,20 +53,33 @@ function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: 
                         )
                     })}
                 </div>
-                {hasContent && onOpenFeedPreview && (
-                    <Button variant='outline' size='sm' className='h-7 text-xs' onClick={onOpenFeedPreview}>
-                        <ExternalLinkIcon className='size-3' />
-                        Open in feed
-                    </Button>
-                )}
-            </div>
-
-            {/* Preview area */}
-            <div className='bg-muted/30 flex flex-1 flex-col items-center overflow-auto py-5 dark:bg-neutral-900/30'>
-                <div className={cn('mx-auto transition-all duration-300', containerWidth[screenSize])}>
+                {/* Card */}
+                <div className={cn('mx-auto pb-5 transition-all duration-300', containerWidth[screenSize])}>
                     <PostCard content={content} media={media} />
                 </div>
             </div>
+
+            {/* Bottom bar */}
+            {hasContent && (
+                <div className='border-border flex shrink-0 items-center justify-between border-t px-4 py-2'>
+                    <button
+                        type='button'
+                        data-tally-open={feedbackConfig.formId}
+                        data-tally-emoji-text='👋'
+                        data-tally-emoji-animation='wave'
+                        className='text-muted-foreground hover:text-foreground text-xs transition-colors'>
+                        Share feedback
+                    </button>
+                    {onOpenFeedPreview && (
+                        <button
+                            type='button'
+                            onClick={onOpenFeedPreview}
+                            className='text-muted-foreground hover:text-foreground text-xs transition-colors'>
+                            See in a realistic LinkedIn feed
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
