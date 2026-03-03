@@ -2,8 +2,9 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { BarChart3, Eye, PenLine } from 'lucide-react'
+import { BarChart3, CopyIcon, Eye, PenLine } from 'lucide-react'
 import { Group, Panel } from 'react-resizable-panels'
+import { toast } from 'sonner'
 
 import { assembleBrandingContext } from '@/lib/ai-branding'
 import { encodeDraft } from '@/lib/draft-url'
@@ -13,6 +14,7 @@ import { useBranding } from '@/hooks/use-branding'
 import { useCurrentDraft } from '@/hooks/use-current-draft'
 import { useDrafts } from '@/hooks/use-drafts'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AIActions } from '@/components/dashboard/ai-actions'
 import { EditorLoading } from '@/components/tool/editor-loading'
@@ -20,7 +22,7 @@ import { PreviewPanel } from '@/components/tool/preview/preview-panel'
 import { ResizeHandle } from '@/components/tool/resize-handle'
 
 import { AnalyzePanel } from './analyze-panel'
-import { LabelPicker } from './label-picker'
+import { PageHeader } from './page-header'
 
 const EditorPanel = dynamic(
     () => import('@/components/tool/editor-panel').then((mod) => ({ default: mod.EditorPanel })),
@@ -55,7 +57,7 @@ function extractPlainText(content: any): string {
 
 function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: RightTab) => void }) {
     return (
-        <div className='border-border flex shrink-0 border-b'>
+        <div className='border-border flex h-10 shrink-0 border-b'>
             <button
                 type='button'
                 onClick={() => onTabChange('preview')}
@@ -90,7 +92,7 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
 
 export function DashboardEditor() {
     const { draftId, initialContent, initialMedia, isLoading, saveContent, saveMedia } = useCurrentDraft()
-    const { drafts, updateDraft } = useDrafts()
+    const { drafts } = useDrafts()
     const { branding } = useBranding()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
@@ -132,18 +134,15 @@ export function DashboardEditor() {
         setContentReplace(newText)
     }, [])
 
-    const currentLabel = React.useMemo(() => drafts.find((d) => d.id === draftId)?.label ?? null, [drafts, draftId])
-
-    const handleLabelChange = React.useCallback(
-        (label: string | null) => {
-            if (!draftId) return
-            updateDraft(draftId, { label })
-        },
-        [draftId, updateDraft],
-    )
-
     const contentText = React.useMemo(() => extractPlainText(content), [content])
     const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
+
+    const handleCopyText = React.useCallback(async () => {
+        const text = contentText
+        if (!text) return
+        await navigator.clipboard.writeText(text)
+        toast.success('Copied to clipboard')
+    }, [contentText])
 
     if (isLoading) {
         return (
@@ -199,91 +198,94 @@ export function DashboardEditor() {
     )
 
     return (
-        <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
-            {/* Editor meta bar */}
-            <div className='border-border flex shrink-0 items-center gap-3 border-b px-4 py-2'>
-                <span className='text-muted-foreground text-xs'>Label</span>
-                <LabelPicker value={currentLabel} onChange={handleLabelChange} className='h-7 text-xs' />
+        <>
+            <PageHeader title='Editor'>
+                <Button size='sm' onClick={handleCopyText} disabled={!contentText}>
+                    <CopyIcon className='size-4' />
+                    Copy Text
+                </Button>
+            </PageHeader>
+
+            <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
+                {/* Mobile tab bar */}
+                {!isDesktop && (
+                    <div className='border-border flex border-b'>
+                        <button
+                            type='button'
+                            onClick={() => setMobileTab('editor')}
+                            className={cn(
+                                'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                                mobileTab === 'editor'
+                                    ? 'border-foreground text-foreground border-b-2'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            )}>
+                            <PenLine className='size-4' />
+                            Editor
+                        </button>
+                        <button
+                            type='button'
+                            onClick={() => setMobileTab('preview')}
+                            className={cn(
+                                'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                                mobileTab === 'preview'
+                                    ? 'border-foreground text-foreground border-b-2'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            )}>
+                            <Eye className='size-4' />
+                            Preview
+                        </button>
+                        <button
+                            type='button'
+                            onClick={() => setMobileTab('analyze')}
+                            className={cn(
+                                'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                                mobileTab === 'analyze'
+                                    ? 'border-foreground text-foreground border-b-2'
+                                    : 'text-muted-foreground hover:text-foreground',
+                            )}>
+                            <BarChart3 className='size-4' />
+                            Analyze
+                        </button>
+                    </div>
+                )}
+
+                {/* Panels */}
+                {isDesktop ? (
+                    <Group orientation='horizontal' className='min-h-0 w-full flex-1 overflow-hidden'>
+                        <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col overflow-hidden'>
+                            {editorPanel}
+                        </Panel>
+                        <ResizeHandle />
+                        <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col overflow-hidden'>
+                            {rightPanel}
+                        </Panel>
+                    </Group>
+                ) : (
+                    <div className='flex min-h-0 flex-1'>
+                        {mobileTab === 'editor' ? (
+                            <div className='flex min-w-0 flex-1 overflow-hidden'>{editorPanel}</div>
+                        ) : mobileTab === 'preview' ? (
+                            <div className='flex w-full flex-1 flex-col'>
+                                <PreviewPanel
+                                    content={content}
+                                    media={media}
+                                    onOpenFeedPreview={handleOpenFeedPreview}
+                                    hasContent={hasTextContent(content)}
+                                />
+                            </div>
+                        ) : (
+                            <div className='flex w-full flex-1 flex-col overflow-hidden'>
+                                <AnalyzePanel
+                                    content={content}
+                                    contentText={contentText}
+                                    hasImage={!!media}
+                                    onApplySuggestion={handleApplySuggestion}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-
-            {/* Mobile tab bar */}
-            {!isDesktop && (
-                <div className='border-border flex border-b'>
-                    <button
-                        type='button'
-                        onClick={() => setMobileTab('editor')}
-                        className={cn(
-                            'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
-                            mobileTab === 'editor'
-                                ? 'border-foreground text-foreground border-b-2'
-                                : 'text-muted-foreground hover:text-foreground',
-                        )}>
-                        <PenLine className='size-4' />
-                        Editor
-                    </button>
-                    <button
-                        type='button'
-                        onClick={() => setMobileTab('preview')}
-                        className={cn(
-                            'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
-                            mobileTab === 'preview'
-                                ? 'border-foreground text-foreground border-b-2'
-                                : 'text-muted-foreground hover:text-foreground',
-                        )}>
-                        <Eye className='size-4' />
-                        Preview
-                    </button>
-                    <button
-                        type='button'
-                        onClick={() => setMobileTab('analyze')}
-                        className={cn(
-                            'flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
-                            mobileTab === 'analyze'
-                                ? 'border-foreground text-foreground border-b-2'
-                                : 'text-muted-foreground hover:text-foreground',
-                        )}>
-                        <BarChart3 className='size-4' />
-                        Analyze
-                    </button>
-                </div>
-            )}
-
-            {/* Panels */}
-            {isDesktop ? (
-                <Group orientation='horizontal' className='min-h-0 w-full flex-1 overflow-hidden'>
-                    <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col overflow-hidden'>
-                        {editorPanel}
-                    </Panel>
-                    <ResizeHandle />
-                    <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col overflow-hidden'>
-                        {rightPanel}
-                    </Panel>
-                </Group>
-            ) : (
-                <div className='flex min-h-0 flex-1'>
-                    {mobileTab === 'editor' ? (
-                        <div className='flex min-w-0 flex-1 overflow-hidden'>{editorPanel}</div>
-                    ) : mobileTab === 'preview' ? (
-                        <div className='flex w-full flex-1 flex-col'>
-                            <PreviewPanel
-                                content={content}
-                                media={media}
-                                onOpenFeedPreview={handleOpenFeedPreview}
-                                hasContent={hasTextContent(content)}
-                            />
-                        </div>
-                    ) : (
-                        <div className='flex w-full flex-1 flex-col overflow-hidden'>
-                            <AnalyzePanel
-                                content={content}
-                                contentText={contentText}
-                                hasImage={!!media}
-                                onApplySuggestion={handleApplySuggestion}
-                            />
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+        </>
     )
 }
