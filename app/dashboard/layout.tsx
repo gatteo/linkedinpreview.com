@@ -28,6 +28,7 @@ export default function DashboardLayout({
                     <AuthGate>
                         <div className='mx-auto h-svh w-full max-w-[1500px]' style={{ transform: 'translateZ(0)' }}>
                             <SidebarProvider
+                                className='h-full !min-h-0'
                                 style={
                                     {
                                         '--sidebar-width': '280px',
@@ -37,7 +38,7 @@ export default function DashboardLayout({
                                 <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
                                     <DashboardSidebar variant='inset' />
                                 </Suspense>
-                                <SidebarInset className='border'>
+                                <SidebarInset className='overflow-hidden border'>
                                     <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
                                 </SidebarInset>
                             </SidebarProvider>
