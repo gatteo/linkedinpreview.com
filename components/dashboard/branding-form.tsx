@@ -5,6 +5,7 @@ import { CheckIcon, InfoIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { type BrandingData, type BrandingRole } from '@/lib/branding'
+import { flagEmoji } from '@/lib/flag-emoji'
 import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -26,18 +27,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 type SectionProps = {
     branding: BrandingData
     onUpdate: (updates: Partial<BrandingData>) => void
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function flagEmoji(code: string): string {
-    return code
-        .toUpperCase()
-        .split('')
-        .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-        .join('')
 }
 
 // ---------------------------------------------------------------------------

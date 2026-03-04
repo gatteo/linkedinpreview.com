@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 const ACCEPTED_TYPES = ['.pdf', '.docx', '.txt', '.md']
 const MAX_BYTES = 5 * 1024 * 1024
 
-interface FileInputProps {
+type FileInputProps = {
     onSubmit: (text: string) => void
     onBack: () => void
 }

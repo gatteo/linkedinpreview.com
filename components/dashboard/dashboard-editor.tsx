@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { assembleBrandingContext } from '@/lib/ai-branding'
 import { encodeDraft } from '@/lib/draft-url'
-import { hasTextContent } from '@/lib/editor-utils'
+import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
 import { useCurrentDraft } from '@/hooks/use-current-draft'
@@ -31,24 +31,6 @@ const EditorPanel = dynamic(
 type Media = { type: 'image' | 'video'; src: string }
 type MobileTab = 'editor' | 'preview' | 'analyze'
 type RightTab = 'preview' | 'analyze'
-
-// ---------------------------------------------------------------------------
-// Extract plain text from TipTap JSON
-// ---------------------------------------------------------------------------
-
-function extractPlainText(content: any): string {
-    if (!content?.content) return ''
-    let text = ''
-    function walk(nodes: any[]) {
-        for (const node of nodes) {
-            if (node.text) text += node.text
-            if (node.content) walk(node.content)
-            if (node.type === 'paragraph' || node.type === 'listItem') text += '\n'
-        }
-    }
-    walk(content.content)
-    return text.trim()
-}
 
 // ---------------------------------------------------------------------------
 // Right panel tab bar

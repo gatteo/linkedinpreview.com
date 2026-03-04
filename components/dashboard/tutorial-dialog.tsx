@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 const STORAGE_KEY = 'lp-tutorial-seen'
 
-interface Slide {
+type Slide = {
     title: string
     description: string
     videoPlaceholder: string

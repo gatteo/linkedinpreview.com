@@ -16,6 +16,7 @@ const config = [
             'docs/',
             'contents/',
             'supabase/',
+            'references/',
         ],
     },
     ...nextConfig,

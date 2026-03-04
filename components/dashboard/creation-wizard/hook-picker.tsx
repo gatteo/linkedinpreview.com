@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
-interface HookPickerProps {
+type HookPickerProps = {
     hooks: Array<{ text: string; category: string; type: string }>
     onSelect: (hookText: string) => void
     onRegenerate: () => void

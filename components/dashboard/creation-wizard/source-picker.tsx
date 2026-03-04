@@ -47,7 +47,7 @@ const SOURCE_OPTIONS: SourceOption[] = [
     },
 ]
 
-interface SourcePickerProps {
+type SourcePickerProps = {
     onSelect: (source: SourceType | 'blank') => void
 }
 

@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 
 type StepId = 'write-first-post' | 'set-up-branding' | 'try-ai-suggestions' | 'preview-feed' | 'copy-publish'
 
-interface Step {
+type Step = {
     id: StepId
     label: string
     href: string
@@ -28,7 +28,7 @@ const STEPS: Step[] = [
 
 const STORAGE_KEY = 'lp-getting-started'
 
-interface PersistedState {
+type PersistedState = {
     checked: StepId[]
     collapsed: boolean
 }

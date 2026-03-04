@@ -2,7 +2,7 @@
 
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
-interface PageHeaderProps {
+type PageHeaderProps = {
     title: string
     children?: React.ReactNode
 }

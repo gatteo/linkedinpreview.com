@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 
 type AnyRecognition = any
 
-interface VoiceInputProps {
+type VoiceInputProps = {
     onSubmit: (text: string) => void
     onBack: () => void
 }

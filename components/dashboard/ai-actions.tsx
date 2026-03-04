@@ -16,7 +16,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-interface AIActionsProps {
+type AIActionsProps = {
     postText: string
     brandingContext: string
     onResult: (newText: string) => void

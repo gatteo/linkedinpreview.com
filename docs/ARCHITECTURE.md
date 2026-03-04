@@ -151,7 +151,7 @@ project-root/
 ├── contents/                # MDX source files (blog posts, changelog, compare pages)
 ├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, etc.)
 ├── lib/
-│   ├── supabase/            # Server/client Supabase instances + CRUD for drafts/branding
+│   ├── supabase/            # Server/client Supabase instances + CRUD, migration
 │   └── mdx/plugins/         # Remark and rehype plugins for MDX processing
 ├── types/                   # Shared TypeScript type definitions
 ├── styles/                  # globals.css - Tailwind v4 theme via @theme + @plugin

@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 const MAX_CHARS = 5000
 
-interface NotesInputProps {
+type NotesInputProps = {
     onSubmit: (text: string) => void
     onBack: () => void
 }

@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { ApiRoutes, Routes } from '@/config/routes'
 import { assembleBrandingContext } from '@/lib/ai-branding'
+import { textToTipTapJson } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
 import { useDrafts } from '@/hooks/use-drafts'
@@ -27,19 +28,19 @@ import { VoiceInput } from './voice-input'
 
 type WizardStep = 'source' | 'input' | 'hooks' | 'variants'
 
-interface Hook {
+type Hook = {
     text: string
     category: string
     type: string
 }
 
-interface Variant {
+type Variant = {
     text: string
     wordCount: number
     label?: string
 }
 
-interface CreationWizardProps {
+type CreationWizardProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
@@ -60,21 +61,6 @@ const STEP_DESCRIPTIONS: Record<WizardStep, string> = {
     input: 'Provide your raw content and we will generate post options',
     hooks: 'Select the angle that fits best',
     variants: 'Pick the version you like most',
-}
-
-// ---------------------------------------------------------------------------
-// Helper
-// ---------------------------------------------------------------------------
-
-function textToTipTapJson(text: string) {
-    const paragraphs = text.split(/\n\n+/).filter(Boolean)
-    return {
-        type: 'doc',
-        content: paragraphs.map((p) => ({
-            type: 'paragraph',
-            content: [{ type: 'text', text: p.replace(/\n/g, ' ') }],
-        })),
-    }
 }
 
 // ---------------------------------------------------------------------------

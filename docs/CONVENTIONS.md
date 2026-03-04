@@ -43,6 +43,7 @@ Structure within each component file:
 - **State**: Local state with `useState`. No global state library. Shared state via React Context (AuthProvider pattern). URL state via `useSearchParams`.
 - **Styling**: Tailwind classes directly on elements. Conditional classes via `cn()` from `lib/utils.ts`. Never CSS-in-JS. Never inline styles. Never CSS modules.
 - **File structure**: One component per file. Co-locate sub-components in the same directory. Group by feature (`dashboard/`, `tool/`, `feedback/`).
+- **No inline utilities**: Utility/helper functions (date formatting, color mapping, text extraction, data migration) belong in `lib/`, not in component files. Component files should only contain React components and component-specific display constants.
 - **Server vs Client**: Server components by default. Add `'use client'` only for interactivity (event handlers, hooks, browser APIs). Keep `'use client'` boundaries as small as possible.
 - **Static generation**: Use static site generation (SSG) everywhere possible. Pages without dynamic per-request data should be statically generated at build time. Use `generateStaticParams()` for dynamic routes (blog posts, compare pages). Only use server-side rendering when the page depends on request-time data (e.g. cookies, search params).
 - **Shared components**: Reuse existing components before creating new ones. Extract shared UI patterns into `components/ui/` or feature-level shared components. Avoid duplicating similar layouts, cards, or interactive patterns across pages.

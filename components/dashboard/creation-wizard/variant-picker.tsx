@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
-interface VariantPickerProps {
+type VariantPickerProps = {
     variants: Array<{ text: string; wordCount: number; label?: string }>
     onSelect: (variant: { text: string; wordCount: number; label?: string }) => void
 }

@@ -19,7 +19,7 @@ export function labelColor(label: string): string {
     return colors[label] ?? 'bg-gray-500'
 }
 
-interface LabelPickerProps {
+type LabelPickerProps = {
     value: string | null
     onChange: (label: string | null) => void
     className?: string
