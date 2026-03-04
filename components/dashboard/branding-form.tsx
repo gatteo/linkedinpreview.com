@@ -23,7 +23,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 // Types
 // ---------------------------------------------------------------------------
 
-interface SectionProps {
+type SectionProps = {
     branding: BrandingData
     onUpdate: (updates: Partial<BrandingData>) => void
 }

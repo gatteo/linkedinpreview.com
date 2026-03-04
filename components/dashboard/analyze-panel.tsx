@@ -10,7 +10,6 @@ import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
 import { computeContentStats } from '@/lib/content-scoring'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
-import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -18,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Types
 // ---------------------------------------------------------------------------
 
-interface Analysis {
+type Analysis = {
     score: number
     hook_score: number
     readability_score: number
@@ -35,7 +34,7 @@ interface Analysis {
     hook_quality: 'weak' | 'moderate' | 'strong'
 }
 
-interface AnalyzePanelProps {
+type AnalyzePanelProps = {
     content: any
     contentText: string
     hasImage: boolean
@@ -260,7 +259,6 @@ function StatsSection({ text }: { text: string }) {
 // ---------------------------------------------------------------------------
 
 export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion }: AnalyzePanelProps) {
-    const { ensureSession } = useAnonymousAuth()
     const [analysis, setAnalysis] = React.useState<Analysis | null>(null)
     const [isAnalyzing, setIsAnalyzing] = React.useState(false)
     const [lastAnalyzedText, setLastAnalyzedText] = React.useState<string | null>(null)
@@ -281,7 +279,6 @@ export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion
         setSuggestions([])
 
         try {
-            await ensureSession()
             const analytics = getPostAnalytics(content, contentText, hasImage)
 
             const res = await fetch(ApiRoutes.Analyze, {
@@ -307,7 +304,7 @@ export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion
             const data = (await res.json()) as { success: boolean; analysis: Analysis }
             setAnalysis(data.analysis)
             setLastAnalyzedText(contentText)
-            posthog.capture('post_analyzed_panel', { content_length: contentText.length })
+            posthog?.capture('post_analyzed_panel', { content_length: contentText.length })
         } catch {
             toast.error('Failed to analyze post')
         } finally {
@@ -319,7 +316,7 @@ export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion
             .then((s) => setSuggestions(s))
             .catch(() => {})
             .finally(() => setIsFetchingSuggestions(false))
-    }, [content, contentText, hasImage, ensureSession])
+    }, [content, contentText, hasImage])
 
     const handleApplySuggestion = React.useCallback(
         async (suggestion: Suggestion, index: number) => {

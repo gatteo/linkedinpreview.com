@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-const DESKTOP_BREAKPOINT = 768
+const DESKTOP_BREAKPOINT = 640
 
 export function useIsDesktop() {
     const [isDesktop, setIsDesktop] = React.useState(false)

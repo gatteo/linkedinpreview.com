@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 
 export type SourceType = 'notes' | 'voice' | 'file' | 'url'
 
-interface SourceOption {
+type SourceOption = {
     id: SourceType | 'blank'
     icon: React.ReactNode
     title: string

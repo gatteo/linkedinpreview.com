@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 // Context
 // ---------------------------------------------------------------------------
 
-interface AuthContextValue {
+type AuthContextValue = {
     isReady: boolean
     userId: string | null
     supabase: ReturnType<typeof createClient>

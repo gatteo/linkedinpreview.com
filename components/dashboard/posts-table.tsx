@@ -246,7 +246,7 @@ function createColumns(
 // PostsTable
 // ---------------------------------------------------------------------------
 
-interface PostsTableProps {
+type PostsTableProps = {
     data: DraftManifestEntry[]
     onDuplicate: (id: string) => void
     onDelete: (id: string) => void

@@ -44,8 +44,10 @@ next-env.d.ts
 # unlighthouse
 /.unlighthouse/
 
-dev
+# development files & folders 
+references/
 
+# claude
 .claude
 .mcp.json
 CLAUDE.md
