@@ -30,7 +30,7 @@ const FEATURE_ITEMS = [
     'From draft to polished in seconds',
 ]
 
-interface ConfigPhaseProps {
+type ConfigPhaseProps = {
     topic: string
     onTopicChange: (topic: string) => void
     tone: Tone

@@ -24,9 +24,12 @@ import type { Media } from './tool'
 import { Toolbar } from './toolbar'
 import { processNodes, toPlainText } from './utils'
 
-const AIGenerateSheet = dynamic(() => import('../ai-chat/sheet').then((mod) => ({ default: mod.AIGenerateSheet })), {
-    ssr: false,
-})
+const AIGenerateSheet = dynamic(
+    () => import('../ai-chat/ai-generate-sheet').then((mod) => ({ default: mod.AIGenerateSheet })),
+    {
+        ssr: false,
+    },
+)
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {

@@ -1,6 +1,6 @@
 import type { Suggestion } from '@/lib/ai-suggestions'
 
-interface SuggestionChipsProps {
+type SuggestionChipsProps = {
     suggestions: Suggestion[]
     loading: boolean
     onSelect: (text: string) => void

@@ -8,6 +8,13 @@ import { toast } from 'sonner'
 
 import { Tone } from '@/config/ai'
 import { ApiRoutes } from '@/config/routes'
+import {
+    extractTextFromMessage,
+    isRateLimitedMessage,
+    isRefusalMessage,
+    RATE_LIMITED_PREFIX,
+    REFUSAL_PREFIX,
+} from '@/lib/ai-chat'
 import { formatResetTime, isRateLimitError, parseAIError } from '@/lib/ai-error'
 import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
@@ -18,15 +25,8 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 
 import { ChatPhase } from './chat-phase'
 import { ConfigPhase } from './config-phase'
-import {
-    extractTextFromMessage,
-    isRateLimitedMessage,
-    isRefusalMessage,
-    RATE_LIMITED_PREFIX,
-    REFUSAL_PREFIX,
-} from './message-utils'
 
-interface AIGenerateSheetProps {
+type AIGenerateSheetProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
     onInsert: (text: string) => void
