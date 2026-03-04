@@ -1,78 +1,11 @@
-import { Readability } from '@mozilla/readability'
-import { parseHTML } from 'linkedom'
-import mammoth from 'mammoth'
-import { PDFParse } from 'pdf-parse'
-import { z } from 'zod'
-
 import { AI_ERROR_CODES } from '@/config/ai'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
-const MAX_TEXT_LENGTH = 10_000
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+import { urlBodySchema } from './route.schema'
+import { extractFromFile, extractFromUrl } from './route.utils'
 
-const urlBodySchema = z.object({
-    url: z.string().url(),
-})
-
-const ALLOWED_EXTENSIONS = new Set(['.pdf', '.docx', '.txt', '.md'])
-
-function truncate(text: string): string {
-    return text.length > MAX_TEXT_LENGTH ? text.slice(0, MAX_TEXT_LENGTH) : text
-}
-
-function getExtension(filename: string): string {
-    const idx = filename.lastIndexOf('.')
-    return idx >= 0 ? filename.slice(idx).toLowerCase() : ''
-}
-
-async function extractFromUrl(url: string): Promise<{ text: string; title?: string }> {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 5_000)
-
-    let html: string
-    try {
-        const res = await fetch(url, { signal: controller.signal })
-        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`)
-        html = await res.text()
-    } finally {
-        clearTimeout(timeout)
-    }
-
-    const { document } = parseHTML(html)
-    const article = new Readability(document as unknown as Document).parse()
-
-    if (!article) throw new Error('Could not parse article content')
-
-    return {
-        text: truncate(article.textContent ?? ''),
-        title: article.title ?? undefined,
-    }
-}
-
-async function extractFromFile(file: File): Promise<{ text: string; title?: string }> {
-    if (file.size > MAX_FILE_SIZE) throw new Error('File exceeds 5MB limit')
-
-    const ext = getExtension(file.name)
-    if (!ALLOWED_EXTENSIONS.has(ext)) throw new Error(`Unsupported file type: ${ext}`)
-
-    const title = file.name.slice(0, file.name.lastIndexOf('.')) || file.name
-
-    let text: string
-
-    if (ext === '.pdf') {
-        const pdf = new PDFParse({ data: new Uint8Array(await file.arrayBuffer()) })
-        const result = await pdf.getText()
-        text = result.text
-        await pdf.destroy()
-    } else if (ext === '.docx') {
-        const result = await mammoth.extractRawText({ buffer: Buffer.from(await file.arrayBuffer()) })
-        text = result.value
-    } else {
-        text = new TextDecoder().decode(await file.arrayBuffer())
-    }
-
-    return { text: truncate(text), title }
-}
+export const maxDuration = 30
 
 export async function POST(request: Request) {
     // Auth: validate the anonymous session
@@ -85,6 +18,21 @@ export async function POST(request: Request) {
         return Response.json({ error: 'Authentication required', code: AI_ERROR_CODES.AUTH_REQUIRED }, { status: 401 })
     }
 
+    // Rate limit: 10 extractions per day
+    const rateLimit = await checkRateLimit(supabase, 'quickAction')
+    if (!rateLimit.allowed) {
+        return Response.json(
+            {
+                error: 'Daily extraction limit reached',
+                code: AI_ERROR_CODES.RATE_LIMITED,
+                action: 'quickAction',
+                resetAt: rateLimit.resetAt,
+                remaining: rateLimit.remaining,
+            },
+            { status: 429 },
+        )
+    }
+
     const contentType = request.headers.get('content-type') ?? ''
 
     if (contentType.includes('multipart/form-data')) {
@@ -92,20 +40,23 @@ export async function POST(request: Request) {
         try {
             formData = await request.formData()
         } catch {
-            return Response.json({ error: 'Invalid form data' }, { status: 400 })
+            return Response.json({ error: 'Invalid form data', code: AI_ERROR_CODES.INVALID_INPUT }, { status: 400 })
         }
 
         const file = formData.get('file')
         if (!(file instanceof File)) {
-            return Response.json({ error: 'Missing file field' }, { status: 400 })
+            return Response.json({ error: 'Missing file field', code: AI_ERROR_CODES.INVALID_INPUT }, { status: 400 })
         }
 
         try {
             const result = await extractFromFile(file)
             return Response.json(result)
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Failed to extract file content'
-            return Response.json({ error: message }, { status: 422 })
+            console.error('File extraction failed:', err)
+            return Response.json(
+                { error: 'Failed to extract file content', code: 'EXTRACTION_FAILED' },
+                { status: 422 },
+            )
         }
     }
 
@@ -113,19 +64,22 @@ export async function POST(request: Request) {
     try {
         body = await request.json()
     } catch {
-        return Response.json({ error: 'Invalid JSON body' }, { status: 400 })
+        return Response.json({ error: 'Invalid JSON body', code: AI_ERROR_CODES.INVALID_INPUT }, { status: 400 })
     }
 
     const parsed = urlBodySchema.safeParse(body)
     if (!parsed.success) {
-        return Response.json({ error: parsed.error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
+        return Response.json(
+            { error: parsed.error.issues[0]?.message ?? 'Invalid input', code: AI_ERROR_CODES.INVALID_INPUT },
+            { status: 400 },
+        )
     }
 
     try {
         const result = await extractFromUrl(parsed.data.url)
         return Response.json(result)
     } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to extract URL content'
-        return Response.json({ error: message }, { status: 422 })
+        console.error('URL extraction failed:', err)
+        return Response.json({ error: 'Failed to extract URL content', code: 'EXTRACTION_FAILED' }, { status: 422 })
     }
 }

@@ -10,6 +10,7 @@
 - Hooks: kebab-case with `use-` prefix (e.g., `use-drafts.ts`, `use-branding.ts`)
 - Config: kebab-case (e.g., `config/site.ts`, `config/ai.ts`)
 - Types: kebab-case (e.g., `types/blog.ts`)
+- API route co-located files: `route.schema.ts` (Zod schemas), `route.utils.ts` (utility functions)
 - No index.ts barrel files - import directly from the source file
 
 ### Variables & Functions

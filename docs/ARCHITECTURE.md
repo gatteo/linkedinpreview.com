@@ -98,7 +98,11 @@ Generate actions: `hooks` (4 hook options), `posts` (2 full variants), `variatio
 
 Rate limits (per user per day): generation: 1, refinement: 3, analysis: 20, wizard: 5, quickAction: 10. Enforced via Supabase RPC `check_and_record_usage` with row-level locking.
 
-**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`).
+**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`, `INVALID_INPUT`, `GENERATION_FAILED`). All routes export `maxDuration = 30`.
+
+**Prompts**: All AI prompts (system and user) are centralized in `config/prompts.ts`. Route handlers import prompt constants/builders from there - no inline prompt strings in route files.
+
+**Route file structure**: Each API route uses co-located files: `route.ts` (handler only), `route.schema.ts` (Zod schemas), and optionally `route.utils.ts` (utility functions). Route handlers contain no inline schemas or utility functions.
 
 **PostHog proxy**: The `/ingest/*` path is not an API route - it is a Next.js rewrite in `next.config.mjs` that proxies requests to `eu.i.posthog.com`.
 
@@ -143,7 +147,7 @@ project-root/
 │   ├── mdx/                 # MDX rendering + syntax highlighting components
 │   ├── feedback/            # Tally.so feedback FAB, article helpfulness
 │   └── tracking/            # PostHog TrackClick wrapper for server components
-├── config/                  # Static config (site metadata, routes, AI limits, feedback)
+├── config/                  # Static config (site metadata, routes, AI limits, prompts, feedback)
 ├── contents/                # MDX source files (blog posts, changelog, compare pages)
 ├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, etc.)
 ├── lib/

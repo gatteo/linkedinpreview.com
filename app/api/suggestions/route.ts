@@ -1,26 +1,30 @@
 import { createOpenAI } from '@ai-sdk/openai'
 import { generateObject } from 'ai'
-import { z } from 'zod'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
+import { SUGGESTIONS_SYSTEM_PROMPT, suggestionsUserPrompt } from '@/config/prompts'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
-const bodySchema = z.object({
-    postText: z.string().min(1).max(10_000),
-})
+import { bodySchema, suggestionsSchema } from './route.schema'
+
+export const maxDuration = 30
 
 export async function POST(request: Request) {
     let body: unknown
     try {
         body = await request.json()
     } catch {
-        return Response.json({ error: 'Invalid JSON body' }, { status: 400 })
+        return Response.json({ error: 'Invalid JSON body', code: AI_ERROR_CODES.INVALID_INPUT }, { status: 400 })
     }
 
     const parsed = bodySchema.safeParse(body)
     if (!parsed.success) {
-        return Response.json({ error: parsed.error.issues[0]?.message ?? 'Invalid input' }, { status: 400 })
+        return Response.json(
+            { error: parsed.error.issues[0]?.message ?? 'Invalid input', code: AI_ERROR_CODES.INVALID_INPUT },
+            { status: 400 },
+        )
     }
 
     // Auth: validate the anonymous session
@@ -33,34 +37,36 @@ export async function POST(request: Request) {
         return Response.json({ error: 'Authentication required', code: AI_ERROR_CODES.AUTH_REQUIRED }, { status: 401 })
     }
 
+    // Rate limit: 10 suggestions per day
+    const rateLimit = await checkRateLimit(supabase, 'quickAction')
+    if (!rateLimit.allowed) {
+        return Response.json(
+            {
+                error: 'Daily suggestion limit reached',
+                code: AI_ERROR_CODES.RATE_LIMITED,
+                action: 'quickAction',
+                resetAt: rateLimit.resetAt,
+                remaining: rateLimit.remaining,
+            },
+            { status: 429 },
+        )
+    }
+
     const openai = createOpenAI({ apiKey: env.LLM_API_KEY })
 
     try {
         const { object } = await generateObject({
             model: openai(env.LLM_MODEL ?? 'gpt-4o-mini'),
-            schema: z.object({
-                suggestions: z
-                    .array(
-                        z.object({
-                            text: z.string(),
-                            type: z.enum(['content', 'structure', 'tone', 'engagement']),
-                        }),
-                    )
-                    .length(3),
-            }),
-            system: `You suggest short refinement prompts for a LinkedIn post.
-Each suggestion must be 4-8 words and start with a verb.
-Make them specific to the post content - reference actual topics, themes, or points from the post.
-Return each suggestion as an object with "text" (the suggestion) and "type" (one of: content, structure, tone, engagement).
-- content: about what information or ideas to add/change
-- structure: about length, formatting, or organization
-- tone: about writing style, voice, or emotion
-- engagement: about hooks, calls-to-action, or audience interaction`,
-            prompt: `Suggest 3 ways to refine this LinkedIn post:\n\n${parsed.data.postText}`,
+            schema: suggestionsSchema,
+            system: SUGGESTIONS_SYSTEM_PROMPT,
+            prompt: suggestionsUserPrompt(parsed.data.postText),
         })
 
         return Response.json(object)
     } catch {
-        return Response.json({ error: 'Failed to generate suggestions' }, { status: 500 })
+        return Response.json(
+            { error: 'Failed to generate suggestions', code: AI_ERROR_CODES.GENERATION_FAILED },
+            { status: 500 },
+        )
     }
 }
