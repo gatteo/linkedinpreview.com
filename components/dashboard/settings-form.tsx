@@ -43,6 +43,9 @@ export function SettingsForm() {
             const { error: analysesError } = await supabase.from('post_analyses').delete().neq('id', '')
             if (analysesError) throw analysesError
 
+            const { error: strategyError } = await supabase.from('strategy').delete().neq('user_id', '')
+            if (strategyError) throw strategyError
+
             toast.success('All data has been deleted')
             window.location.reload()
         } catch {
