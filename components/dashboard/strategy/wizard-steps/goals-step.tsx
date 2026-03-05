@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { BriefcaseIcon, Building2Icon, MegaphoneIcon, NewspaperIcon, TrendingUpIcon } from 'lucide-react'
 
 import { STRATEGY_GOALS, type StrategyGoal } from '@/lib/strategy'
@@ -18,7 +19,7 @@ type GoalsStepProps = {
 // Constants
 // ---------------------------------------------------------------------------
 
-const GOAL_ICONS: Record<string, React.ReactNode> = {
+const GOAL_ICONS: Record<string, ReactNode> = {
     TrendingUp: <TrendingUpIcon className='size-4' />,
     Megaphone: <MegaphoneIcon className='size-4' />,
     Briefcase: <BriefcaseIcon className='size-4' />,

@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import {
     BriefcaseBusinessIcon,
     BuildingIcon,
@@ -26,7 +27,7 @@ type AudienceStepProps = {
 // Constants
 // ---------------------------------------------------------------------------
 
-const AUDIENCE_ICONS: Record<string, React.ReactNode> = {
+const AUDIENCE_ICONS: Record<string, ReactNode> = {
     UserPlus: <UserPlusIcon className='size-4' />,
     Users: <UsersIcon className='size-4' />,
     Sparkles: <SparklesIcon className='size-4' />,

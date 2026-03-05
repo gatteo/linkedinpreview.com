@@ -115,7 +115,7 @@ export function IdeasSection({ strategy, branding, drafts, onUpdateStrategy }: I
             {isGenerating ? (
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
                     {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className='space-y-3 rounded-xl p-4 ring-1 ring-black/10 ring-inset'>
+                        <div key={i} className='border-border space-y-3 rounded-xl border p-4'>
                             <Skeleton className='h-4 w-20 rounded-full' />
                             <Skeleton className='h-4 w-full' />
                             <Skeleton className='h-4 w-3/4' />

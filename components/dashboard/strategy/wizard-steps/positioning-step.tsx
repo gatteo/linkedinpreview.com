@@ -45,11 +45,14 @@ export function PositioningStep({ value, onChange, role, goals, audience, topics
                         topics: topics.filter(Boolean),
                     }),
                 })
-                if (!res.ok) return
+                if (!res.ok) {
+                    onChange('')
+                    return
+                }
                 const data = await res.json()
                 if (data.statement) onChange(data.statement)
             } catch {
-                // silently fail - user can type manually
+                // generation failed - user can type manually
             } finally {
                 setIsGenerating(false)
             }
