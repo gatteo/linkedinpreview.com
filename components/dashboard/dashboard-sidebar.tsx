@@ -172,11 +172,15 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
-                                <SidebarMenuButton disabled tooltip='Content Strategy'>
-                                    <TargetIcon />
-                                    <span>Content Strategy</span>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isActive('/dashboard/strategy')}
+                                    tooltip='Content Strategy'>
+                                    <Link href='/dashboard/strategy'>
+                                        <TargetIcon />
+                                        <span>Content Strategy</span>
+                                    </Link>
                                 </SidebarMenuButton>
-                                <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
                             </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
