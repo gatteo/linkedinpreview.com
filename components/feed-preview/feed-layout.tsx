@@ -5,7 +5,7 @@ import { LeftSidebar } from './left-sidebar'
 import { PlaceholderPost } from './placeholder-post'
 import { RightSidebar } from './right-sidebar'
 
-interface FeedLayoutProps {
+type FeedLayoutProps = {
     children: React.ReactNode
     mode: 'desktop' | 'mobile'
 }
@@ -27,7 +27,6 @@ const StartAPostBar: React.FC = () => (
         {/* Bottom icon row */}
         <div className='flex items-center gap-1 border-t border-neutral-100 px-4 py-2'>
             {[70, 65, 80, 75].map((w, i) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <div key={i} className='flex items-center gap-1.5 rounded px-2 py-1 opacity-40'>
                     <div className='size-4 rounded bg-neutral-400' style={{ filter: 'blur(0.5px)' }} />
                     <div

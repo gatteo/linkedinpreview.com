@@ -6,7 +6,7 @@ import { PostCard } from '@/components/tool/preview/post-card'
 import { ScreenSizeProvider } from '@/components/tool/preview/preview-size-context'
 import type { Media } from '@/components/tool/tool'
 
-interface FeedPostCardProps {
+type FeedPostCardProps = {
     content: any
     media?: Media | null
 }

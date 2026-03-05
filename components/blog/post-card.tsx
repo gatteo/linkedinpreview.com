@@ -7,12 +7,11 @@ import { UtmUrl } from '@/utils/urls'
 import posthog from 'posthog-js'
 
 import { BlogPostPreview } from '@/types/blog'
-
-import { Badge } from '../ui/badge'
+import { Badge } from '@/components/ui/badge'
 
 export function PostCard({ post }: { post: BlogPostPreview }) {
     const handleClick = () => {
-        posthog.capture('blog_article_clicked', {
+        posthog?.capture('blog_article_clicked', {
             article_slug: post.slug,
             article_title: post.title,
             article_tags: post.tags,
@@ -21,7 +20,6 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
 
     return (
         <Link
-            key={post.id}
             href={UtmUrl(post.url, {
                 content: 'post_card',
             })}
