@@ -10,13 +10,13 @@ Users upload a file (PDF, DOCX, TXT, MD, or audio/video) in the new post creatio
 
 ## Acceptance Criteria
 
-- [ ] User can upload supported file types from the new post wizard
-- [ ] Document content is extracted and converted to a LinkedIn post
-- [ ] Audio/video files are transcribed then converted to a post
-- [ ] Generated post opens in the editor
-- [ ] File size limits are enforced with clear error messages
-- [ ] Unsupported file types show a descriptive error
-- [ ] Rate limited under wizard quota
+- [x] User can upload supported file types from the new post wizard
+- [x] Document content is extracted and converted to a LinkedIn post
+- [x] Audio/video files are transcribed then converted to a post
+- [x] Generated post opens in the editor
+- [x] File size limits are enforced with clear error messages
+- [x] Unsupported file types show a descriptive error
+- [x] Rate limited under wizard quota
 
 ## Technical Notes
 

@@ -10,11 +10,11 @@ Users paste a URL in the new post creation wizard. The URL content is extracted 
 
 ## Acceptance Criteria
 
-- [ ] User can paste a URL in the new post wizard
-- [ ] Article content is extracted and converted to a LinkedIn post
-- [ ] Generated post opens in the editor for further editing
-- [ ] Invalid or inaccessible URLs show clear error messages
-- [ ] Rate limited under wizard quota
+- [x] User can paste a URL in the new post wizard
+- [x] Article content is extracted and converted to a LinkedIn post
+- [x] Generated post opens in the editor for further editing
+- [x] Invalid or inaccessible URLs show clear error messages
+- [x] Rate limited under wizard quota
 
 ## Technical Notes
 

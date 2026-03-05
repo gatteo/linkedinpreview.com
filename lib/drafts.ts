@@ -4,27 +4,6 @@
 
 export type DraftStatus = 'draft' | 'scheduled' | 'published'
 
-export interface Draft {
-    /** Unique identifier (UUID v4) */
-    id: string
-    /** TipTap JSON document */
-    content: any
-    /** Auto-generated from first line of content, truncated to 60 chars */
-    title: string
-    /** Post status */
-    status: DraftStatus
-    /** Unix timestamp (ms) when the draft was created */
-    createdAt: number
-    /** Unix timestamp (ms) when the draft was last modified */
-    updatedAt: number
-    /** Total character count of plain-text content */
-    charCount: number
-    /** Total word count */
-    wordCount: number
-    /** Media attachment (image/video as data URL), NOT stored in manifest */
-    media: { type: 'image' | 'video'; src: string } | null
-}
-
 /** Lightweight entry stored in the manifest (no content/media blobs) */
 export interface DraftManifestEntry {
     id: string
@@ -64,14 +43,6 @@ export type PostLabel = PostFormat
 export interface DraftContent {
     content: any // TipTap JSON
     media: { type: 'image' | 'video'; src: string } | null
-}
-
-export interface ExportData {
-    version: 1
-    exportedAt: string
-    manifest: DraftManifestEntry[]
-    drafts: Record<string, DraftContent>
-    branding: any // raw branding JSON
 }
 
 // ---------------------------------------------------------------------------

@@ -10,20 +10,19 @@ Users record a voice note directly in the browser using the Web Audio API. The r
 
 ## Acceptance Criteria
 
-- [ ] User can record voice in-browser from the new post wizard
-- [ ] Recording is transcribed to text
-- [ ] Transcribed text is converted to a LinkedIn post via AI generation
-- [ ] Generated post opens in the editor for further editing
-- [ ] Works on desktop and mobile browsers
-- [ ] Graceful error handling if microphone access is denied
-- [ ] Rate limited under wizard quota
+- [x] User can record voice in-browser from the new post wizard
+- [x] Recording is transcribed to text
+- [x] Transcribed text is converted to a LinkedIn post via AI generation
+- [x] Generated post opens in the editor for further editing
+- [x] Works on desktop and mobile browsers
+- [x] Graceful error handling if microphone access is denied
+- [x] Rate limited under wizard quota
 
 ## Technical Notes
 
-- Browser-side recording via MediaRecorder API (WebM/Opus format)
-- Max recording length TBD (suggest 3-5 minutes)
-- Transcription service: OpenAI Whisper API or browser SpeechRecognition API (evaluate cost/quality)
+- Uses browser Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`) for real-time transcription
+- Continuous mode with interim results displayed live
+- Graceful fallback message for unsupported browsers
 - Transcribed text fed into `/api/generate` with `action: 'posts'` and branding context
-- New API route or extension of `/api/extract` for audio transcription
-- Client component with record/stop/playback controls
+- Voice input UI in `components/dashboard/creation-wizard/voice-input.tsx`
 - Rate limit: counts as a wizard action (5/day)

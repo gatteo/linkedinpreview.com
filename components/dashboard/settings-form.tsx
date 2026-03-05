@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { DownloadIcon, MonitorIcon, MoonIcon, SunIcon, Trash2Icon, UploadIcon } from 'lucide-react'
+import { Loader2, MonitorIcon, MoonIcon, SunIcon, Trash2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 
@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuth } from '@/components/dashboard/auth-provider'
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: SunIcon },
@@ -26,21 +27,30 @@ const THEME_OPTIONS = [
 ] as const
 
 export function SettingsForm() {
-    const fileInputRef = React.useRef<HTMLInputElement>(null)
+    const { supabase } = useAuth()
     const { theme, setTheme } = useTheme()
+    const [isResetting, setIsResetting] = React.useState(false)
 
-    const handleExport = () => {
-        toast.info('Export will be available once data sync is enabled')
-    }
+    const handleReset = React.useCallback(async () => {
+        setIsResetting(true)
+        try {
+            const { error: draftsError } = await supabase.from('drafts').delete().neq('id', '')
+            if (draftsError) throw draftsError
 
-    const handleImport = (_e: React.ChangeEvent<HTMLInputElement>) => {
-        toast.info('Import will be available once data sync is enabled')
-        if (fileInputRef.current) fileInputRef.current.value = ''
-    }
+            const { error: brandingError } = await supabase.from('branding').delete().neq('user_id', '')
+            if (brandingError) throw brandingError
 
-    const handleReset = () => {
-        toast.info('Reset will be available once data sync is enabled')
-    }
+            const { error: analysesError } = await supabase.from('post_analyses').delete().neq('id', '')
+            if (analysesError) throw analysesError
+
+            toast.success('All data has been deleted')
+            window.location.reload()
+        } catch {
+            toast.error('Failed to reset data')
+        } finally {
+            setIsResetting(false)
+        }
+    }, [supabase])
 
     return (
         <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
@@ -67,37 +77,6 @@ export function SettingsForm() {
                 </CardContent>
             </Card>
 
-            {/* Export */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Export Data</CardTitle>
-                    <CardDescription>Download all your posts, branding, and settings as a JSON file.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button variant='outline' onClick={handleExport}>
-                        <DownloadIcon className='mr-2 size-4' />
-                        Export Backup
-                    </Button>
-                </CardContent>
-            </Card>
-
-            {/* Import */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Import Data</CardTitle>
-                    <CardDescription>
-                        Restore from a previously exported backup file. This will replace all current data.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <input ref={fileInputRef} type='file' accept='.json' className='hidden' onChange={handleImport} />
-                    <Button variant='outline' onClick={() => fileInputRef.current?.click()}>
-                        <UploadIcon className='mr-2 size-4' />
-                        Import Backup
-                    </Button>
-                </CardContent>
-            </Card>
-
             {/* Reset */}
             <Card className='border-destructive/50'>
                 <CardHeader>
@@ -107,8 +86,12 @@ export function SettingsForm() {
                 <CardContent>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant='destructive'>
-                                <Trash2Icon className='mr-2 size-4' />
+                            <Button variant='destructive' disabled={isResetting}>
+                                {isResetting ? (
+                                    <Loader2 className='mr-2 size-4 animate-spin' />
+                                ) : (
+                                    <Trash2Icon className='mr-2 size-4' />
+                                )}
                                 Reset All Data
                             </Button>
                         </AlertDialogTrigger>

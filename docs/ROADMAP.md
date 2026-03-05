@@ -17,16 +17,16 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 
 ### Features
 
-| ID      | Feature Spec                               | Notes                                                                                   |
-| ------- | ------------------------------------------ | --------------------------------------------------------------------------------------- |
-| 060     | App shell with sidebar navigation          | shadcn SidebarProvider, inset variant                                                   |
-| 028     | Homepage quick-start tool                  | Stays as-is; dashboard is the full-featured app                                         |
-| 062     | Multi-draft management                     | Statuses: draft / scheduled / published                                                 |
-| 064     | Draft labels                               | Content format categorization                                                           |
-| 080-090 | Branding page                              | Profile, positioning, role, expertise, writing style, footer, knowledge base, dos/donts |
-| 100     | Settings page                              | Theme toggle, export/import data                                                        |
-| 061     | Supabase anonymous auth                    | Anonymous session on first visit, RLS-protected tables                                  |
-| 030-034 | AI chat, generation, analysis, suggestions | Pre-existing; now integrated with dashboard                                             |
+| ID      | Feature Spec                               | Status | Notes                                                                                   |
+| ------- | ------------------------------------------ | ------ | --------------------------------------------------------------------------------------- |
+| 060     | App shell with sidebar navigation          | Done   | shadcn SidebarProvider, inset variant                                                   |
+| 028     | Homepage quick-start tool                  | Done   | Stays as-is; dashboard is the full-featured app                                         |
+| 062     | Multi-draft management                     | Done   | Statuses: draft / scheduled / published                                                 |
+| 064     | Draft labels                               | Done   | Content format categorization                                                           |
+| 080-090 | Branding page                              | Done   | Profile, positioning, role, expertise, writing style, footer, knowledge base, dos/donts |
+| 100     | Settings page                              | Done   | Theme toggle, reset all data                                                            |
+| 061     | Supabase anonymous auth                    | Done   | Anonymous session on first visit, RLS-protected tables                                  |
+| 030-034 | AI chat, generation, analysis, suggestions | Done   | Pre-existing; now integrated with dashboard                                             |
 
 ### Dependencies
 
@@ -34,7 +34,7 @@ None - this was the first wave.
 
 ---
 
-## Wave 1: Smart Content Creation
+## Wave 1: Smart Content Creation - COMPLETE
 
 ### Goal
 
@@ -42,14 +42,14 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 
 ### Features
 
-| ID      | Feature Spec                        | Notes                                       |
-| ------- | ----------------------------------- | ------------------------------------------- |
-| 038-040 | AI post generation from any source  | Notes, voice, file, URL as input            |
-| 035     | AI hook suggestions                 | 4 personalized hooks per post               |
-| 050-056 | Content scoring panel               | Readability, writing flow, hashtags, length |
-| 034     | Smart suggestions                   | AI-driven inline improvement suggestions    |
-| 032     | Quick AI actions                    | Shorten, lengthen, variation, restyle       |
-| 064     | Post labels with AI auto-suggestion | Label a post by detected content format     |
+| ID      | Feature Spec                        | Status  | Notes                                                                   |
+| ------- | ----------------------------------- | ------- | ----------------------------------------------------------------------- |
+| 038-040 | AI post generation from any source  | Done    | Notes, voice (Web Speech API), file (PDF/DOCX/TXT/MD), URL extraction   |
+| 035     | AI hook suggestions                 | Done    | 4 personalized hooks per post via creation wizard + editor quick action |
+| 050-056 | Content scoring panel               | Done    | Readability, writing flow, hashtags, length                             |
+| 034     | Smart suggestions                   | Done    | AI-driven inline improvement suggestions                                |
+| 032     | Quick AI actions                    | Done    | Shorten, lengthen, variation, restyle                                   |
+| 064     | Post labels with AI auto-suggestion | Partial | AI auto-suggests at wizard time; manual label picker not in editor UI   |
 
 ### Dependencies
 

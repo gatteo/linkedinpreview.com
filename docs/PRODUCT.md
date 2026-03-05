@@ -50,19 +50,19 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 
 ### AI Features
 
-| ID  | Feature                       | Description                                                                                                                                                                                                      | Status  |
-| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 030 | AI chat assistant             | Multi-turn conversational AI for iterative post editing. Streaming responses via Vercel AI SDK. Scoped strictly to LinkedIn content. Rate limit: 1 generation + 3 refinements/day.                               | Live    |
-| 031 | AI post generation            | Generate posts from a topic and tone. Supports `hooks` (4 options), `posts` (2 full variants) actions. Streams output. Rate limit: 5 wizard actions/day.                                                         | Live    |
-| 032 | Quick AI actions              | One-click transformations: `shorten`, `lengthen`, `variation`, `restyle`, `apply-suggestion`. Rate limit: 10/day.                                                                                                | Live    |
-| 033 | AI post analysis              | Scores post quality (1-100) with sub-scores for hook, readability, CTA, engagement. Classifies sentiment, category, tone. Detects hook/CTA presence and quality. Stores results in Supabase. Rate limit: 20/day. | Live    |
-| 034 | AI suggestions                | Generates 3 context-specific refinement suggestions (content, structure, tone, engagement). 4-8 words each, starting with a verb.                                                                                | Live    |
-| 035 | AI hook generation            | Generates 4 personalized opening hooks with category and type tags. User picks the best one to apply. Regenerate option.                                                                                         | Live    |
-| 036 | AI content extraction         | Extracts text from URLs (HTML via Readability), PDFs (pdf-parse), DOCX (mammoth), and TXT/MD files. Max 5MB input, 10KB output.                                                                                  | Live    |
-| 037 | Branding-aware AI             | The `/api/generate` endpoint accepts branding context (positioning, expertise, writing style, knowledge base, dos/donts) to personalize output. Used by the creation wizard and dashboard editor.                | Live    |
-| 038 | AI post generation from voice | Browser voice recording, transcription, AI conversion to post.                                                                                                                                                   | Planned |
-| 039 | AI post generation from file  | Upload audio/video/document, extract content, AI generates post.                                                                                                                                                 | Planned |
-| 040 | AI post generation from URL   | Paste URL, extract article content, AI converts to LinkedIn post format.                                                                                                                                         | Planned |
+| ID  | Feature                       | Description                                                                                                                                                                                                      | Status |
+| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 030 | AI chat assistant             | Multi-turn conversational AI for iterative post editing. Streaming responses via Vercel AI SDK. Scoped strictly to LinkedIn content. Rate limit: 1 generation + 3 refinements/day.                               | Live   |
+| 031 | AI post generation            | Generate posts from a topic and tone. Supports `hooks` (4 options), `posts` (2 full variants) actions. Streams output. Rate limit: 5 wizard actions/day.                                                         | Live   |
+| 032 | Quick AI actions              | One-click transformations: `shorten`, `lengthen`, `variation`, `restyle`, `apply-suggestion`. Rate limit: 10/day.                                                                                                | Live   |
+| 033 | AI post analysis              | Scores post quality (1-100) with sub-scores for hook, readability, CTA, engagement. Classifies sentiment, category, tone. Detects hook/CTA presence and quality. Stores results in Supabase. Rate limit: 20/day. | Live   |
+| 034 | AI suggestions                | Generates 3 context-specific refinement suggestions (content, structure, tone, engagement). 4-8 words each, starting with a verb.                                                                                | Live   |
+| 035 | AI hook generation            | Generates 4 personalized opening hooks with category and type tags. User picks the best one to apply. Regenerate option.                                                                                         | Live   |
+| 036 | AI content extraction         | Extracts text from URLs (HTML via Readability), PDFs (pdf-parse), DOCX (mammoth), and TXT/MD files. Max 5MB input, 10KB output.                                                                                  | Live   |
+| 037 | Branding-aware AI             | The `/api/generate` endpoint accepts branding context (positioning, expertise, writing style, knowledge base, dos/donts) to personalize output. Used by the creation wizard and dashboard editor.                | Live   |
+| 038 | AI post generation from voice | Browser voice input via Web Speech API, real-time transcription, AI conversion to post. Available in creation wizard.                                                                                            | Live   |
+| 039 | AI post generation from file  | Upload PDF/DOCX/TXT/MD, extract content via `/api/extract`, AI generates post. Drag-and-drop in creation wizard.                                                                                                 | Live   |
+| 040 | AI post generation from URL   | Paste URL, extract article content via Readability, AI converts to LinkedIn post format. URL input in creation wizard.                                                                                           | Live   |
 
 ### Content Scoring (Client-side)
 
@@ -109,11 +109,10 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 
 ### Settings
 
-| ID  | Feature        | Description                                                     | Status  |
-| --- | -------------- | --------------------------------------------------------------- | ------- |
-| 100 | Theme selector | Light/dark/system with icon buttons. Persisted via next-themes. | Live    |
-| 101 | Export data    | Download all posts, branding, and settings as JSON backup.      | Planned |
-| 102 | Import data    | Restore from previously exported JSON backup.                   | Planned |
+| ID  | Feature        | Description                                                                                                                     | Status |
+| --- | -------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 100 | Theme selector | Light/dark/system with icon buttons. Persisted via next-themes.                                                                 | Live   |
+| 103 | Reset all data | Danger zone: permanently delete all drafts, branding, and post analyses. Confirmation dialog. Reloads dashboard after deletion. | Live   |
 
 ### Feedback & Analytics
 
