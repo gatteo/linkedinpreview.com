@@ -220,3 +220,63 @@ Post:
 ${input.postText}${brandingPrompt(input.brandingContext)}`,
     },
 } as const
+
+// ---------------------------------------------------------------------------
+// Strategy prompts
+// ---------------------------------------------------------------------------
+
+export const POSITIONING_SYSTEM_PROMPT = `You are a LinkedIn personal branding strategist. Generate a concise positioning statement based on the user's role, goals, audience, and expertise. The statement should follow the format: "I help [audience] [achieve outcome] by [method/expertise]". Keep it to 1-2 sentences, professional but approachable. Do not use em dashes.`
+
+export function positioningUserPrompt(input: {
+    role: string
+    goals: string[]
+    audience: string[]
+    topics: string[]
+}): string {
+    return `Generate a positioning statement for:
+- Role: ${input.role}
+- Goals: ${input.goals.join(', ')}
+- Target audience: ${input.audience.join(', ')}
+- Areas of expertise: ${input.topics.join(', ')}`
+}
+
+export const STRATEGY_FORMATS_SYSTEM_PROMPT = `You are a LinkedIn content strategist. Based on the user's profile, suggest which content formats they should use. Enable formats that align with their goals and audience. Categorize each format. Return ALL formats with enabled true/false.`
+
+export function strategyFormatsUserPrompt(input: {
+    role: string
+    goals: string[]
+    audience: string[]
+    topics: string[]
+}): string {
+    return `Suggest content formats for:
+- Role: ${input.role}
+- Goals: ${input.goals.join(', ')}
+- Target audience: ${input.audience.join(', ')}
+- Areas of expertise: ${input.topics.join(', ')}
+
+Available formats: Personal Milestones, Mindset & Motivation, Career Before & After, Tool & Resource Insights, Case Studies, Actionable Guides, Culture Moments, Offer Highlight, Client Success Story
+
+Categorize each as: personal, educational, organizational, or promotional.`
+}
+
+export const IDEAS_SYSTEM_PROMPT = `You are a LinkedIn content strategist. Generate post ideas that align with the user's content strategy and brand voice. Each idea should have a specific topic, a recommended format, a compelling one-line hook, and brief reasoning for why this idea fits their strategy. Hooks should be attention-grabbing first lines. Do not use em dashes. Vary the formats across ideas.`
+
+export function ideasUserPrompt(input: {
+    goals: string[]
+    audience: string[]
+    topics: string[]
+    formats: string[]
+    positioning: string
+    recentTitles: string[]
+}): string {
+    return `Generate 5-7 LinkedIn post ideas for this creator:
+
+Strategy:
+- Goals: ${input.goals.join(', ')}
+- Target audience: ${input.audience.join(', ')}
+- Expertise: ${input.topics.join(', ')}
+- Positioning: ${input.positioning}
+- Active formats: ${input.formats.join(', ')}
+
+${input.recentTitles.length > 0 ? `Recent posts (avoid repeating these topics):\n${input.recentTitles.map((t) => `- ${t}`).join('\n')}` : ''}`
+}

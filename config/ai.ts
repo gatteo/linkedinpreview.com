@@ -1,4 +1,11 @@
-export const AI_RATE_LIMITS = { generation: 1, refinement: 3, analysis: 20, wizard: 5, quickAction: 10 } as const
+export const AI_RATE_LIMITS = {
+    generation: 1,
+    refinement: 3,
+    analysis: 20,
+    wizard: 5,
+    quickAction: 10,
+    ideas: 3,
+} as const
 
 export const AI_ERROR_CODES = {
     RATE_LIMITED: 'RATE_LIMITED',
