@@ -10,12 +10,12 @@ A dashboard view that tracks monthly posting progress against the user's strateg
 
 ## Acceptance Criteria
 
-- [ ] Shows monthly posts created vs target frequency
-- [ ] Shows format distribution vs target mix
-- [ ] Posting activity heatmap (last 3-6 months)
-- [ ] Current streak display
-- [ ] Handles empty state gracefully (no strategy set up yet - link to wizard)
-- [ ] Updates in real-time as drafts are created/published
+- [x] Shows monthly posts created vs target frequency
+- [x] Shows format distribution vs target mix
+- [x] Posting activity heatmap (last 3-6 months)
+- [x] Current streak display
+- [x] Handles empty state gracefully (no strategy set up yet - link to wizard)
+- [x] Updates in real-time as drafts are created/published
 
 ## Technical Notes
 

@@ -10,12 +10,12 @@ A guided multi-step wizard that walks users through setting up their content str
 
 ## Acceptance Criteria
 
-- [ ] Multi-step wizard with clear progress indication
-- [ ] User can set goals, audience, posting frequency, and format preferences
-- [ ] Strategy is persisted to Supabase
-- [ ] Strategy can be edited after initial setup
-- [ ] Wizard is accessible from the dashboard sidebar
-- [ ] Mobile-responsive layout
+- [x] Multi-step wizard with clear progress indication
+- [x] User can set goals, audience, posting frequency, and format preferences
+- [x] Strategy is persisted to Supabase
+- [x] Strategy can be edited after initial setup
+- [x] Wizard is accessible from the dashboard sidebar
+- [x] Mobile-responsive layout
 
 ## Technical Notes
 

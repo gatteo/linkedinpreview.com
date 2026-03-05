@@ -6,7 +6,7 @@ Monolithic Next.js 16.1 App Router application deployed as a single Vercel proje
 
 1. **The Tool** - A fully client-side TipTap rich text editor with live LinkedIn post preview. Available on the homepage (`/`) and as an embeddable variant (`/embed`). No server-side state - all draft persistence is handled client-side or via Supabase.
 2. **The Blog** - SEO-optimized MDX articles processed at build time via Contentlayer. Server components render content statically.
-3. **The Dashboard** - Posts management (`/dashboard`), editor (`/dashboard/editor`), branding settings (`/dashboard/branding`), and user settings (`/dashboard/settings`). Backed by Supabase via anonymous auth - no signup required.
+3. **The Dashboard** - Posts management (`/dashboard`), editor (`/dashboard/editor`), branding settings (`/dashboard/branding`), content strategy (`/dashboard/strategy`), and user settings (`/dashboard/settings`). Backed by Supabase via anonymous auth - no signup required.
 
 Server components fetch data where possible. Client components handle editor interactivity. Auth is anonymous Supabase sessions (signInAnonymously) - users get a persistent identity without ever seeing a login screen.
 
@@ -53,6 +53,18 @@ The `data` jsonb contains: profile (avatarUrl, name, headline), positioning (sta
 
 **Relationships:** Many AI Usage records per User.
 
+### Strategy
+
+| Field      | Type        | Constraints             | Description                  |
+| ---------- | ----------- | ----------------------- | ---------------------------- |
+| user_id    | uuid        | PK, FK auth.users       | One strategy record per user |
+| data       | jsonb       | NOT NULL                | All strategy fields as JSON  |
+| updated_at | timestamptz | NOT NULL, default now() | Last modification            |
+
+The `data` jsonb contains: goals (array), audience (description), postsPerWeek (number), formatMix (record of format to percentage), positioning (AI-generated statement).
+
+**Relationships:** One-to-one with User.
+
 ### Post Analysis
 
 | Field             | Type        | Constraints   | Description                         |
@@ -86,13 +98,16 @@ The `data` jsonb contains: profile (avatarUrl, name, headline), positioning (sta
 
 ## API Routes
 
-| Method | Path             | Description                         | Auth         | Request Body                                         | Response                                         |
-| ------ | ---------------- | ----------------------------------- | ------------ | ---------------------------------------------------- | ------------------------------------------------ |
-| POST   | /api/chat        | Multi-turn AI chat for post editing | Anon session | `{ messages: Message[] }`                            | SSE stream (UIMessageStreamResponse)             |
-| POST   | /api/generate    | Generate or transform content       | Anon session | `{ action, content, tone?, format?, withBranding? }` | Structured JSON (hooks, posts, text)             |
-| POST   | /api/suggestions | Get 3 refinement suggestions        | Anon session | `{ content: string }`                                | `{ suggestions: Suggestion[] }`                  |
-| POST   | /api/analyze     | Analyze post quality                | Anon session | `{ content, metrics }`                               | `{ score, scores, classification, suggestions }` |
-| POST   | /api/extract     | Extract text from URL or file       | Anon session | URL: `{ url: string }`, File: `FormData`             | `{ text: string, title?: string }`               |
+| Method | Path                      | Description                         | Auth         | Request Body                                         | Response                                         |
+| ------ | ------------------------- | ----------------------------------- | ------------ | ---------------------------------------------------- | ------------------------------------------------ |
+| POST   | /api/chat                 | Multi-turn AI chat for post editing | Anon session | `{ messages: Message[] }`                            | SSE stream (UIMessageStreamResponse)             |
+| POST   | /api/generate             | Generate or transform content       | Anon session | `{ action, content, tone?, format?, withBranding? }` | Structured JSON (hooks, posts, text)             |
+| POST   | /api/suggestions          | Get 3 refinement suggestions        | Anon session | `{ content: string }`                                | `{ suggestions: Suggestion[] }`                  |
+| POST   | /api/analyze              | Analyze post quality                | Anon session | `{ content, metrics }`                               | `{ score, scores, classification, suggestions }` |
+| POST   | /api/extract              | Extract text from URL or file       | Anon session | URL: `{ url: string }`, File: `FormData`             | `{ text: string, title?: string }`               |
+| POST   | /api/strategy/positioning | Generate AI positioning statement   | Anon session | `{ role, expertise, audience, goals }`               | `{ positioning: string }`                        |
+| POST   | /api/strategy/formats     | AI format mix recommendations       | Anon session | `{ role, goals, expertise }`                         | `{ formats: FormatRecommendation[] }`            |
+| POST   | /api/ideas                | Generate weekly AI post ideas       | Anon session | `{ strategy, branding, recentDrafts }`               | `{ ideas: PostIdea[] }`                          |
 
 Generate actions: `hooks` (4 hook options), `posts` (2 full variants), `variation`, `shorten`, `lengthen`, `restyle`, `apply-suggestion`.
 
@@ -112,7 +127,7 @@ Rate limits (per user per day): generation: 1, refinement: 3, analysis: 20, wiza
 - **Session handling**: Supabase manages JWT in cookies, refreshed via `proxy.ts` on every request (Next.js 16 middleware replacement)
 - **Roles**: None - all users are anonymous with equal access
 - **Authorization rules**:
-    - RLS policies ensure users can only CRUD their own rows in `drafts`, `branding`, `ai_usage`, and `post_analyses`
+    - RLS policies ensure users can only CRUD their own rows in `drafts`, `branding`, `strategy`, `ai_usage`, and `post_analyses`
     - Rate limiting enforced via the `check_and_record_usage` Supabase RPC, which uses row-level locking to prevent concurrent abuse
     - No admin role exists - all management is done directly in Supabase Studio
 
@@ -130,17 +145,23 @@ project-root/
 │   │   ├── page.tsx         # Posts list (tanstack table)
 │   │   ├── editor/          # TipTap editor page
 │   │   ├── branding/        # Branding settings page
+│   │   ├── strategy/        # Content strategy wizard + dashboard page
 │   │   └── settings/        # User settings page
 │   ├── api/
 │   │   ├── chat/            # AI chat endpoint (streaming)
 │   │   ├── generate/        # Content generation endpoint
 │   │   ├── analyze/         # Post analysis endpoint
 │   │   ├── extract/         # Content extraction from URL/file
-│   │   └── suggestions/     # Refinement suggestions endpoint
+│   │   ├── suggestions/     # Refinement suggestions endpoint
+│   │   ├── strategy/
+│   │   │   ├── positioning/ # AI positioning statement generation
+│   │   │   └── formats/     # AI format mix recommendations
+│   │   └── ideas/           # Weekly AI post ideas generation
 │   ├── embed/               # Embeddable tool variant (minimal layout)
 │   └── preview/             # Feed preview page
 ├── components/
 │   ├── dashboard/           # Dashboard shell, auth provider, sidebar, post list
+│   │   └── strategy/        # Content strategy wizard + dashboard UI components
 │   ├── tool/                # TipTap editor + LinkedIn preview panel
 │   ├── ui/                  # shadcn/ui primitives (Button, Dialog, Sheet, etc.)
 │   ├── shadcn-demo/         # shadcn demo components (used by app/dash-example/)

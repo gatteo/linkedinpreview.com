@@ -10,12 +10,12 @@ Each week, AI generates a set of post ideas based on the user's content strategy
 
 ## Acceptance Criteria
 
-- [ ] AI generates 5-7 post ideas per week
-- [ ] Ideas reflect the user's strategy, branding, and recent posting history
-- [ ] User can click an idea to create a new draft with the hook pre-filled
-- [ ] User can dismiss ideas
-- [ ] Ideas refresh weekly
-- [ ] Handles case where no strategy is set up (prompt to complete wizard)
+- [x] AI generates 5-7 post ideas per week
+- [x] Ideas reflect the user's strategy, branding, and recent posting history
+- [x] User can click an idea to create a new draft with the hook pre-filled
+- [x] User can dismiss ideas
+- [x] Ideas refresh weekly
+- [x] Handles case where no strategy is set up (prompt to complete wizard)
 
 ## Technical Notes
 

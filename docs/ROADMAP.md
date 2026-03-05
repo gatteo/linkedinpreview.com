@@ -57,7 +57,7 @@ Wave 0 complete.
 
 ---
 
-## Wave 2: Content Strategy
+## Wave 2: Content Strategy - COMPLETE
 
 ### Goal
 
@@ -65,11 +65,11 @@ Help users build and follow a LinkedIn content strategy with goals, audience, po
 
 ### Features
 
-| ID  | Feature Spec                   | Notes                                                |
-| --- | ------------------------------ | ---------------------------------------------------- |
-| 200 | Content strategy wizard        | Role, goals, audience, expertise, frequency, formats |
-| 201 | Content strategy dashboard     | Monthly progress tracking                            |
-| 202 | Weekly AI-generated post ideas | Based on strategy + branding                         |
+| ID  | Feature Spec                   | Status | Notes                                                |
+| --- | ------------------------------ | ------ | ---------------------------------------------------- |
+| 200 | Content strategy wizard        | Done   | Role, goals, audience, expertise, frequency, formats |
+| 201 | Content strategy dashboard     | Done   | Monthly progress tracking                            |
+| 202 | Weekly AI-generated post ideas | Done   | Based on strategy + branding                         |
 
 ### Dependencies
 

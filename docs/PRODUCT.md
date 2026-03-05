@@ -91,6 +91,14 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 | 068 | Tutorial dialog          | 4-slide onboarding tutorial on first visit (Welcome, Create Posts, Brand Your Voice, Analyze & Improve). Dismissed via localStorage `lp-tutorial-seen` flag.                                                                                                 | Live   |
 | 069 | Dark mode                | Dashboard supports light/dark/system themes via next-themes. Scoped to dashboard only - homepage is always light. Theme selector in settings.                                                                                                                | Live   |
 
+### Content Strategy
+
+| ID  | Feature                    | Description                                                                                                                                                                          | Status |
+| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| 200 | Content strategy wizard    | Guided multi-step setup for role, goals, target audience, expertise areas, posting frequency, and preferred content formats. Strategy persisted to Supabase `strategy` table.        | Live   |
+| 201 | Content strategy dashboard | Dashboard page at `/dashboard/strategy` showing monthly posting progress vs targets, format distribution, posting activity heatmap (last 3-6 months), and streak tracking.           | Live   |
+| 202 | Weekly AI post ideas       | AI generates 5-7 post ideas per week based on strategy and branding context. Each idea includes topic, format label, and hook. Click to create a new draft pre-filled with the hook. | Live   |
+
 ### Branding & Personalization
 
 | ID  | Feature                   | Description                                                                                                                                                                       | Status |
@@ -125,25 +133,22 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 
 ### Future Features
 
-| ID  | Feature                    | Description                                                                                                                                             | Status  |
-| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 200 | Content strategy wizard    | Guided setup for role, goals, audience, expertise, posting frequency, format mix.                                                                       | Planned |
-| 201 | Content strategy dashboard | Monthly progress tracking, activity targets, format targets, posting heatmap.                                                                           | Planned |
-| 202 | Weekly AI post ideas       | AI generates content ideas based on strategy + branding.                                                                                                | Planned |
-| 210 | Carousel creator           | Slide-based editor for LinkedIn carousel posts with real-time preview.                                                                                  | Planned |
-| 211 | Carousel templates         | 10+ pre-designed carousel templates with style customization.                                                                                           | Planned |
-| 212 | Carousel export            | Export as PDF, PNG, or ZIP.                                                                                                                             | Planned |
-| 220 | LinkedIn OAuth             | Connect LinkedIn account for scheduling/publishing. OAuth 2.0 flow.                                                                                     | Planned |
-| 221 | One-click publish          | Publish directly to LinkedIn from the editor.                                                                                                           | Planned |
-| 222 | Post scheduling            | Schedule posts with date/time picker, timezone support.                                                                                                 | Planned |
-| 223 | Content calendar           | Month/week views showing posts by status. Drag-and-drop rescheduling.                                                                                   | Planned |
-| 224 | Best time to post          | AI-recommended posting times based on strategy and engagement data.                                                                                     | Planned |
-| 230 | Analytics dashboard        | Post performance metrics (impressions, reactions, comments, shares), engagement trends, and content insights (top formats, best hooks, optimal length). | Planned |
-| 240 | Team collaboration         | Shared workspace, multiple editors, approval workflows.                                                                                                 | Planned |
-| 241 | Chrome extension           | Preview overlay on LinkedIn.com, quick formatting, save posts from feed.                                                                                | Planned |
-| 242 | Content repurposing        | Convert posts to carousels, threads, newsletter sections.                                                                                               | Planned |
-| 243 | Inspiration library        | Curated database of high-performing LinkedIn posts by format.                                                                                           | Planned |
-| 244 | Integrations               | Notion, Slack, Zapier/Make.com webhooks.                                                                                                                | Planned |
+| ID  | Feature             | Description                                                                                                                                             | Status  |
+| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| 210 | Carousel creator    | Slide-based editor for LinkedIn carousel posts with real-time preview.                                                                                  | Planned |
+| 211 | Carousel templates  | 10+ pre-designed carousel templates with style customization.                                                                                           | Planned |
+| 212 | Carousel export     | Export as PDF, PNG, or ZIP.                                                                                                                             | Planned |
+| 220 | LinkedIn OAuth      | Connect LinkedIn account for scheduling/publishing. OAuth 2.0 flow.                                                                                     | Planned |
+| 221 | One-click publish   | Publish directly to LinkedIn from the editor.                                                                                                           | Planned |
+| 222 | Post scheduling     | Schedule posts with date/time picker, timezone support.                                                                                                 | Planned |
+| 223 | Content calendar    | Month/week views showing posts by status. Drag-and-drop rescheduling.                                                                                   | Planned |
+| 224 | Best time to post   | AI-recommended posting times based on strategy and engagement data.                                                                                     | Planned |
+| 230 | Analytics dashboard | Post performance metrics (impressions, reactions, comments, shares), engagement trends, and content insights (top formats, best hooks, optimal length). | Planned |
+| 240 | Team collaboration  | Shared workspace, multiple editors, approval workflows.                                                                                                 | Planned |
+| 241 | Chrome extension    | Preview overlay on LinkedIn.com, quick formatting, save posts from feed.                                                                                | Planned |
+| 242 | Content repurposing | Convert posts to carousels, threads, newsletter sections.                                                                                               | Planned |
+| 243 | Inspiration library | Curated database of high-performing LinkedIn posts by format.                                                                                           | Planned |
+| 244 | Integrations        | Notion, Slack, Zapier/Make.com webhooks.                                                                                                                | Planned |
 
 ## User Flows
 
