@@ -7,12 +7,15 @@ import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
 import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
-import { formatCategory, scoreBarColor, scoreColor, sentimentColor, suggestionTypeColor } from '@/lib/analyze-utils'
-import { computeContentStats } from '@/lib/content-scoring'
+import { formatCategory, sentimentColor, suggestionTypeColor } from '@/lib/analyze-utils'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+
+import { CircularGauge } from './circular-gauge'
+import { StatsSection } from './stats-section'
+import { SubScore } from './sub-score'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,178 +43,6 @@ type AnalyzePanelProps = {
     contentText: string
     hasImage: boolean
     onApplySuggestion: (newText: string) => void
-}
-
-// ---------------------------------------------------------------------------
-// Circular gauge
-// ---------------------------------------------------------------------------
-
-function CircularGauge({ score }: { score: number }) {
-    const radius = 35
-    const circumference = 2 * Math.PI * radius
-    const offset = circumference - (score / 100) * circumference
-
-    return (
-        <svg width='80' height='80' viewBox='0 0 80 80'>
-            <circle
-                cx='40'
-                cy='40'
-                r={radius}
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='6'
-                className='text-muted/30'
-            />
-            <circle
-                cx='40'
-                cy='40'
-                r={radius}
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='6'
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap='round'
-                className={scoreColor(score)}
-                style={{
-                    transform: 'rotate(-90deg)',
-                    transformOrigin: 'center',
-                    transition: 'stroke-dashoffset 0.5s ease',
-                }}
-            />
-            <text
-                x='40'
-                y='40'
-                textAnchor='middle'
-                dominantBaseline='central'
-                className='fill-foreground text-lg font-bold'
-                fontSize='16'
-                fontWeight='700'>
-                {score}
-            </text>
-        </svg>
-    )
-}
-
-// ---------------------------------------------------------------------------
-// Sub-score bar
-// ---------------------------------------------------------------------------
-
-function SubScore({ label, score }: { label: string; score: number }) {
-    return (
-        <div className='flex items-center gap-2'>
-            <span className='text-muted-foreground w-24 shrink-0 text-xs'>{label}</span>
-            <div className='bg-muted h-1.5 flex-1 overflow-hidden rounded-full'>
-                <div
-                    className={cn('h-full rounded-full transition-all duration-500', scoreBarColor(score))}
-                    style={{ width: `${score}%` }}
-                />
-            </div>
-            <span className={cn('w-6 shrink-0 text-right text-xs font-medium tabular-nums', scoreColor(score))}>
-                {score}
-            </span>
-        </div>
-    )
-}
-
-// ---------------------------------------------------------------------------
-// Stats section
-// ---------------------------------------------------------------------------
-
-function StatsSection({ text }: { text: string }) {
-    const stats = React.useMemo(() => computeContentStats(text), [text])
-    const dist = stats.sentenceDistribution
-    const distEntries = [
-        { key: 'tiny', label: 'Tiny', value: dist.tiny, color: 'bg-blue-400' },
-        { key: 'short', label: 'Short', value: dist.short, color: 'bg-green-400' },
-        { key: 'medium', label: 'Medium', value: dist.medium, color: 'bg-yellow-400' },
-        { key: 'long', label: 'Long', value: dist.long, color: 'bg-orange-400' },
-        { key: 'veryLong', label: 'Very Long', value: dist.veryLong, color: 'bg-red-400' },
-    ]
-
-    return (
-        <div className='space-y-3'>
-            <h3 className='text-foreground text-xs font-semibold tracking-wider uppercase'>Stats</h3>
-
-            <div className='space-y-2.5'>
-                {/* Readability */}
-                <div className='flex items-center justify-between text-sm'>
-                    <span className='text-muted-foreground text-xs'>Readability</span>
-                    <span className='text-foreground text-xs font-medium'>
-                        {stats.readabilityGrade} - {stats.readabilityLabel}
-                    </span>
-                </div>
-
-                {/* Sentence mix */}
-                <div>
-                    <span className='text-muted-foreground mb-1 block text-xs'>Sentence mix</span>
-                    <div className='bg-muted flex h-2 overflow-hidden rounded-full'>
-                        {distEntries.map((e) =>
-                            e.value > 0 ? (
-                                <div
-                                    key={e.key}
-                                    className={e.color}
-                                    style={{ width: `${e.value}%` }}
-                                    title={`${e.label}: ${e.value}%`}
-                                />
-                            ) : null,
-                        )}
-                    </div>
-                    <div className='mt-1 flex flex-wrap gap-x-3 gap-y-0.5'>
-                        {distEntries
-                            .filter((e) => e.value > 0)
-                            .map((e) => (
-                                <span key={e.key} className='text-muted-foreground flex items-center gap-1 text-xs'>
-                                    <span className={cn('inline-block size-1.5 rounded-full', e.color)} />
-                                    {e.label} {e.value}%
-                                </span>
-                            ))}
-                    </div>
-                </div>
-
-                {/* Counts row */}
-                <div className='grid grid-cols-2 gap-x-4 gap-y-1.5'>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Characters</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>{stats.charCount}</span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Words</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>{stats.wordCount}</span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Lines</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>{stats.lineCount}</span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Emojis</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>{stats.emojiCount}</span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Hashtags</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>
-                            {stats.hashtagCount}{' '}
-                            <span className='text-muted-foreground font-normal'>/ {stats.recommendedHashtags}</span>
-                        </span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                        <span className='text-muted-foreground text-xs'>Length</span>
-                        <span
-                            className={cn(
-                                'text-xs font-medium',
-                                stats.lengthStatus === 'optimal' ? 'text-green-500' : 'text-red-500',
-                            )}>
-                            {stats.lengthStatus === 'optimal'
-                                ? 'Optimal'
-                                : stats.lengthStatus === 'too_short'
-                                  ? 'Too short'
-                                  : 'Too long'}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
 }
 
 // ---------------------------------------------------------------------------

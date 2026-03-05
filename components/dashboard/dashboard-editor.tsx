@@ -20,7 +20,7 @@ import { EditorLoading } from '@/components/tool/editor-loading'
 import { PreviewPanel } from '@/components/tool/preview/preview-panel'
 import { ResizeHandle } from '@/components/tool/resize-handle'
 
-import { AnalyzePanel } from './analyze-panel'
+import { AnalyzePanel } from './analyze/analyze-panel'
 import { PageHeader } from './page-header'
 
 const EditorPanel = dynamic(

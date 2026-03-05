@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { BrandingForm } from '@/components/dashboard/branding-form'
+import { BrandingForm } from '@/components/dashboard/branding/branding-form'
 import { PageHeader } from '@/components/dashboard/page-header'
 
 export const metadata: Metadata = { title: 'Branding - LinkedInPreview.com' }
