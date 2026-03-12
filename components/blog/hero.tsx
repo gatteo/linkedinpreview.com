@@ -1,8 +1,7 @@
 import Link from 'next/link'
 
 import { Routes } from '@/config/routes'
-
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 
 export function Hero() {
     return (

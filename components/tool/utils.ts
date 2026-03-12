@@ -22,13 +22,13 @@ type Appender = {
     ignore: Array<string>
 }
 
-type Transforms = keyof typeof TRANSFORMS
+type TransformKey = string
 
 // Each transform consists of a modifier for lowercase and a modifier for
 // uppercase characters. To go from e.g. A to 𝔸, the character code for A, 65,
 // is added to the uppercase modifier for DOUBLE, 0xdcf7, and prefixed with a
 // unicode surrogate.
-const TRANSFORMS = {
+const TRANSFORMS: Record<string, Transform> = {
     DOUBLE: {
         exclusive: true,
         modifier: [0xdcf1, 0xdcf7],
@@ -60,25 +60,25 @@ const UNDERLINE_IGNORE = ['g', 'j', 'p', 'q', 'y']
 
 // Repeat UNDERLINE_IGNORE for all transforms.
 function buildUnderlineIgnore() {
-    const repeated = UNDERLINE_IGNORE.reduce((total, char) => {
+    const repeated = UNDERLINE_IGNORE.reduce<string[]>((total, char) => {
         const permutations = Object.keys(TRANSFORMS).map((key) => applyTransform(char, TRANSFORMS[key]))
 
         return total.concat(permutations)
     }, [])
 
-    // Include the regular characters as well:
     return repeated.concat(UNDERLINE_IGNORE)
 }
 
-const COMBINED_TRANSFORMS = {
+const COMBINED_TRANSFORMS: Record<string, Transform> = {
     BOLDITALIC: {
+        exclusive: false,
         modifier: [0xddf5, 0xddfb],
     },
 }
 
 // To e.g. underline a character, a
 // specific unicode character is appended prior to it.
-const APPENDERS = {
+const APPENDERS: Record<string, Appender> = {
     UNDERLINE: {
         character: '̲',
         ignore: buildUnderlineIgnore(),
@@ -92,7 +92,7 @@ const APPENDERS = {
 /**
  * Turns e.g., BOLD and ITALIC into BOLDITALIC.
  */
-function retrieveTransforms(styles: Transforms[]): Array<Transform> {
+function retrieveTransforms(styles: TransformKey[]): Array<Transform> {
     const combined = styles
         .filter((style) => TRANSFORMS[style])
         .sort()
@@ -147,33 +147,13 @@ function applyAppender(text: string, appender: Appender): string {
  * Applies a list of styles to the given characters.
  */
 export function applyStyles(characters: string, style: string[]): string {
-    const transforms = retrieveTransforms(style as Transforms[])
+    const transforms = retrieveTransforms(style)
     const appenders = retrieveAppenders(style)
     const styledText = transforms.reduce(applyTransform, characters)
     return appenders.reduce(applyAppender, styledText)
 }
 
-export function applyStylesJSON(obj: any) {
-    if (obj.content) {
-        obj.content.forEach((item) => {
-            // const mappedMarks = item.marks.reduce((mark) => mapMarks(mark.type))
-
-            item.content.forEach(() => {
-                if (textItem.text) {
-                    textItem.text = textItem.text.toUpperCase()
-                }
-            })
-
-            if (item.marks && item.marks.some((mark) => mark.type === 'bold')) {
-                // If the field has bold mark, transform the text to uppercase
-            }
-            // Recursively process nested content
-            processJSON(item)
-        })
-    }
-}
-
-interface Node {
+type Node = {
     type: string
     content?: Node[]
     marks?: { type: string }[]
@@ -185,7 +165,7 @@ export function processNodes(node: Node): Node {
     const processedNode = { ...node }
 
     if (node.type === 'text') {
-        const mappedMarks = (node.marks || []).reduce((acc, mark) => [...acc, mapMarks(mark.type)], [])
+        const mappedMarks = (node.marks || []).reduce<string[]>((acc, mark) => [...acc, mapMarks(mark.type)], [])
 
         const styledText = applyStyles(node.text || '', mappedMarks)
 

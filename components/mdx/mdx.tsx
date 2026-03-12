@@ -7,9 +7,9 @@ import { type MDXComponents } from 'mdx/types'
 import ReactDOM from 'react-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Link } from '@/components/ui/link'
+import { CtaCard } from '@/components/cta-card'
 
-import { CtaCard } from '../cta-card'
-import { Link } from '../ui/link'
 import { Heading } from './heading'
 import { ImageZoom } from './image-zoom'
 import { ItemGrid } from './item-grid'
@@ -107,4 +107,4 @@ const Mdx = ({ code }: MdxProps) => {
 }
 /* eslint-enable react-hooks/static-components */
 
-export default Mdx
+export { Mdx }

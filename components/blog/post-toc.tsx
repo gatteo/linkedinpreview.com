@@ -111,4 +111,4 @@ const TableOfContents = (props: TableOfContentsProps) => {
     )
 }
 
-export default TableOfContents
+export { TableOfContents }

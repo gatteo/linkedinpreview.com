@@ -1,6 +1,6 @@
 import type React from 'react'
 
-interface PlaceholderPostProps {
+type PlaceholderPostProps = {
     variant?: 'short' | 'long' | 'with-image'
     initials?: string
     avatarColor?: string

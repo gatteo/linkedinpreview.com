@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { absoluteUrl } from '@/utils/urls'
 
@@ -46,7 +47,9 @@ export default async function Page({ searchParams }: Props) {
     return (
         <main>
             <Hero />
-            <FilteredPosts posts={posts} initialSearch={q} />
+            <Suspense>
+                <FilteredPosts posts={posts} initialSearch={q} />
+            </Suspense>
         </main>
     )
 }
