@@ -3,7 +3,7 @@ import { Bell, Briefcase, Home, MessageSquare, Search, Users } from 'lucide-reac
 
 import { Icons } from '@/components/icon'
 
-interface NavItemProps {
+type NavItemProps = {
     icon: React.ReactNode
     label: string
 }

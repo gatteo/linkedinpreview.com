@@ -6,15 +6,14 @@ import { CheckIcon, CopyIcon, FileIcon, TerminalIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
-
-import { Button, ButtonProps } from '../ui/button'
+import { Button } from '@/components/ui/button'
 
 type PreProps = {
     'data-lang'?: string
 } & React.ComponentPropsWithoutRef<'pre'>
 type CopyButtonProps = {
     text: string
-} & ButtonProps
+} & React.ComponentPropsWithoutRef<typeof Button>
 
 const getLanguageIcon = (lang: string): React.ReactNode => {
     switch (lang) {
