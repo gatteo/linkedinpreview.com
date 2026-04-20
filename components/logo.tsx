@@ -8,7 +8,7 @@ export function Logo({ className }: { className?: string }) {
     return (
         <Link href='/' className={cn('', className)} aria-label='Homepage'>
             <div className='block'>
-                <Image src={LogoImage} placeholder='blur' height={40} width={40} alt='Tech Career Launch Logo' />
+                <Image src={LogoImage} placeholder='blur' height={40} width={40} alt='' />
             </div>
         </Link>
     )

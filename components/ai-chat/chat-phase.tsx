@@ -3,18 +3,20 @@
 import React from 'react'
 import type { UIMessage } from 'ai'
 
+import type { Suggestion } from '@/lib/ai-suggestions'
+
 import { ChatInput } from './chat-input'
 import { ChatMessage } from './chat-message'
 import { SuggestionChips } from './suggestion-chips'
 
-interface ChatPhaseProps {
+type ChatPhaseProps = {
     messages: UIMessage[]
     status: 'ready' | 'submitted' | 'streaming' | 'error'
     onSendMessage: (text: string) => void
     onStop: () => void
     onOpenInEditor: () => void
     latestPostText: string
-    suggestions: string[]
+    suggestions: Suggestion[]
     suggestionsLoading: boolean
     onSuggestionSelect: (text: string) => void
 }

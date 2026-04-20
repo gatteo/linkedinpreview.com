@@ -20,7 +20,6 @@ export const RightSidebar: React.FC = () => {
 
             {/* Follow recommendations */}
             {followItems.map((item, i) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <div key={i}>
                     <div className='flex items-center gap-2.5 px-3 py-2.5'>
                         {/* Avatar */}
@@ -52,7 +51,6 @@ export const RightSidebar: React.FC = () => {
             {/* Footer links */}
             <div className='flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-3'>
                 {[50, 55, 45, 60, 40].map((w, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <BlurredLine key={i} width={`${w}px`} height='h-2.5' />
                 ))}
             </div>
