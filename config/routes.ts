@@ -2,12 +2,13 @@ export const ApiRoutes = {
     Chat: '/api/chat',
     Suggestions: '/api/suggestions',
     Analyze: '/api/analyze',
+    Generate: '/api/generate',
+    Extract: '/api/extract',
 }
 
 export const Routes = {
     Home: '',
     Tool: '/#tool',
-    MainFeatures: '/#main-features',
     AllFeatures: '/#all-features',
     HowItWorks: '/#how-it-works',
     Faqs: '/#faqs',
@@ -19,4 +20,9 @@ export const Routes = {
     ComparePost: (slug: string) => `/compare/${slug}`,
     Embed: '/embed',
     EmbedSection: '/#embed',
+    Dashboard: '/dashboard',
+    DashboardEditor: (draftId?: string) => (draftId ? `/dashboard/editor?draft=${draftId}` : '/dashboard/editor'),
+    DashboardPosts: '/dashboard',
+    DashboardBranding: '/dashboard/branding',
+    DashboardSettings: '/dashboard/settings',
 }

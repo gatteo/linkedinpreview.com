@@ -19,11 +19,6 @@ export type LocalBlogPost = {
     author: BlogPostAuthor
 }
 
-export enum BlogPostSource {
-    Local = 'LOCAL',
-    Substack = 'SUBSTACK',
-}
-
 export type BlogPostPreview = {
     id: string | number
     slug: string
@@ -31,7 +26,6 @@ export type BlogPostPreview = {
     summary: string
     date: Date
     image: string | null
-    source: BlogPostSource
     url: string
     tags?: string[]
     author: BlogPostAuthor
