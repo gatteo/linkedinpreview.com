@@ -1,0 +1,108 @@
+---
+title: 'How to Find the Exact Date of a LinkedIn Post (Date Extractor Guide)'
+createdAt: '2026-06-04T00:00:00Z'
+modifiedAt: '2026-06-04T00:00:00Z'
+summary: 'LinkedIn hides the exact publishing date of posts, but you can find it. Learn how to extract the exact timestamp from any LinkedIn post URL easily.'
+image: '/images/blog/how-to-find-exact-date-of-linkedin-post/og.png'
+authorId: matteo
+tags: ['linkedin', 'linkedin strategy', 'tips']
+---
+
+Have you ever scrolled through LinkedIn, found an incredibly useful post, and wondered exactly when it was published?
+
+If you look at the timestamp, LinkedIn only gives you a vague estimate like **"2w" (two weeks ago)**, **"3mo" (three months ago)**, or **"1yr" (one year ago)**.
+
+For marketers, researchers, and content creators, "about three months ago" is not good enough. You need the **exact date and time** to analyze trends, cite sources, or understand a creator's [LinkedIn content strategy](/blog/linkedin-content-strategy-2026).
+
+Fortunately, there are a few simple ways to find the exact publishing date of any LinkedIn post. In this guide, we will show you how to extract the exact timestamp from a LinkedIn post URL.
+
+## Why Does LinkedIn Hide the Exact Post Date?
+
+LinkedIn intentionally obscures the exact publishing date to make the feed feel "evergreen."
+
+When you see a post from "1yr" ago, you are less likely to dismiss it as outdated than if you saw a specific date from over a year ago. This design choice helps LinkedIn keep older, high-performing content circulating in the feed longer.
+
+However, the exact timestamp **is still there** - it is just hidden inside the post's unique URL structure. Every time someone publishes a post, LinkedIn generates a unique "Activity ID" that contains the exact millisecond the post was created.
+
+<CtaCard
+    title='Free LinkedIn Post Preview Tool'
+    description='Write, format, and preview your LinkedIn posts before publishing. See exactly how they will look. No signup required.'
+    primaryButtonText='Try It Free'
+    primaryButtonUrl='/#tool'
+    pattern='circles'
+    align='center'
+/>
+
+## Method 1: Use an Online LinkedIn Post Date Extractor (Easiest)
+
+The fastest way to find the exact date of a LinkedIn post is to use a free online **LinkedIn Post Date Extractor**.
+
+These tools do the complex math for you by decoding the Activity ID hidden in the post URL.
+
+### Step 1: Copy the LinkedIn Post URL
+
+Go to the LinkedIn post you want to analyze. Click the **three dots (...)** in the top right corner of the post and select **Copy link to post**.
+
+The URL will look something like this:
+`https://www.linkedin.com/posts/username_activity-7164283940123456789-AbCd`
+
+### Step 2: Use an Extractor Tool
+
+Search Google for a "LinkedIn post date extractor" (there are several free options available).
+
+Paste your copied URL into the tool. The tool will instantly extract the hidden Activity ID (`7164283940123456789`) and convert it into a human-readable date and time, adjusting for your local timezone.
+
+## Method 2: Manually Extract the Date Using the Activity ID (Advanced)
+
+If you do not want to use a third-party tool, you can decode the timestamp yourself. This method requires a bit of technical knowledge, but it reveals exactly how the system works.
+
+### Step 1: Find the Activity ID
+
+Look at the URL you copied from LinkedIn. The **Activity ID** is the long 19-digit number located right after the word "activity-".
+
+Example URL:
+`https://www.linkedin.com/posts/username_activity-7164283940123456789-AbCd`
+
+In this example, the Activity ID is `7164283940123456789`.
+
+### Step 2: Convert to Binary
+
+This 19-digit number is a specific type of database identifier called a "Snowflake ID." To get the date, you first need to convert this decimal number into binary code. You can use any free decimal-to-binary converter online for this step.
+
+### Step 3: Extract the Timestamp
+
+Once you have the binary number, take the **first 41 bits** (the first 41 digits).
+
+Convert those 41 bits back into a decimal number. The resulting number is the **UNIX timestamp** in milliseconds (the number of milliseconds that have passed since January 1, 1970).
+
+### Step 4: Convert to a Readable Date
+
+Finally, paste that UNIX timestamp into an "Epoch Converter" or UNIX timestamp converter website. This will translate the milliseconds into an exact calendar date and time.
+
+<CtaCard
+    title='Format Your LinkedIn Posts Perfectly'
+    description='Use bold, italics, lists, and special formatting in your LinkedIn posts. Preview exactly how they will render before you publish.'
+    primaryButtonText='Format Your Post'
+    primaryButtonUrl='/#tool'
+    pattern='circles'
+    align='center'
+/>
+
+## How to Find the Exact Date of Your Own LinkedIn Posts
+
+If you are trying to find the exact date of **your own** LinkedIn posts, you do not need to extract the Activity ID. LinkedIn provides this data in your analytics.
+
+1. Go to your LinkedIn profile.
+2. Scroll down to the **Analytics** section.
+3. Click on **Post impressions**.
+4. Here, you can see a list of your recent posts along with their exact publication dates.
+
+You can also export this data. If you go to your Page or Creator Analytics and export your content data as a CSV file, the spreadsheet will include a column with the exact publish date and time for every post. This is highly useful for measuring your [LinkedIn posting frequency](/blog/linkedin-posting-frequency) and analyzing what times yield the best engagement.
+
+## Summary
+
+LinkedIn's decision to hide exact dates with vague labels like "1mo" can be frustrating when you need precise information. But by using a **LinkedIn post date extractor** or decoding the Activity ID yourself, you can always uncover the exact moment a post went live.
+
+Whether you are studying competitors, tracking trends, or auditing your own [LinkedIn content calendar](/blog/linkedin-content-calendar), having the exact timestamps gives you a massive analytical advantage.
+
+If you are looking to create posts that stand out regardless of when they are published, try formatting your text first. Use the [LinkedIn Preview Tool](/) to add bold text, italics, and custom spacing to make your content pop in the feed.
