@@ -17,12 +17,11 @@ import {
 } from 'react-share'
 
 import { cn } from '@/lib/utils'
-
-import { buttonVariants } from '../ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 export function ShareIcons({ url, title, className }: { url: string; title: string; className?: string }) {
     const trackShare = (platform: string) => {
-        posthog.capture('blog_article_shared', {
+        posthog?.capture('blog_article_shared', {
             platform,
             article_url: url,
             article_title: title,

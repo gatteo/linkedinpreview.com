@@ -11,7 +11,7 @@ export function FeedbackFab() {
     if (!formId) return null
 
     const handleClick = () => {
-        posthog.capture('feedback_button_clicked', {
+        posthog?.capture('feedback_button_clicked', {
             source: 'fab',
             page_url: window.location.href,
         })

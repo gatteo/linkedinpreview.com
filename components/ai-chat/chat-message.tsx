@@ -1,18 +1,18 @@
 import type { UIMessage } from 'ai'
 import { Clock, TriangleAlert } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
-
-import { ChatPreviewCard } from './chat-preview-card'
 import {
     extractTextFromMessage,
     getRateLimitedReason,
     getRefusalReason,
     isRateLimitedMessage,
     isRefusalMessage,
-} from './message-utils'
+} from '@/lib/ai-chat'
+import { cn } from '@/lib/utils'
 
-interface ChatMessageProps {
+import { ChatPreviewCard } from './chat-preview-card'
+
+type ChatMessageProps = {
     message: UIMessage
     isStreaming: boolean
     onOpenInEditor?: () => void

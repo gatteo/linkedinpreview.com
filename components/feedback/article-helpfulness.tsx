@@ -27,7 +27,7 @@ export function ArticleHelpfulness({ slug, title }: { slug: string; title: strin
         localStorage.setItem(getStorageKey(slug), value)
         setVote(value)
 
-        posthog.capture('article_helpful_voted', {
+        posthog?.capture('article_helpful_voted', {
             article_slug: slug,
             article_title: title,
             vote: value,

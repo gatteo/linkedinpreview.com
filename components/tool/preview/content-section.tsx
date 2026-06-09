@@ -14,7 +14,6 @@ export function renderWithHashtags(text: string): React.ReactNode {
     if (parts.length === 1) return text
     return parts.map((part, i) =>
         /^#[\w\u00C0-\u024F]+$/.test(part) ? (
-            // eslint-disable-next-line react/no-array-index-key -- static list derived from text, never reordered
             <span key={i} className='font-semibold text-[#0a66c2]'>
                 {part}
             </span>

@@ -51,24 +51,34 @@ export function HeroCTA() {
     const copy = CTA_VARIANTS[variantKey] || CONTROL
 
     return (
-        <div className='flex items-center gap-3'>
-            <TrackClick
-                event='cta_button_clicked'
-                properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
-                <Button asChild size='lg' className='rounded-lg'>
-                    <Link href={Routes.Tool}>
-                        {copy.primary}
-                        <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
-                    </Link>
-                </Button>
-            </TrackClick>
-            <TrackClick
-                event='cta_button_clicked'
-                properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
-                    <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
-                </Button>
-            </TrackClick>
+        <div className='flex flex-col items-center gap-3'>
+            <div className='flex items-center gap-3'>
+                <TrackClick
+                    event='cta_button_clicked'
+                    properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
+                    <Button asChild size='lg' className='rounded-lg'>
+                        <Link href={Routes.Tool}>
+                            {copy.primary}
+                            <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
+                        </Link>
+                    </Button>
+                </TrackClick>
+                <TrackClick
+                    event='cta_button_clicked'
+                    properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
+                    <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
+                        <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
+                    </Button>
+                </TrackClick>
+            </div>
+            <p className='text-muted-foreground text-xs'>
+                or{' '}
+                <Link
+                    href={Routes.Dashboard}
+                    className='text-primary hover:text-primary/80 underline underline-offset-2'>
+                    open the full dashboard
+                </Link>
+            </p>
         </div>
     )
 }

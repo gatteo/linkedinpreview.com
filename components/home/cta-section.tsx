@@ -93,7 +93,7 @@ export function CtaSection() {
                         <Button
                             asChild
                             className='rounded-lg bg-white px-5 py-2.5 text-neutral-900 hover:bg-neutral-100'>
-                            <Link href={Routes.Tool}>Start, it's free</Link>
+                            <Link href={Routes.Dashboard}>Start, it's free</Link>
                         </Button>
                         <Button
                             asChild

@@ -5,7 +5,7 @@ import { ArrowUp, Square } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
-interface ChatInputProps {
+type ChatInputProps = {
     onSend: (text: string) => void
     isLoading: boolean
     onStop: () => void

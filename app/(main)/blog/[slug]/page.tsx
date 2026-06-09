@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { absoluteUrl } from '@/utils/urls'
 import { type Article, type BreadcrumbList, type WithContext } from 'schema-dts'
 
-import { BlogPostSource } from '@/types/blog'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { getLocalBlogPost, getLocalBlogPosts } from '@/lib/blog'
@@ -165,13 +164,12 @@ export default async function Page({ params }: Props) {
                 summary={post.summary}
                 image={post.image}
                 author={post.author}
-                source={BlogPostSource.Local}
                 tags={post.tags}
             />
 
             <Content title={post.title} body={post.body} url={absoluteUrl(Routes.BlogPost(slug))} />
 
-            <Footer slug={slug} title={post.title} author={post.author} source={BlogPostSource.Local} />
+            <Footer slug={slug} title={post.title} author={post.author} />
 
             <ArticleHelpfulness slug={slug} title={post.title} />
 

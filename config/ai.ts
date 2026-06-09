@@ -1,6 +1,18 @@
-export const AI_RATE_LIMITS = { generation: 1, refinement: 3, analysis: 20 } as const
+export const AI_RATE_LIMITS = {
+    generation: 1,
+    refinement: 3,
+    analysis: 20,
+    wizard: 5,
+    quickAction: 10,
+    ideas: 3,
+} as const
 
-export const AI_ERROR_CODES = { RATE_LIMITED: 'RATE_LIMITED', AUTH_REQUIRED: 'AUTH_REQUIRED' } as const
+export const AI_ERROR_CODES = {
+    RATE_LIMITED: 'RATE_LIMITED',
+    AUTH_REQUIRED: 'AUTH_REQUIRED',
+    INVALID_INPUT: 'INVALID_INPUT',
+    GENERATION_FAILED: 'GENERATION_FAILED',
+} as const
 
 export type Tone = 'professional' | 'casual' | 'inspirational' | 'educational' | 'storytelling' | 'humorous'
 

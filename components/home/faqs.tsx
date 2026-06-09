@@ -1,5 +1,3 @@
-'use client'
-
 import { type FAQPage, type WithContext } from 'schema-dts'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'

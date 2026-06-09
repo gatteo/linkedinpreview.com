@@ -48,7 +48,7 @@ export function FilteredPosts({ posts, initialSearch }: { posts: BlogPostPreview
         if (trackTimeoutRef.current) clearTimeout(trackTimeoutRef.current)
         if (value.length >= 2) {
             trackTimeoutRef.current = setTimeout(() => {
-                posthog.capture('blog_search_performed', {
+                posthog?.capture('blog_search_performed', {
                     search_query: value,
                     results_count: posts.filter((post) => post.title.toLowerCase().includes(value.toLowerCase()))
                         .length,

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import { Icons } from '../icon'
 import { Skeleton } from '../ui/skeleton'
 

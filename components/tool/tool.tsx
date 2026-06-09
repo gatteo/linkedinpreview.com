@@ -5,8 +5,11 @@ import dynamic from 'next/dynamic'
 import { Eye, PenLine } from 'lucide-react'
 import { Group, Panel } from 'react-resizable-panels'
 
+import { Routes } from '@/config/routes'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
+import { hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/hooks/use-is-desktop'
 
 import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
@@ -19,17 +22,6 @@ const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ defa
 
 export type Media = { type: 'image' | 'video'; src: string }
 
-// Helper to check if TipTap JSON has actual text content
-function hasTextContent(doc: any): boolean {
-    if (!doc?.content) return false
-    return doc.content.some((node: any) => {
-        if (node.content) {
-            return node.content.some((child: any) => child.text?.trim())
-        }
-        return false
-    })
-}
-
 type ToolProps = {
     variant?: 'default' | 'embed'
 }
@@ -38,21 +30,6 @@ type MobileTab = 'editor' | 'preview'
 
 const STORAGE_KEY = 'linkedinpreview-draft'
 const SAVE_DELAY_MS = 2000
-const DESKTOP_BREAKPOINT = 768
-
-function useIsDesktop() {
-    const [isDesktop, setIsDesktop] = React.useState(false)
-
-    React.useEffect(() => {
-        const mql = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`)
-        const onChange = () => setIsDesktop(mql.matches)
-        onChange()
-        mql.addEventListener('change', onChange)
-        return () => mql.removeEventListener('change', onChange)
-    }, [])
-
-    return isDesktop
-}
 
 function loadLocalDraft(): any | null {
     try {
@@ -147,6 +124,16 @@ export function Tool({ variant = 'default' }: ToolProps) {
         window.open(`/preview?draft=${encoded}`, '_blank')
     }, [content])
 
+    const handleOpenDashboard = React.useCallback(async () => {
+        if (!content) return
+        const encoded = await encodeDraft(content)
+        if (!encoded) {
+            window.location.href = Routes.Dashboard
+            return
+        }
+        window.location.href = `/dashboard/editor?import=${encoded}`
+    }, [content])
+
     if (isLoading) {
         return null
     }
@@ -229,6 +216,19 @@ export function Tool({ variant = 'default' }: ToolProps) {
                             />
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Dashboard prompt - shown when user has written content */}
+            {variant === 'default' && hasTextContent(content) && (
+                <div className='border-border bg-muted/30 text-muted-foreground flex items-center justify-center gap-2 border-t px-4 py-2 text-xs'>
+                    <span>Want to save and manage drafts?</span>
+                    <button
+                        type='button'
+                        onClick={handleOpenDashboard}
+                        className='text-primary hover:text-primary/80 font-medium underline underline-offset-2'>
+                        Open full editor
+                    </button>
                 </div>
             )}
         </div>

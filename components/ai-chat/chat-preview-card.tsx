@@ -12,7 +12,7 @@ import { Reactions } from '@/components/tool/preview/reactions'
 import { UserInfo } from '@/components/tool/preview/user-info'
 import { processNodes, toPlainText } from '@/components/tool/utils'
 
-interface ChatPreviewCardProps {
+type ChatPreviewCardProps = {
     text: string
     isStreaming: boolean
     onOpenInEditor?: () => void
@@ -22,8 +22,7 @@ export function ChatPreviewCard({ text, isStreaming, onOpenInEditor }: ChatPrevi
     const processedText = useMemo(() => {
         if (!text) return ''
         const doc = { type: 'doc', content: toTipTapParagraphs(text) }
-        // @ts-ignore -- same usage as ContentSection
-        return toPlainText(processNodes(doc).content) as string
+        return toPlainText(processNodes(doc).content ?? [])
     }, [text])
 
     return (

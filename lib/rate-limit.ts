@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { AI_RATE_LIMITS } from '@/config/ai'
 
-interface RateLimitResult {
+type RateLimitResult = {
     allowed: boolean
     remaining: number
     resetAt: string | null

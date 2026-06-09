@@ -4,7 +4,7 @@ import { absoluteUrl } from '@/utils/urls'
 
 import { Routes } from '@/config/routes'
 import { getAllChangelogs } from '@/lib/changelog'
-import Mdx from '@/components/mdx/mdx'
+import { Mdx } from '@/components/mdx/mdx'
 
 const title = 'Changelog'
 const description = 'New features, improvements, and fixes - see what we have been building.'

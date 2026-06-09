@@ -21,12 +21,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { EditorLoading } from './editor-loading'
 import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
-import Toolbar from './toolbar'
+import { Toolbar } from './toolbar'
 import { processNodes, toPlainText } from './utils'
 
-const AIGenerateSheet = dynamic(() => import('../ai-chat/sheet').then((mod) => ({ default: mod.AIGenerateSheet })), {
-    ssr: false,
-})
+const AIGenerateSheet = dynamic(
+    () => import('../ai-chat/ai-generate-sheet').then((mod) => ({ default: mod.AIGenerateSheet })),
+    {
+        ssr: false,
+    },
+)
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {
@@ -45,11 +48,15 @@ export function EditorPanel({
     onChange,
     onMediaChange,
     onShare,
+    contentReplace,
+    onContentReplaceApplied,
 }: {
     initialContent?: any
     onChange: (json: any) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
+    contentReplace?: string | null
+    onContentReplaceApplied?: () => void
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
@@ -231,6 +238,14 @@ export function EditorPanel({
         posthog.capture('media_removed', { media_type: mediaType })
     }, [handleMediaChangeWrapper, currentMedia])
 
+    React.useEffect(() => {
+        if (!contentReplace || !editor) return
+        const paragraphs = toTipTapParagraphs(contentReplace)
+        editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
+        onChange(editor.getJSON())
+        onContentReplaceApplied?.()
+    }, [contentReplace]) // eslint-disable-line react-hooks/exhaustive-deps
+
     if (!editor) {
         return <EditorLoading />
     }
@@ -277,18 +292,6 @@ export function EditorPanel({
             <div className='border-border shrink-0 border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
-                                <Icons.emoji className='size-4' />
-                            </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Insert Emoji
-                            </span>
-                        </div> */}
-
                         <input
                             ref={fileInputRef}
                             type='file'
@@ -310,18 +313,6 @@ export function EditorPanel({
                             </TooltipTrigger>
                             <TooltipContent>{currentMedia ? 'Remove Media' : 'Add Image or Video'}</TooltipContent>
                         </Tooltip>
-
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
-                                <Icons.carousel className='size-4' />
-                            </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Add Carousel
-                            </span>
-                        </div> */}
 
                         <Tooltip>
                             <TooltipTrigger asChild>
