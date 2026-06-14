@@ -1,11 +1,10 @@
 # Roadmap
 
-> The Foundation and Waves 0-2 shipped their core to production but still carry some PARTIAL
-> features, so they are not labeled COMPLETE - each section lists exactly what is left under "To
-> complete this wave". Per-feature truth (SHIPPED/PARTIAL with evidence) is in
-> [features/](features/) and summarized in [STATUS.md](STATUS.md). Waves 3-6 and the SEO track are
-> planned; each feature has a spec in [backlog/](backlog/). The feature matrix is in
-> [PRODUCT.md](PRODUCT.md).
+> The Foundation and Waves 0, 1, and 2 are now COMPLETE - every feature in them is SHIPPED with all
+> acceptance criteria verified. Per-feature truth (SHIPPED with evidence) is in
+> [features/completed/](features/completed/) and summarized in [STATUS.md](STATUS.md). Waves 3-6 and
+> the SEO track are planned; each feature has a spec in [backlog/](backlog/). The feature matrix is
+> in [PRODUCT.md](PRODUCT.md).
 >
 > **Rules this document holds itself to:**
 >
@@ -71,7 +70,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (27 of 28 SHIPPED, 1 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - COMPLETE (28 of 28 SHIPPED)
 
 ### Goal
 
@@ -99,7 +98,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [085 - Custom footer](features/completed/085-custom-footer.md)                         | SHIPPED | Deterministically appended to generated posts           |
 | [086 - Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED | Wired into AI as additional context                     |
 | [087 - Dos and donts](features/completed/087-dos-and-donts.md)                         | SHIPPED | Injected as system-prompt hard constraints              |
-| [088 - Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL | Feeds AI now; card "URL" claim still inaccurate (T-014) |
+| [088 - Inspirational posts](features/completed/088-inspirational-posts.md)             | SHIPPED | Feeds AI as style reference; spec matches text-paste UI |
 | [089 - Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED | Sent to AI as style reference                           |
 | [090 - Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED | "All changes saved" + auto-upsert                       |
 | [100 - Theme selector](features/completed/100-theme-selector.md)                       | SHIPPED | Light/dark/system                                       |
@@ -112,10 +111,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 
 ### To complete this wave
 
-Every item below is a PARTIAL feature with a tracking ticket. The wave reaches COMPLETE when all are
-SHIPPED.
-
-- [088 - Inspirational posts](features/088-inspirational-posts.md) - [T-014](tickets/T-014-inspiration-posts-url-claim.md): reconcile the "post URL" claim with the text-paste UI (AI wiring already shipped via T-005).
+Done - every feature in this wave is SHIPPED.
 
 ### Dependencies
 

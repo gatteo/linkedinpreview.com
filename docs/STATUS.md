@@ -10,10 +10,11 @@
 The product is **functionally complete for Waves 0, 1, and 2**: the public site + tool, the AI
 features, the dashboard with anonymous-auth persistence, branding, and content strategy all ship
 real code. Every built feature has a spec with fact-checked acceptance criteria: SHIPPED specs live
-in [features/completed/](features/completed/), PARTIAL specs in [features/](features/). Of 63 built
-features, **62 are SHIPPED** (every AC verified) and **1 is PARTIAL** (one or more ACs unmet - see
-the gap list below). Every PARTIAL has a tracking ticket in [tickets/](tickets/). Reaching a clean
-release is mostly configuration plus closing those gaps, not feature building.
+in [features/completed/](features/completed/). Of 63 built features, **all 63 are SHIPPED** (every
+AC verified against `file:line`); there are **no PARTIAL features left**. The Foundation and Waves
+0, 1, and 2 are each COMPLETE. Reaching a clean release is now purely configuration (env + Supabase
+
+- build), not feature building.
 
 ## What works today (SHIPPED, AC-verified)
 
@@ -37,11 +38,9 @@ release is mostly configuration plus closing those gaps, not feature building.
 
 ## What is PARTIAL (built, but a documented capability is missing)
 
-The fact-check downgraded these from the previous all-"Live" docs. Each has a `[ ]` AC in its spec.
-
-| Feature                 | Gap found                                                                        | Ticket                                                |
-| ----------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| 088 inspirational posts | Card claims it invites post URLs but accepts free text (AI wiring done in T-005) | [T-014](tickets/T-014-inspiration-posts-url-claim.md) |
+None. Every built feature is SHIPPED with all acceptance criteria verified against `file:line`. The
+gaps the fact-check originally found (tickets T-001 through T-014) have all been closed. The full
+dated history is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Blockers to a running/deployed build (configuration, not code)
 
@@ -69,12 +68,9 @@ The fact-check downgraded these from the previous all-"Live" docs. Each has a `[
 
 ## Recommended next
 
-1. Configure env + Supabase, apply migrations, verify the build (blockers 1-3).
-2. Close the honesty gaps in leverage order: [T-001](tickets/T-001-wire-label-picker-in-editor.md)
-   -> [T-002](tickets/T-002-branding-profile-in-post-preview.md) ->
-   [T-004](tickets/T-004-idea-create-post-prefill.md) ->
-   [T-003](tickets/T-003-reachable-post-statuses.md) ->
-   [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md).
+1. Configure env + Supabase, apply migrations, verify the build (blockers 1-3). With all PARTIAL
+   gaps closed, this is the only thing between here and a clean release.
+2. Optionally do the pre-shipping cleanup below (dead scaffolding, route registration).
 3. Then start the next wave from [backlog/](backlog/) - Wave 3 (carousel) and Wave 4 (LinkedIn
    OAuth + scheduling) are the biggest product gaps; LinkedIn API approval has lead time, so apply
    early.

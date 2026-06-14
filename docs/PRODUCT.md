@@ -117,7 +117,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 085 | [Custom footer](features/completed/085-custom-footer.md)                         | SHIPPED |
 | 086 | [Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED |
 | 087 | [Dos and donts](features/completed/087-dos-and-donts.md)                         | SHIPPED |
-| 088 | [Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL |
+| 088 | [Inspirational posts](features/completed/088-inspirational-posts.md)             | SHIPPED |
 | 089 | [Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED |
 | 090 | [Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED |
 

@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Reconciled the inspirational-posts spec with the built design (T-014).** Corrected 088-AC-4: the
+  card invites pasting LinkedIn post body text (the direct style signal), not URLs, and the card copy
+  already reflected that; there is intentionally no URL ingestion. Closes the last open AC; feature
+  088 (Inspirational posts) is now SHIPPED, which completes Wave 0. With this, all 63 built features
+  are SHIPPED and the Foundation and Waves 0, 1, and 2 are all COMPLETE.
+
 - **Deliberate app-wide page-view tracking (T-013).** A `PostHogPageView` client component mounted in
   the root layout (inside a Suspense boundary so public-page static generation is preserved) fires a
   snake_case `page_viewed` event on every route change, replacing reliance on autocapture defaults.

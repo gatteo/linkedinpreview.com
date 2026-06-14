@@ -1,7 +1,6 @@
 # T-014 — Reconcile the inspirational-posts "URL" claim with the text-paste reality
 
-> Status: proposed
-> Touches: [`../features/088-inspirational-posts.md`](../features/088-inspirational-posts.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/088-inspirational-posts.md`](../features/completed/088-inspirational-posts.md) · Opened: 2026-06-14 · Closed: 2026-06-14 · Resolution: A (corrected the spec to match the text-paste design)
 
 ## Goal
 
@@ -29,9 +28,9 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-014-AC-1 The 088 spec's description and 088-AC-4 match what the UI actually does (no false
+- [x] T-014-AC-1 The 088 spec's description and 088-AC-4 match what the UI actually does (no false
       "URL" claim), with `file:line` evidence.
-- [ ] T-014-AC-2 The card copy does not promise a capability the code lacks.
+- [x] T-014-AC-2 The card copy does not promise a capability the code lacks. _(verified: existing copy at `components/dashboard/branding/inspiration-posts-section.tsx:31,48` is about pasting post text, never URLs; no change needed.)_
 
 ## On completion
 
