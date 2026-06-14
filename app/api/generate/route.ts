@@ -3,7 +3,8 @@ import { generateObject } from 'ai'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
-import { GENERATE_PROMPTS } from '@/config/prompts'
+import { GENERATE_PROMPTS, generateConstraints } from '@/config/prompts'
+import { countWords } from '@/lib/content-scoring'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
         return Response.json({ error: 'Authentication required', code: AI_ERROR_CODES.AUTH_REQUIRED }, { status: 401 })
     }
 
-    const { action, sourceText, hook, postText, tone, suggestion, brandingContext } = parsed.data
+    const { action, sourceText, hook, postText, tone, suggestion, brandingContext, footerText, dosDonts } = parsed.data
 
     // Rate limiting: wizard actions are more expensive
     const rateLimitAction = action === 'hooks' || action === 'posts' ? 'wizard' : 'quickAction'
@@ -65,9 +66,23 @@ export async function POST(request: Request) {
         const { object } = await generateObject({
             model: openai(model),
             schema: schemaMap[action],
-            system: prompts.system,
+            system: prompts.system + generateConstraints(dosDonts),
             prompt: prompts.user({ sourceText, hook, postText, tone, suggestion, brandingContext }),
         })
+
+        // Deterministically append the footer to full-post variants only. Quick
+        // actions transform existing text that may already carry the footer, so
+        // appending there would duplicate it. The footer flows in as structured
+        // data, not a prompt instruction, so compliance is guaranteed.
+        const trimmedFooter = footerText?.trim()
+        if (action === 'posts' && trimmedFooter) {
+            const result = object as { posts: Array<{ text: string; wordCount: number; label: string }> }
+            const posts = result.posts.map((post) => {
+                const text = `${post.text}\n\n${trimmedFooter}`
+                return { ...post, text, wordCount: countWords(text) }
+            })
+            return Response.json({ posts })
+        }
 
         return Response.json(object)
     } catch (err) {

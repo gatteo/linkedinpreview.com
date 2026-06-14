@@ -114,9 +114,9 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 082 | [Role selection](features/completed/082-role-selection.md)                       | SHIPPED |
 | 083 | [Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED |
 | 084 | [Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED |
-| 085 | [Custom footer](features/085-custom-footer.md)                                   | PARTIAL |
+| 085 | [Custom footer](features/completed/085-custom-footer.md)                         | SHIPPED |
 | 086 | [Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED |
-| 087 | [Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL |
+| 087 | [Dos and donts](features/completed/087-dos-and-donts.md)                         | SHIPPED |
 | 088 | [Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL |
 | 089 | [Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED |
 | 090 | [Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED |

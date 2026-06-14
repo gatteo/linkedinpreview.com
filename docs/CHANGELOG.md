@@ -6,6 +6,13 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Custom footer + dos/donts are now enforced, not just suggested (T-011).** When the footer is
+  enabled it is appended deterministically server-side to AI-generated full posts (the `posts`
+  action), with word count recomputed, instead of relying on the model to comply. Dos/donts are
+  injected into the generation system prompt as hard constraints for every generate action (and
+  still flow as voice context for chat). Closes 085-AC-5 and 087-AC-5; features 085 (Custom footer)
+  and 087 (Dos and donts) are now SHIPPED.
+
 - **Core editor footer now shows a live word count (T-010).** The public tool's editor footer shows
   word count next to character count, computed via a shared `countWords` helper in
   `lib/content-scoring.ts` so it always matches the dashboard analyze panel. Closes 052-AC-2; feature

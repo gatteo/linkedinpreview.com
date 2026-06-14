@@ -71,7 +71,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (25 of 28 SHIPPED, 3 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (27 of 28 SHIPPED, 1 PARTIAL)
 
 ### Goal
 
@@ -96,9 +96,9 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [082 - Role selection](features/completed/082-role-selection.md)                       | SHIPPED | Wired into AI generation                                |
 | [083 - Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED | Wired into AI generation                                |
 | [084 - Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED | Language, sentence/post length, emoji                   |
-| [085 - Custom footer](features/085-custom-footer.md)                                   | PARTIAL | Prompt instruction only; no deterministic append        |
+| [085 - Custom footer](features/completed/085-custom-footer.md)                         | SHIPPED | Deterministically appended to generated posts           |
 | [086 - Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED | Wired into AI as additional context                     |
-| [087 - Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL | In user prompt, not system-prompt hard constraints      |
+| [087 - Dos and donts](features/completed/087-dos-and-donts.md)                         | SHIPPED | Injected as system-prompt hard constraints              |
 | [088 - Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL | Feeds AI now; card "URL" claim still inaccurate (T-014) |
 | [089 - Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED | Sent to AI as style reference                           |
 | [090 - Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED | "All changes saved" + auto-upsert                       |
@@ -115,8 +115,6 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 Every item below is a PARTIAL feature with a tracking ticket. The wave reaches COMPLETE when all are
 SHIPPED.
 
-- [085 - Custom footer](features/085-custom-footer.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): deterministic append.
-- [087 - Dos and donts](features/087-dos-and-donts.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): system-prompt hard constraints.
 - [088 - Inspirational posts](features/088-inspirational-posts.md) - [T-014](tickets/T-014-inspiration-posts-url-claim.md): reconcile the "post URL" claim with the text-paste UI (AI wiring already shipped via T-005).
 
 ### Dependencies

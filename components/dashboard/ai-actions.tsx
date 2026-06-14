@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 
 import { TONE_OPTIONS, type Tone } from '@/config/ai'
 import { ApiRoutes } from '@/config/routes'
+import type { BrandingRules } from '@/lib/ai-branding'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -19,13 +20,14 @@ import {
 type AIActionsProps = {
     postText: string
     brandingContext: string
+    dosDonts?: BrandingRules['dosDonts']
     onResult: (newText: string) => void
     disabled?: boolean
 }
 
 type Action = 'restyle' | 'hooks' | 'shorten' | 'lengthen' | 'variation'
 
-export function AIActions({ postText, brandingContext, onResult, disabled }: AIActionsProps) {
+export function AIActions({ postText, brandingContext, dosDonts, onResult, disabled }: AIActionsProps) {
     const [activeAction, setActiveAction] = useState<string | null>(null)
     const [hooks, setHooks] = useState<string[]>([])
     const [hooksOpen, setHooksOpen] = useState(false)
@@ -37,7 +39,7 @@ export function AIActions({ postText, brandingContext, onResult, disabled }: AIA
         const actionKey = tone ? `${action}-${tone}` : action
         setActiveAction(actionKey)
         try {
-            const body: Record<string, string> = { action, brandingContext }
+            const body: Record<string, unknown> = { action, brandingContext, dosDonts }
             if (action === 'hooks') {
                 body.sourceText = postText
             } else {

@@ -6,6 +6,7 @@ import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
+import type { BrandingRules } from '@/lib/ai-branding'
 import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
 import { formatCategory, sentimentColor, suggestionTypeColor } from '@/lib/analyze-utils'
 import { getPostAnalytics } from '@/lib/post-analytics'
@@ -43,6 +44,7 @@ type AnalyzePanelProps = {
     contentText: string
     hasImage: boolean
     brandingContext: string
+    dosDonts?: BrandingRules['dosDonts']
     onApplySuggestion: (newText: string) => void
 }
 
@@ -55,6 +57,7 @@ export function AnalyzePanel({
     contentText,
     hasImage,
     brandingContext,
+    dosDonts,
     onApplySuggestion,
 }: AnalyzePanelProps) {
     const [analysis, setAnalysis] = React.useState<Analysis | null>(null)
@@ -128,6 +131,7 @@ export function AnalyzePanel({
                         postText: contentText,
                         suggestion: suggestion.text,
                         brandingContext,
+                        dosDonts,
                     }),
                 })
 
@@ -147,7 +151,7 @@ export function AnalyzePanel({
                 setApplyingIndex(null)
             }
         },
-        [contentText, brandingContext, onApplySuggestion],
+        [contentText, brandingContext, dosDonts, onApplySuggestion],
     )
 
     return (

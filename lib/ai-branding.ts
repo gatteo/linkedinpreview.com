@@ -56,10 +56,10 @@ export function assembleBrandingContext(branding: BrandingData): string {
         lines.push(`Never do: ${donts.join('; ')}`)
     }
 
-    // Footer
-    if (branding.footer.enabled && branding.footer.text) {
-        lines.push(`Append this footer to every post: ${branding.footer.text}`)
-    }
+    // Footer is intentionally NOT added here. It is appended deterministically
+    // server-side for full-post generation via the structured footerText field
+    // (see app/api/generate/route.ts and brandingRulesForGenerate below). Telling
+    // the model to add it too would produce a double footer.
 
     // Knowledge base
     if (branding.knowledgeBase.notes) {
@@ -73,6 +73,35 @@ export function assembleBrandingContext(branding: BrandingData): string {
     }
 
     return lines.join('\n').slice(0, MAX_BRANDING_CONTEXT_CHARS)
+}
+
+export type BrandingRules = {
+    footerText?: string
+    dosDonts?: {
+        dos: string[]
+        donts: string[]
+    }
+}
+
+// Extracts the structured branding rules the generate route enforces server-side:
+// the footer text (when enabled and non-empty) and the dos/donts lists (when any
+// exist). Used by the generate senders so the extraction logic is not duplicated
+// across the wizard, AI actions, and analyze panel.
+export function brandingRulesForGenerate(branding: BrandingData): BrandingRules {
+    const rules: BrandingRules = {}
+
+    const footerText = branding.footer.text.trim()
+    if (branding.footer.enabled && footerText) {
+        rules.footerText = footerText
+    }
+
+    const dos = branding.dosDonts.dos.filter(Boolean)
+    const donts = branding.dosDonts.donts.filter(Boolean)
+    if (dos.length > 0 || donts.length > 0) {
+        rules.dosDonts = { dos, donts }
+    }
+
+    return rules
 }
 
 // Inspiration is user-pasted content. It is delimited and explicitly framed as

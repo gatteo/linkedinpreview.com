@@ -6,7 +6,7 @@ import { BarChart3, CopyIcon, Eye, PenLine } from 'lucide-react'
 import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
-import { assembleBrandingContext } from '@/lib/ai-branding'
+import { assembleBrandingContext, brandingRulesForGenerate } from '@/lib/ai-branding'
 import { encodeDraft } from '@/lib/draft-url'
 import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
@@ -119,6 +119,7 @@ export function DashboardEditor() {
 
     const contentText = React.useMemo(() => extractPlainText(content), [content])
     const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
+    const { dosDonts: brandingDosDonts } = React.useMemo(() => brandingRulesForGenerate(branding), [branding])
     const previewAuthor = {
         name: branding.profile.name,
         headline: branding.profile.headline,
@@ -158,7 +159,12 @@ export function DashboardEditor() {
                 contentReplace={contentReplace}
                 onContentReplaceApplied={() => setContentReplace(null)}
             />
-            <AIActions postText={contentText} brandingContext={brandingContext} onResult={handleApplySuggestion} />
+            <AIActions
+                postText={contentText}
+                brandingContext={brandingContext}
+                dosDonts={brandingDosDonts}
+                onResult={handleApplySuggestion}
+            />
         </div>
     )
 
@@ -180,6 +186,7 @@ export function DashboardEditor() {
                         contentText={contentText}
                         hasImage={!!media}
                         brandingContext={brandingContext}
+                        dosDonts={brandingDosDonts}
                         onApplySuggestion={handleApplySuggestion}
                     />
                 )}
@@ -277,6 +284,7 @@ export function DashboardEditor() {
                                     contentText={contentText}
                                     hasImage={!!media}
                                     brandingContext={brandingContext}
+                                    dosDonts={brandingDosDonts}
                                     onApplySuggestion={handleApplySuggestion}
                                 />
                             </div>

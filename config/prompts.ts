@@ -148,6 +148,33 @@ const GENERATE_SYSTEM = {
     writerFull: `You are an expert LinkedIn content writer. You write complete, engaging LinkedIn posts.${FORMATTING_RULES}`,
 }
 
+type DosDonts = {
+    dos: string[]
+    donts: string[]
+}
+
+// Returns a hard-constraints SYSTEM block when the author has any dos/donts,
+// framed as enforced rules. Returns '' when there are none. This is composed
+// onto the generate system prompt for every action so the rules apply to full
+// generation, quick-action transforms, and apply-suggestion alike. The same
+// dos/donts also appear in the user-prompt branding context for voice matching
+// (see lib/ai-branding.ts); the duplication is deliberate reinforcement.
+export function generateConstraints(dosDonts?: DosDonts): string {
+    if (!dosDonts) return ''
+    const dos = dosDonts.dos.filter(Boolean)
+    const donts = dosDonts.donts.filter(Boolean)
+    if (dos.length === 0 && donts.length === 0) return ''
+
+    const lines = ['\n\n## Hard Constraints', 'You MUST follow these rules with no exceptions.']
+    if (dos.length > 0) {
+        lines.push(`Always: ${dos.join('; ')}.`)
+    }
+    if (donts.length > 0) {
+        lines.push(`Never: ${donts.join('; ')}.`)
+    }
+    return lines.join('\n')
+}
+
 const POST_FORMATS = [
     'Personal Milestones',
     'Mindset & Motivation',

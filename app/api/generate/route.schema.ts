@@ -9,6 +9,13 @@ export const bodySchema = z.object({
     style: z.string().max(100).optional(),
     suggestion: z.string().max(2_000).optional(),
     brandingContext: z.string().max(5_000).optional(),
+    footerText: z.string().max(1_000).optional(),
+    dosDonts: z
+        .object({
+            dos: z.array(z.string().max(500)).max(50),
+            donts: z.array(z.string().max(500)).max(50),
+        })
+        .optional(),
 })
 
 const hooksSchema = z.object({

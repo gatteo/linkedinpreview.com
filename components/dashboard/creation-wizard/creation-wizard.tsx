@@ -6,7 +6,7 @@ import { ChevronLeftIcon, Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ApiRoutes, Routes } from '@/config/routes'
-import { assembleBrandingContext } from '@/lib/ai-branding'
+import { assembleBrandingContext, brandingRulesForGenerate } from '@/lib/ai-branding'
 import { textToTipTapJson } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
@@ -113,10 +113,11 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
         setIsGenerating(true)
         try {
             const brandingContext = assembleBrandingContext(branding)
+            const { dosDonts } = brandingRulesForGenerate(branding)
             const res = await fetch(ApiRoutes.Generate, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'hooks', sourceText: text, brandingContext }),
+                body: JSON.stringify({ action: 'hooks', sourceText: text, brandingContext, dosDonts }),
             })
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}))
@@ -145,10 +146,18 @@ export function CreationWizard({ open, onOpenChange }: CreationWizardProps) {
         setIsGenerating(true)
         try {
             const brandingContext = assembleBrandingContext(branding)
+            const { footerText, dosDonts } = brandingRulesForGenerate(branding)
             const res = await fetch(ApiRoutes.Generate, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'posts', sourceText, hook: hookText, brandingContext }),
+                body: JSON.stringify({
+                    action: 'posts',
+                    sourceText,
+                    hook: hookText,
+                    brandingContext,
+                    footerText,
+                    dosDonts,
+                }),
             })
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}))

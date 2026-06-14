@@ -1,8 +1,8 @@
 # T-011 — Enforce branding footer and dos/donts deterministically
 
-> Status: proposed
-> Touches: [`../features/085-custom-footer.md`](../features/085-custom-footer.md),
-> [`../features/087-dos-and-donts.md`](../features/087-dos-and-donts.md) · Opened: 2026-06-14
+> Status: done · Opened: 2026-06-14 · Closed: 2026-06-14
+> Touches: [`../features/completed/085-custom-footer.md`](../features/completed/085-custom-footer.md),
+> [`../features/completed/087-dos-and-donts.md`](../features/completed/087-dos-and-donts.md)
 
 ## Goal
 
@@ -25,8 +25,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-011-AC-1 When the footer is enabled, generated output always ends with the footer text.
-- [ ] T-011-AC-2 Dos/donts are present in the system prompt as constraints, not just user-prompt
+- [x] T-011-AC-1 When the footer is enabled, generated output always ends with the footer text.
+- [x] T-011-AC-2 Dos/donts are present in the system prompt as constraints, not just user-prompt
       voice context.
 
 ## On completion
