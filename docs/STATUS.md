@@ -12,8 +12,9 @@ features, the dashboard with anonymous-auth persistence, branding, and content s
 real code. Every built feature has a spec with fact-checked acceptance criteria: SHIPPED specs live
 in [features/completed/](features/completed/). Of 63 built features, **all 63 are SHIPPED** (every
 AC verified against `file:line`); there are **no PARTIAL features left**. The Foundation and Waves
-0, 1, and 2 are each COMPLETE. Reaching a clean release is now purely configuration work (env vars,
-the Supabase project, and a verified build), not feature building.
+0, 1, and 2 are each COMPLETE. The deployment configuration (env vars, the Supabase project, and a
+verified local build) is now in place, so the product is release-ready: no feature work and no
+configuration blockers remain.
 
 ## What works today (SHIPPED, AC-verified)
 
@@ -41,19 +42,25 @@ None. Every built feature is SHIPPED with all acceptance criteria verified again
 gaps the fact-check originally found (tickets T-001 through T-014) have all been closed. The full
 dated history is in [CHANGELOG.md](CHANGELOG.md).
 
-## Blockers to a running/deployed build (configuration, not code)
+## Deployment readiness (configuration)
 
-1. **Env.** `env.mjs` validates at build time. Required: `NEXT_PUBLIC_SUPABASE_URL`,
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `LLM_API_KEY` (`LLM_MODEL` optional). `NEXT_PUBLIC_GTM_MEASUREMENT_ID`
-   and `NEXT_PUBLIC_POSTHOG_KEY` are required by the schema but analytics-only - make them
-   `.optional()` to run without analytics. `NEXT_PUBLIC_TALLY_FORM_ID` is already optional.
-2. **Supabase.** Point env at a project, apply migrations `001`-`008` (drafts, branding,
-   `ai_usage`/rate-limit RPC, `post_analyses`, `strategy`, labels, ideas, all with RLS), and enable
-   anonymous auth in project settings.
-3. **Build.** Run `pnpm install && pnpm type-check && pnpm build` in a real environment. There may
-   be a small pre-existing `type-check` baseline plus a few `@ts-ignore`/`@ts-expect-error`
-   suppressions (`components/tool/editor-panel.tsx`, `lib/mdx/plugins/index.ts`,
-   `components/tool/preview/content-section.tsx`); confirm no _new_ errors.
+Verified on 2026-06-14 on branch `feat/dashboard-overhaul`.
+
+1. **Env - configured.** `.env` is set with `LLM_API_KEY` (+ `LLM_MODEL`), `NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `NEXT_PUBLIC_POSTHOG_KEY`. The analytics keys
+   `NEXT_PUBLIC_GTM_MEASUREMENT_ID` and `NEXT_PUBLIC_TALLY_FORM_ID` are left blank; the build still
+   succeeds with them empty, so analytics are simply inert until those are filled in.
+2. **Supabase - configured.** Env points at a Supabase project; migrations `001`-`008` (drafts,
+   branding, `ai_usage`/rate-limit RPC, `post_analyses`, `strategy`, labels, ideas, all with RLS)
+   and anonymous auth are set up by the maintainer. (The remote project state - migrations applied,
+   anonymous auth toggled on - is configured outside the repo and is not independently re-verifiable
+   from these files.)
+3. **Build - verified.** `pnpm type-check` is clean, `pnpm lint` is at baseline (only the two
+   pre-existing `react-hooks/incompatible-library` warnings in `posts-table.tsx` and
+   `shadcn-demo/data-table.tsx`), and `pnpm build` compiles and prerenders all 48 routes (public
+   pages static, `/blog` + `/compare` SSG). A few pre-existing `@ts-expect-error`/`@ts-ignore`
+   suppressions remain in the baseline (`components/tool/editor-panel.tsx`, `lib/mdx/plugins/index.ts`,
+   `components/tool/preview/content-section.tsx`); no new errors or suppressions were introduced.
 
 ## Cleanup worth doing before shipping
 
@@ -67,8 +74,8 @@ dated history is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Recommended next
 
-1. Configure env + Supabase, apply migrations, verify the build (blockers 1-3). With all PARTIAL
-   gaps closed, this is the only thing between here and a clean release.
+1. Deploy: env + Supabase are configured and the build is verified, so the branch is ready to merge
+   and ship. Run the deploy in the real environment and smoke-test the live anonymous-auth + AI flows.
 2. Optionally do the pre-shipping cleanup below (dead scaffolding, route registration).
 3. Then start the next wave from [backlog/](backlog/) - Wave 3 (carousel) and Wave 4 (LinkedIn
    OAuth + scheduling) are the biggest product gaps; LinkedIn API approval has lead time, so apply

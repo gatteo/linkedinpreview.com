@@ -4,6 +4,15 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-14 — Deployment configured (release-ready)
+
+- **Env + Supabase configured; build verified.** `.env` now carries the LLM and Supabase keys (and
+  PostHog); the Supabase project + migrations `001`-`008` + anonymous auth are set up. `pnpm
+type-check` is clean, `pnpm lint` is at baseline, and `pnpm build` prerenders all 48 routes. With
+  every built feature SHIPPED, the branch is release-ready: no feature work and no configuration
+  blockers remain. (GTM/Tally analytics keys are intentionally left blank; the build tolerates them
+  empty and analytics stay inert until filled in.) See [STATUS.md](STATUS.md) "Deployment readiness".
+
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
 - **Reconciled the inspirational-posts spec with the built design (T-014).** Corrected 088-AC-4: the
