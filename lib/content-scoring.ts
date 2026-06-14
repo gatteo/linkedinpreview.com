@@ -18,6 +18,10 @@ export interface ContentStats {
     emojiCount: number
 }
 
+export function countWords(text: string): number {
+    return text.trim().length === 0 ? 0 : text.trim().split(/\s+/).filter(Boolean).length
+}
+
 function countSyllables(word: string): number {
     const lower = word.toLowerCase().replace(/[^a-z]/g, '')
     if (lower.length === 0) return 0
@@ -34,7 +38,7 @@ export function computeContentStats(text: string): ContentStats {
 
     // Words
     const words = text.trim().length === 0 ? [] : text.trim().split(/\s+/).filter(Boolean)
-    const wordCount = words.length
+    const wordCount = countWords(text)
 
     // Sentences
     const rawSentences = text.split(/[.!?]+(?:\s|$)/).filter((s) => s.trim().length > 0)

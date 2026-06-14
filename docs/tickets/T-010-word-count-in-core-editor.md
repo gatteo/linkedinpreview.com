@@ -1,7 +1,6 @@
 # T-010 — Show word count in the core editor
 
-> Status: proposed
-> Touches: [`../features/052-character-and-word-count.md`](../features/052-character-and-word-count.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/052-character-and-word-count.md`](../features/completed/052-character-and-word-count.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -19,8 +18,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-010-AC-1 The core editor footer shows a live word count.
-- [ ] T-010-AC-2 The word count matches the dashboard panel's computation.
+- [x] T-010-AC-1 The core editor footer shows a live word count.
+- [x] T-010-AC-2 The word count matches the dashboard panel's computation.
 
 ## On completion
 

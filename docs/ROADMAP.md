@@ -125,7 +125,7 @@ None - this was the first wave.
 
 ---
 
-## Wave 1: Smart Content Creation - IN PROGRESS (12 of 13 SHIPPED, 1 PARTIAL)
+## Wave 1: Smart Content Creation - COMPLETE (13 of 13 SHIPPED)
 
 ### Goal
 
@@ -143,7 +143,7 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 | [037 - Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED | Generate, wizard, editor actions, chat, and analyze   |
 | [050 - Readability score](features/completed/050-readability-score.md)                         | SHIPPED | Flesch-Kincaid grade + label                          |
 | [051 - Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)               | SHIPPED | 5-bucket distribution                                 |
-| [052 - Character and word count](features/052-character-and-word-count.md)                     | PARTIAL | Word count not shown in the core editor               |
+| [052 - Character and word count](features/completed/052-character-and-word-count.md)           | SHIPPED | Char + word count in the core editor footer           |
 | [053 - Hashtag count](features/completed/053-hashtag-count.md)                                 | SHIPPED | Count vs 3-5 recommended                              |
 | [054 - Emoji count](features/completed/054-emoji-count.md)                                     | SHIPPED | Total emoji count                                     |
 | [055 - Length status indicator](features/completed/055-length-status-indicator.md)             | SHIPPED | Short / optimal / long                                |
@@ -151,7 +151,7 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 
 ### To complete this wave
 
-- [052 - Character and word count](features/052-character-and-word-count.md) - [T-010](tickets/T-010-word-count-in-core-editor.md): word count in the core editor.
+Done - every feature in this wave is SHIPPED.
 
 ### Dependencies
 

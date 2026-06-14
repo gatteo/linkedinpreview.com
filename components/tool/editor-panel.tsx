@@ -10,6 +10,7 @@ import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
+import { countWords } from '@/lib/content-scoring'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
@@ -252,6 +253,7 @@ export function EditorPanel({
 
     const text = editor.getText()
     const charCount = text.length
+    const wordCount = countWords(text)
 
     return (
         <div className='flex size-full min-h-0 flex-col'>
@@ -281,10 +283,13 @@ export function EditorPanel({
                 </div>
             </div>
 
-            {/** Character count */}
-            <div className='shrink-0 px-4 pb-1 sm:px-6'>
+            {/** Character and word count */}
+            <div className='flex shrink-0 items-center gap-3 px-4 pb-1 sm:px-6'>
                 <span className='text-muted-foreground text-xs tabular-nums'>
                     {charCount} {charCount === 1 ? 'char' : 'chars'}
+                </span>
+                <span className='text-muted-foreground text-xs tabular-nums'>
+                    {wordCount} {wordCount === 1 ? 'word' : 'words'}
                 </span>
             </div>
 

@@ -11,7 +11,7 @@ The product is **functionally complete for Waves 0, 1, and 2**: the public site 
 features, the dashboard with anonymous-auth persistence, branding, and content strategy all ship
 real code. Every built feature has a spec with fact-checked acceptance criteria: SHIPPED specs live
 in [features/completed/](features/completed/), PARTIAL specs in [features/](features/). Of 63 built
-features, **57 are SHIPPED** (every AC verified) and **6 are PARTIAL** (one or more ACs unmet - see
+features, **58 are SHIPPED** (every AC verified) and **5 are PARTIAL** (one or more ACs unmet - see
 the gap list below). Every PARTIAL has a tracking ticket in [tickets/](tickets/). Reaching a clean
 release is mostly configuration plus closing those gaps, not feature building.
 
@@ -45,7 +45,6 @@ The fact-check downgraded these from the previous all-"Live" docs. Each has a `[
 | 085 custom footer       | Footer is a prompt instruction, not a deterministic append                          | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)   |
 | 087 dos and donts       | Go into the user prompt as style context, not the system prompt as hard constraints | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)   |
 | 201 strategy dashboard  | Heatmap is single-month (not 3-6 months); streak tracking does not exist            | [T-012](tickets/T-012-multi-month-heatmap-and-streak.md) |
-| 052 char/word count     | Word count is not shown in the core editor (char count only)                        | [T-010](tickets/T-010-word-count-in-core-editor.md)      |
 | 112 PostHog             | No app-wide page-view tracking (relies on autocapture; one manual event)            | [T-013](tickets/T-013-explicit-pageview-tracking.md)     |
 
 ## Blockers to a running/deployed build (configuration, not code)

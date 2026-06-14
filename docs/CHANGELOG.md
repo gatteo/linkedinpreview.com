@@ -6,6 +6,11 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Core editor footer now shows a live word count (T-010).** The public tool's editor footer shows
+  word count next to character count, computed via a shared `countWords` helper in
+  `lib/content-scoring.ts` so it always matches the dashboard analyze panel. Closes 052-AC-2; feature
+  052 (Character and word count) is now SHIPPED, which completes Wave 1 (Smart Content Creation).
+
 - **URL/source generation prompt now asks for an original, attributed take (T-009).** The shared
   `posts` generation prompt instructs the model to write an original post inspired by the source
   rather than summarizing it, and to credit external sources where appropriate (with no attribution

@@ -72,15 +72,15 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 
 ### Content Scoring (Client-side, dashboard analyze panel)
 
-| ID  | Feature                                                                      | Status  |
-| --- | ---------------------------------------------------------------------------- | ------- |
-| 050 | [Readability score](features/completed/050-readability-score.md)             | SHIPPED |
-| 051 | [Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)   | SHIPPED |
-| 052 | [Character and word count](features/052-character-and-word-count.md)         | PARTIAL |
-| 053 | [Hashtag count](features/completed/053-hashtag-count.md)                     | SHIPPED |
-| 054 | [Emoji count](features/completed/054-emoji-count.md)                         | SHIPPED |
-| 055 | [Length status indicator](features/completed/055-length-status-indicator.md) | SHIPPED |
-| 056 | [Line count](features/completed/056-line-count.md)                           | SHIPPED |
+| ID  | Feature                                                                        | Status  |
+| --- | ------------------------------------------------------------------------------ | ------- |
+| 050 | [Readability score](features/completed/050-readability-score.md)               | SHIPPED |
+| 051 | [Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)     | SHIPPED |
+| 052 | [Character and word count](features/completed/052-character-and-word-count.md) | SHIPPED |
+| 053 | [Hashtag count](features/completed/053-hashtag-count.md)                       | SHIPPED |
+| 054 | [Emoji count](features/completed/054-emoji-count.md)                           | SHIPPED |
+| 055 | [Length status indicator](features/completed/055-length-status-indicator.md)   | SHIPPED |
+| 056 | [Line count](features/completed/056-line-count.md)                             | SHIPPED |
 
 ### Dashboard
 
