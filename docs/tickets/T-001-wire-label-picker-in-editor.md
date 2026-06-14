@@ -1,7 +1,6 @@
 # T-001 — Wire the label picker into the editor
 
-> Status: proposed
-> Touches: [`../features/064-post-format-labels.md`](../features/064-post-format-labels.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/064-post-format-labels.md`](../features/completed/064-post-format-labels.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -25,9 +24,9 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-001-AC-1 The dashboard editor renders a label control bound to the open draft.
-- [ ] T-001-AC-2 Choosing or clearing a label persists to the `drafts` row and survives reload.
-- [ ] T-001-AC-3 The chosen label appears in the posts list and the label filter matches it.
+- [x] T-001-AC-1 The dashboard editor renders a label control bound to the open draft.
+- [x] T-001-AC-2 Choosing or clearing a label persists to the `drafts` row and survives reload.
+- [x] T-001-AC-3 The chosen label appears in the posts list and the label filter matches it.
 
 ## On completion
 

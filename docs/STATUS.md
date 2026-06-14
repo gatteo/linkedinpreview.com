@@ -11,7 +11,7 @@ The product is **functionally complete for Waves 0, 1, and 2**: the public site 
 features, the dashboard with anonymous-auth persistence, branding, and content strategy all ship
 real code. Every built feature has a spec with fact-checked acceptance criteria: SHIPPED specs live
 in [features/completed/](features/completed/), PARTIAL specs in [features/](features/). Of 63 built
-features, **48 are SHIPPED** (every AC verified) and **15 are PARTIAL** (one or more ACs unmet - see
+features, **49 are SHIPPED** (every AC verified) and **14 are PARTIAL** (one or more ACs unmet - see
 the gap list below). Every PARTIAL has a tracking ticket in [tickets/](tickets/). Reaching a clean
 release is mostly configuration plus closing those gaps, not feature building.
 
@@ -41,7 +41,6 @@ The fact-check downgraded these from the previous all-"Live" docs. Each has a `[
 
 | Feature                                 | Gap found                                                                           | Ticket                                                        |
 | --------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 064 post format labels                  | `LabelPicker` exists but is never rendered; no way to assign a label while editing  | [T-001](tickets/T-001-wire-label-picker-in-editor.md)         |
 | 080 profile / 021 preview               | Post preview author is hard-coded; branding name/headline/avatar never reach it     | [T-002](tickets/T-002-branding-profile-in-post-preview.md)    |
 | 063 post statuses                       | No UI ever sets `scheduled`/`published`; two of three statuses are unreachable      | [T-003](tickets/T-003-reachable-post-statuses.md)             |
 | 202 weekly ideas                        | "Create Post" does not pre-fill the hook or create a draft; no dismiss action       | [T-004](tickets/T-004-idea-create-post-prefill.md)            |

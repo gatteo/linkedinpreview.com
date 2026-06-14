@@ -4,6 +4,13 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-14 — Closing PARTIAL feature gaps
+
+- **Wired the LabelPicker into the dashboard editor (T-001).** Users can now assign, change, or
+  clear a draft's content-format label from the editor header; the selection persists to
+  `drafts.label` and survives reload, and the chosen label shows in the posts list and matches the
+  format filter. Closes 064-AC-6; feature 064 (Post format labels) is now SHIPPED.
+
 ## 2026-06-14 — Documentation overhaul + quality gate
 
 - **Fact-checked every built feature against the code.** Created/standardized 63 feature specs in

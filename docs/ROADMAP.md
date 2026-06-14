@@ -72,7 +72,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (20 of 28 SHIPPED, 8 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (21 of 28 SHIPPED, 7 PARTIAL)
 
 ### Goal
 
@@ -86,7 +86,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [061 - Supabase anonymous auth](features/completed/061-anonymous-auth.md)              | SHIPPED | Anonymous session on first visit, RLS-protected tables |
 | [062 - Multi-draft management](features/completed/062-multi-draft-management.md)       | SHIPPED | Create/edit/duplicate/delete                           |
 | [063 - Post statuses](features/063-post-statuses.md)                                   | PARTIAL | No UI sets scheduled/published                         |
-| [064 - Draft labels](features/064-post-format-labels.md)                               | PARTIAL | Picker built but not rendered in the editor            |
+| [064 - Draft labels](features/completed/064-post-format-labels.md)                     | SHIPPED | Label picker wired into the editor; persists to draft  |
 | [065 - Posts list page](features/completed/065-posts-list-page.md)                     | SHIPPED | TanStack table, search/filter/paginate                 |
 | [066 - Dashboard editor](features/completed/066-dashboard-editor.md)                   | SHIPPED | TipTap + preview + AI + 2s auto-save                   |
 | [067 - New post creation wizard](features/completed/067-new-post-creation-wizard.md)   | SHIPPED | Blank / notes / file / URL / voice                     |
@@ -117,7 +117,6 @@ Every item below is a PARTIAL feature with a tracking ticket. The wave reaches C
 SHIPPED.
 
 - [063 - Post statuses](features/063-post-statuses.md) - [T-003](tickets/T-003-reachable-post-statuses.md): let the user set scheduled/published.
-- [064 - Post format labels](features/064-post-format-labels.md) - [T-001](tickets/T-001-wire-label-picker-in-editor.md): render the label picker in the editor.
 - [080 - Profile section](features/080-profile-section.md) - [T-002](tickets/T-002-branding-profile-in-post-preview.md): show profile in preview + avatar cropping.
 - [081 - Positioning statement](features/081-positioning-statement.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): reach chat/analyze.
 - [085 - Custom footer](features/085-custom-footer.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): deterministic append.

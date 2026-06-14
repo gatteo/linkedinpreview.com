@@ -1,6 +1,6 @@
 # 064 — Post Format Labels
 
-> Status: PARTIAL · Area: Dashboard · Last verified: 2026-06-14
+> Status: SHIPPED · Area: Dashboard · Last verified: 2026-06-14
 
 ## What
 
@@ -21,12 +21,13 @@
 - [x] 064-AC-3 Each label maps to a distinct color via `labelColor`. _(verified: `components/dashboard/label-picker.tsx:7-20`)_
 - [x] 064-AC-4 The format label is displayed with its color dot in the posts table. _(verified: `components/dashboard/posts-table.tsx:190-203` using `labelColor` imported at `:51`)_
 - [x] 064-AC-5 The posts list can be filtered by format label. _(verified: `components/dashboard/posts-list.tsx:106-108` filter logic, `:161-187` selector)_
-- [ ] 064-AC-6 Users can assign or change a post's format label from the editor. _(gap: `components/dashboard/label-picker.tsx:28` exports a working `LabelPicker`, but a repo-wide search shows it is never imported or rendered anywhere; only its `labelColor` helper is imported (`components/dashboard/posts-list.tsx:16`, `components/dashboard/posts-table.tsx:51`). The editor has no label control. Labels can only be set automatically when an AI-generated wizard variant carries one (`components/dashboard/creation-wizard/creation-wizard.tsx:171-173`). See [STATUS.md](../STATUS.md) and ticket T-001.)_
+- [x] 064-AC-6 Users can assign or change a post's format label from the editor. _(verified: `LabelPicker` rendered in the editor header bound to the open draft `components/dashboard/dashboard-editor.tsx:184`; label loaded and persisted immediately via `hooks/use-current-draft.ts:214` `saveLabel` -> `updateDraft` -> `drafts.label` `lib/supabase/drafts.ts:142-144`. Chosen label flows to the posts list filter `components/dashboard/posts-list.tsx:107` and table `components/dashboard/posts-table.tsx:190-199`.)_
 
 ## Implementation
 
 - Format constants + type: `lib/drafts.ts` `POST_FORMATS` / `PostFormat`.
-- Label color map and (unused) picker: `components/dashboard/label-picker.tsx:7-56`.
+- Label color map and picker: `components/dashboard/label-picker.tsx:7-58`.
+- Editor wiring: `components/dashboard/dashboard-editor.tsx:184` renders `LabelPicker`; `hooks/use-current-draft.ts:214` `saveLabel` persists the selection.
 - Table display: `components/dashboard/posts-table.tsx:190-203`.
 - List filter selector: `components/dashboard/posts-list.tsx:161-187`.
 - Auto-label from wizard variant: `components/dashboard/creation-wizard/creation-wizard.tsx:167-180`.
@@ -40,6 +41,5 @@
 
 ## Open questions / known gaps
 
-- The `LabelPicker` component is built and exported but dead: it is not wired into the editor or
-  anywhere else, so a user cannot manually tag or re-tag a post. Tracked as T-001; see
-  [STATUS.md](../STATUS.md). Until then, a label only appears if an AI wizard variant supplies one.
+- None. The `LabelPicker` is now wired into the editor header (T-001), so users can assign, change,
+  or clear a draft's format label; the selection persists to the `drafts` row and survives reload.

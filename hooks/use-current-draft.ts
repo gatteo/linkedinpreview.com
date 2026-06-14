@@ -15,6 +15,7 @@ interface CurrentDraftState {
     draftId: string | null
     initialContent: any
     initialMedia: { type: 'image' | 'video'; src: string } | null
+    label: string | null
     isLoading: boolean
 }
 
@@ -40,6 +41,7 @@ export function useCurrentDraft() {
         draftId: null,
         initialContent: undefined,
         initialMedia: null,
+        label: null,
         isLoading: true,
     })
 
@@ -70,13 +72,14 @@ export function useCurrentDraft() {
                         draftId: draft.id,
                         initialContent: decoded,
                         initialMedia: null,
+                        label: draft.label,
                         isLoading: false,
                     })
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to create draft')
                     router.replace('/dashboard')
-                    setState({ draftId: null, initialContent: null, initialMedia: null, isLoading: false })
+                    setState({ draftId: null, initialContent: null, initialMedia: null, label: null, isLoading: false })
                 }
                 loadedRef.current = true
                 return
@@ -92,6 +95,7 @@ export function useCurrentDraft() {
                             draftId: draftIdParam,
                             initialContent: result.content.content,
                             initialMedia: result.content.media,
+                            label: result.entry.label,
                             isLoading: false,
                         })
                     } else {
@@ -103,13 +107,20 @@ export function useCurrentDraft() {
                             draftId: draft.id,
                             initialContent: null,
                             initialMedia: null,
+                            label: draft.label,
                             isLoading: false,
                         })
                     }
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to load draft')
-                    setState({ draftId: draftIdParam, initialContent: null, initialMedia: null, isLoading: false })
+                    setState({
+                        draftId: draftIdParam,
+                        initialContent: null,
+                        initialMedia: null,
+                        label: null,
+                        isLoading: false,
+                    })
                 }
                 loadedRef.current = true
                 return
@@ -126,6 +137,7 @@ export function useCurrentDraft() {
                         draftId: mostRecent.id,
                         initialContent: result?.content.content ?? null,
                         initialMedia: result?.content.media ?? null,
+                        label: result?.entry.label ?? null,
                         isLoading: false,
                     })
                 } catch {
@@ -135,6 +147,7 @@ export function useCurrentDraft() {
                         draftId: mostRecent.id,
                         initialContent: null,
                         initialMedia: null,
+                        label: null,
                         isLoading: false,
                     })
                 }
@@ -143,11 +156,17 @@ export function useCurrentDraft() {
                     const draft = await createDraftHook()
                     if (callId !== loadCallRef.current) return
                     router.replace(`/dashboard/editor?draft=${draft.id}`)
-                    setState({ draftId: draft.id, initialContent: null, initialMedia: null, isLoading: false })
+                    setState({
+                        draftId: draft.id,
+                        initialContent: null,
+                        initialMedia: null,
+                        label: draft.label,
+                        isLoading: false,
+                    })
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to create draft')
-                    setState({ draftId: null, initialContent: null, initialMedia: null, isLoading: false })
+                    setState({ draftId: null, initialContent: null, initialMedia: null, label: null, isLoading: false })
                 }
             }
             loadedRef.current = true
@@ -189,12 +208,26 @@ export function useCurrentDraft() {
         [state.draftId, updateDraftHook],
     )
 
+    /**
+     * Save the format label immediately (no debounce - label changes are infrequent).
+     */
+    const saveLabel = React.useCallback(
+        (label: string | null) => {
+            if (!state.draftId) return
+            setState((prev) => ({ ...prev, label }))
+            updateDraftHook(state.draftId, { label })
+        },
+        [state.draftId, updateDraftHook],
+    )
+
     return {
         draftId: state.draftId,
         initialContent: state.initialContent,
         initialMedia: state.initialMedia,
+        label: state.label,
         isLoading: state.isLoading,
         saveContent,
         saveMedia,
+        saveLabel,
     }
 }

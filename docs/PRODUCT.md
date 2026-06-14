@@ -90,7 +90,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 061 | [Anonymous auth](features/completed/061-anonymous-auth.md)                     | SHIPPED |
 | 062 | [Multi-draft management](features/completed/062-multi-draft-management.md)     | SHIPPED |
 | 063 | [Post statuses](features/063-post-statuses.md)                                 | PARTIAL |
-| 064 | [Post format labels](features/064-post-format-labels.md)                       | PARTIAL |
+| 064 | [Post format labels](features/completed/064-post-format-labels.md)             | SHIPPED |
 | 065 | [Posts list page](features/completed/065-posts-list-page.md)                   | SHIPPED |
 | 066 | [Dashboard editor](features/completed/066-dashboard-editor.md)                 | SHIPPED |
 | 067 | [New post creation wizard](features/completed/067-new-post-creation-wizard.md) | SHIPPED |

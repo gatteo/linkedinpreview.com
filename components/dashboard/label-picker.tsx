@@ -20,15 +20,16 @@ export function labelColor(label: string): string {
 }
 
 type LabelPickerProps = {
-    value: string | null
-    onChange: (label: string | null) => void
-    className?: string
+    'value': string | null
+    'onChange': (label: string | null) => void
+    'className'?: string
+    'aria-label'?: string
 }
 
-export function LabelPicker({ value, onChange, className }: LabelPickerProps) {
+export function LabelPicker({ value, onChange, className, 'aria-label': ariaLabel }: LabelPickerProps) {
     return (
         <Select value={value ?? '__none__'} onValueChange={(v) => onChange(v === '__none__' ? null : v)}>
-            <SelectTrigger className={cn('w-48', className)}>
+            <SelectTrigger aria-label={ariaLabel} className={cn('w-48', className)}>
                 {value ? (
                     <div className='flex items-center gap-1.5'>
                         <div className={cn('size-2 shrink-0 rounded-full', labelColor(value))} />

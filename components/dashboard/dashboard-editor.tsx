@@ -16,6 +16,7 @@ import { useIsDesktop } from '@/hooks/use-is-desktop'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AIActions } from '@/components/dashboard/ai-actions'
+import { LabelPicker } from '@/components/dashboard/label-picker'
 import { EditorLoading } from '@/components/tool/editor-loading'
 import { PreviewPanel } from '@/components/tool/preview/preview-panel'
 import { ResizeHandle } from '@/components/tool/resize-handle'
@@ -72,7 +73,7 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
 // ---------------------------------------------------------------------------
 
 export function DashboardEditor() {
-    const { initialContent, initialMedia, isLoading, saveContent, saveMedia } = useCurrentDraft()
+    const { initialContent, initialMedia, label, isLoading, saveContent, saveMedia, saveLabel } = useCurrentDraft()
     const { branding } = useBranding()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
@@ -180,6 +181,7 @@ export function DashboardEditor() {
     return (
         <>
             <PageHeader title='Editor'>
+                <LabelPicker value={label} onChange={saveLabel} aria-label='Post format label' />
                 <Button size='sm' onClick={handleCopyText} disabled={!contentText}>
                     <CopyIcon className='size-4' />
                     Copy Text
