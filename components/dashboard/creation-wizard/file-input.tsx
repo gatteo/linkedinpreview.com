@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { UploadIcon } from 'lucide-react'
+import { FilmIcon, UploadIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
@@ -110,6 +110,15 @@ export function FileInput({ onSubmit, onBack }: FileInputProps) {
                 </div>
             ) : (
                 <Textarea value={extractedText} readOnly className='min-h-40 resize-none' />
+            )}
+
+            {extractedText.length === 0 && (
+                <div
+                    aria-disabled='true'
+                    className='border-input flex items-center gap-2 rounded-lg border border-dashed px-3 py-2 opacity-60'>
+                    <FilmIcon className='text-muted-foreground size-4' aria-hidden='true' />
+                    <p className='text-muted-foreground text-xs'>Audio / video (coming soon)</p>
+                </div>
             )}
 
             <div className='flex justify-between gap-2'>

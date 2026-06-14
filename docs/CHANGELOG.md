@@ -6,6 +6,11 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Creation-wizard file picker shows audio/video as "coming soon" (T-008).** A disabled, purely
+  informational "Audio / video (coming soon)" affordance now sets expectations in the file picker;
+  accepted types (PDF/DOCX/TXT/MD) and the 5MB cap are unchanged, and no transcription is
+  implemented (the real capability remains backlog 041). Enhancement to the already-SHIPPED feature 039.
+
 - **Changelog page groups entries by month/year (T-006).** `/changelog` now renders entries under
   newest-first month/year headings (a pure `groupEntriesByMonth` helper in `lib/changelog.ts`)
   instead of one flat list; the sticky date column and static prerendering/metadata are unchanged.

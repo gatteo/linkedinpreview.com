@@ -1,6 +1,6 @@
 # T-008 — Show "coming soon" for audio/video file uploads
 
-> Status: proposed · Touches: [`../features/completed/039-ai-post-generation-from-file.md`](../features/completed/039-ai-post-generation-from-file.md), [`../backlog/041-audio-video-post-source.md`](../backlog/041-audio-video-post-source.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/039-ai-post-generation-from-file.md`](../features/completed/039-ai-post-generation-from-file.md), [`../backlog/041-audio-video-post-source.md`](../backlog/041-audio-video-post-source.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -22,9 +22,9 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-008-AC-1 The file picker shows an audio/video option clearly marked "coming soon" and
+- [x] T-008-AC-1 The file picker shows an audio/video option clearly marked "coming soon" and
       disabled.
-- [ ] T-008-AC-2 Selecting/dropping an audio/video file does not attempt extraction; accepted types
+- [x] T-008-AC-2 Selecting/dropping an audio/video file does not attempt extraction; accepted types
       are unchanged.
 
 ## On completion

@@ -36,5 +36,5 @@
 
 ## Open questions / known gaps
 
-- Audio/video support (MP3, MP4, WAV, WebM, transcription) is not built and is now a separate backlog feature ([041](../../backlog/041-audio-video-post-source.md)); the file picker will advertise it as "coming soon" (T-008). The size cap is 5MB for all supported types.
+- Audio/video support (MP3, MP4, WAV, WebM, transcription) is not built and is now a separate backlog feature ([041](../../backlog/041-audio-video-post-source.md)); the file picker now shows a disabled "Audio / video (coming soon)" affordance (T-008) while the real capability remains tracked in 041. The affordance is purely informational - the accept filter and 5MB cap are unchanged. The size cap is 5MB for all supported types.
 - TXT/MD are read entirely client-side (`FileReader`), so they never pass through the server-side 10,000-char truncation; only PDF/DOCX are truncated.
