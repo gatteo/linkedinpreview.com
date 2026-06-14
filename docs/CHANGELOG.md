@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Post statuses are now user-settable (T-003).** The dashboard editor header has a status control
+  (Draft / Scheduled / Published) next to the format label; the choice persists to the draft and the
+  posts-list status filter reflects it. This is a manual status label only - it does not publish to
+  LinkedIn (real publishing/scheduling remains Wave 4). Closes 063-AC-4; feature 063 (Post statuses)
+  is now SHIPPED.
+
 - **Weekly idea "Create Post" now seeds a draft + ideas are dismissable (T-004).** Clicking Create
   Post on a weekly AI idea creates a new draft pre-filled with the idea's hook and carrying its
   format label, then opens it in the editor (reusing the creation-wizard path); each idea card also

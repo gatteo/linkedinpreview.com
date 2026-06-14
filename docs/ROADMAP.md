@@ -72,7 +72,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (22 of 28 SHIPPED, 6 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (23 of 28 SHIPPED, 5 PARTIAL)
 
 ### Goal
 
@@ -85,7 +85,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [060 - App shell with sidebar navigation](features/completed/060-dashboard-shell.md)   | SHIPPED | shadcn SidebarProvider, inset variant                  |
 | [061 - Supabase anonymous auth](features/completed/061-anonymous-auth.md)              | SHIPPED | Anonymous session on first visit, RLS-protected tables |
 | [062 - Multi-draft management](features/completed/062-multi-draft-management.md)       | SHIPPED | Create/edit/duplicate/delete                           |
-| [063 - Post statuses](features/063-post-statuses.md)                                   | PARTIAL | No UI sets scheduled/published                         |
+| [063 - Post statuses](features/completed/063-post-statuses.md)                         | SHIPPED | Status picker in the editor; manual, not LinkedIn yet  |
 | [064 - Draft labels](features/completed/064-post-format-labels.md)                     | SHIPPED | Label picker wired into the editor; persists to draft  |
 | [065 - Posts list page](features/completed/065-posts-list-page.md)                     | SHIPPED | TanStack table, search/filter/paginate                 |
 | [066 - Dashboard editor](features/completed/066-dashboard-editor.md)                   | SHIPPED | TipTap + preview + AI + 2s auto-save                   |
@@ -116,7 +116,6 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 Every item below is a PARTIAL feature with a tracking ticket. The wave reaches COMPLETE when all are
 SHIPPED.
 
-- [063 - Post statuses](features/063-post-statuses.md) - [T-003](tickets/T-003-reachable-post-statuses.md): let the user set scheduled/published.
 - [081 - Positioning statement](features/081-positioning-statement.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): reach chat/analyze.
 - [085 - Custom footer](features/085-custom-footer.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): deterministic append.
 - [087 - Dos and donts](features/087-dos-and-donts.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): system-prompt hard constraints.

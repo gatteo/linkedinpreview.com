@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { decodeDraft } from '@/lib/draft-url'
+import { type DraftStatus } from '@/lib/drafts'
 import { fetchDraft } from '@/lib/supabase/drafts'
 import { useDrafts } from '@/hooks/use-drafts'
 import { useAuth } from '@/components/dashboard/auth-provider'
@@ -16,6 +17,7 @@ interface CurrentDraftState {
     initialContent: any
     initialMedia: { type: 'image' | 'video'; src: string } | null
     label: string | null
+    status: DraftStatus
     isLoading: boolean
 }
 
@@ -42,6 +44,7 @@ export function useCurrentDraft() {
         initialContent: undefined,
         initialMedia: null,
         label: null,
+        status: 'draft',
         isLoading: true,
     })
 
@@ -73,13 +76,21 @@ export function useCurrentDraft() {
                         initialContent: decoded,
                         initialMedia: null,
                         label: draft.label,
+                        status: draft.status,
                         isLoading: false,
                     })
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to create draft')
                     router.replace('/dashboard')
-                    setState({ draftId: null, initialContent: null, initialMedia: null, label: null, isLoading: false })
+                    setState({
+                        draftId: null,
+                        initialContent: null,
+                        initialMedia: null,
+                        label: null,
+                        status: 'draft',
+                        isLoading: false,
+                    })
                 }
                 loadedRef.current = true
                 return
@@ -96,6 +107,7 @@ export function useCurrentDraft() {
                             initialContent: result.content.content,
                             initialMedia: result.content.media,
                             label: result.entry.label,
+                            status: result.entry.status,
                             isLoading: false,
                         })
                     } else {
@@ -108,6 +120,7 @@ export function useCurrentDraft() {
                             initialContent: null,
                             initialMedia: null,
                             label: draft.label,
+                            status: draft.status,
                             isLoading: false,
                         })
                     }
@@ -119,6 +132,7 @@ export function useCurrentDraft() {
                         initialContent: null,
                         initialMedia: null,
                         label: null,
+                        status: 'draft',
                         isLoading: false,
                     })
                 }
@@ -138,6 +152,7 @@ export function useCurrentDraft() {
                         initialContent: result?.content.content ?? null,
                         initialMedia: result?.content.media ?? null,
                         label: result?.entry.label ?? null,
+                        status: result?.entry.status ?? 'draft',
                         isLoading: false,
                     })
                 } catch {
@@ -148,6 +163,7 @@ export function useCurrentDraft() {
                         initialContent: null,
                         initialMedia: null,
                         label: null,
+                        status: 'draft',
                         isLoading: false,
                     })
                 }
@@ -161,12 +177,20 @@ export function useCurrentDraft() {
                         initialContent: null,
                         initialMedia: null,
                         label: draft.label,
+                        status: draft.status,
                         isLoading: false,
                     })
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to create draft')
-                    setState({ draftId: null, initialContent: null, initialMedia: null, label: null, isLoading: false })
+                    setState({
+                        draftId: null,
+                        initialContent: null,
+                        initialMedia: null,
+                        label: null,
+                        status: 'draft',
+                        isLoading: false,
+                    })
                 }
             }
             loadedRef.current = true
@@ -220,14 +244,29 @@ export function useCurrentDraft() {
         [state.draftId, updateDraftHook],
     )
 
+    /**
+     * Save the post status immediately (no debounce - status changes are infrequent).
+     * This is a manual label only and does not publish to LinkedIn.
+     */
+    const saveStatus = React.useCallback(
+        (status: DraftStatus) => {
+            if (!state.draftId) return
+            setState((prev) => ({ ...prev, status }))
+            updateDraftHook(state.draftId, { status })
+        },
+        [state.draftId, updateDraftHook],
+    )
+
     return {
         draftId: state.draftId,
         initialContent: state.initialContent,
         initialMedia: state.initialMedia,
         label: state.label,
+        status: state.status,
         isLoading: state.isLoading,
         saveContent,
         saveMedia,
         saveLabel,
+        saveStatus,
     }
 }

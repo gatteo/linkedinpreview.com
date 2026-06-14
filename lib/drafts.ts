@@ -4,6 +4,17 @@
 
 export type DraftStatus = 'draft' | 'scheduled' | 'published'
 
+/**
+ * User-facing status options. These are manual labels only - changing a status
+ * here does not publish to or schedule with LinkedIn (real delivery arrives in a
+ * later release).
+ */
+export const STATUS_OPTIONS: { label: string; value: DraftStatus }[] = [
+    { label: 'Draft', value: 'draft' },
+    { label: 'Scheduled', value: 'scheduled' },
+    { label: 'Published', value: 'published' },
+]
+
 /** Lightweight entry stored in the manifest (no content/media blobs) */
 export interface DraftManifestEntry {
     id: string

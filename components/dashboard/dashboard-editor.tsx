@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AIActions } from '@/components/dashboard/ai-actions'
 import { LabelPicker } from '@/components/dashboard/label-picker'
+import { StatusPicker } from '@/components/dashboard/status-picker'
 import { EditorLoading } from '@/components/tool/editor-loading'
 import { PreviewPanel } from '@/components/tool/preview/preview-panel'
 import { ResizeHandle } from '@/components/tool/resize-handle'
@@ -73,7 +74,8 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
 // ---------------------------------------------------------------------------
 
 export function DashboardEditor() {
-    const { initialContent, initialMedia, label, isLoading, saveContent, saveMedia, saveLabel } = useCurrentDraft()
+    const { initialContent, initialMedia, label, status, isLoading, saveContent, saveMedia, saveLabel, saveStatus } =
+        useCurrentDraft()
     const { branding } = useBranding()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
@@ -187,6 +189,11 @@ export function DashboardEditor() {
     return (
         <>
             <PageHeader title='Editor'>
+                <StatusPicker
+                    value={status}
+                    onChange={saveStatus}
+                    aria-label='Post status (manual label, does not publish to LinkedIn)'
+                />
                 <LabelPicker value={label} onChange={saveLabel} aria-label='Post format label' />
                 <Button size='sm' onClick={handleCopyText} disabled={!contentText}>
                     <CopyIcon className='size-4' />

@@ -1,7 +1,6 @@
 # T-003 — Make post statuses reachable from the UI
 
-> Status: proposed
-> Touches: [`../features/063-post-statuses.md`](../features/063-post-statuses.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/063-post-statuses.md`](../features/completed/063-post-statuses.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -25,9 +24,9 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-003-AC-1 The user can set a draft to `scheduled` or `published` from the UI.
-- [ ] T-003-AC-2 The change persists and the status filter reflects it.
-- [ ] T-003-AC-3 Copy does not imply the post was delivered to LinkedIn.
+- [x] T-003-AC-1 The user can set a draft to `scheduled` or `published` from the UI.
+- [x] T-003-AC-2 The change persists and the status filter reflects it.
+- [x] T-003-AC-3 Copy does not imply the post was delivered to LinkedIn.
 
 ## On completion
 
