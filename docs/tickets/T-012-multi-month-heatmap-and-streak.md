@@ -1,7 +1,6 @@
 # T-012 — Multi-month activity heatmap and streak tracking
 
-> Status: proposed
-> Touches: [`../features/201-content-strategy-dashboard.md`](../features/201-content-strategy-dashboard.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/201-content-strategy-dashboard.md`](../features/completed/201-content-strategy-dashboard.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -21,8 +20,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-012-AC-1 The heatmap covers the last 3-6 months.
-- [ ] T-012-AC-2 A current streak is computed from posting history and displayed.
+- [x] T-012-AC-1 The heatmap covers the last 3-6 months.
+- [x] T-012-AC-2 A current streak is computed from posting history and displayed.
 
 ## On completion
 

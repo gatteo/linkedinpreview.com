@@ -99,11 +99,11 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 
 ### Content Strategy
 
-| ID  | Feature                                                                      | Status  |
-| --- | ---------------------------------------------------------------------------- | ------- |
-| 200 | [Content strategy wizard](features/completed/200-content-strategy-wizard.md) | SHIPPED |
-| 201 | [Content strategy dashboard](features/201-content-strategy-dashboard.md)     | PARTIAL |
-| 202 | [Weekly AI post ideas](features/completed/202-weekly-ai-post-ideas.md)       | SHIPPED |
+| ID  | Feature                                                                            | Status  |
+| --- | ---------------------------------------------------------------------------------- | ------- |
+| 200 | [Content strategy wizard](features/completed/200-content-strategy-wizard.md)       | SHIPPED |
+| 201 | [Content strategy dashboard](features/completed/201-content-strategy-dashboard.md) | SHIPPED |
+| 202 | [Weekly AI post ideas](features/completed/202-weekly-ai-post-ideas.md)             | SHIPPED |
 
 ### Branding & Personalization
 

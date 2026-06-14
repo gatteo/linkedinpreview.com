@@ -5,10 +5,11 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 import type { DraftManifestEntry } from '@/lib/drafts'
 import type { StrategyData } from '@/lib/strategy'
+import { buildHeatmapColumns, computeWeeklyStreak } from '@/lib/strategy-metrics'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
-import { ActivityHeatmap } from './activity-heatmap'
+import { ContributionGrid } from './contribution-grid'
 import { FormatTargets } from './format-targets'
 
 type ProgressSectionProps = {
@@ -57,13 +58,6 @@ export function ProgressSection({ strategy, drafts }: ProgressSectionProps) {
     const weeksInMonth = getWeeksInMonth(year, month)
     const monthlyTarget = strategy.frequency * weeksInMonth
 
-    // Posts by day-of-month
-    const postsByDay: Record<number, number> = {}
-    for (const draft of monthDrafts) {
-        const day = new Date(draft.createdAt).getDate()
-        postsByDay[day] = (postsByDay[day] ?? 0) + 1
-    }
-
     // Posts by format label
     const postsByFormat: Record<string, number> = {}
     for (const draft of monthDrafts) {
@@ -71,6 +65,12 @@ export function ProgressSection({ strategy, drafts }: ProgressSectionProps) {
             postsByFormat[draft.label] = (postsByFormat[draft.label] ?? 0) + 1
         }
     }
+
+    // Rolling 6-month contribution grid + weekly streak: independent of the
+    // selected month, derived from the full drafts history.
+    const allCreatedAts = drafts.map((d) => d.createdAt)
+    const heatmapColumns = buildHeatmapColumns(allCreatedAts)
+    const weeklyStreak = computeWeeklyStreak(allCreatedAts)
 
     const goToPrevMonth = () => {
         setSelectedMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
@@ -99,8 +99,8 @@ export function ProgressSection({ strategy, drafts }: ProgressSectionProps) {
                 </div>
             </div>
 
-            {/* Three columns */}
-            <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+            {/* Month-scoped metric cards */}
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
                 {/* Activity Targets */}
                 <Card>
                     <CardHeader>
@@ -126,6 +126,10 @@ export function ProgressSection({ strategy, drafts }: ProgressSectionProps) {
                                 ? 'Target reached!'
                                 : `${monthlyTarget - postsThisMonth} more to reach your target`}
                         </p>
+
+                        <p className='text-muted-foreground border-t pt-3 text-xs'>
+                            {weeklyStreak > 0 ? `${weeklyStreak} week streak` : 'No active streak'}
+                        </p>
                     </CardContent>
                 </Card>
 
@@ -139,19 +143,19 @@ export function ProgressSection({ strategy, drafts }: ProgressSectionProps) {
                         />
                     </CardContent>
                 </Card>
-
-                {/* Monthly Activity Heatmap */}
-                <Card>
-                    <CardHeader>
-                        <p className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
-                            Monthly Activity
-                        </p>
-                    </CardHeader>
-                    <CardContent className='pb-4'>
-                        <ActivityHeatmap year={year} month={month} postsByDay={postsByDay} />
-                    </CardContent>
-                </Card>
             </div>
+
+            {/* Rolling contribution grid (fixed window, independent of the selected month) */}
+            <Card className='mt-4'>
+                <CardHeader>
+                    <p className='text-muted-foreground text-xs font-semibold tracking-wider uppercase'>
+                        Posting activity (last 6 months)
+                    </p>
+                </CardHeader>
+                <CardContent className='pb-4'>
+                    <ContributionGrid columns={heatmapColumns} />
+                </CardContent>
+            </Card>
         </section>
     )
 }

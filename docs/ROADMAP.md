@@ -157,7 +157,7 @@ Wave 0.
 
 ---
 
-## Wave 2: Content Strategy - IN PROGRESS (2 of 3 SHIPPED, 1 PARTIAL)
+## Wave 2: Content Strategy - COMPLETE (3 of 3 SHIPPED)
 
 ### Goal
 
@@ -165,15 +165,15 @@ Help users build and follow a LinkedIn content strategy with goals, audience, po
 
 ### Features
 
-| Feature                                                                                | Status  | Notes                                                    |
-| -------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
-| [200 - Content strategy wizard](features/completed/200-content-strategy-wizard.md)     | SHIPPED | 7-step wizard, persisted to Supabase                     |
-| [201 - Content strategy dashboard](features/201-content-strategy-dashboard.md)         | PARTIAL | Single-month heatmap (not 3-6); no streak tracking       |
-| [202 - Weekly AI-generated post ideas](features/completed/202-weekly-ai-post-ideas.md) | SHIPPED | Create Post seeds a draft from the hook + label; dismiss |
+| Feature                                                                                  | Status  | Notes                                                    |
+| ---------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
+| [200 - Content strategy wizard](features/completed/200-content-strategy-wizard.md)       | SHIPPED | 7-step wizard, persisted to Supabase                     |
+| [201 - Content strategy dashboard](features/completed/201-content-strategy-dashboard.md) | SHIPPED | 6-month contribution heatmap + weekly streak             |
+| [202 - Weekly AI-generated post ideas](features/completed/202-weekly-ai-post-ideas.md)   | SHIPPED | Create Post seeds a draft from the hook + label; dismiss |
 
 ### To complete this wave
 
-- [201 - Content strategy dashboard](features/201-content-strategy-dashboard.md) - [T-012](tickets/T-012-multi-month-heatmap-and-streak.md): 3-6 month heatmap + streak.
+Done - every feature in this wave is SHIPPED.
 
 ### Dependencies
 

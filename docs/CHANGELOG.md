@@ -6,6 +6,13 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Strategy dashboard gains a 6-month activity heatmap + weekly streak (T-012).** The single-month
+  calendar was replaced with a rolling 26-week GitHub-style contribution grid, and a weekly posting
+  streak (consecutive weeks with a post, tolerant of an in-progress current week, DST-safe) is
+  computed from draft history and displayed. Both derive from pure helpers in `lib/strategy-metrics.ts`.
+  Closes 201-AC-3 and 201-AC-4; feature 201 (Content strategy dashboard) is now SHIPPED, which
+  completes Wave 2 (Content Strategy).
+
 - **Custom footer + dos/donts are now enforced, not just suggested (T-011).** When the footer is
   enabled it is appended deterministically server-side to AI-generated full posts (the `posts`
   action), with word count recomputed, instead of relying on the model to comply. Dos/donts are
