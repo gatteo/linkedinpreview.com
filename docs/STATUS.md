@@ -39,17 +39,18 @@ release is mostly configuration plus closing those gaps, not feature building.
 
 The fact-check downgraded these from the previous all-"Live" docs. Each has a `[ ]` AC in its spec.
 
-| Feature                | Gap found                                                                           | Ticket                                                        |
-| ---------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------- | --- | --------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 063 post statuses      | No UI ever sets `scheduled`/`published`; two of three statuses are unreachable      | [T-003](tickets/T-003-reachable-post-statuses.md)             |     | 037 branding-aware AI / 081 positioning | Chat and analyze get no branding context (only `/api/generate` + wizard do) | [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md) |
-| 088 / 089 inspiration  | Inspirational posts and creators are stored but never sent to the AI                | [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md) |
-| 085 custom footer      | Footer is a prompt instruction, not a deterministic append                          | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)        |
-| 087 dos and donts      | Go into the user prompt as style context, not the system prompt as hard constraints | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)        |
-| 201 strategy dashboard | Heatmap is single-month (not 3-6 months); streak tracking does not exist            | [T-012](tickets/T-012-multi-month-heatmap-and-streak.md)      |
-| 004 changelog          | "Month/year grouping" is not implemented (flat list)                                | [T-006](tickets/T-006-changelog-month-year-grouping.md)       |
-| 052 char/word count    | Word count is not shown in the core editor (char count only)                        | [T-010](tickets/T-010-word-count-in-core-editor.md)           |
-| 112 PostHog            | No app-wide page-view tracking (relies on autocapture; one manual event)            | [T-013](tickets/T-013-explicit-pageview-tracking.md)          |
-| 040 AI from URL        | Extracts the article; prompt lacks anti-summary + source-attribution guidance       | [T-009](tickets/T-009-url-generation-prompt-quality.md)       |
+| Feature                                 | Gap found                                                                           | Ticket                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 063 post statuses                       | No UI ever sets `scheduled`/`published`; two of three statuses are unreachable      | [T-003](tickets/T-003-reachable-post-statuses.md)             |
+| 037 branding-aware AI / 081 positioning | Chat and analyze get no branding context (only `/api/generate` + wizard do)         | [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md) |
+| 088 / 089 inspiration                   | Inspirational posts and creators are stored but never sent to the AI                | [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md) |
+| 085 custom footer                       | Footer is a prompt instruction, not a deterministic append                          | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)        |
+| 087 dos and donts                       | Go into the user prompt as style context, not the system prompt as hard constraints | [T-011](tickets/T-011-enforce-footer-and-dos-donts.md)        |
+| 201 strategy dashboard                  | Heatmap is single-month (not 3-6 months); streak tracking does not exist            | [T-012](tickets/T-012-multi-month-heatmap-and-streak.md)      |
+| 004 changelog                           | "Month/year grouping" is not implemented (flat list)                                | [T-006](tickets/T-006-changelog-month-year-grouping.md)       |
+| 052 char/word count                     | Word count is not shown in the core editor (char count only)                        | [T-010](tickets/T-010-word-count-in-core-editor.md)           |
+| 112 PostHog                             | No app-wide page-view tracking (relies on autocapture; one manual event)            | [T-013](tickets/T-013-explicit-pageview-tracking.md)          |
+| 040 AI from URL                         | Extracts the article; prompt lacks anti-summary + source-attribution guidance       | [T-009](tickets/T-009-url-generation-prompt-quality.md)       |
 
 ## Blockers to a running/deployed build (configuration, not code)
 
