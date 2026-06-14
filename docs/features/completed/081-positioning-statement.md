@@ -1,6 +1,6 @@
 # 081 — Positioning Statement
 
-> Status: PARTIAL · Area: Branding · Last verified: 2026-06-14
+> Status: SHIPPED · Area: Branding · Last verified: 2026-06-14
 
 ## What
 
@@ -20,7 +20,7 @@
 - [x] 081-AC-2 The UI shows the "I help [audience] achieve [outcome] by [method]" format guidance. _(verified: `components/dashboard/branding/positioning-section.tsx:11-13`)_
 - [x] 081-AC-3 The statement is included in the AI branding context. _(verified: `lib/ai-branding.ts:18-20` pushes `Positioning: ...`)_
 - [x] 081-AC-4 The branding context is appended to AI generation prompts. _(verified: `config/prompts.ts:16-19` brandingPrompt, used by every GENERATE_PROMPTS user builder e.g. `config/prompts.ts:174,185,191`)_
-- [ ] 081-AC-5 Positioning guides ALL AI generation. _(gap: it reaches the seven generate-route actions and the creation wizard via the user prompt, but NOT the chat assistant or analyze flows. CHAT_SYSTEM_PROMPT at `config/prompts.ts:25-77` and ANALYZE_SYSTEM_PROMPT at `config/prompts.ts:100-114` never receive brandingContext. "All" is an overstatement.)_
+- [x] 081-AC-5 Positioning guides ALL AI generation. _(verified: positioning is part of `assembleBrandingContext` `lib/ai-branding.ts:18-20`, which now reaches the generate-route actions, the chat assistant via the system prompt `app/api/chat/route.ts:65` + `config/prompts.ts:21-24`, and the analyze apply-suggestion `components/dashboard/analyze/analyze-panel.tsx:130`.)_
 
 ## Implementation
 
@@ -36,5 +36,5 @@
 
 ## Open questions / known gaps
 
-- Positioning is injected via the USER prompt, not the system prompt, and only
-  for the generate route and creation wizard, not chat or analyze.
+- None. Positioning reaches the generate route (user prompt), the chat assistant
+  (system prompt), and the analyze apply-suggestion path.

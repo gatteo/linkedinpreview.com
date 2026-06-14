@@ -15,4 +15,5 @@ const messageSchema = z.object({
 
 export const bodySchema = z.object({
     messages: z.array(messageSchema).min(1, 'At least one message is required').max(30, 'Too many messages'),
+    brandingContext: z.string().max(5_000).optional(),
 })

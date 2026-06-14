@@ -65,7 +65,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 034 | [AI suggestions](features/completed/034-ai-suggestions.md)                               | SHIPPED |
 | 035 | [AI hook generation](features/completed/035-ai-hook-generation.md)                       | SHIPPED |
 | 036 | [AI content extraction](features/completed/036-ai-content-extraction.md)                 | SHIPPED |
-| 037 | [Branding-aware AI](features/037-branding-aware-ai.md)                                   | PARTIAL |
+| 037 | [Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED |
 | 038 | [AI post generation from voice](features/completed/038-ai-post-generation-from-voice.md) | SHIPPED |
 | 039 | [AI post generation from file](features/completed/039-ai-post-generation-from-file.md)   | SHIPPED |
 | 040 | [AI post generation from URL](features/040-ai-post-generation-from-url.md)               | PARTIAL |
@@ -110,7 +110,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | ID  | Feature                                                                          | Status  |
 | --- | -------------------------------------------------------------------------------- | ------- |
 | 080 | [Profile section](features/completed/080-profile-section.md)                     | SHIPPED |
-| 081 | [Positioning statement](features/081-positioning-statement.md)                   | PARTIAL |
+| 081 | [Positioning statement](features/completed/081-positioning-statement.md)         | SHIPPED |
 | 082 | [Role selection](features/completed/082-role-selection.md)                       | SHIPPED |
 | 083 | [Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED |
 | 084 | [Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED |
@@ -118,7 +118,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 086 | [Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED |
 | 087 | [Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL |
 | 088 | [Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL |
-| 089 | [Inspirational creators](features/089-inspirational-creators.md)                 | PARTIAL |
+| 089 | [Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED |
 | 090 | [Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED |
 
 ### Settings

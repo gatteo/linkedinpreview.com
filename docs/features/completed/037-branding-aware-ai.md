@@ -1,6 +1,6 @@
 # 037 — Branding-Aware AI
 
-> Status: PARTIAL · Area: AI · Last verified: 2026-06-14
+> Status: SHIPPED · Area: AI · Last verified: 2026-06-14
 
 ## What
 
@@ -17,8 +17,8 @@
 - [x] 037-AC-3 The assembled context includes positioning, expertise topics, writing style, dos/donts, and knowledge-base notes _(verified: `lib/ai-branding.ts:18-55`)_
 - [x] 037-AC-4 The creation wizard sends `brandingContext` for both hooks and posts _(verified: `components/dashboard/creation-wizard/creation-wizard.tsx:115-119,147-151`)_
 - [x] 037-AC-5 The editor AI actions toolbar sends `brandingContext` for its transforms _(verified: `components/dashboard/ai-actions.tsx:40`)_
-- [ ] 037-AC-6 The analyze panel's apply-suggestion sends branding context _(gap: the apply-suggestion call omits `brandingContext` — `components/dashboard/analyze/analyze-panel.tsx:118-123`)_
-- [ ] 037-AC-7 The chat assistant (030) is branding-aware _(gap: `/api/chat` does not accept or use `brandingContext`; `CHAT_SYSTEM_PROMPT` has no branding hook — `app/api/chat/route.ts:63-67`)_
+- [x] 037-AC-6 The analyze panel's apply-suggestion sends branding context _(verified: `components/dashboard/analyze/analyze-panel.tsx:130` sends `brandingContext`; threaded from `components/dashboard/dashboard-editor.tsx:182,279`)_
+- [x] 037-AC-7 The chat assistant (030) is branding-aware _(verified: schema accepts it `app/api/chat/route.schema.ts:18`, injected into the system prompt `app/api/chat/route.ts:65` via `chatSystemPrompt` `config/prompts.ts:21-24`, sent by client `components/ai-chat/ai-generate-sheet.tsx:45-46,60-61`)_
 
 ## Implementation
 
@@ -33,4 +33,4 @@
 
 ## Open questions / known gaps
 
-- Branding is only wired into `/api/generate`. The chat generator (030) and the analyze apply-suggestion path are not branding-aware, so output from those surfaces is not personalized. Status is PARTIAL until those gaps are closed or the claim is scoped to `/api/generate` only.
+- None. Branding context now reaches `/api/generate`, the chat assistant (030, via the system prompt), and the analyze apply-suggestion path. Pasted inspiration is delimited as untrusted reference data (`lib/ai-branding.ts:76-105`).

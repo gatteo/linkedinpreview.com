@@ -179,6 +179,7 @@ export function DashboardEditor() {
                         content={content}
                         contentText={contentText}
                         hasImage={!!media}
+                        brandingContext={brandingContext}
                         onApplySuggestion={handleApplySuggestion}
                     />
                 )}
@@ -275,6 +276,7 @@ export function DashboardEditor() {
                                     content={content}
                                     contentText={contentText}
                                     hasImage={!!media}
+                                    brandingContext={brandingContext}
                                     onApplySuggestion={handleApplySuggestion}
                                 />
                             </div>

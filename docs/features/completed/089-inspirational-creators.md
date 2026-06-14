@@ -1,6 +1,6 @@
 # 089 — Inspirational Creators
 
-> Status: PARTIAL · Area: Branding · Last verified: 2026-06-14
+> Status: SHIPPED · Area: Branding · Last verified: 2026-06-14
 
 ## What
 
@@ -20,13 +20,13 @@
 - [x] 089-AC-2 Each creator can be removed. _(verified: `inspiration-creators-section.tsx:30-37,58`)_
 - [x] 089-AC-3 A "Profile" link renders only when a URL is set. _(verified: `inspiration-creators-section.tsx:49-57`)_
 - [x] 089-AC-4 Creators persist to `branding.inspiration.creators`. _(verified: `inspiration-creators-section.tsx:20-26`, schema `lib/branding.ts:64-69`)_
-- [ ] 089-AC-5 Inspirational creators are used as AI style reference. _(gap: `assembleBrandingContext` never reads `branding.inspiration` (see full builder `lib/ai-branding.ts:3-58`). Creators are stored but never sent to any AI prompt. Claim is false.)_
+- [x] 089-AC-5 Inspirational creators are used as AI style reference. _(verified: `assembleBrandingContext` appends creator names inside the delimited STYLE REFERENCE block, capped at `MAX_INSPIRATION_CREATORS` (10) — `lib/ai-branding.ts:8,83-85,99-101`.)_
 
 ## Implementation
 
 - UI: `components/dashboard/branding/inspiration-creators-section.tsx`
 - Schema `BrandingInspiration`: `lib/branding.ts:64-69`
-- AI bridge: NOT wired (absent from `lib/ai-branding.ts`)
+- AI bridge: `assembleBrandingContext` `lib/ai-branding.ts:76-105` (STYLE REFERENCE block)
 
 ## Dependencies
 
@@ -34,4 +34,4 @@
 
 ## Open questions / known gaps
 
-- Creators are stored only; they do not feed AI generation.
+- None. Creator names now feed AI generation as style reference (capped at 10).

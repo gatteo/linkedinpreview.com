@@ -4,7 +4,7 @@ import type { UIMessage } from 'ai'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
-import { CHAT_SYSTEM_PROMPT } from '@/config/prompts'
+import { chatSystemPrompt } from '@/config/prompts'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
 
     const result = streamText({
         model: openai(model),
-        system: CHAT_SYSTEM_PROMPT,
+        system: chatSystemPrompt(parsed.data.brandingContext),
         messages: modelMessages,
     })
 

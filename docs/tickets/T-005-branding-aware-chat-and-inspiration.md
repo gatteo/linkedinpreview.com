@@ -1,10 +1,10 @@
 # T-005 — Extend branding context to chat and wire inspiration into AI
 
-> Status: proposed
-> Touches: [`../features/037-branding-aware-ai.md`](../features/037-branding-aware-ai.md),
-> [`../features/081-positioning-statement.md`](../features/081-positioning-statement.md),
-> [`../features/088-inspirational-posts.md`](../features/088-inspirational-posts.md),
-> [`../features/089-inspirational-creators.md`](../features/089-inspirational-creators.md) · Opened: 2026-06-14
+> Status: done · Opened: 2026-06-14 · Closed: 2026-06-14
+> Touches: [`../features/completed/037-branding-aware-ai.md`](../features/completed/037-branding-aware-ai.md),
+> [`../features/completed/081-positioning-statement.md`](../features/completed/081-positioning-statement.md),
+> [`../features/088-inspirational-posts.md`](../features/088-inspirational-posts.md) (AC-5 only; AC-4 -> T-014),
+> [`../features/completed/089-inspirational-creators.md`](../features/completed/089-inspirational-creators.md)
 
 ## Goal
 
@@ -29,12 +29,12 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-005-AC-1 The chat assistant receives the branding context (verifiable in the assembled
+- [x] T-005-AC-1 The chat assistant receives the branding context (verifiable in the assembled
       prompt). Closes 037-AC-7 and 081-AC-5.
-- [ ] T-005-AC-2 Inspirational posts and creators are included in the AI branding context for
+- [x] T-005-AC-2 Inspirational posts and creators are included in the AI branding context for
       generation. Closes 088-AC-5 and 089-AC-5.
-- [ ] T-005-AC-3 Pasted inspiration is treated as reference data, never as model instructions.
-- [ ] T-005-AC-4 The analyze panel's apply-suggestion sends branding context. Closes 037-AC-6.
+- [x] T-005-AC-3 Pasted inspiration is treated as reference data, never as model instructions.
+- [x] T-005-AC-4 The analyze panel's apply-suggestion sends branding context. Closes 037-AC-6.
 
 ## On completion
 

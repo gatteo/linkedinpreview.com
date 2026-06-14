@@ -6,6 +6,16 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Branding context now reaches chat, analyze, and uses inspiration (T-005).** The chat assistant
+  and the analyze apply-suggestion call now receive the assembled branding context, and
+  `assembleBrandingContext` now includes inspirational posts and creators as a delimited style
+  reference (capped for prompt budget and clamped to 5000 chars), explicitly framed as untrusted
+  reference data the model must not follow as instructions. Closes 037-AC-6/AC-7, 081-AC-5,
+  088-AC-5, 089-AC-5. Features 037 (Branding-aware AI), 081 (Positioning statement), and 089
+  (Inspirational creators) are now SHIPPED. Feature 088 (Inspirational posts) stays PARTIAL: its AI
+  wiring is done, but the card's "paste a post URL" claim still does not match the free-text input
+  (now tracked by T-014).
+
 - **Post statuses are now user-settable (T-003).** The dashboard editor header has a status control
   (Draft / Scheduled / Published) next to the format label; the choice persists to the draft and the
   posts-list status filter reflects it. This is a manual status label only - it does not publish to

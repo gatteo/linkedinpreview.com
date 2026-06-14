@@ -72,7 +72,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (23 of 28 SHIPPED, 5 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (25 of 28 SHIPPED, 3 PARTIAL)
 
 ### Goal
 
@@ -80,47 +80,45 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 
 ### Features
 
-| Feature                                                                                | Status  | Notes                                                  |
-| -------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------ |
-| [060 - App shell with sidebar navigation](features/completed/060-dashboard-shell.md)   | SHIPPED | shadcn SidebarProvider, inset variant                  |
-| [061 - Supabase anonymous auth](features/completed/061-anonymous-auth.md)              | SHIPPED | Anonymous session on first visit, RLS-protected tables |
-| [062 - Multi-draft management](features/completed/062-multi-draft-management.md)       | SHIPPED | Create/edit/duplicate/delete                           |
-| [063 - Post statuses](features/completed/063-post-statuses.md)                         | SHIPPED | Status picker in the editor; manual, not LinkedIn yet  |
-| [064 - Draft labels](features/completed/064-post-format-labels.md)                     | SHIPPED | Label picker wired into the editor; persists to draft  |
-| [065 - Posts list page](features/completed/065-posts-list-page.md)                     | SHIPPED | TanStack table, search/filter/paginate                 |
-| [066 - Dashboard editor](features/completed/066-dashboard-editor.md)                   | SHIPPED | TipTap + preview + AI + 2s auto-save                   |
-| [067 - New post creation wizard](features/completed/067-new-post-creation-wizard.md)   | SHIPPED | Blank / notes / file / URL / voice                     |
-| [068 - Tutorial dialog](features/completed/068-tutorial-dialog.md)                     | SHIPPED | 4-slide onboarding                                     |
-| [069 - Dark mode](features/completed/069-dark-mode.md)                                 | SHIPPED | Dashboard-scoped light/dark/system                     |
-| [080 - Profile section](features/completed/080-profile-section.md)                     | SHIPPED | Avatar cropping; name/headline/avatar in post preview  |
-| [081 - Positioning statement](features/081-positioning-statement.md)                   | PARTIAL | Not wired into chat/analyze                            |
-| [082 - Role selection](features/completed/082-role-selection.md)                       | SHIPPED | Wired into AI generation                               |
-| [083 - Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED | Wired into AI generation                               |
-| [084 - Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED | Language, sentence/post length, emoji                  |
-| [085 - Custom footer](features/085-custom-footer.md)                                   | PARTIAL | Prompt instruction only; no deterministic append       |
-| [086 - Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED | Wired into AI as additional context                    |
-| [087 - Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL | In user prompt, not system-prompt hard constraints     |
-| [088 - Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL | Stored but never sent to AI                            |
-| [089 - Inspirational creators](features/089-inspirational-creators.md)                 | PARTIAL | Stored but never sent to AI                            |
-| [090 - Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED | "All changes saved" + auto-upsert                      |
-| [100 - Theme selector](features/completed/100-theme-selector.md)                       | SHIPPED | Light/dark/system                                      |
-| [103 - Reset all data](features/completed/103-reset-all-data.md)                       | SHIPPED | Danger-zone wipe with confirmation                     |
-| [030 - AI chat assistant](features/completed/030-ai-chat-assistant.md)                 | SHIPPED | Streaming via Vercel AI SDK                            |
-| [031 - AI post generation](features/completed/031-ai-post-generation.md)               | SHIPPED | Hooks + full post variants                             |
-| [032 - Quick AI actions](features/completed/032-quick-ai-actions.md)                   | SHIPPED | Shorten/lengthen/variation/restyle                     |
-| [033 - AI post analysis](features/completed/033-ai-post-analysis.md)                   | SHIPPED | Score + classification, stored                         |
-| [034 - AI suggestions](features/completed/034-ai-suggestions.md)                       | SHIPPED | 3 refinement suggestions                               |
+| Feature                                                                                | Status  | Notes                                                   |
+| -------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
+| [060 - App shell with sidebar navigation](features/completed/060-dashboard-shell.md)   | SHIPPED | shadcn SidebarProvider, inset variant                   |
+| [061 - Supabase anonymous auth](features/completed/061-anonymous-auth.md)              | SHIPPED | Anonymous session on first visit, RLS-protected tables  |
+| [062 - Multi-draft management](features/completed/062-multi-draft-management.md)       | SHIPPED | Create/edit/duplicate/delete                            |
+| [063 - Post statuses](features/completed/063-post-statuses.md)                         | SHIPPED | Status picker in the editor; manual, not LinkedIn yet   |
+| [064 - Draft labels](features/completed/064-post-format-labels.md)                     | SHIPPED | Label picker wired into the editor; persists to draft   |
+| [065 - Posts list page](features/completed/065-posts-list-page.md)                     | SHIPPED | TanStack table, search/filter/paginate                  |
+| [066 - Dashboard editor](features/completed/066-dashboard-editor.md)                   | SHIPPED | TipTap + preview + AI + 2s auto-save                    |
+| [067 - New post creation wizard](features/completed/067-new-post-creation-wizard.md)   | SHIPPED | Blank / notes / file / URL / voice                      |
+| [068 - Tutorial dialog](features/completed/068-tutorial-dialog.md)                     | SHIPPED | 4-slide onboarding                                      |
+| [069 - Dark mode](features/completed/069-dark-mode.md)                                 | SHIPPED | Dashboard-scoped light/dark/system                      |
+| [080 - Profile section](features/completed/080-profile-section.md)                     | SHIPPED | Avatar cropping; name/headline/avatar in post preview   |
+| [081 - Positioning statement](features/completed/081-positioning-statement.md)         | SHIPPED | Reaches chat + analyze via branding context             |
+| [082 - Role selection](features/completed/082-role-selection.md)                       | SHIPPED | Wired into AI generation                                |
+| [083 - Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED | Wired into AI generation                                |
+| [084 - Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED | Language, sentence/post length, emoji                   |
+| [085 - Custom footer](features/085-custom-footer.md)                                   | PARTIAL | Prompt instruction only; no deterministic append        |
+| [086 - Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED | Wired into AI as additional context                     |
+| [087 - Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL | In user prompt, not system-prompt hard constraints      |
+| [088 - Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL | Feeds AI now; card "URL" claim still inaccurate (T-014) |
+| [089 - Inspirational creators](features/completed/089-inspirational-creators.md)       | SHIPPED | Sent to AI as style reference                           |
+| [090 - Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED | "All changes saved" + auto-upsert                       |
+| [100 - Theme selector](features/completed/100-theme-selector.md)                       | SHIPPED | Light/dark/system                                       |
+| [103 - Reset all data](features/completed/103-reset-all-data.md)                       | SHIPPED | Danger-zone wipe with confirmation                      |
+| [030 - AI chat assistant](features/completed/030-ai-chat-assistant.md)                 | SHIPPED | Streaming via Vercel AI SDK                             |
+| [031 - AI post generation](features/completed/031-ai-post-generation.md)               | SHIPPED | Hooks + full post variants                              |
+| [032 - Quick AI actions](features/completed/032-quick-ai-actions.md)                   | SHIPPED | Shorten/lengthen/variation/restyle                      |
+| [033 - AI post analysis](features/completed/033-ai-post-analysis.md)                   | SHIPPED | Score + classification, stored                          |
+| [034 - AI suggestions](features/completed/034-ai-suggestions.md)                       | SHIPPED | 3 refinement suggestions                                |
 
 ### To complete this wave
 
 Every item below is a PARTIAL feature with a tracking ticket. The wave reaches COMPLETE when all are
 SHIPPED.
 
-- [081 - Positioning statement](features/081-positioning-statement.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): reach chat/analyze.
 - [085 - Custom footer](features/085-custom-footer.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): deterministic append.
 - [087 - Dos and donts](features/087-dos-and-donts.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): system-prompt hard constraints.
-- [088 - Inspirational posts](features/088-inspirational-posts.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): wire into AI.
-- [089 - Inspirational creators](features/089-inspirational-creators.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): wire into AI.
+- [088 - Inspirational posts](features/088-inspirational-posts.md) - [T-014](tickets/T-014-inspiration-posts-url-claim.md): reconcile the "post URL" claim with the text-paste UI (AI wiring already shipped via T-005).
 
 ### Dependencies
 
@@ -128,7 +126,7 @@ None - this was the first wave.
 
 ---
 
-## Wave 1: Smart Content Creation - IN PROGRESS (10 of 13 SHIPPED, 3 PARTIAL)
+## Wave 1: Smart Content Creation - IN PROGRESS (11 of 13 SHIPPED, 2 PARTIAL)
 
 ### Goal
 
@@ -143,7 +141,7 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 | [040 - AI post generation from URL](features/040-ai-post-generation-from-url.md)               | PARTIAL | Extracts article; prompt lacks anti-summary/attribution |
 | [035 - AI hook suggestions](features/completed/035-ai-hook-generation.md)                      | SHIPPED | 4 hooks via wizard + editor quick action                |
 | [036 - AI content extraction](features/completed/036-ai-content-extraction.md)                 | SHIPPED | URL/PDF/DOCX/TXT/MD extraction                          |
-| [037 - Branding-aware AI](features/037-branding-aware-ai.md)                                   | PARTIAL | Generate route + wizard only; not chat/analyze          |
+| [037 - Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED | Generate, wizard, editor actions, chat, and analyze     |
 | [050 - Readability score](features/completed/050-readability-score.md)                         | SHIPPED | Flesch-Kincaid grade + label                            |
 | [051 - Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)               | SHIPPED | 5-bucket distribution                                   |
 | [052 - Character and word count](features/052-character-and-word-count.md)                     | PARTIAL | Word count not shown in the core editor                 |
@@ -154,7 +152,6 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 
 ### To complete this wave
 
-- [037 - Branding-aware AI](features/037-branding-aware-ai.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): extend branding to chat/analyze.
 - [040 - AI post generation from URL](features/040-ai-post-generation-from-url.md) - [T-009](tickets/T-009-url-generation-prompt-quality.md): original + attributed prompt.
 - [052 - Character and word count](features/052-character-and-word-count.md) - [T-010](tickets/T-010-word-count-in-core-editor.md): word count in the core editor.
 

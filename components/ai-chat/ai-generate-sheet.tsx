@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { Tone } from '@/config/ai'
 import { ApiRoutes } from '@/config/routes'
+import { assembleBrandingContext } from '@/lib/ai-branding'
 import {
     extractTextFromMessage,
     isRateLimitedMessage,
@@ -18,6 +19,7 @@ import {
 import { formatResetTime, isRateLimitError, parseAIError } from '@/lib/ai-error'
 import { fetchSuggestions, type Suggestion } from '@/lib/ai-suggestions'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
+import { useBranding } from '@/hooks/use-branding'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
@@ -40,6 +42,8 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
     const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
     const [suggestionsLoading, setSuggestionsLoading] = React.useState(false)
     const { isAuthReady, ensureSession } = useAnonymousAuth()
+    const { branding } = useBranding()
+    const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
 
     // Refs to avoid stale closures in useChat callbacks
     const toneRef = React.useRef(tone)
@@ -47,7 +51,18 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
         toneRef.current = tone
     }, [tone])
 
-    const transport = React.useMemo(() => new DefaultChatTransport({ api: ApiRoutes.Chat }), [])
+    // Recreate the transport when branding changes so requests carry the
+    // latest context. Branding changes rarely (load / edit), so this is cheap.
+    const transport = React.useMemo(
+        () =>
+            new DefaultChatTransport({
+                api: ApiRoutes.Chat,
+                prepareSendMessagesRequest: ({ body }) => ({
+                    body: { ...body, brandingContext: brandingContext || undefined },
+                }),
+            }),
+        [brandingContext],
+    )
 
     const { messages, sendMessage, status, stop, setMessages } = useChat({
         transport,

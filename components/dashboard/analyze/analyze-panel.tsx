@@ -42,6 +42,7 @@ type AnalyzePanelProps = {
     content: any
     contentText: string
     hasImage: boolean
+    brandingContext: string
     onApplySuggestion: (newText: string) => void
 }
 
@@ -49,7 +50,13 @@ type AnalyzePanelProps = {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion }: AnalyzePanelProps) {
+export function AnalyzePanel({
+    content,
+    contentText,
+    hasImage,
+    brandingContext,
+    onApplySuggestion,
+}: AnalyzePanelProps) {
     const [analysis, setAnalysis] = React.useState<Analysis | null>(null)
     const [isAnalyzing, setIsAnalyzing] = React.useState(false)
     const [lastAnalyzedText, setLastAnalyzedText] = React.useState<string | null>(null)
@@ -120,6 +127,7 @@ export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion
                         action: 'apply-suggestion',
                         postText: contentText,
                         suggestion: suggestion.text,
+                        brandingContext,
                     }),
                 })
 
@@ -139,7 +147,7 @@ export function AnalyzePanel({ content, contentText, hasImage, onApplySuggestion
                 setApplyingIndex(null)
             }
         },
-        [contentText, onApplySuggestion],
+        [contentText, brandingContext, onApplySuggestion],
     )
 
     return (
