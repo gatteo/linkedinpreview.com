@@ -109,7 +109,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 
 | ID  | Feature                                                                          | Status  |
 | --- | -------------------------------------------------------------------------------- | ------- |
-| 080 | [Profile section](features/080-profile-section.md)                               | PARTIAL |
+| 080 | [Profile section](features/completed/080-profile-section.md)                     | SHIPPED |
 | 081 | [Positioning statement](features/081-positioning-statement.md)                   | PARTIAL |
 | 082 | [Role selection](features/completed/082-role-selection.md)                       | SHIPPED |
 | 083 | [Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED |

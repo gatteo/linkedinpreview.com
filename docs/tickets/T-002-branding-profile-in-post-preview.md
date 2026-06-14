@@ -1,8 +1,8 @@
 # T-002 — Use the branding profile in the post preview
 
-> Status: proposed
-> Touches: [`../features/080-profile-section.md`](../features/080-profile-section.md),
-> [`../features/021-realtime-post-preview.md`](../features/completed/021-realtime-post-preview.md) · Opened: 2026-06-14
+> Status: done · Opened: 2026-06-14 · Closed: 2026-06-14
+> Touches: [`../features/completed/080-profile-section.md`](../features/completed/080-profile-section.md),
+> [`../features/completed/021-realtime-post-preview.md`](../features/completed/021-realtime-post-preview.md)
 
 ## Goal
 
@@ -26,11 +26,11 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-002-AC-1 In the dashboard editor, the preview author block shows the branding profile's
+- [x] T-002-AC-1 In the dashboard editor, the preview author block shows the branding profile's
       name and headline.
-- [ ] T-002-AC-2 The uploaded avatar (if any) renders in the preview; a fallback shows otherwise.
-- [ ] T-002-AC-3 The homepage/embed tool still renders without a branding profile present.
-- [ ] T-002-AC-4 Avatar upload supports cropping before saving (closes 080-AC-2).
+- [x] T-002-AC-2 The uploaded avatar (if any) renders in the preview; a fallback shows otherwise.
+- [x] T-002-AC-3 The homepage/embed tool still renders without a branding profile present.
+- [x] T-002-AC-4 Avatar upload supports cropping before saving (closes 080-AC-2).
 
 ## On completion
 

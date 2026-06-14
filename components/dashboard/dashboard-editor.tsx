@@ -117,6 +117,11 @@ export function DashboardEditor() {
 
     const contentText = React.useMemo(() => extractPlainText(content), [content])
     const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
+    const previewAuthor = {
+        name: branding.profile.name,
+        headline: branding.profile.headline,
+        avatarUrl: branding.profile.avatarUrl,
+    }
 
     const handleCopyText = React.useCallback(async () => {
         const text = contentText
@@ -163,6 +168,7 @@ export function DashboardEditor() {
                     <PreviewPanel
                         content={content}
                         media={media}
+                        author={previewAuthor}
                         onOpenFeedPreview={handleOpenFeedPreview}
                         hasContent={hasTextContent(content)}
                     />
@@ -251,6 +257,7 @@ export function DashboardEditor() {
                                 <PreviewPanel
                                     content={content}
                                     media={media}
+                                    author={previewAuthor}
                                     onOpenFeedPreview={handleOpenFeedPreview}
                                     hasContent={hasTextContent(content)}
                                 />

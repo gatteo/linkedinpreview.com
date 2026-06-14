@@ -32,4 +32,4 @@
 
 ## Open questions / known gaps
 
-- Author identity (name "Matteo Giardino", headline "Founder @ devv.it", avatar) is hard-coded in `user-info.tsx`; it is not yet driven by branding settings in the core tool.
+- In the dashboard editor the author identity is now driven by branding settings: `DashboardEditor` passes a `previewAuthor` (name/headline/avatar) into the preview (`components/dashboard/dashboard-editor.tsx:120-124`), threaded through `PreviewPanel` -> `PostCard` -> `UserInfo` (T-002, closes 080-AC-5). The logged-out homepage tool, embed, and chat preview pass no author and intentionally fall back to the hard-coded placeholder identity in `components/tool/preview/user-info.tsx:16-25`.

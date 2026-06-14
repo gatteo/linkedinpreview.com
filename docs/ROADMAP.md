@@ -72,7 +72,7 @@ None - this is the original product the rest is built on.
 
 ---
 
-## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (21 of 28 SHIPPED, 7 PARTIAL)
+## Wave 0: Dashboard Foundation & Branding - IN PROGRESS (22 of 28 SHIPPED, 6 PARTIAL)
 
 ### Goal
 
@@ -92,7 +92,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [067 - New post creation wizard](features/completed/067-new-post-creation-wizard.md)   | SHIPPED | Blank / notes / file / URL / voice                     |
 | [068 - Tutorial dialog](features/completed/068-tutorial-dialog.md)                     | SHIPPED | 4-slide onboarding                                     |
 | [069 - Dark mode](features/completed/069-dark-mode.md)                                 | SHIPPED | Dashboard-scoped light/dark/system                     |
-| [080 - Profile section](features/080-profile-section.md)                               | PARTIAL | No cropping; not shown in post preview                 |
+| [080 - Profile section](features/completed/080-profile-section.md)                     | SHIPPED | Avatar cropping; name/headline/avatar in post preview  |
 | [081 - Positioning statement](features/081-positioning-statement.md)                   | PARTIAL | Not wired into chat/analyze                            |
 | [082 - Role selection](features/completed/082-role-selection.md)                       | SHIPPED | Wired into AI generation                               |
 | [083 - Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED | Wired into AI generation                               |
@@ -117,7 +117,6 @@ Every item below is a PARTIAL feature with a tracking ticket. The wave reaches C
 SHIPPED.
 
 - [063 - Post statuses](features/063-post-statuses.md) - [T-003](tickets/T-003-reachable-post-statuses.md): let the user set scheduled/published.
-- [080 - Profile section](features/080-profile-section.md) - [T-002](tickets/T-002-branding-profile-in-post-preview.md): show profile in preview + avatar cropping.
 - [081 - Positioning statement](features/081-positioning-statement.md) - [T-005](tickets/T-005-branding-aware-chat-and-inspiration.md): reach chat/analyze.
 - [085 - Custom footer](features/085-custom-footer.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): deterministic append.
 - [087 - Dos and donts](features/087-dos-and-donts.md) - [T-011](tickets/T-011-enforce-footer-and-dos-donts.md): system-prompt hard constraints.

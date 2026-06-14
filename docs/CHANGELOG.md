@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Branding profile now drives the post preview + avatar cropping (T-002).** The dashboard editor
+  preview shows the user's branding name, headline, and uploaded avatar (with a placeholder fallback
+  for the logged-out homepage, embed, and chat preview), and the avatar upload now opens a square
+  crop dialog (drag-to-reposition, zoom, keyboard-pannable) before saving. Closes 080-AC-2 and
+  080-AC-5; feature 080 (Profile section) is now SHIPPED and the 021 preview author gap is resolved.
+
 - **Wired the LabelPicker into the dashboard editor (T-001).** Users can now assign, change, or
   clear a draft's content-format label from the editor header; the selection persists to
   `drafts.label` and survives reload, and the chosen label shows in the posts list and matches the

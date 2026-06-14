@@ -7,15 +7,17 @@ import { cn } from '@/lib/utils'
 import type { Media } from '../tool'
 import { PostCard } from './post-card'
 import { ScreenSizeProvider, useScreenSize } from './preview-size-context'
+import type { PreviewAuthor } from './user-info'
 
 interface PreviewPanelProps {
     content: any
     media: Media | null
+    author?: PreviewAuthor
     onOpenFeedPreview?: () => void
     hasContent: boolean
 }
 
-function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: PreviewPanelProps) {
+function PreviewPanelContent({ content, media, author, onOpenFeedPreview, hasContent }: PreviewPanelProps) {
     const { screenSize, setScreenSize } = useScreenSize()
     const containerWidth: Record<string, string> = {
         mobile: 'w-[320px]',
@@ -57,7 +59,7 @@ function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: 
                 </div>
                 {/* Card */}
                 <div className={cn('mx-auto pb-5 transition-all duration-300', containerWidth[screenSize])}>
-                    <PostCard content={content} media={media} />
+                    <PostCard content={content} media={media} author={author} />
                 </div>
                 {/* Inline links below card */}
                 <div className='text-muted-foreground flex w-full gap-1.5 px-4 pb-4 text-xs whitespace-nowrap sm:justify-center'>
@@ -90,12 +92,19 @@ function PreviewPanelContent({ content, media, onOpenFeedPreview, hasContent }: 
     )
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ content, media, onOpenFeedPreview, hasContent }) => {
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({
+    content,
+    media,
+    author,
+    onOpenFeedPreview,
+    hasContent,
+}) => {
     return (
         <ScreenSizeProvider>
             <PreviewPanelContent
                 content={content}
                 media={media}
+                author={author}
                 onOpenFeedPreview={onOpenFeedPreview}
                 hasContent={hasContent}
             />

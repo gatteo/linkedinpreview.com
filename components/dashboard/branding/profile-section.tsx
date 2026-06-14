@@ -3,30 +3,39 @@
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { readFileAsDataUrl } from '@/lib/image-crop'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
+import { AvatarCropDialog } from './avatar-crop-dialog'
 import { type SectionProps } from './types'
 
 export function ProfileSection({ branding, onUpdate }: SectionProps) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
+    const [cropSrc, setCropSrc] = React.useState<string | null>(null)
 
-    const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
+        // Reset so selecting the same file again re-triggers change.
+        e.target.value = ''
         if (!file || !file.type.startsWith('image/')) return
         if (file.size > 2 * 1024 * 1024) {
             toast.error('Image must be under 2MB')
             return
         }
-        const reader = new FileReader()
-        reader.onload = (ev) => {
-            const url = ev.target?.result as string
-            onUpdate({ profile: { ...branding.profile, avatarUrl: url } })
+        try {
+            setCropSrc(await readFileAsDataUrl(file))
+        } catch {
+            toast.error('Failed to read image')
         }
-        reader.readAsDataURL(file)
+    }
+
+    const handleCrop = (dataUrl: string) => {
+        onUpdate({ profile: { ...branding.profile, avatarUrl: dataUrl } })
+        setCropSrc(null)
     }
 
     return (
@@ -87,6 +96,13 @@ export function ProfileSection({ branding, onUpdate }: SectionProps) {
                     />
                 </div>
             </CardContent>
+
+            <AvatarCropDialog
+                open={cropSrc !== null}
+                src={cropSrc}
+                onCancel={() => setCropSrc(null)}
+                onCrop={handleCrop}
+            />
         </Card>
     )
 }
