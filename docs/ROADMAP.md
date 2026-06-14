@@ -31,7 +31,7 @@
 
 ---
 
-## Foundation: Public Tool & Site - IN PROGRESS (18 of 19 SHIPPED, 1 PARTIAL)
+## Foundation: Public Tool & Site - COMPLETE (19 of 19 SHIPPED)
 
 ### Goal
 
@@ -58,12 +58,12 @@ The original free, login-free product that predates the dashboard: the public ma
 | [028 - Homepage tool variant](features/completed/028-homepage-tool-variant.md)       | SHIPPED | Editor inline on the homepage                    |
 | [110 - Feedback collection](features/completed/110-feedback-collection.md)           | SHIPPED | Tally FAB + inline links                         |
 | [111 - Article helpfulness](features/completed/111-article-helpfulness.md)           | SHIPPED | "Was this helpful?" widget                       |
-| [112 - PostHog analytics](features/112-posthog-analytics.md)                         | PARTIAL | No app-wide page-view tracking                   |
+| [112 - PostHog analytics](features/completed/112-posthog-analytics.md)               | SHIPPED | Deliberate per-route `page_viewed` tracking      |
 | [113 - Google Tag Manager](features/completed/113-google-tag-manager.md)             | SHIPPED | GTM container in root layout                     |
 
 ### To complete this wave
 
-- [112 - PostHog analytics](features/112-posthog-analytics.md) - [T-013](tickets/T-013-explicit-pageview-tracking.md): deliberate page-view tracking.
+Done - every feature in this wave is SHIPPED.
 
 ### Dependencies
 

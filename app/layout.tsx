@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
@@ -8,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { GTM } from '@/components/gtm'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
+import { PostHogPageView } from '@/components/tracking/posthog-page-view'
 
 import '../styles/globals.css'
 
@@ -52,6 +54,9 @@ export default function RootLayout({
         <html lang='en' className={cn(sans.variable, cal.variable)} suppressHydrationWarning>
             <body>
                 <TooltipProvider>{children}</TooltipProvider>
+                <Suspense fallback={null}>
+                    <PostHogPageView />
+                </Suspense>
                 <GTM />
                 <SpeedInsights />
                 <TailwindIndicator />

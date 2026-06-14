@@ -1,7 +1,6 @@
 # T-013 — Explicit page-view tracking
 
-> Status: proposed
-> Touches: [`../features/112-posthog-analytics.md`](../features/112-posthog-analytics.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/112-posthog-analytics.md`](../features/completed/112-posthog-analytics.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -21,8 +20,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-013-AC-1 Page views are captured on route changes app-wide (production).
-- [ ] T-013-AC-2 The event name follows the `snake_case` convention used elsewhere.
+- [x] T-013-AC-1 Page views are captured on route changes app-wide (production).
+- [x] T-013-AC-2 The event name follows the `snake_case` convention used elsewhere.
 
 ## On completion
 

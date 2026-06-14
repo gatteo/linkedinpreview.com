@@ -1,11 +1,6 @@
 # 112 — PostHog Analytics
 
-> Status: PARTIAL · Area: Feedback · Last verified: 2026-06-14
->
-> Copy this file to `NNN-slug.md` and fill it in. This folder holds **only built features**
-> (SHIPPED or PARTIAL). Not-yet-built ideas live in [`../backlog/`](../backlog/). A feature
-> describes a user-facing **surface**; system internals live in
-> [`../ARCHITECTURE.md`](../ARCHITECTURE.md).
+> Status: SHIPPED · Area: Feedback · Last verified: 2026-06-14
 
 ## What
 
@@ -27,7 +22,7 @@
 - [x] 112-AC-3 Toolbar/editor actions, copies, and AI usage emit events _(verified: copies `components/tool/editor-panel.tsx:145` `post_copied`; toolbar `components/tool/toolbar.tsx:22` `formatting_applied`; AI `components/ai-chat/ai-generate-sheet.tsx:56` `ai_generation_completed`)_
 - [x] 112-AC-4 Event names use snake*case *(verified: representative names `feedback_button_clicked` `feedback-fab.tsx:14`, `article_helpful_voted` `article-helpfulness.tsx:30`, `ai_generation_started` `ai-generate-sheet.tsx:134`; a grep for capitalized event identifiers returns no matches)\_
 - [x] 112-AC-5 A reusable click-tracking wrapper exists _(verified: `components/tracking/track-click.tsx:6-19` `TrackClick` calls `posthog.capture(event, properties)`)_
-- [ ] 112-AC-6 Page views are tracked _(gap: only one manual pageview event exists — `components/feed-preview/preview-page-client.tsx:44` `feed_preview_page_viewed`. General page-view capture relies on posthog-js autocapture defaults; `instrumentation-client.ts` sets no `capture_pageview` option and there is no explicit per-route pageview instrumentation, so "page views" as a deliberate tracked event is not implemented app-wide.)_
+- [x] 112-AC-6 Page views are tracked _(verified: `components/tracking/posthog-page-view.tsx:11-23` fires a deliberate snake_case `page_viewed` event in a `useEffect` keyed on `[pathname, searchParams]`; mounted app-wide in the root layout `app/layout.tsx:57-59` inside a `<Suspense fallback={null}>` boundary)_
 
 > Acceptance IDs are stable forever. A box is checked `[x]` **only** when verified against the code
 > with a `file:line` citation. Anything unverified or contradicted stays `[ ]` with a gap note, and
@@ -38,6 +33,7 @@
 - Init: `instrumentation-client.ts` (production-only, `/ingest` host, `capture_exceptions: true`).
 - Proxy rewrites: `next.config.mjs:25-38` plus `skipTrailingSlashRedirect`.
 - Reusable wrapper: `components/tracking/track-click.tsx`.
+- App-wide pageviews: `components/tracking/posthog-page-view.tsx` emits `page_viewed` on every route change (deps `[pathname, searchParams]`), mounted in `app/layout.tsx` inside a `<Suspense>` boundary so public pages stay statically prerendered.
 - Event emitters (sample): `components/tool/editor-panel.tsx`, `components/tool/toolbar.tsx`, `components/tool/preview/preview-header.tsx`, `components/tool/share-dialog.tsx`, `components/ai-chat/ai-generate-sheet.tsx`, `components/dashboard/analyze/analyze-panel.tsx`, `components/blog/*`, `components/feedback/*`, `lib/post-analytics.ts`.
 
 ## Dependencies
@@ -47,6 +43,6 @@
 
 ## Open questions / known gaps
 
-- No explicit app-wide pageview tracking; reliant on autocapture defaults. If a deliberate `$pageview`
-  per route is required, it is not present.
+- App-wide pageviews now emit a deliberate `page_viewed` event per route change (T-013); the codebase
+  does not rely on PostHog's `$pageview` autocapture for this signal.
 - `ui_host` points at `eu.posthog.com`; deployment is EU-region.

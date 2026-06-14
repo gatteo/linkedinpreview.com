@@ -134,7 +134,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | --- | -------------------------------------------------------------------- | ------- |
 | 110 | [Feedback collection](features/completed/110-feedback-collection.md) | SHIPPED |
 | 111 | [Article helpfulness](features/completed/111-article-helpfulness.md) | SHIPPED |
-| 112 | [PostHog analytics](features/112-posthog-analytics.md)               | PARTIAL |
+| 112 | [PostHog analytics](features/completed/112-posthog-analytics.md)     | SHIPPED |
 | 113 | [Google Tag Manager](features/completed/113-google-tag-manager.md)   | SHIPPED |
 
 ### Planned (backlog)

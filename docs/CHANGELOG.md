@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Deliberate app-wide page-view tracking (T-013).** A `PostHogPageView` client component mounted in
+  the root layout (inside a Suspense boundary so public-page static generation is preserved) fires a
+  snake_case `page_viewed` event on every route change, replacing reliance on autocapture defaults.
+  Closes 112-AC-6; feature 112 (PostHog analytics) is now SHIPPED, which completes the Foundation
+  wave.
+
 - **Strategy dashboard gains a 6-month activity heatmap + weekly streak (T-012).** The single-month
   calendar was replaced with a rolling 26-week GitHub-style contribution grid, and a weekly posting
   streak (consecutive weeks with a post, tolerant of an in-progress current week, DST-safe) is
