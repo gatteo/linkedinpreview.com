@@ -1,6 +1,6 @@
 # 040 — AI Post Generation from URL
 
-> Status: PARTIAL · Area: AI · Last verified: 2026-06-14
+> Status: SHIPPED · Area: AI · Last verified: 2026-06-14
 
 ## What
 
@@ -17,8 +17,8 @@
 - [x] 040-AC-3 Extracted text is fed into the generation pipeline and the selected post opens in the editor _(verified: `components/dashboard/creation-wizard/url-input.tsx:81`, `creation-wizard.tsx:135-138,167-176`)_
 - [x] 040-AC-4 Invalid URLs are rejected by schema and extraction failures show a clear error _(verified: `app/api/extract/route.schema.ts:4`, `url-input.tsx:35-36`)_
 - [x] 040-AC-5 Extraction is rate limited (quickAction 10/day) and generation under the wizard quota (5/day) _(verified: `app/api/extract/route.ts:24`, `app/api/generate/route.ts:40`)_
-- [ ] 040-AC-6 The prompt instructs the model to create an original post inspired by the article (not a summary) _(gap: the `posts` prompt simply uses the extracted text as source material with no anti-summary instruction — `config/prompts.ts:177-185`)_
-- [ ] 040-AC-7 Generated post includes source attribution guidance _(gap: no attribution instruction exists in any generation prompt — `config/prompts.ts:177-185`)_
+- [x] 040-AC-6 The prompt instructs the model to create an original post inspired by the article (not a summary) _(verified: `config/prompts.ts:187`)_
+- [x] 040-AC-7 Generated post includes source attribution guidance _(verified: `config/prompts.ts:187`)_
 
 ## Implementation
 
@@ -32,5 +32,5 @@
 
 ## Open questions / known gaps
 
-- Prior doc claimed the prompt instructs "create an original post inspired by the article, not just summarize" and to "include source attribution guidance". Neither instruction exists in the prompts. Corrected; 040-AC-6 and 040-AC-7 left unchecked. Status PARTIAL.
+- T-009 added the anti-summary and source-attribution instructions to the shared `posts` prompt (`config/prompts.ts:187`); 040-AC-6 and 040-AC-7 now pass and the feature is SHIPPED. The attribution guidance is conditional (external sources only) so it does not misfire on personal notes; the anti-summary instruction is general to all source types since the `posts` prompt is shared (notes, files, voice, URLs).
 - URL extraction has a 5s fetch timeout; slow sources fail with a 422 rather than a specific timeout message.

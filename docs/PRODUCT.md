@@ -68,7 +68,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 037 | [Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED |
 | 038 | [AI post generation from voice](features/completed/038-ai-post-generation-from-voice.md) | SHIPPED |
 | 039 | [AI post generation from file](features/completed/039-ai-post-generation-from-file.md)   | SHIPPED |
-| 040 | [AI post generation from URL](features/040-ai-post-generation-from-url.md)               | PARTIAL |
+| 040 | [AI post generation from URL](features/completed/040-ai-post-generation-from-url.md)     | SHIPPED |
 
 ### Content Scoring (Client-side, dashboard analyze panel)
 

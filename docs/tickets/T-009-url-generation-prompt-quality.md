@@ -1,7 +1,6 @@
 # T-009 — Improve URL-to-post generation prompt (original, attributed)
 
-> Status: proposed
-> Touches: [`../features/040-ai-post-generation-from-url.md`](../features/040-ai-post-generation-from-url.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/040-ai-post-generation-from-url.md`](../features/completed/040-ai-post-generation-from-url.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -20,8 +19,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-009-AC-1 The generation prompt instructs an original, non-summary post for source material.
-- [ ] T-009-AC-2 The prompt provides source-attribution guidance.
+- [x] T-009-AC-1 The generation prompt instructs an original, non-summary post for source material.
+- [x] T-009-AC-2 The prompt provides source-attribution guidance.
 
 ## On completion
 

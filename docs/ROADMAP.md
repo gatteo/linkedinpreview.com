@@ -125,7 +125,7 @@ None - this was the first wave.
 
 ---
 
-## Wave 1: Smart Content Creation - IN PROGRESS (11 of 13 SHIPPED, 2 PARTIAL)
+## Wave 1: Smart Content Creation - IN PROGRESS (12 of 13 SHIPPED, 1 PARTIAL)
 
 ### Goal
 
@@ -133,25 +133,24 @@ Make post creation intelligent with AI that knows your brand, suggests hooks, sc
 
 ### Features
 
-| Feature                                                                                        | Status  | Notes                                                   |
-| ---------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------- |
-| [038 - AI post generation from voice](features/completed/038-ai-post-generation-from-voice.md) | SHIPPED | Web Speech API transcription -> generation              |
-| [039 - AI post generation from file](features/completed/039-ai-post-generation-from-file.md)   | SHIPPED | PDF/DOCX/TXT/MD; audio/video moved to backlog 041       |
-| [040 - AI post generation from URL](features/040-ai-post-generation-from-url.md)               | PARTIAL | Extracts article; prompt lacks anti-summary/attribution |
-| [035 - AI hook suggestions](features/completed/035-ai-hook-generation.md)                      | SHIPPED | 4 hooks via wizard + editor quick action                |
-| [036 - AI content extraction](features/completed/036-ai-content-extraction.md)                 | SHIPPED | URL/PDF/DOCX/TXT/MD extraction                          |
-| [037 - Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED | Generate, wizard, editor actions, chat, and analyze     |
-| [050 - Readability score](features/completed/050-readability-score.md)                         | SHIPPED | Flesch-Kincaid grade + label                            |
-| [051 - Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)               | SHIPPED | 5-bucket distribution                                   |
-| [052 - Character and word count](features/052-character-and-word-count.md)                     | PARTIAL | Word count not shown in the core editor                 |
-| [053 - Hashtag count](features/completed/053-hashtag-count.md)                                 | SHIPPED | Count vs 3-5 recommended                                |
-| [054 - Emoji count](features/completed/054-emoji-count.md)                                     | SHIPPED | Total emoji count                                       |
-| [055 - Length status indicator](features/completed/055-length-status-indicator.md)             | SHIPPED | Short / optimal / long                                  |
-| [056 - Line count](features/completed/056-line-count.md)                                       | SHIPPED | Line count                                              |
+| Feature                                                                                        | Status  | Notes                                                 |
+| ---------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------- |
+| [038 - AI post generation from voice](features/completed/038-ai-post-generation-from-voice.md) | SHIPPED | Web Speech API transcription -> generation            |
+| [039 - AI post generation from file](features/completed/039-ai-post-generation-from-file.md)   | SHIPPED | PDF/DOCX/TXT/MD; audio/video moved to backlog 041     |
+| [040 - AI post generation from URL](features/completed/040-ai-post-generation-from-url.md)     | SHIPPED | Original-take + conditional source-attribution prompt |
+| [035 - AI hook suggestions](features/completed/035-ai-hook-generation.md)                      | SHIPPED | 4 hooks via wizard + editor quick action              |
+| [036 - AI content extraction](features/completed/036-ai-content-extraction.md)                 | SHIPPED | URL/PDF/DOCX/TXT/MD extraction                        |
+| [037 - Branding-aware AI](features/completed/037-branding-aware-ai.md)                         | SHIPPED | Generate, wizard, editor actions, chat, and analyze   |
+| [050 - Readability score](features/completed/050-readability-score.md)                         | SHIPPED | Flesch-Kincaid grade + label                          |
+| [051 - Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)               | SHIPPED | 5-bucket distribution                                 |
+| [052 - Character and word count](features/052-character-and-word-count.md)                     | PARTIAL | Word count not shown in the core editor               |
+| [053 - Hashtag count](features/completed/053-hashtag-count.md)                                 | SHIPPED | Count vs 3-5 recommended                              |
+| [054 - Emoji count](features/completed/054-emoji-count.md)                                     | SHIPPED | Total emoji count                                     |
+| [055 - Length status indicator](features/completed/055-length-status-indicator.md)             | SHIPPED | Short / optimal / long                                |
+| [056 - Line count](features/completed/056-line-count.md)                                       | SHIPPED | Line count                                            |
 
 ### To complete this wave
 
-- [040 - AI post generation from URL](features/040-ai-post-generation-from-url.md) - [T-009](tickets/T-009-url-generation-prompt-quality.md): original + attributed prompt.
 - [052 - Character and word count](features/052-character-and-word-count.md) - [T-010](tickets/T-010-word-count-in-core-editor.md): word count in the core editor.
 
 ### Dependencies

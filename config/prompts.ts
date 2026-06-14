@@ -184,6 +184,8 @@ ${input.sourceText}${brandingPrompt(input.brandingContext)}`,
         user: (input: GenerateInput) =>
             `Write 2 full LinkedIn post variants using the hook and source material below. Each post should be different in structure or angle but both use the same hook. Count the words in each post and include the word count. Assign each post one of these content formats that best describes it: ${POST_FORMATS.join(', ')}.
 
+Write an original post that shares the author's own perspective and take inspired by the source material. Do not summarize or recap the source; use it as a springboard for the author's own insights. When the post draws on external content (an article, study, report, or someone else's work), credit or reference that source appropriately rather than presenting others' ideas as the author's own. When the source is the author's own notes or thoughts, no attribution is needed.
+
 Hook: ${input.hook}
 
 Source material:

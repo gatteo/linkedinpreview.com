@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **URL/source generation prompt now asks for an original, attributed take (T-009).** The shared
+  `posts` generation prompt instructs the model to write an original post inspired by the source
+  rather than summarizing it, and to credit external sources where appropriate (with no attribution
+  for the author's own notes). Closes 040-AC-6 and 040-AC-7; feature 040 (AI post generation from
+  URL) is now SHIPPED.
+
 - **Creation-wizard file picker shows audio/video as "coming soon" (T-008).** A disabled, purely
   informational "Audio / video (coming soon)" affordance now sets expectations in the file picker;
   accepted types (PDF/DOCX/TXT/MD) and the 5MB cap are unchanged, and no transcription is
