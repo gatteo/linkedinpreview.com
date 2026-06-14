@@ -1,7 +1,6 @@
 # T-006 — Group changelog entries by month/year
 
-> Status: proposed
-> Touches: [`../features/004-changelog.md`](../features/004-changelog.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/004-changelog.md`](../features/completed/004-changelog.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -20,8 +19,8 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-006-AC-1 Entries render under month/year group headings, newest first.
-- [ ] T-006-AC-2 The sticky date sidebar reflects the groups.
+- [x] T-006-AC-1 Entries render under month/year group headings, newest first.
+- [x] T-006-AC-2 The sticky date sidebar reflects the groups.
 
 ## On completion
 

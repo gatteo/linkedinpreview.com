@@ -31,7 +31,7 @@
 
 ---
 
-## Foundation: Public Tool & Site - IN PROGRESS (17 of 19 SHIPPED, 2 PARTIAL)
+## Foundation: Public Tool & Site - IN PROGRESS (18 of 19 SHIPPED, 1 PARTIAL)
 
 ### Goal
 
@@ -44,7 +44,7 @@ The original free, login-free product that predates the dashboard: the public ma
 | [001 - Landing page](features/completed/001-landing-page.md)                         | SHIPPED | Hero, demo, FAQ, JSON-LD schemas                 |
 | [002 - Blog](features/completed/002-blog.md)                                         | SHIPPED | MDX via Contentlayer                             |
 | [003 - RSS feed](features/completed/003-rss-feed.md)                                 | SHIPPED | `/rss.xml`                                       |
-| [004 - Changelog](features/004-changelog.md)                                         | PARTIAL | No month/year grouping                           |
+| [004 - Changelog](features/completed/004-changelog.md)                               | SHIPPED | Entries grouped by month/year                    |
 | [005 - Compare pages](features/completed/005-compare-pages.md)                       | SHIPPED | `/compare/[slug]`, static                        |
 | [006 - SEO infrastructure](features/completed/006-seo-infrastructure.md)             | SHIPPED | Sitemap, robots, JSON-LD, OG, canonicals         |
 | [020 - Rich text editor](features/completed/020-rich-text-editor.md)                 | SHIPPED | TipTap; Unicode output                           |
@@ -63,7 +63,6 @@ The original free, login-free product that predates the dashboard: the public ma
 
 ### To complete this wave
 
-- [004 - Changelog](features/004-changelog.md) - [T-006](tickets/T-006-changelog-month-year-grouping.md): group entries by month/year.
 - [112 - PostHog analytics](features/112-posthog-analytics.md) - [T-013](tickets/T-013-explicit-pageview-tracking.md): deliberate page-view tracking.
 
 ### Dependencies

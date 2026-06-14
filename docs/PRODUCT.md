@@ -33,7 +33,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 001 | [Landing page](features/completed/001-landing-page.md)              | SHIPPED |
 | 002 | [Blog](features/completed/002-blog.md)                              | SHIPPED |
 | 003 | [RSS feed](features/completed/003-rss-feed.md)                      | SHIPPED |
-| 004 | [Changelog](features/004-changelog.md)                              | PARTIAL |
+| 004 | [Changelog](features/completed/004-changelog.md)                    | SHIPPED |
 | 005 | [Compare pages](features/completed/005-compare-pages.md)            | SHIPPED |
 | 006 | [SEO infrastructure](features/completed/006-seo-infrastructure.md)  | SHIPPED |
 | 007 | [Hook template library](backlog/007-hook-template-library.md)       | PLANNED |

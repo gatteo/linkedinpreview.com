@@ -1,6 +1,6 @@
 # 004 — Changelog
 
-> Status: PARTIAL · Area: Public · Last verified: 2026-06-14
+> Status: SHIPPED · Area: Public · Last verified: 2026-06-14
 
 ## What
 
@@ -17,13 +17,14 @@
 - [x] 004-AC-3 Each entry renders its title and MDX body _(verified: `app/(main)/changelog/page.tsx:83-85,99`)_
 - [x] 004-AC-4 Each entry shows a date that is sticky on desktop _(verified: `app/(main)/changelog/page.tsx:71-78` `md:sticky md:top-[...]`)_
 - [x] 004-AC-5 Each entry optionally renders an image when present _(verified: `app/(main)/changelog/page.tsx:87-97`; `image` is an optional field in `contentlayer.config.ts:76`)_
-- [ ] 004-AC-6 Entries are grouped by month/year _(gap: entries are rendered as a flat newest-first list with a per-entry formatted date; there is no month/year grouping in `app/(main)/changelog/page.tsx:67-103` or `lib/changelog.ts` — claim is false)_
+- [x] 004-AC-6 Entries are grouped by month/year _(verified: `lib/changelog.ts:36-59` `groupEntriesByMonth` groups newest-first entries by UTC `YYYY-MM`; rendered under a per-group `h2` heading at `app/(main)/changelog/page.tsx:69-74`, groups and entries both newest-first)_
 
 ## Implementation
 
 - Page (hero, entry list, sticky date column, optional image, MDX body): `app/(main)/changelog/page.tsx:44-108`.
 - Local date formatter (UTC, "1 January 2026"): `app/(main)/changelog/page.tsx:40-42`.
-- Data access and shape: `lib/changelog.ts:15-26`.
+- Data access and shape: `lib/changelog.ts:21-32`.
+- Month/year grouping helper (UTC, newest-first): `lib/changelog.ts:36-59` (`groupEntriesByMonth`).
 - MDX render: `components/mdx/mdx.tsx` (imported at `app/(main)/changelog/page.tsx:7`).
 - Page metadata + canonical: `app/(main)/changelog/page.tsx:16-38`.
 
@@ -33,4 +34,4 @@
 
 ## Open questions / known gaps
 
-- Month/year grouping is claimed but not implemented (004-AC-6). The layout is a single flat list; group headers would need to be added.
+- None. Month/year grouping shipped via `groupEntriesByMonth` (`lib/changelog.ts`); entries render under per-month `h2` headings while the page title remains the `h1` and the sticky per-entry date column is preserved within each group.
