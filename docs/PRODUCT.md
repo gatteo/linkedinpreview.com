@@ -1,6 +1,10 @@
 # Product
 
-> This is a living document. It tracks the current state of the product and will be updated as features are planned, built, and shipped. Keep it in sync with what is actually deployed.
+> This is a living document. It tracks the current state of the product and is kept in sync with
+> what is actually deployed. Every built feature links to its spec in [features/](features/) (with
+> fact-checked acceptance criteria); every planned feature links to [backlog/](backlog/). The
+> honest "what works vs what is partial" snapshot is [STATUS.md](STATUS.md). Last verified against
+> the code on 2026-06-14.
 
 ## Vision
 
@@ -18,137 +22,140 @@ LinkedInPreview.com is the most powerful free LinkedIn content creation and prev
 
 ## Features
 
-Status key: **Live** = deployed and available, **Planned** = on the roadmap but not yet built.
+Status key: **SHIPPED** = built and every acceptance criterion verified against the code ·
+**PARTIAL** = built but at least one documented capability is missing (see the linked spec and
+[STATUS.md](STATUS.md)) · **PLANNED** = on the roadmap, not built (lives in [backlog/](backlog/)).
 
 ### Public Website
 
-| ID  | Feature                  | Description                                                                                                                                                                                                                           | Status  |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 001 | Landing page             | Hero section, tool demo, how-to-use guide, features grid, embed section, open-source section, reasons section, FAQ, CTA. Includes JSON-LD schemas (Organization, WebSite, SoftwareApplication).                                       | Live    |
-| 002 | Blog                     | MDX-powered articles via Contentlayer. Blog listing with search/filter, individual post pages with MDX rendering, author info, related articles, reading time, scroll progress indicator.                                             | Live    |
-| 003 | RSS feed                 | XML feed at `/rss.xml` with all blog posts (title, description, date, link, author).                                                                                                                                                  | Live    |
-| 004 | Changelog                | Changelog page with sticky date sidebar, month/year grouping, entry titles, optional images, and MDX content per entry.                                                                                                               | Live    |
-| 005 | Compare pages            | Comparison landing with competitor cards grid. Individual comparison pages (`/compare/[slug]`) with breadcrumbs, badges, MDX content, and scroll progress. Static generation.                                                         | Live    |
-| 006 | SEO infrastructure       | Sitemap generation (`/sitemap.xml`), robots.txt, JSON-LD schemas (Organization, WebSite, SoftwareApplication, Article, BreadcrumbList, HowTo), Open Graph metadata per page, canonical URLs. Dashboard pages are `noindex, nofollow`. | Live    |
-| 007 | Hook template library    | Public SEO page listing 50+ proven LinkedIn hook templates, categorized, with CTAs to open in editor.                                                                                                                                 | Planned |
-| 008 | CTA template library     | Public SEO page listing 30+ proven LinkedIn CTA endings, categorized.                                                                                                                                                                 | Planned |
-| 009 | Post structure templates | Public SEO page listing 15+ full post frameworks (AIDA, PAS, Listicle, etc.) with examples.                                                                                                                                           | Planned |
+| ID  | Feature                                                             | Status  |
+| --- | ------------------------------------------------------------------- | ------- |
+| 001 | [Landing page](features/completed/001-landing-page.md)              | SHIPPED |
+| 002 | [Blog](features/completed/002-blog.md)                              | SHIPPED |
+| 003 | [RSS feed](features/completed/003-rss-feed.md)                      | SHIPPED |
+| 004 | [Changelog](features/004-changelog.md)                              | PARTIAL |
+| 005 | [Compare pages](features/completed/005-compare-pages.md)            | SHIPPED |
+| 006 | [SEO infrastructure](features/completed/006-seo-infrastructure.md)  | SHIPPED |
+| 007 | [Hook template library](backlog/007-hook-template-library.md)       | PLANNED |
+| 008 | [CTA template library](backlog/008-cta-template-library.md)         | PLANNED |
+| 009 | [Post structure templates](backlog/009-post-structure-templates.md) | PLANNED |
 
 ### Editor (Core Tool)
 
-| ID  | Feature                       | Description                                                                                                                                                                                                                | Status |
-| --- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 020 | Rich text editor              | TipTap-based editor with bold, italic, underline, strikethrough, bullet list, ordered list, undo/redo. Unicode output compatible with LinkedIn.                                                                            | Live   |
-| 021 | Real-time post preview        | Live LinkedIn post preview that updates as you type. Shows profile avatar, name, headline, post content, and engagement bar.                                                                                               | Live   |
-| 022 | Mobile/desktop preview toggle | Switch preview between desktop (full-width) and mobile (375px iPhone frame) viewports.                                                                                                                                     | Live   |
-| 023 | Realistic feed preview        | Shows the user's post in context within a simulated LinkedIn feed alongside placeholder posts. Available in-editor and as a standalone page at `/preview` with `?draft=[encoded]` for shared drafts. Unique in the market. | Live   |
-| 024 | Image and video upload        | Attach images (max 5MB) or videos (max 25MB) to the post preview. Stored client-side as base64 or URL.                                                                                                                     | Live   |
-| 025 | Copy to clipboard             | Copies formatted Unicode text (bold, italic preserved) ready to paste into LinkedIn. Toast confirmation on copy.                                                                                                           | Live   |
-| 026 | Draft sharing via URL         | Encodes the current draft into a compressed, shareable URL using deflate-raw + base64url. No backend required.                                                                                                             | Live   |
-| 027 | Embeddable widget             | The editor available as a minimal embeddable iframe at `/embed` with its own layout. `noindex` for SEO.                                                                                                                    | Live   |
-| 028 | Homepage tool variant         | The editor embedded directly on the homepage as a quick-start entry point for new visitors. Same TipTap editor + preview.                                                                                                  | Live   |
+| ID  | Feature                                                                        | Status  |
+| --- | ------------------------------------------------------------------------------ | ------- |
+| 020 | [Rich text editor](features/completed/020-rich-text-editor.md)                 | SHIPPED |
+| 021 | [Real-time post preview](features/completed/021-realtime-post-preview.md)      | SHIPPED |
+| 022 | [Preview size toggle](features/completed/022-mobile-desktop-preview-toggle.md) | SHIPPED |
+| 023 | [Realistic feed preview](features/completed/023-realistic-feed-preview.md)     | SHIPPED |
+| 024 | [Image and video upload](features/completed/024-image-and-video-upload.md)     | SHIPPED |
+| 025 | [Copy to clipboard](features/completed/025-copy-to-clipboard.md)               | SHIPPED |
+| 026 | [Draft sharing via URL](features/completed/026-draft-sharing-via-url.md)       | SHIPPED |
+| 027 | [Embeddable widget](features/completed/027-embeddable-widget.md)               | SHIPPED |
+| 028 | [Homepage tool variant](features/completed/028-homepage-tool-variant.md)       | SHIPPED |
 
 ### AI Features
 
-| ID  | Feature                       | Description                                                                                                                                                                                                      | Status |
-| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 030 | AI chat assistant             | Multi-turn conversational AI for iterative post editing. Streaming responses via Vercel AI SDK. Scoped strictly to LinkedIn content. Rate limit: 1 generation + 3 refinements/day.                               | Live   |
-| 031 | AI post generation            | Generate posts from a topic and tone. Supports `hooks` (4 options), `posts` (2 full variants) actions. Streams output. Rate limit: 5 wizard actions/day.                                                         | Live   |
-| 032 | Quick AI actions              | One-click transformations: `shorten`, `lengthen`, `variation`, `restyle`, `apply-suggestion`. Rate limit: 10/day.                                                                                                | Live   |
-| 033 | AI post analysis              | Scores post quality (1-100) with sub-scores for hook, readability, CTA, engagement. Classifies sentiment, category, tone. Detects hook/CTA presence and quality. Stores results in Supabase. Rate limit: 20/day. | Live   |
-| 034 | AI suggestions                | Generates 3 context-specific refinement suggestions (content, structure, tone, engagement). 4-8 words each, starting with a verb.                                                                                | Live   |
-| 035 | AI hook generation            | Generates 4 personalized opening hooks with category and type tags. User picks the best one to apply. Regenerate option.                                                                                         | Live   |
-| 036 | AI content extraction         | Extracts text from URLs (HTML via Readability), PDFs (pdf-parse), DOCX (mammoth), and TXT/MD files. Max 5MB input, 10KB output.                                                                                  | Live   |
-| 037 | Branding-aware AI             | The `/api/generate` endpoint accepts branding context (positioning, expertise, writing style, knowledge base, dos/donts) to personalize output. Used by the creation wizard and dashboard editor.                | Live   |
-| 038 | AI post generation from voice | Browser voice input via Web Speech API, real-time transcription, AI conversion to post. Available in creation wizard.                                                                                            | Live   |
-| 039 | AI post generation from file  | Upload PDF/DOCX/TXT/MD, extract content via `/api/extract`, AI generates post. Drag-and-drop in creation wizard.                                                                                                 | Live   |
-| 040 | AI post generation from URL   | Paste URL, extract article content via Readability, AI converts to LinkedIn post format. URL input in creation wizard.                                                                                           | Live   |
+| ID  | Feature                                                                                  | Status  |
+| --- | ---------------------------------------------------------------------------------------- | ------- |
+| 030 | [AI chat assistant](features/completed/030-ai-chat-assistant.md)                         | SHIPPED |
+| 031 | [AI post generation](features/completed/031-ai-post-generation.md)                       | SHIPPED |
+| 032 | [Quick AI actions](features/completed/032-quick-ai-actions.md)                           | SHIPPED |
+| 033 | [AI post analysis](features/completed/033-ai-post-analysis.md)                           | SHIPPED |
+| 034 | [AI suggestions](features/completed/034-ai-suggestions.md)                               | SHIPPED |
+| 035 | [AI hook generation](features/completed/035-ai-hook-generation.md)                       | SHIPPED |
+| 036 | [AI content extraction](features/completed/036-ai-content-extraction.md)                 | SHIPPED |
+| 037 | [Branding-aware AI](features/037-branding-aware-ai.md)                                   | PARTIAL |
+| 038 | [AI post generation from voice](features/completed/038-ai-post-generation-from-voice.md) | SHIPPED |
+| 039 | [AI post generation from file](features/completed/039-ai-post-generation-from-file.md)   | SHIPPED |
+| 040 | [AI post generation from URL](features/040-ai-post-generation-from-url.md)               | PARTIAL |
 
-### Content Scoring (Client-side)
+### Content Scoring (Client-side, dashboard analyze panel)
 
-| ID  | Feature                  | Description                                                                                           | Status |
-| --- | ------------------------ | ----------------------------------------------------------------------------------------------------- | ------ |
-| 050 | Readability score        | Flesch-Kincaid grade level with label (Easy/Standard/Complex). Computed client-side under 100ms.      | Live   |
-| 051 | Sentence flow analysis   | Sentence length distribution across 5 categories (tiny/short/medium/long/very long) with percentages. | Live   |
-| 052 | Character and word count | Always-visible counts in the editor.                                                                  | Live   |
-| 053 | Hashtag count            | Current count vs recommended 3-5.                                                                     | Live   |
-| 054 | Emoji count              | Total emoji count in post.                                                                            | Live   |
-| 055 | Length status indicator  | Flags posts as too short (<100 chars), optimal (100-3000), or too long (>3000).                       | Live   |
-| 056 | Line count               | Total line count in post.                                                                             | Live   |
+| ID  | Feature                                                                      | Status  |
+| --- | ---------------------------------------------------------------------------- | ------- |
+| 050 | [Readability score](features/completed/050-readability-score.md)             | SHIPPED |
+| 051 | [Sentence flow analysis](features/completed/051-sentence-flow-analysis.md)   | SHIPPED |
+| 052 | [Character and word count](features/052-character-and-word-count.md)         | PARTIAL |
+| 053 | [Hashtag count](features/completed/053-hashtag-count.md)                     | SHIPPED |
+| 054 | [Emoji count](features/completed/054-emoji-count.md)                         | SHIPPED |
+| 055 | [Length status indicator](features/completed/055-length-status-indicator.md) | SHIPPED |
+| 056 | [Line count](features/completed/056-line-count.md)                           | SHIPPED |
 
 ### Dashboard
 
-| ID  | Feature                  | Description                                                                                                                                                                                                                                                  | Status |
-| --- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 060 | Dashboard shell          | Sidebar navigation (shadcn SidebarProvider, inset variant, collapsible, Cmd+B toggle). Responsive: offcanvas on mobile. Max-width 1500px wrapper.                                                                                                            | Live   |
-| 061 | Anonymous auth           | Supabase `signInAnonymously` on first dashboard visit. Transparent session creation with no visible signup. AuthProvider + AuthGate components.                                                                                                              | Live   |
-| 062 | Multi-draft management   | Create, edit, duplicate, and delete drafts. Each draft has an auto-generated title (from first line), status, optional label, word/char counts, timestamps.                                                                                                  | Live   |
-| 063 | Post statuses            | Three statuses: draft, scheduled, published. Status badges with color coding (amber/blue/green). Filter posts list by status.                                                                                                                                | Live   |
-| 064 | Post format              | Tag posts with content format labels (9 POST_FORMATS: Personal Milestones, Mindset & Motivation, Career Before & After, Tool & Resource Insights, Case Studies, Actionable Guides, Culture Moments, Offer Highlight, Client Success Story). Filter by label. | Live   |
-| 065 | Posts list page          | TanStack React Table with columns for title, format label, status badge, updated date (relative), and actions dropdown (edit, duplicate, delete). Search by title. Filter by status and format. Pagination. Empty state with "New Post" CTA.                 | Live   |
-| 066 | Dashboard editor         | Full-featured editor page at `/dashboard/editor` with TipTap editor, live preview (desktop/mobile), AI actions panel, analysis panel. Auto-saves to Supabase with 2s debounce.                                                                               | Live   |
-| 067 | New post creation wizard | Modal for creating new posts. Options: blank, generate from notes, generate from file, generate from URL. Routes to editor with pre-filled content.                                                                                                          | Live   |
-| 068 | Tutorial dialog          | 4-slide onboarding tutorial on first visit (Welcome, Create Posts, Brand Your Voice, Analyze & Improve). Dismissed via localStorage `lp-tutorial-seen` flag.                                                                                                 | Live   |
-| 069 | Dark mode                | Dashboard supports light/dark/system themes via next-themes. Scoped to dashboard only - homepage is always light. Theme selector in settings.                                                                                                                | Live   |
+| ID  | Feature                                                                        | Status  |
+| --- | ------------------------------------------------------------------------------ | ------- |
+| 060 | [Dashboard shell](features/completed/060-dashboard-shell.md)                   | SHIPPED |
+| 061 | [Anonymous auth](features/completed/061-anonymous-auth.md)                     | SHIPPED |
+| 062 | [Multi-draft management](features/completed/062-multi-draft-management.md)     | SHIPPED |
+| 063 | [Post statuses](features/063-post-statuses.md)                                 | PARTIAL |
+| 064 | [Post format labels](features/064-post-format-labels.md)                       | PARTIAL |
+| 065 | [Posts list page](features/completed/065-posts-list-page.md)                   | SHIPPED |
+| 066 | [Dashboard editor](features/completed/066-dashboard-editor.md)                 | SHIPPED |
+| 067 | [New post creation wizard](features/completed/067-new-post-creation-wizard.md) | SHIPPED |
+| 068 | [Tutorial dialog](features/completed/068-tutorial-dialog.md)                   | SHIPPED |
+| 069 | [Dark mode](features/completed/069-dark-mode.md)                               | SHIPPED |
 
 ### Content Strategy
 
-| ID  | Feature                    | Description                                                                                                                                                                          | Status |
-| --- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 200 | Content strategy wizard    | Guided multi-step setup for role, goals, target audience, expertise areas, posting frequency, and preferred content formats. Strategy persisted to Supabase `strategy` table.        | Live   |
-| 201 | Content strategy dashboard | Dashboard page at `/dashboard/strategy` showing monthly posting progress vs targets, format distribution, posting activity heatmap (last 3-6 months), and streak tracking.           | Live   |
-| 202 | Weekly AI post ideas       | AI generates 5-7 post ideas per week based on strategy and branding context. Each idea includes topic, format label, and hook. Click to create a new draft pre-filled with the hook. | Live   |
+| ID  | Feature                                                                      | Status  |
+| --- | ---------------------------------------------------------------------------- | ------- |
+| 200 | [Content strategy wizard](features/completed/200-content-strategy-wizard.md) | SHIPPED |
+| 201 | [Content strategy dashboard](features/201-content-strategy-dashboard.md)     | PARTIAL |
+| 202 | [Weekly AI post ideas](features/202-weekly-ai-post-ideas.md)                 | PARTIAL |
 
 ### Branding & Personalization
 
-| ID  | Feature                   | Description                                                                                                                                                                       | Status |
-| --- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 080 | Profile section           | Avatar upload (max 2MB with cropping), full name, headline. Shown in post preview.                                                                                                | Live   |
-| 081 | Positioning statement     | Free-text statement ("I help [audience] achieve [outcome] by [method]"). Guides all AI generation.                                                                                | Live   |
-| 082 | Role selection            | Single select: Founder/C-Level, Freelancer, Team Lead, Employee, Creator, Consultant, Agency.                                                                                     | Live   |
-| 083 | Areas of expertise        | Tag-based topic input. Add/remove dynamically. Used to keep AI on-topic.                                                                                                          | Live   |
-| 084 | Writing style preferences | Language (7 options with flags), sentence length (short/standard/long), post length (short/standard/long), emoji frequency (none/moderate/a lot). Fed into AI generation prompts. | Live   |
-| 085 | Custom footer             | Toggle on/off. Free-text footer auto-appended to posts.                                                                                                                           | Live   |
-| 086 | Knowledge base            | Text area for business context, audience info, product details. Used as AI generation context.                                                                                    | Live   |
-| 087 | Dos and donts             | Two separate lists of rules. Injected into AI system prompts as hard constraints.                                                                                                 | Live   |
-| 088 | Inspirational posts       | Paste LinkedIn post URLs for AI style reference. Line-clamped preview.                                                                                                            | Live   |
-| 089 | Inspirational creators    | Name + optional LinkedIn URL. Used for AI style reference.                                                                                                                        | Live   |
-| 090 | Auto-save indicator       | "All changes saved" with green checkmark. All branding persisted to Supabase automatically.                                                                                       | Live   |
+| ID  | Feature                                                                          | Status  |
+| --- | -------------------------------------------------------------------------------- | ------- |
+| 080 | [Profile section](features/080-profile-section.md)                               | PARTIAL |
+| 081 | [Positioning statement](features/081-positioning-statement.md)                   | PARTIAL |
+| 082 | [Role selection](features/completed/082-role-selection.md)                       | SHIPPED |
+| 083 | [Areas of expertise](features/completed/083-areas-of-expertise.md)               | SHIPPED |
+| 084 | [Writing style preferences](features/completed/084-writing-style-preferences.md) | SHIPPED |
+| 085 | [Custom footer](features/085-custom-footer.md)                                   | PARTIAL |
+| 086 | [Knowledge base](features/completed/086-knowledge-base.md)                       | SHIPPED |
+| 087 | [Dos and donts](features/087-dos-and-donts.md)                                   | PARTIAL |
+| 088 | [Inspirational posts](features/088-inspirational-posts.md)                       | PARTIAL |
+| 089 | [Inspirational creators](features/089-inspirational-creators.md)                 | PARTIAL |
+| 090 | [Auto-save indicator](features/completed/090-auto-save-indicator.md)             | SHIPPED |
 
 ### Settings
 
-| ID  | Feature        | Description                                                                                                                     | Status |
-| --- | -------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 100 | Theme selector | Light/dark/system with icon buttons. Persisted via next-themes.                                                                 | Live   |
-| 103 | Reset all data | Danger zone: permanently delete all drafts, branding, and post analyses. Confirmation dialog. Reloads dashboard after deletion. | Live   |
+| ID  | Feature                                                    | Status  |
+| --- | ---------------------------------------------------------- | ------- |
+| 100 | [Theme selector](features/completed/100-theme-selector.md) | SHIPPED |
+| 103 | [Reset all data](features/completed/103-reset-all-data.md) | SHIPPED |
 
 ### Feedback & Analytics
 
-| ID  | Feature             | Description                                                                                                                                                  | Status |
-| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
-| 110 | Feedback collection | Tally.so feedback form accessible via floating action button (bottom-right) and inline links across pages.                                                   | Live   |
-| 111 | Article helpfulness | "Was this helpful?" widget on blog post pages.                                                                                                               | Live   |
-| 112 | PostHog analytics   | Client-side event tracking (production only). Reverse-proxied through `/ingest`. Events: toolbar actions, copies, AI usage, page views. `snake_case` naming. | Live   |
-| 113 | Google Tag Manager  | GTM container in root layout for marketing analytics.                                                                                                        | Live   |
+| ID  | Feature                                                              | Status  |
+| --- | -------------------------------------------------------------------- | ------- |
+| 110 | [Feedback collection](features/completed/110-feedback-collection.md) | SHIPPED |
+| 111 | [Article helpfulness](features/completed/111-article-helpfulness.md) | SHIPPED |
+| 112 | [PostHog analytics](features/112-posthog-analytics.md)               | PARTIAL |
+| 113 | [Google Tag Manager](features/completed/113-google-tag-manager.md)   | SHIPPED |
 
-### Future Features
+### Planned (backlog)
 
-| ID  | Feature             | Description                                                                                                                                             | Status  |
-| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 210 | Carousel creator    | Slide-based editor for LinkedIn carousel posts with real-time preview.                                                                                  | Planned |
-| 211 | Carousel templates  | 10+ pre-designed carousel templates with style customization.                                                                                           | Planned |
-| 212 | Carousel export     | Export as PDF, PNG, or ZIP.                                                                                                                             | Planned |
-| 220 | LinkedIn OAuth      | Connect LinkedIn account for scheduling/publishing. OAuth 2.0 flow.                                                                                     | Planned |
-| 221 | One-click publish   | Publish directly to LinkedIn from the editor.                                                                                                           | Planned |
-| 222 | Post scheduling     | Schedule posts with date/time picker, timezone support.                                                                                                 | Planned |
-| 223 | Content calendar    | Month/week views showing posts by status. Drag-and-drop rescheduling.                                                                                   | Planned |
-| 224 | Best time to post   | AI-recommended posting times based on strategy and engagement data.                                                                                     | Planned |
-| 230 | Analytics dashboard | Post performance metrics (impressions, reactions, comments, shares), engagement trends, and content insights (top formats, best hooks, optimal length). | Planned |
-| 240 | Team collaboration  | Shared workspace, multiple editors, approval workflows.                                                                                                 | Planned |
-| 241 | Chrome extension    | Preview overlay on LinkedIn.com, quick formatting, save posts from feed.                                                                                | Planned |
-| 242 | Content repurposing | Convert posts to carousels, threads, newsletter sections.                                                                                               | Planned |
-| 243 | Inspiration library | Curated database of high-performing LinkedIn posts by format.                                                                                           | Planned |
-| 244 | Integrations        | Notion, Slack, Zapier/Make.com webhooks.                                                                                                                | Planned |
+| ID  | Feature                                                           | Wave |
+| --- | ----------------------------------------------------------------- | ---- |
+| 210 | [Carousel creator](backlog/210-carousel-creator.md)               | 3    |
+| 211 | [Carousel templates](backlog/211-carousel-templates.md)           | 3    |
+| 212 | [Carousel export](backlog/212-carousel-export.md)                 | 3    |
+| 220 | [LinkedIn OAuth](backlog/220-linkedin-oauth.md)                   | 4    |
+| 221 | [One-click publish](backlog/221-one-click-publish.md)             | 4    |
+| 222 | [Post scheduling](backlog/222-post-scheduling.md)                 | 4    |
+| 223 | [Content calendar](backlog/223-content-calendar.md)               | 4    |
+| 224 | [Best time to post](backlog/224-best-time-to-post.md)             | 4    |
+| 230 | [Analytics dashboard](backlog/230-analytics-dashboard.md)         | 5    |
+| 240 | [Team collaboration](backlog/240-team-collaboration.md)           | 6    |
+| 241 | [Chrome extension](backlog/241-chrome-extension.md)               | 6    |
+| 242 | [Content repurposing](backlog/242-content-repurposing.md)         | 6    |
+| 243 | [Inspiration library](backlog/243-inspiration-library.md)         | 6    |
+| 244 | [Integrations](backlog/244-integrations.md)                       | 6    |
+| 041 | [Audio/video post source](backlog/041-audio-video-post-source.md) | 6    |
 
 ## User Flows
 
@@ -157,15 +164,15 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 1. User lands on the homepage.
 2. User types or pastes text into the editor.
 3. Preview panel updates in real time showing formatted LinkedIn post.
-4. User switches between desktop and mobile viewport in the preview.
+4. User switches between viewport widths in the preview.
 5. User clicks "Copy" - formatted Unicode text is copied to clipboard.
 6. User pastes directly into LinkedIn's native editor and publishes.
 
 ### Flow: AI-Assisted Post Creation (dashboard)
 
 1. User opens the dashboard. Anonymous Supabase session is created silently on first visit.
-2. User clicks "New Post" and chooses a creation method (blank, generate from notes, or AI from topic).
-3. If AI generation: user enters a topic and selects a tone, then clicks Generate. Post streams in.
+2. User clicks "New Post" and chooses a creation method (blank, generate from notes, voice, file, or URL).
+3. If AI generation: user enters a topic and selects a tone, then clicks Generate. Hooks then a post are produced.
 4. User refines the post with quick AI actions or the chat assistant.
 5. AI analysis fires on demand - quality scores are shown in the analysis panel.
 6. User saves the draft. Status defaults to "draft".
@@ -178,13 +185,13 @@ Status key: **Live** = deployed and available, **Planned** = on the roadmap but 
 3. User sets positioning statement, role, expertise, and writing style preferences.
 4. User adds knowledge base context and dos/donts.
 5. Branding is saved automatically to Supabase.
-6. On next AI generation, the branding context is injected into the system prompt.
+6. On next AI generation (generate route + wizard), the wired branding fields are injected into the prompt.
 
 ### Flow: Draft Management
 
 1. User opens the Posts page in the dashboard.
 2. User views all drafts in a table sorted by last modified date.
-3. User filters by status (draft, scheduled, published) or label.
+3. User filters by status or format label.
 4. User clicks a draft to open it in the editor.
 5. User edits content, then saves. Changes are persisted to Supabase with 2s debounce.
 6. User duplicates a draft to create a variation, or deletes one they no longer need.

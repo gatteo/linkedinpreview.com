@@ -1,0 +1,70 @@
+# Changelog
+
+> Dated history of meaningful changes to the product and its docs. Newest first. Each shipped
+> change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
+> This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
+
+## 2026-06-14 — Documentation overhaul + quality gate
+
+- **Fact-checked every built feature against the code.** Created/standardized 63 feature specs in
+  each feature spec, with stable `NNN-AC-K` acceptance criteria checked only against `file:line`
+  evidence. SHIPPED specs live in [features/completed/](features/completed/); PARTIAL specs in
+  [features/](features/). Result: 46 SHIPPED, 17 PARTIAL. The fact-check corrected several false
+  "Live" claims, including: changelog month/year grouping (not implemented), the in-editor "iPhone
+  frame" toggle (actually a 3-way width switcher), the post preview author (hard-coded, not from
+  branding), post `scheduled`/`published` statuses (no UI to set them), weekly-idea "Create Post"
+  (no hook pre-fill / draft), branding-aware chat and inspiration fields (stored but never sent to
+  AI), and AI-from-file audio/video support (does not exist).
+- **Organized features into [completed/](features/completed/) (SHIPPED) vs [features/](features/)
+  (PARTIAL)** and gave every [ROADMAP](ROADMAP.md) wave table a single linked feature column plus a
+  status column.
+- **Blog (002): dropped reading-time from scope and marked it SHIPPED.** Reading-time display was
+  never implemented and is no longer a requirement; title-only search remains a non-blocking known
+  limitation.
+- **038 (post from voice): reclassified PARTIAL -> SHIPPED.** All ACs pass; the unverifiable
+  mobile/Web-Audio claims were already moved to known-gaps, so PARTIAL was a stale label.
+- **ROADMAP per-wave breakdown.** Every wave table now lists each feature on its own row (no
+  aggregated ranges), with a status column, and a "To complete this wave" checklist. Built waves are
+  labeled by completion (e.g. "Wave 0 - IN PROGRESS, 16 of 23 SHIPPED") rather than COMPLETE while
+  features remain PARTIAL.
+- **Tickets for every PARTIAL.** Added T-006..T-013 (changelog grouping, preview-toggle alignment,
+  audio/video source, URL prompt quality, word count, footer + dos/donts enforcement, multi-month
+  heatmap + streak, page-view tracking) and extended T-002 (avatar cropping) and T-005 (analyze
+  apply-suggestion) so every PARTIAL feature maps to a ticket.
+- **Roadmap made comprehensive.** Added a "Foundation: Public Tool & Site" section (the pre-dashboard
+  product: public site, core editor, feedback/analytics) and moved every previously-unlisted built
+  feature into a section, so all 63 built + 18 backlog specs appear in exactly one roadmap section.
+  Documented the placement rule: `features/` once a feature's wave has started, `backlog/` until then.
+- **022 (preview size toggle): decision - keep the 3-way fixed-width switcher.** Retired the
+  binary-toggle and 375px-iPhone-frame criteria (former 022-AC-1/AC-2); 022 is now SHIPPED. Closes
+  T-007.
+- **039 (post from file): audio/video moved to backlog.** Split audio/video transcription into new
+  backlog feature [041](backlog/041-audio-video-post-source.md); 039 (PDF/DOCX/TXT/MD) is now
+  SHIPPED. T-008 re-scoped to a "coming soon" affordance in the file picker.
+- Counts after these decisions: **48 SHIPPED, 15 PARTIAL** (63 built); backlog now 18 features.
+- **Adopted the luminars docs conventions.** Added [STATUS.md](STATUS.md) (the one-screen honest
+  snapshot, folding the former `RELEASE_READINESS.md`), this changelog, [backlog/](backlog/) for
+  planned work, and [tickets/](tickets/) for work in flight. Moved the 17 not-yet-built features
+  (waves 3-6, SEO template libraries) into the backlog.
+- **Opened gap tickets** T-001..T-005 in [tickets/](tickets/) for the highest-leverage honesty
+  gaps, so the PARTIAL list is actionable.
+- **Added the quality gate.** Ported the `code-quality-reviewer` agent
+  ([.claude/agents/code-quality-reviewer.md](../.claude/agents/code-quality-reviewer.md)) adapted
+  to this stack, a CI workflow ([.github/workflows/ci.yml](../.github/workflows/ci.yml)) running
+  type-check / lint / build, and the [process/development-workflow.md](process/development-workflow.md)
+  mandatory-review process doc.
+- Rewrote [PRODUCT.md](PRODUCT.md) so every feature row links to its spec and carries a verified
+  status, and refreshed [\_INDEX.md](_INDEX.md).
+
+## Earlier — product history (pre-overhaul, reconstructed from git)
+
+- **Wave 2 — Content Strategy.** 7-step strategy wizard persisted to Supabase, strategy dashboard,
+  and weekly AI post ideas (`/api/ideas`). Migrations `007_strategy`, `008_add_ideas_action`.
+- **Wave 1 — Smart Content Creation.** AI generation from notes/voice/file/URL, hook suggestions,
+  quick actions, content scoring panel, AI suggestions, branding-aware generation.
+- **Wave 0 — Dashboard Foundation & Branding.** Sidebar app shell, Supabase anonymous auth with
+  RLS, multi-draft management, branding page, settings, and the integration of the pre-existing AI
+  chat/generation/analysis into the dashboard.
+- **Pre-Wave 0 — the free tool.** Public site (landing, blog, changelog, compare, SEO infra) and
+  the login-free TipTap editor with live LinkedIn preview, feed preview, copy-to-clipboard, and
+  draft-sharing URLs.

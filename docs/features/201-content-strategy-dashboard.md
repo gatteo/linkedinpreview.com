@@ -1,28 +1,54 @@
-# Feature 201: Content Strategy Dashboard
+# 201 — Content Strategy Dashboard
 
-## Goal
+> Status: PARTIAL · Area: Strategy · Last verified: 2026-06-14
+>
+> Copy this file to `NNN-slug.md` and fill it in. This folder holds **only built features**
+> (SHIPPED or PARTIAL). Not-yet-built ideas live in [`../backlog/`](../backlog/). A feature
+> describes a user-facing **surface**; system internals live in
+> [`../ARCHITECTURE.md`](../ARCHITECTURE.md).
 
-Show users their progress toward their content strategy goals so they stay consistent.
+## What
 
-## Description
+- The `/dashboard/strategy` page. Once a strategy exists it shows an overview of the user's
+  profile/positioning/goals/audience/topics, a monthly progress section (posts created this month
+  vs a computed monthly target, format distribution vs target mix, and a single-month activity
+  calendar grid), and the weekly AI post ideas section. If no strategy exists yet it shows an empty
+  state that launches the wizard.
 
-A dashboard view that tracks monthly posting progress against the user's strategy targets. Shows activity metrics (posts created, posts published), format distribution vs targets, posting frequency heatmap, and streak tracking. Data sourced from the drafts table and strategy settings.
+## Why
 
-## Acceptance Criteria
+- Gives users a single place to see whether they are keeping pace with the cadence and format mix
+  they committed to, reducing the chance they drift or go silent.
 
-- [x] Shows monthly posts created vs target frequency
-- [x] Shows format distribution vs target mix
-- [x] Posting activity heatmap (last 3-6 months)
-- [x] Current streak display
-- [x] Handles empty state gracefully (no strategy set up yet - link to wizard)
-- [x] Updates in real-time as drafts are created/published
+## Acceptance (binary, testable)
 
-## Technical Notes
+- [x] 201-AC-1 Shows monthly posts created vs a target derived from strategy frequency _(verified: `components/dashboard/strategy/progress-section.tsx:56-58` `postsThisMonth` and `monthlyTarget = frequency * weeksInMonth`, rendered `:112-115`)_
+- [x] 201-AC-2 Shows format distribution vs target mix _(verified: `components/dashboard/strategy/progress-section.tsx:68-73,133-141` `postsByFormat` passed to `FormatTargets`; `components/dashboard/strategy/format-targets.tsx`)_
+- [ ] 201-AC-3 Posting activity heatmap covering the last 3-6 months _(gap: heatmap renders only the single selected month as a calendar grid — `components/dashboard/strategy/activity-heatmap.tsx:20-31` builds one month from `year`/`month`; navigation steps one month at a time `progress-section.tsx:75-81`. No multi-month/3-6 month view exists.)_
+- [ ] 201-AC-4 Current streak display _(gap: no streak logic anywhere — grep for "streak" across components/lib/hooks/app returns no matches. Streak tracking is not implemented.)_
+- [x] 201-AC-5 Handles empty state gracefully with a link to the wizard _(verified: `components/dashboard/strategy/strategy-page.tsx:72-79` renders `StrategyEmpty` with `onCreateStrategy` when `strategy.completedAt` is null)_
+- [x] 201-AC-6 Metrics update as drafts change (client-side, no dedicated API) _(verified: `components/dashboard/strategy/strategy-page.tsx:39` uses `useDrafts`; `progress-section.tsx:54` derives all metrics from the live `drafts` array)_
 
-- New dashboard page at `/dashboard/strategy` (or tab within it, alongside the wizard)
-- Metrics computed from drafts table: count by status, count by label, count by date
-- Compare actual vs target from strategy settings (200)
-- Charts: simple bar/progress indicators (avoid heavy chart libraries - consider recharts or lightweight alternatives)
-- Heatmap: GitHub-style contribution grid showing posting days
-- All data fetched client-side from Supabase using existing hooks
-- No new API routes needed - all derived from existing draft data
+> Acceptance IDs are stable forever. A box is checked `[x]` **only** when verified against the code
+> with a `file:line` citation. Anything unverified or contradicted stays `[ ]` with a gap note, and
+> the feature's status drops to PARTIAL.
+
+## Implementation
+
+- Page host with loading/empty/loaded branches: `components/dashboard/strategy/strategy-page.tsx`.
+- Layout composition: `components/dashboard/strategy/strategy-dashboard.tsx` (Overview + Progress + Ideas).
+- Sections: `overview-section.tsx`, `progress-section.tsx` (targets, format targets, heatmap), `format-targets.tsx`, `activity-heatmap.tsx`.
+- Data: `hooks/use-strategy.ts`, `hooks/use-branding.ts`, `hooks/use-drafts.ts`. No new API route; metrics computed in `progress-section.tsx`.
+
+## Dependencies
+
+- Requires a completed strategy from 200.
+- Reads drafts via `hooks/use-drafts.ts` (draft `createdAt`, `label`).
+- Hosts 202 (weekly AI post ideas) via `ideas-section.tsx`.
+
+## Open questions / known gaps
+
+- Heatmap is single-month, not the documented "last 3-6 months" GitHub-style contribution grid.
+- No streak tracking exists despite being a claimed acceptance criterion.
+- "Updates in real-time" is client-derived from the drafts manifest on load/refresh, not a live subscription; it reflects the current in-memory drafts, which is sufficient for the page but not a websocket-style realtime feed.
+- Progress counts drafts by `createdAt`, not by published status; there is no separate created-vs-published breakdown.

@@ -1,26 +1,36 @@
-# Feature 040: AI Post Generation from URL
+# 040 — AI Post Generation from URL
 
-## Goal
+> Status: PARTIAL · Area: AI · Last verified: 2026-06-14
 
-Let users paste a URL and have AI extract the article content and convert it into a LinkedIn post.
+## What
 
-## Description
+- In the creation wizard the user pastes a URL, the wizard extracts the article (Readability over fetched HTML) and shows the title and text, and on confirmation feeds the text into the generation pipeline (hooks then post variants). The chosen variant opens in the editor.
 
-Users paste a URL in the new post creation wizard. The URL content is extracted using the existing `/api/extract` endpoint (036) via Readability, and the extracted text is passed to AI generation to produce a LinkedIn post. The user gets a formatted post summarizing or reacting to the source article.
+## Why
 
-## Acceptance Criteria
+- Reacting to or distilling an article is one of the most common LinkedIn post patterns. Pasting a link is the lowest-effort way to turn external content into a draft.
 
-- [x] User can paste a URL in the new post wizard
-- [x] Article content is extracted and converted to a LinkedIn post
-- [x] Generated post opens in the editor for further editing
-- [x] Invalid or inaccessible URLs show clear error messages
-- [x] Rate limited under wizard quota
+## Acceptance (binary, testable)
 
-## Technical Notes
+- [x] 040-AC-1 User can paste a URL and trigger extraction from the wizard _(verified: `components/dashboard/creation-wizard/url-input.tsx:21-40,51-66`)_
+- [x] 040-AC-2 Article content is extracted via Readability + linkedom and the title is shown _(verified: `app/api/extract/route.utils.ts:32-40`, `url-input.tsx:33-34,71`)_
+- [x] 040-AC-3 Extracted text is fed into the generation pipeline and the selected post opens in the editor _(verified: `components/dashboard/creation-wizard/url-input.tsx:81`, `creation-wizard.tsx:135-138,167-176`)_
+- [x] 040-AC-4 Invalid URLs are rejected by schema and extraction failures show a clear error _(verified: `app/api/extract/route.schema.ts:4`, `url-input.tsx:35-36`)_
+- [x] 040-AC-5 Extraction is rate limited (quickAction 10/day) and generation under the wizard quota (5/day) _(verified: `app/api/extract/route.ts:24`, `app/api/generate/route.ts:40`)_
+- [ ] 040-AC-6 The prompt instructs the model to create an original post inspired by the article (not a summary) _(gap: the `posts` prompt simply uses the extracted text as source material with no anti-summary instruction — `config/prompts.ts:177-185`)_
+- [ ] 040-AC-7 Generated post includes source attribution guidance _(gap: no attribution instruction exists in any generation prompt — `config/prompts.ts:177-185`)_
 
-- Uses the existing `/api/extract` URL extraction (Readability + linkedom)
-- Extracted text fed into `/api/generate` with `action: 'posts'` and branding context
-- URL input field in the new post wizard modal
-- AI prompt should instruct the model to create an original post inspired by the article, not just summarize
-- Include source attribution guidance in the generated post
-- Rate limit: counts as a wizard action (5/day)
+## Implementation
+
+- URL UI: `components/dashboard/creation-wizard/url-input.tsx`.
+- Extraction: `app/api/extract/route.ts`, `route.utils.ts` (see 036).
+- Generation: shared `/api/generate` pipeline (see 031/035).
+
+## Dependencies
+
+- 036 (URL extraction), 031/035 (generation), 037 (branding context).
+
+## Open questions / known gaps
+
+- Prior doc claimed the prompt instructs "create an original post inspired by the article, not just summarize" and to "include source attribution guidance". Neither instruction exists in the prompts. Corrected; 040-AC-6 and 040-AC-7 left unchecked. Status PARTIAL.
+- URL extraction has a 5s fetch timeout; slow sources fail with a 422 rather than a specific timeout message.
