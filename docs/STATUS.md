@@ -12,9 +12,8 @@ features, the dashboard with anonymous-auth persistence, branding, and content s
 real code. Every built feature has a spec with fact-checked acceptance criteria: SHIPPED specs live
 in [features/completed/](features/completed/). Of 63 built features, **all 63 are SHIPPED** (every
 AC verified against `file:line`); there are **no PARTIAL features left**. The Foundation and Waves
-0, 1, and 2 are each COMPLETE. Reaching a clean release is now purely configuration (env + Supabase
-
-- build), not feature building.
+0, 1, and 2 are each COMPLETE. Reaching a clean release is now purely configuration work (env vars,
+the Supabase project, and a verified build), not feature building.
 
 ## What works today (SHIPPED, AC-verified)
 
