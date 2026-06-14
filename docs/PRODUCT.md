@@ -103,7 +103,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | --- | ---------------------------------------------------------------------------- | ------- |
 | 200 | [Content strategy wizard](features/completed/200-content-strategy-wizard.md) | SHIPPED |
 | 201 | [Content strategy dashboard](features/201-content-strategy-dashboard.md)     | PARTIAL |
-| 202 | [Weekly AI post ideas](features/202-weekly-ai-post-ideas.md)                 | PARTIAL |
+| 202 | [Weekly AI post ideas](features/completed/202-weekly-ai-post-ideas.md)       | SHIPPED |
 
 ### Branding & Personalization
 

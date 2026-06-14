@@ -1,7 +1,6 @@
 # T-004 — Make "Create Post" from a weekly idea pre-fill a draft
 
-> Status: proposed
-> Touches: [`../features/202-weekly-ai-post-ideas.md`](../features/202-weekly-ai-post-ideas.md) · Opened: 2026-06-14
+> Status: done · Touches: [`../features/completed/202-weekly-ai-post-ideas.md`](../features/completed/202-weekly-ai-post-ideas.md) · Opened: 2026-06-14 · Closed: 2026-06-14
 
 ## Goal
 
@@ -22,9 +21,9 @@
 
 ## Acceptance (binary, testable)
 
-- [ ] T-004-AC-1 "Create Post" creates a draft whose content starts from the idea's hook.
-- [ ] T-004-AC-2 The new draft carries the idea's format label.
-- [ ] T-004-AC-3 Dismissing an idea removes it from the list for the week.
+- [x] T-004-AC-1 "Create Post" creates a draft whose content starts from the idea's hook.
+- [x] T-004-AC-2 The new draft carries the idea's format label.
+- [x] T-004-AC-3 Dismissing an idea removes it from the list for the week.
 
 ## On completion
 

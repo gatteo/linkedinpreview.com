@@ -165,7 +165,7 @@ Wave 0.
 
 ---
 
-## Wave 2: Content Strategy - IN PROGRESS (1 of 3 SHIPPED, 2 PARTIAL)
+## Wave 2: Content Strategy - IN PROGRESS (2 of 3 SHIPPED, 1 PARTIAL)
 
 ### Goal
 
@@ -173,16 +173,15 @@ Help users build and follow a LinkedIn content strategy with goals, audience, po
 
 ### Features
 
-| Feature                                                                            | Status  | Notes                                               |
-| ---------------------------------------------------------------------------------- | ------- | --------------------------------------------------- |
-| [200 - Content strategy wizard](features/completed/200-content-strategy-wizard.md) | SHIPPED | 7-step wizard, persisted to Supabase                |
-| [201 - Content strategy dashboard](features/201-content-strategy-dashboard.md)     | PARTIAL | Single-month heatmap (not 3-6); no streak tracking  |
-| [202 - Weekly AI-generated post ideas](features/202-weekly-ai-post-ideas.md)       | PARTIAL | "Create Post" lacks hook pre-fill/draft; no dismiss |
+| Feature                                                                                | Status  | Notes                                                    |
+| -------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------- |
+| [200 - Content strategy wizard](features/completed/200-content-strategy-wizard.md)     | SHIPPED | 7-step wizard, persisted to Supabase                     |
+| [201 - Content strategy dashboard](features/201-content-strategy-dashboard.md)         | PARTIAL | Single-month heatmap (not 3-6); no streak tracking       |
+| [202 - Weekly AI-generated post ideas](features/completed/202-weekly-ai-post-ideas.md) | SHIPPED | Create Post seeds a draft from the hook + label; dismiss |
 
 ### To complete this wave
 
 - [201 - Content strategy dashboard](features/201-content-strategy-dashboard.md) - [T-012](tickets/T-012-multi-month-heatmap-and-streak.md): 3-6 month heatmap + streak.
-- [202 - Weekly AI post ideas](features/202-weekly-ai-post-ideas.md) - [T-004](tickets/T-004-idea-create-post-prefill.md): pre-fill hook + create draft + dismiss.
 
 ### Dependencies
 

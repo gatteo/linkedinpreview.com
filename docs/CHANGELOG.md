@@ -6,6 +6,12 @@
 
 ## 2026-06-14 — Closing PARTIAL feature gaps
 
+- **Weekly idea "Create Post" now seeds a draft + ideas are dismissable (T-004).** Clicking Create
+  Post on a weekly AI idea creates a new draft pre-filled with the idea's hook and carrying its
+  format label, then opens it in the editor (reusing the creation-wizard path); each idea card also
+  has a dismiss control that removes the idea from the current week and persists via the strategy
+  record. Closes 202-AC-4 and 202-AC-5; feature 202 (Weekly AI post ideas) is now SHIPPED.
+
 - **Branding profile now drives the post preview + avatar cropping (T-002).** The dashboard editor
   preview shows the user's branding name, headline, and uploaded avatar (with a placeholder fallback
   for the logged-out homepage, embed, and chat preview), and the avatar upload now opens a square

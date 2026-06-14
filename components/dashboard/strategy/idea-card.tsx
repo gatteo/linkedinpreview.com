@@ -1,15 +1,22 @@
 'use client'
 
+import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { Loader2Icon, XIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { Routes } from '@/config/routes'
+import { textToTipTapJson } from '@/lib/editor-utils'
 import type { PostIdea } from '@/lib/strategy'
 import { FORMAT_CATEGORIES } from '@/lib/strategy'
 import { cn } from '@/lib/utils'
+import { useDrafts } from '@/hooks/use-drafts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 type IdeaCardProps = {
     idea: PostIdea
+    onDismiss: () => void
 }
 
 const CATEGORY_STYLES: Record<string, string> = {
@@ -19,14 +26,41 @@ const CATEGORY_STYLES: Record<string, string> = {
     promotional: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
 }
 
-export function IdeaCard({ idea }: IdeaCardProps) {
+export function IdeaCard({ idea, onDismiss }: IdeaCardProps) {
     const router = useRouter()
+    const { createDraft, updateDraft } = useDrafts()
+    const [isCreating, setIsCreating] = React.useState(false)
     const category = FORMAT_CATEGORIES[idea.format] ?? 'educational'
     const categoryStyle = CATEGORY_STYLES[category]
 
+    const handleCreatePost = async () => {
+        setIsCreating(true)
+        try {
+            const content = textToTipTapJson(idea.hook)
+            const draft = await createDraft(content)
+            if (idea.format) {
+                await updateDraft(draft.id, { label: idea.format })
+            }
+            router.push(Routes.DashboardEditor(draft.id))
+        } catch {
+            toast.error('Failed to create draft')
+            setIsCreating(false)
+        }
+    }
+
     return (
-        <Card className='flex flex-col'>
+        <Card className='relative flex flex-col'>
             <CardContent className='flex flex-1 flex-col gap-3 py-4'>
+                {/* Dismiss */}
+                <Button
+                    variant='ghost'
+                    size='icon-sm'
+                    onClick={onDismiss}
+                    aria-label='Dismiss idea'
+                    className='text-muted-foreground absolute top-2 right-2'>
+                    <XIcon />
+                </Button>
+
                 {/* Format badge */}
                 <span
                     className={cn(
@@ -37,7 +71,7 @@ export function IdeaCard({ idea }: IdeaCardProps) {
                 </span>
 
                 {/* Topic */}
-                <p className='text-sm leading-snug font-medium'>{idea.topic}</p>
+                <p className='pr-7 text-sm leading-snug font-medium'>{idea.topic}</p>
 
                 {/* Hook */}
                 <p className='text-muted-foreground text-sm leading-relaxed'>"{idea.hook}"</p>
@@ -47,9 +81,11 @@ export function IdeaCard({ idea }: IdeaCardProps) {
                     <Button
                         variant='outline'
                         size='sm'
-                        onClick={() => router.push('/dashboard/editor')}
+                        onClick={handleCreatePost}
+                        disabled={isCreating}
                         className='w-full'>
-                        Create Post
+                        {isCreating && <Loader2Icon className='size-3.5 animate-spin' />}
+                        {isCreating ? 'Creating...' : 'Create Post'}
                     </Button>
                 </div>
             </CardContent>

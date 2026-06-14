@@ -39,7 +39,7 @@ export function IdeasSection({ strategy, branding, drafts, onUpdateStrategy }: I
     const [error, setError] = React.useState<string | null>(null)
 
     const weeklyIdeas = strategy.weeklyIdeas
-    const hasCurrentIdeas = weeklyIdeas !== null && isCurrentWeek(weeklyIdeas.weekOf)
+    const hasCurrentIdeas = weeklyIdeas !== null && weeklyIdeas.ideas.length > 0 && isCurrentWeek(weeklyIdeas.weekOf)
 
     const handleGenerateIdeas = async () => {
         setIsGenerating(true)
@@ -96,6 +96,15 @@ export function IdeasSection({ strategy, branding, drafts, onUpdateStrategy }: I
         }
     }
 
+    const handleDismissIdea = (index: number) => {
+        if (!weeklyIdeas) return
+        const updatedIdeas: WeeklyIdeas = {
+            ...weeklyIdeas,
+            ideas: weeklyIdeas.ideas.filter((_, i) => i !== index),
+        }
+        onUpdateStrategy({ weeklyIdeas: updatedIdeas })
+    }
+
     return (
         <section>
             <div className='mb-4 flex items-center justify-between'>
@@ -127,7 +136,7 @@ export function IdeasSection({ strategy, branding, drafts, onUpdateStrategy }: I
             ) : hasCurrentIdeas ? (
                 <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
                     {weeklyIdeas!.ideas.map((idea, i) => (
-                        <IdeaCard key={i} idea={idea} />
+                        <IdeaCard key={i} idea={idea} onDismiss={() => handleDismissIdea(i)} />
                     ))}
                 </div>
             ) : (
