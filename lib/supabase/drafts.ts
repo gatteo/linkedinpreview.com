@@ -18,7 +18,14 @@ interface DraftRow {
     char_count: number
     created_at: string
     updated_at: string
+    scheduled_at: string | null
+    published_at: string | null
+    linkedin_post_url: string | null
+    publish_error: string | null
 }
+
+const ENTRY_COLUMNS =
+    'id, title, status, label, word_count, char_count, created_at, updated_at, scheduled_at, published_at, linkedin_post_url, publish_error'
 
 // ---------------------------------------------------------------------------
 // Mapping helpers
@@ -34,6 +41,10 @@ function rowToEntry(row: DraftRow): DraftManifestEntry {
         updatedAt: new Date(row.updated_at).getTime(),
         charCount: row.char_count,
         wordCount: row.word_count,
+        scheduledAt: row.scheduled_at ? new Date(row.scheduled_at).getTime() : null,
+        publishedAt: row.published_at ? new Date(row.published_at).getTime() : null,
+        linkedinPostUrl: row.linkedin_post_url ?? null,
+        publishError: row.publish_error ?? null,
     }
 }
 
@@ -52,10 +63,7 @@ function rowToContent(row: DraftRow): DraftContent {
  * Fetch all drafts for the current user, ordered by updated_at desc.
  */
 export async function fetchDrafts(client: SupabaseClient): Promise<DraftManifestEntry[]> {
-    const { data, error } = await client
-        .from('drafts')
-        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
-        .order('updated_at', { ascending: false })
+    const { data, error } = await client.from('drafts').select(ENTRY_COLUMNS).order('updated_at', { ascending: false })
 
     if (error) throw error
     return (data as DraftRow[]).map(rowToEntry)
@@ -108,7 +116,7 @@ export async function createDraft(
             created_at: now,
             updated_at: now,
         })
-        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
+        .select(ENTRY_COLUMNS)
         .single()
 
     if (error) throw error
@@ -156,6 +164,37 @@ export async function deleteDraft(client: SupabaseClient, id: string): Promise<v
 }
 
 /**
+ * Bulk-delete "empty" drafts the user never typed into: no text (char_count 0),
+ * no media, still a plain draft that was never scheduled, published, or labelled.
+ * These accumulate because the editor eagerly creates a draft on open.
+ *
+ * `exceptId` spares the draft currently open in the editor. `createdBefore` (ISO
+ * timestamp) limits the sweep to drafts created before the current editor
+ * session, so a blank draft another tab just created is never swept out from
+ * under the user. RLS scopes the delete to the current user's rows. Returns the
+ * ids actually deleted so callers can reconcile local state.
+ */
+export async function deleteEmptyDrafts(
+    client: SupabaseClient,
+    opts: { exceptId?: string; createdBefore?: string } = {},
+): Promise<string[]> {
+    let query = client
+        .from('drafts')
+        .delete()
+        .eq('status', 'draft')
+        .eq('char_count', 0)
+        .is('media', null)
+        .is('label', null)
+        .is('scheduled_at', null)
+        .is('linkedin_post_url', null)
+    if (opts.exceptId) query = query.neq('id', opts.exceptId)
+    if (opts.createdBefore) query = query.lt('created_at', opts.createdBefore)
+    const { data, error } = await query.select('id')
+    if (error) throw error
+    return (data as { id: string }[] | null)?.map((r) => r.id) ?? []
+}
+
+/**
  * Duplicate a draft. Returns the new manifest entry, or null if source not found.
  */
 export async function duplicateDraft(
@@ -184,9 +223,79 @@ export async function duplicateDraft(
             created_at: now,
             updated_at: now,
         })
-        .select('id, title, status, label, word_count, char_count, created_at, updated_at')
+        .select(ENTRY_COLUMNS)
         .single()
 
     if (error) throw error
     return rowToEntry(data as DraftRow)
+}
+
+// ---------------------------------------------------------------------------
+// Scheduling & publishing state transitions
+// ---------------------------------------------------------------------------
+
+/**
+ * Schedule a draft for a future time (or unschedule when `scheduledAtMs` is null).
+ * Clears any prior publish error and resets retry bookkeeping.
+ */
+export async function setDraftSchedule(
+    client: SupabaseClient,
+    id: string,
+    scheduledAtMs: number | null,
+): Promise<void> {
+    const patch =
+        scheduledAtMs === null
+            ? { status: 'draft', scheduled_at: null, updated_at: new Date().toISOString() }
+            : {
+                  status: 'scheduled',
+                  scheduled_at: new Date(scheduledAtMs).toISOString(),
+                  publish_error: null,
+                  publish_attempts: 0,
+                  publish_lock_at: null,
+                  updated_at: new Date().toISOString(),
+              }
+    const { error } = await client.from('drafts').update(patch).eq('id', id)
+    if (error) throw error
+}
+
+/** Mark a draft as published to LinkedIn. */
+export async function markDraftPublished(
+    client: SupabaseClient,
+    id: string,
+    result: { urn: string; url: string },
+): Promise<void> {
+    const now = new Date().toISOString()
+    const { error } = await client
+        .from('drafts')
+        .update({
+            status: 'published',
+            published_at: now,
+            scheduled_at: null,
+            linkedin_post_urn: result.urn,
+            linkedin_post_url: result.url,
+            publish_error: null,
+            publish_lock_at: null,
+            updated_at: now,
+        })
+        .eq('id', id)
+    if (error) throw error
+}
+
+/**
+ * Record a failed publish. Transient failures keep the draft `scheduled` (the
+ * cron retries after the lock window); permanent failures move it to `failed`.
+ */
+export async function markDraftPublishFailed(
+    client: SupabaseClient,
+    id: string,
+    message: string,
+    opts: { permanent: boolean },
+): Promise<void> {
+    const patch: Record<string, any> = { publish_error: message, updated_at: new Date().toISOString() }
+    if (opts.permanent) {
+        patch.status = 'failed'
+        patch.publish_lock_at = null
+    }
+    const { error } = await client.from('drafts').update(patch).eq('id', id)
+    if (error) throw error
 }

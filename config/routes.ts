@@ -4,6 +4,11 @@ export const ApiRoutes = {
     Analyze: '/api/analyze',
     Generate: '/api/generate',
     Extract: '/api/extract',
+    LinkedInAuth: '/api/linkedin/auth',
+    LinkedInStatus: '/api/linkedin/status',
+    LinkedInDisconnect: '/api/linkedin/disconnect',
+    LinkedInPublish: '/api/linkedin/publish',
+    LinkedInSwitch: '/api/linkedin/switch',
 }
 
 export const Routes = {
@@ -23,6 +28,8 @@ export const Routes = {
     Dashboard: '/dashboard',
     DashboardEditor: (draftId?: string) => (draftId ? `/dashboard/editor?draft=${draftId}` : '/dashboard/editor'),
     DashboardPosts: '/dashboard',
+    DashboardCalendar: '/dashboard/calendar',
+    DashboardStrategy: '/dashboard/strategy',
     DashboardBranding: '/dashboard/branding',
     DashboardSettings: '/dashboard/settings',
 }

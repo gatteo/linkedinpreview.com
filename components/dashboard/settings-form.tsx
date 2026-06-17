@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/components/dashboard/auth-provider'
+import { LinkedInConnection } from '@/components/dashboard/linkedin-connection'
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: SunIcon },
@@ -79,6 +80,9 @@ export function SettingsForm() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* LinkedIn connection */}
+            <LinkedInConnection />
 
             {/* Reset */}
             <Card className='border-destructive/50'>

@@ -12,6 +12,7 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "type-check": "tsc --noEmit",
+        "db:migrate": "bash scripts/db-migrate.sh",
         "format": "prettier --write .",
         "check-updates": "pnpm dlx npm-check-updates --interactive --format group",
         "prepare": "husky"

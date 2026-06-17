@@ -60,3 +60,14 @@ PARTIAL feature surfaced in [`../STATUS.md`](../STATUS.md).
   heatmap + streak on the strategy dashboard (feature 201) — `proposed`.
 - [`T-013-explicit-pageview-tracking.md`](T-013-explicit-pageview-tracking.md) — deliberate
   page-view tracking (feature 112) — `proposed`.
+
+Wave 4 (LinkedIn Scheduling & Publishing) build tickets, opened 2026-06-15, `in-review` (their open
+ACs are blocked on live LinkedIn verification, not code):
+
+- [`T-015-linkedin-oauth.md`](T-015-linkedin-oauth.md) - LinkedIn OAuth connection (feature 220) - `in-review`.
+- [`T-016-one-click-publish.md`](T-016-one-click-publish.md) - one-click publish to LinkedIn (feature 221) - `in-review`.
+- [`T-017-post-scheduling.md`](T-017-post-scheduling.md) - post scheduling + cron publisher (feature 222) - `in-review`.
+- [`T-018-content-calendar.md`](T-018-content-calendar.md) - content calendar (feature 223) - `in-review`.
+- [`T-019-best-time-to-post.md`](T-019-best-time-to-post.md) - best time to post, phase 1 (feature 224) - `in-review`.
+
+(T-014 closed the inspirational-posts spec reconciliation; see [`../CHANGELOG.md`](../CHANGELOG.md).)

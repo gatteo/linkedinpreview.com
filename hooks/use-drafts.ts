@@ -7,6 +7,7 @@ import { type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
 import {
     createDraft as createDraftApi,
     deleteDraft as deleteDraftApi,
+    deleteEmptyDrafts as deleteEmptyDraftsApi,
     duplicateDraft as duplicateDraftApi,
     fetchDrafts,
     updateDraft as updateDraftApi,
@@ -109,6 +110,21 @@ export function useDrafts() {
         [supabase],
     )
 
+    const purgeEmptyDrafts = React.useCallback(
+        async (opts: { exceptId?: string; createdBefore?: string } = {}) => {
+            try {
+                const deletedIds = await deleteEmptyDraftsApi(supabase, opts)
+                if (deletedIds.length > 0) {
+                    const removed = new Set(deletedIds)
+                    setDrafts((prev) => prev.filter((d) => !removed.has(d.id)))
+                }
+            } catch {
+                // Best-effort cleanup; a failed sweep just leaves the empties for next time.
+            }
+        },
+        [supabase],
+    )
+
     const recentDrafts = React.useMemo(
         () => [...drafts].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 3),
         [drafts],
@@ -122,5 +138,6 @@ export function useDrafts() {
         deleteDraft,
         duplicateDraft,
         updateDraft,
+        purgeEmptyDrafts,
     }
 }

@@ -2,18 +2,26 @@
 // Draft schema
 // ---------------------------------------------------------------------------
 
-export type DraftStatus = 'draft' | 'scheduled' | 'published'
+export type DraftStatus = 'draft' | 'scheduled' | 'published' | 'failed'
 
 /**
- * User-facing status options. These are manual labels only - changing a status
- * here does not publish to or schedule with LinkedIn (real delivery arrives in a
- * later release).
+ * Manual status labels offered in the editor's status picker. `failed` is a
+ * system-set state (a scheduled publish that could not be delivered) and is never
+ * a manual choice, so it is intentionally excluded here.
  */
 export const STATUS_OPTIONS: { label: string; value: DraftStatus }[] = [
     { label: 'Draft', value: 'draft' },
     { label: 'Scheduled', value: 'scheduled' },
     { label: 'Published', value: 'published' },
 ]
+
+/** Display label for every status, including the system-set `failed`. */
+export const STATUS_LABELS: Record<DraftStatus, string> = {
+    draft: 'Draft',
+    scheduled: 'Scheduled',
+    published: 'Published',
+    failed: 'Failed',
+}
 
 /** Lightweight entry stored in the manifest (no content/media blobs) */
 export interface DraftManifestEntry {
@@ -25,6 +33,10 @@ export interface DraftManifestEntry {
     updatedAt: number
     charCount: number
     wordCount: number
+    scheduledAt: number | null
+    publishedAt: number | null
+    linkedinPostUrl: string | null
+    publishError: string | null
 }
 
 // ---------------------------------------------------------------------------

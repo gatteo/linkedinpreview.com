@@ -58,6 +58,7 @@ const STATUS_STYLES: Record<DraftStatus, string> = {
     draft: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
     scheduled: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
     published: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    failed: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 }
 
 // ---------------------------------------------------------------------------
@@ -178,13 +179,28 @@ function createColumns(
         {
             accessorKey: 'status',
             header: 'Status',
-            cell: ({ row }) => (
-                <Badge
-                    variant='secondary'
-                    className={cn('px-1.5 py-0 text-[10px] capitalize', STATUS_STYLES[row.original.status])}>
-                    {row.original.status}
-                </Badge>
-            ),
+            cell: ({ row }) => {
+                const { status, scheduledAt } = row.original
+                return (
+                    <div className='flex flex-col gap-0.5'>
+                        <Badge
+                            variant='secondary'
+                            className={cn('w-fit px-1.5 py-0 text-[10px] capitalize', STATUS_STYLES[status])}>
+                            {status}
+                        </Badge>
+                        {status === 'scheduled' && scheduledAt && (
+                            <span className='text-muted-foreground text-[10px]'>
+                                {new Date(scheduledAt).toLocaleString(undefined, {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit',
+                                })}
+                            </span>
+                        )}
+                    </div>
+                )
+            },
         },
         {
             accessorKey: 'label',

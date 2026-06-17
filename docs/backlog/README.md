@@ -1,8 +1,8 @@
 # Backlog — planned & parked work
 
-This folder holds **features whose wave has not started yet**: the planned waves (3-6) and the SEO
+This folder holds **features whose wave has not started yet**: the planned waves (3, 5-6) and the SEO
 template track. It is the counterpart to [`../features/`](../features/), which holds the features of
-sections already underway (Foundation + Waves 0-2), SHIPPED or PARTIAL.
+sections already underway (Foundation, Waves 0-2, and Wave 4), SHIPPED or PARTIAL.
 
 **Placement rule:** a feature lives in `backlog/` until work on its wave begins; at that point it
 graduates to `../features/`. See the rules block at the top of
@@ -37,11 +37,7 @@ Grouped by wave (see [`../ROADMAP.md`](../ROADMAP.md)).
 - **Wave 3 — Carousel** — [`210-carousel-creator.md`](210-carousel-creator.md),
   [`211-carousel-templates.md`](211-carousel-templates.md),
   [`212-carousel-export.md`](212-carousel-export.md)
-- **Wave 4 — Scheduling & Publishing** — [`220-linkedin-oauth.md`](220-linkedin-oauth.md),
-  [`221-one-click-publish.md`](221-one-click-publish.md),
-  [`222-post-scheduling.md`](222-post-scheduling.md),
-  [`223-content-calendar.md`](223-content-calendar.md),
-  [`224-best-time-to-post.md`](224-best-time-to-post.md)
+- **Wave 4 - Scheduling & Publishing** - graduated to [`../features/`](../features/) (220-224, PARTIAL); see [`../ROADMAP.md`](../ROADMAP.md).
 - **Wave 5 — Analytics** — [`230-analytics-dashboard.md`](230-analytics-dashboard.md)
 - **Wave 6 — Advanced & Scale** — [`041-audio-video-post-source.md`](041-audio-video-post-source.md),
   [`240-team-collaboration.md`](240-team-collaboration.md),

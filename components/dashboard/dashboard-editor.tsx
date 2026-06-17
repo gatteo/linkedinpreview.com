@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AIActions } from '@/components/dashboard/ai-actions'
 import { LabelPicker } from '@/components/dashboard/label-picker'
+import { PublishControls } from '@/components/dashboard/publish-controls'
 import { StatusPicker } from '@/components/dashboard/status-picker'
 import { EditorLoading } from '@/components/tool/editor-loading'
 import { PreviewPanel } from '@/components/tool/preview/preview-panel'
@@ -74,8 +75,23 @@ function RightTabBar({ tab, onTabChange }: { tab: RightTab; onTabChange: (t: Rig
 // ---------------------------------------------------------------------------
 
 export function DashboardEditor() {
-    const { initialContent, initialMedia, label, status, isLoading, saveContent, saveMedia, saveLabel, saveStatus } =
-        useCurrentDraft()
+    const {
+        draftId,
+        initialContent,
+        initialMedia,
+        label,
+        status,
+        scheduledAt,
+        linkedinPostUrl,
+        isLoading,
+        saveContent,
+        saveMedia,
+        saveLabel,
+        saveStatus,
+        flush,
+        saveSchedule,
+        applyPublished,
+    } = useCurrentDraft()
     const { branding } = useBranding()
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
@@ -203,10 +219,20 @@ export function DashboardEditor() {
                     aria-label='Post status (manual label, does not publish to LinkedIn)'
                 />
                 <LabelPicker value={label} onChange={saveLabel} aria-label='Post format label' />
-                <Button size='sm' onClick={handleCopyText} disabled={!contentText}>
+                <Button variant='outline' size='sm' onClick={handleCopyText} disabled={!contentText}>
                     <CopyIcon className='size-4' />
                     Copy Text
                 </Button>
+                <PublishControls
+                    draftId={draftId}
+                    status={status}
+                    scheduledAt={scheduledAt}
+                    linkedinPostUrl={linkedinPostUrl}
+                    hasContent={!!contentText}
+                    onFlush={flush}
+                    onScheduled={saveSchedule}
+                    onPublished={applyPublished}
+                />
             </PageHeader>
 
             <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>

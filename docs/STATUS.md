@@ -1,7 +1,7 @@
 # Status
 
 > A plain-language snapshot of where the product is **right now** - read this first each session.
-> Verified against the code on 2026-06-14 (branch `feat/dashboard-overhaul`). Detailed dated
+> Verified against the code on 2026-06-15 (branch `feat/dashboard-overhaul`). Detailed dated
 > history is in [CHANGELOG.md](CHANGELOG.md); the per-feature truth is in
 > [features/](features/) with `file:line` evidence; the phase plan is in [ROADMAP.md](ROADMAP.md).
 
@@ -13,8 +13,11 @@ real code. Every built feature has a spec with fact-checked acceptance criteria:
 in [features/completed/](features/completed/). Of 63 built features, **all 63 are SHIPPED** (every
 AC verified against `file:line`); there are **no PARTIAL features left**. The Foundation and Waves
 0, 1, and 2 are each COMPLETE. The deployment configuration (env vars, the Supabase project, and a
-verified local build) is now in place, so the product is release-ready: no feature work and no
-configuration blockers remain.
+verified local build) is in place, so Waves 0-2 are release-ready. **Wave 4 (LinkedIn Scheduling &
+Publishing) is now built but PARTIAL**: all five specs (220-224) ship real code that type-checks,
+lints, builds, and passed the code-quality review (SHIP), but with no live LinkedIn app credentials
+configured the OAuth, real publishing, media upload, and cron delivery are **not** end-to-end
+verified against LinkedIn. See "Wave 4 setup required before it works" below.
 
 ## What works today (SHIPPED, AC-verified)
 
@@ -38,9 +41,54 @@ configuration blockers remain.
 
 ## What is PARTIAL (built, but a documented capability is missing)
 
-None. Every built feature is SHIPPED with all acceptance criteria verified against `file:line`. The
-gaps the fact-check originally found (tickets T-001 through T-014) have all been closed. The full
-dated history is in [CHANGELOG.md](CHANGELOG.md).
+- **Wave 4 - LinkedIn Scheduling & Publishing (220-224).** All five features are built and pass
+  type-check, lint, build, and the code-quality review, but they are **not** live-verified. The
+  shared gap is the same for each: **pending real LinkedIn app credentials + a connected account for
+  end-to-end verification.** Specifically unverified against LinkedIn: a real OAuth consent +
+  token exchange succeeding (220), an actual post appearing on a profile and media uploading (221),
+  the cron delivering a scheduled post at its time (222), and the calendar reschedule -> live publish
+  loop (223). Best time to post (224) is phase-1 general guidance only; phase-2 personalization waits
+  on Wave 5 analytics (230). Architectural constraints baked into the design: self-serve LinkedIn
+  apps get **no** programmatic refresh token (60-day token, the member must reconnect), and
+  per-minute scheduling requires **Vercel Pro** (on Hobby, cron runs once per day). Tracked by
+  tickets [T-015](tickets/T-015-linkedin-oauth.md)-[T-019](tickets/T-019-best-time-to-post.md).
+  **LinkedIn now doubles as login** (220): first connect converts the anonymous session into an
+  email-backed account and seeds profile/branding; connecting an identity that already owns an account
+  signs the user into it (silently, or behind a "bring your drafts?" merge prompt), while a conflict
+  with a different saved account is blocked. The returning-member sign-in path (resolve → magic-link
+  mint → session swap) is code/build-verified but, like the rest of Wave 4, not yet live-verified
+  against LinkedIn (220-AC-18).
+
+For Waves 0-2, every built feature is SHIPPED with all acceptance criteria verified against
+`file:line`; the gaps the fact-check originally found (tickets T-001 through T-014) have all been
+closed. The full dated history is in [CHANGELOG.md](CHANGELOG.md).
+
+## Wave 4 setup required before it works
+
+Wave 4 is inert until the integration is configured. To make it function:
+
+1. **Set the env vars** (all optional in `env.mjs`; the feature presents as "not configured" until
+   they are set):
+    - `LINKEDIN_CLIENT_ID` and `LINKEDIN_CLIENT_SECRET` - from the LinkedIn app.
+    - `LINKEDIN_TOKEN_ENC_KEY` - the AES-256-GCM key that encrypts tokens at rest. Generate a
+      64-char hex string: `openssl rand -hex 32`.
+    - `LINKEDIN_REDIRECT_URI` - optional override; defaults to `${site.url}/api/linkedin/callback`.
+      It must exactly match the redirect URL registered on the LinkedIn app.
+    - `CRON_SECRET` - shared secret the Vercel Cron publisher sends as its bearer token.
+    - `SUPABASE_SERVICE_ROLE_KEY` - used by the cron publisher **and** by LinkedIn login (account
+      resolution + magic-link session minting). Service-role client, bypasses RLS; never exposed to
+      the client. Without it, connect degrades to attach-only and cannot sign returning users into an
+      existing account.
+2. **Add the two LinkedIn Developer products** to the app: "Sign In with LinkedIn using OpenID
+   Connect" (scopes `openid profile email`) and "Share on LinkedIn" (scope `w_member_social`).
+3. **Apply migrations `009`, `010`, and `011`** to the Supabase project (`linkedin_connections` table
+    - RLS; the drafts scheduling columns + `claim_due_linkedin_posts` / `claim_draft_for_publish` RPCs;
+      and `011` makes `linkedin_sub` unique + `access_token` nullable for LinkedIn-as-login).
+      3a. **Enable email confirmations** in Supabase and point the confirmation email template at
+      `/auth/confirm?token_hash={{ .TokenHash }}&type={{ .Type }}` so first-connect account conversion
+      works.
+4. **Per-minute scheduling needs Vercel Pro.** `vercel.json` schedules the publisher every minute; on
+   the Hobby plan cron runs at most once per day, so scheduled posts would publish in a daily batch.
 
 ## Deployment readiness (configuration)
 
@@ -83,6 +131,6 @@ Verified on 2026-06-14 on branch `feat/dashboard-overhaul`.
 
 ## Out of scope for "working product" (planned, in backlog/)
 
-Wave 3 carousel (210-212), Wave 4 scheduling/publishing (220-224), Wave 5 analytics (230), Wave 6
-advanced (240-244), and the SEO template libraries (007-009). These appear as disabled "Soon" items
-or are absent by design.
+Wave 3 carousel (210-212), Wave 5 analytics (230), Wave 6 advanced (240-244), and the SEO template
+libraries (007-009). These appear as disabled "Soon" items or are absent by design. (Wave 4
+scheduling/publishing (220-224) is now built but PARTIAL - see "What is PARTIAL" above.)

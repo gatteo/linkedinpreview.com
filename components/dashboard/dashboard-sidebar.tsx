@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/sidebar'
 import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
 import { GettingStartedChecklist } from '@/components/dashboard/getting-started-checklist'
+import { SidebarProfile } from '@/components/dashboard/sidebar-profile'
 
 export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
@@ -129,11 +130,15 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                                 <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
-                                <SidebarMenuButton disabled tooltip='Calendar'>
-                                    <CalendarIcon />
-                                    <span>Calendar</span>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isActive('/dashboard/calendar')}
+                                    tooltip='Calendar'>
+                                    <Link href='/dashboard/calendar'>
+                                        <CalendarIcon />
+                                        <span>Calendar</span>
+                                    </Link>
                                 </SidebarMenuButton>
-                                <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton disabled tooltip='Analytics'>
@@ -221,7 +226,9 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter />
+            <SidebarFooter>
+                <SidebarProfile />
+            </SidebarFooter>
             <SidebarRail />
 
             <CreationWizard open={newPostOpen} onOpenChange={setNewPostOpen} />

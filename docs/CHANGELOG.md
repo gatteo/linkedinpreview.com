@@ -4,6 +4,66 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-17 — LinkedIn as login: account conversion, resolution & switching (PARTIAL)
+
+- **Connect now establishes identity, not just a publish token (220).** On first connect the
+  anonymous Supabase session is converted into a real, email-backed account: the LinkedIn email is
+  linked (email-confirmation link handled by a new `app/auth/confirm/route.ts`), and the name/avatar
+  seed the auth-user metadata and branding profile (empty-fill, never clobbering customisations).
+  New `lib/linkedin/identity-sync.ts`.
+- **LinkedIn doubles as login.** `app/api/linkedin/callback` now resolves the OAuth-verified
+  `linkedin_sub` against existing accounts (`findUserIdByLinkedInSub`, service-role) and branches:
+  attach (new identity) / reconnect (same account) / **login-switch** (identity owned by another
+  account + anonymous session → sign into it) / **block** (current session is a different saved
+  account). The switch mints the target account's session server-side
+  (`admin.generateLink('magiclink')` → `verifyOtp`) in new `lib/linkedin/account-link.ts`. When the
+  anonymous session has drafts, the switch is deferred to a new `app/api/linkedin/switch` route behind
+  a "bring your drafts?" prompt (`MergePromptDialog`); the `{from,to}` pair travels in a short-lived
+  AES-GCM-encrypted httpOnly cookie so the client only sends a `merge` boolean.
+- **Disconnect keeps the identity mapping.** Migration `011_linkedin_login.sql` makes `linkedin_sub`
+  unique and `access_token` nullable; Disconnect now clears the token but keeps the row (via
+  `disconnectConnection`) so a passwordless user can always log back in. "Connected for publishing"
+  means a row exists with a non-null token; publish + cron routes skip null-token rows.
+- **Sidebar profile / connect CTA.** New `components/dashboard/sidebar-profile.tsx`: avatar+name when
+  connected (links to Settings, with expiry/reconnect state), or a benefit-led one-click connect CTA
+  when not — rendered in the sidebar footer.
+- **Still PARTIAL.** Type-check, lint, and build pass; new behaviors are code-verified with `file:line`
+  ACs (220-AC-12..17). The live returning-member sign-in path (220-AC-18) shares the Wave 4 gap: no
+  live LinkedIn credentials. Requires `SUPABASE_SERVICE_ROLE_KEY` set and the Supabase email template
+  pointed at `/auth/confirm` with confirmations enabled (see [STATUS.md](STATUS.md)).
+
+## 2026-06-15 — Wave 4: LinkedIn Scheduling & Publishing (PARTIAL)
+
+- **Built Wave 4 (features 220-224).** LinkedIn OAuth + encrypted token storage, one-click publish
+  from the editor (text + image/video), timezone-aware scheduling with a Vercel Cron publisher, a
+  month/week content calendar with drag-to-reschedule, and phase-1 best-time-to-post suggestions.
+  New: `config/linkedin.ts`, `config/best-time.ts`, `lib/linkedin/*` (oauth, crypto, posts,
+  connections, serialize), `lib/supabase/admin.ts`, `app/api/linkedin/*` and `app/api/cron/publish`,
+  `app/dashboard/calendar` + `components/dashboard/calendar/content-calendar.tsx`,
+  `components/dashboard/{linkedin-connection,publish-controls}.tsx`, `hooks/use-linkedin-status.ts`,
+  migrations `009_linkedin_connections` (table + RLS) and `010_post_scheduling` (drafts scheduling
+  columns, `failed` status, `idx_drafts_due`, `claim_due_linkedin_posts` / `claim_draft_for_publish`
+  RPCs), and `vercel.json` (per-minute cron). Tokens are AES-256-GCM-encrypted at rest; the publish
+  route is Zod + session + connection-gated with atomic claim-for-publish; the cron is
+  CRON_SECRET-authed, service-role, idempotent, with retry/permanent-failure handling. The LinkedIn
+  env vars are all optional, so the features stay inert and present as "not configured" until set.
+
+- **Marked Wave 4 PARTIAL, not SHIPPED - honest about live verification.** Type-check, lint, and
+  build pass and the code-quality review returned SHIP, but **no live LinkedIn app credentials are
+  configured**, so OAuth consent + token exchange, real post creation, media upload, and cron
+  delivery are not end-to-end verified against LinkedIn. Each spec checks only code/build-verifiable
+  ACs with `file:line` evidence and leaves the live-verification AC open. Two architectural
+  constraints are recorded: self-serve apps get no programmatic refresh token (60-day token, member
+  must reconnect), and per-minute scheduling requires Vercel Pro (Hobby cron runs once/day).
+
+- **Docs: graduated 220-224 from `backlog/` to `features/` (PARTIAL)**, opened tickets
+  [T-015](tickets/T-015-linkedin-oauth.md)-[T-019](tickets/T-019-best-time-to-post.md) (in-review),
+  set [ROADMAP.md](ROADMAP.md) Wave 4 to IN PROGRESS with the feature links repointed, added the
+  Wave 4 PARTIAL gap + a "Wave 4 setup required before it works" section to [STATUS.md](STATUS.md),
+  and extended [ARCHITECTURE.md](ARCHITECTURE.md) with the `linkedin_connections` model, the new
+  Draft scheduling columns, the `/api/linkedin/*` + `/api/cron/publish` routes, the new env vars,
+  and LinkedIn/Vercel Cron integration rows.
+
 ## 2026-06-14 — Deployment configured (release-ready)
 
 - **Env + Supabase configured; build verified.** `.env` now carries the LLM and Supabase keys (and

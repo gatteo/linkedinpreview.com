@@ -1,20 +1,22 @@
 # Roadmap
 
-> The Foundation and Waves 0, 1, and 2 are now COMPLETE - every feature in them is SHIPPED with all
-> acceptance criteria verified. Per-feature truth (SHIPPED with evidence) is in
-> [features/completed/](features/completed/) and summarized in [STATUS.md](STATUS.md). Waves 3-6 and
-> the SEO track are planned; each feature has a spec in [backlog/](backlog/). The feature matrix is
-> in [PRODUCT.md](PRODUCT.md).
+> The Foundation and Waves 0, 1, and 2 are COMPLETE - every feature in them is SHIPPED with all
+> acceptance criteria verified. **Wave 4 (Scheduling & Publishing) is IN PROGRESS**: its five specs
+> are built and live in [features/](features/) as PARTIAL, pending live LinkedIn verification.
+> Per-feature truth (SHIPPED with evidence) is in [features/completed/](features/completed/); PARTIAL
+> specs stay in [features/](features/); both are summarized in [STATUS.md](STATUS.md). Wave 3, Waves
+> 5-6, and the SEO track are planned; each of those features has a spec in [backlog/](backlog/). The
+> feature matrix is in [PRODUCT.md](PRODUCT.md).
 >
 > **Rules this document holds itself to:**
 >
 > - A section is **COMPLETE** only when every feature in it is SHIPPED. Otherwise it is IN PROGRESS
 >   (built sections) or PLANNED (not-yet-started sections).
 > - **Every feature spec appears in exactly one section here** - no feature file exists outside the
->   roadmap. Built specs (Foundation, Waves 0-2) live in [features/](features/); planned specs
->   (Waves 3-6, SEO) live in [backlog/](backlog/).
+>   roadmap. Built specs (Foundation, Waves 0-2, and Wave 4) live in [features/](features/); planned
+>   specs (Wave 3, Waves 5-6, SEO) live in [backlog/](backlog/).
 > - **Placement rule (features/ vs backlog/):** a feature's spec lives in `features/` once work on
->   its section has started (Foundation + Waves 0-2). Within `features/`, SHIPPED specs go in
+>   its section has started (Foundation, Waves 0-2, Wave 4). Within `features/`, SHIPPED specs go in
 >   [features/completed/](features/completed/) and PARTIAL specs stay in `features/`. A feature whose
 >   section has **not** started lives in [backlog/](backlog/). It graduates to `features/` only when
 >   its wave begins.
@@ -207,7 +209,7 @@ Wave 0 (dashboard exists). Can run in parallel with Wave 1 and Wave 2.
 
 ---
 
-## Wave 4: Scheduling & Publishing
+## Wave 4: Scheduling & Publishing - IN PROGRESS (0 of 5 SHIPPED, 5 PARTIAL)
 
 ### Goal
 
@@ -215,27 +217,34 @@ Close the biggest feature gap - direct LinkedIn scheduling and publishing. This 
 
 ### Features
 
-| Feature                                                                     | Status  | Notes                                                           |
-| --------------------------------------------------------------------------- | ------- | --------------------------------------------------------------- |
-| [220 - LinkedIn OAuth integration](backlog/220-linkedin-oauth.md)           | PLANNED | Login required; replaces anonymous auth for scheduling features |
-| [221 - One-click publish to LinkedIn](backlog/221-one-click-publish.md)     | PLANNED | Post directly from the editor                                   |
-| [222 - Post scheduling](backlog/222-post-scheduling.md)                     | PLANNED | Timezone support                                                |
-| [223 - Content calendar](backlog/223-content-calendar.md)                   | PLANNED | Month and week views                                            |
-| [224 - Best time to post recommendations](backlog/224-best-time-to-post.md) | PLANNED | Based on LinkedIn engagement data                               |
+| Feature                                                                      | Status  | Notes                                                              |
+| ---------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------ |
+| [220 - LinkedIn OAuth integration](features/220-linkedin-oauth.md)           | PARTIAL | OAuth + encrypted token + Settings card; not live-verified         |
+| [221 - One-click publish to LinkedIn](features/221-one-click-publish.md)     | PARTIAL | Editor Publish (text + media); not live-verified                   |
+| [222 - Post scheduling](features/222-post-scheduling.md)                     | PARTIAL | Timezone-aware schedule + Vercel Cron publisher; not live-verified |
+| [223 - Content calendar](features/223-content-calendar.md)                   | PARTIAL | Month/week views, drag-to-reschedule; calendar UI built            |
+| [224 - Best time to post recommendations](features/224-best-time-to-post.md) | PARTIAL | Phase 1 general guidance; Phase 2 (personalized) waits on Wave 5   |
 
 ### To complete this wave
 
-Not started. Build each feature below and open a `T-NNN` ticket per feature at kickoff:
+In progress. All five specs are built and live in `features/` as PARTIAL. Each maps to an in-review
+ticket; the open ACs are blocked on live verification, not code:
 
-- [220 - LinkedIn OAuth integration](backlog/220-linkedin-oauth.md)
-- [221 - One-click publish to LinkedIn](backlog/221-one-click-publish.md)
-- [222 - Post scheduling](backlog/222-post-scheduling.md)
-- [223 - Content calendar](backlog/223-content-calendar.md)
-- [224 - Best time to post recommendations](backlog/224-best-time-to-post.md)
+- [220 - LinkedIn OAuth integration](features/220-linkedin-oauth.md) - [T-015](tickets/T-015-linkedin-oauth.md)
+- [221 - One-click publish to LinkedIn](features/221-one-click-publish.md) - [T-016](tickets/T-016-one-click-publish.md)
+- [222 - Post scheduling](features/222-post-scheduling.md) - [T-017](tickets/T-017-post-scheduling.md)
+- [223 - Content calendar](features/223-content-calendar.md) - [T-018](tickets/T-018-content-calendar.md)
+- [224 - Best time to post recommendations](features/224-best-time-to-post.md) - [T-019](tickets/T-019-best-time-to-post.md)
+
+The shared blocker: real LinkedIn app credentials + a connected account for end-to-end verification
+(no live OAuth, publishing, media upload, or cron delivery against LinkedIn yet). Per-minute
+scheduling additionally requires Vercel Pro. Each feature moves to SHIPPED / `features/completed/`
+once its live-verification AC passes.
 
 ### Dependencies
 
-Wave 0 + Wave 1. LinkedIn API approval must be applied for during Wave 2.
+Wave 0 + Wave 1. LinkedIn API approval (the "Sign In with LinkedIn using OpenID Connect" and
+"Share on LinkedIn" products) must be secured before the wave's open ACs can be verified.
 
 ---
 
