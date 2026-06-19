@@ -21,6 +21,7 @@ function mergeWithDefaults(stored: Partial<BrandingData>): BrandingData {
         knowledgeBase: { ...DEFAULT_BRANDING.knowledgeBase, ...stored.knowledgeBase },
         dosDonts: { ...DEFAULT_BRANDING.dosDonts, ...stored.dosDonts },
         inspiration: { ...DEFAULT_BRANDING.inspiration, ...stored.inspiration },
+        meta: { ...DEFAULT_BRANDING.meta, ...stored.meta },
     }
 }
 

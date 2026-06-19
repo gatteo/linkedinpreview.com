@@ -7,7 +7,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AuthGate } from '@/components/dashboard/auth-gate'
 import { AuthProvider } from '@/components/dashboard/auth-provider'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
-import { TutorialDialog } from '@/components/dashboard/tutorial-dialog'
+import { OnboardingController } from '@/components/dashboard/onboarding/onboarding-controller'
 import { TallyScript } from '@/components/feedback/tally-script'
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ export default function DashboardLayout({
                                 </SidebarInset>
                             </SidebarProvider>
                         </div>
-                        <TutorialDialog />
+                        <OnboardingController />
                     </AuthGate>
                 </AuthProvider>
             </ThemeProvider>

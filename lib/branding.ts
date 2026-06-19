@@ -68,6 +68,11 @@ export interface BrandingInspiration {
     creators: Array<{ name: string; url: string }>
 }
 
+export interface BrandingMeta {
+    /** ISO timestamp the user finished (or skipped) onboarding. Gates the setup modal. */
+    onboardedAt: string | null
+}
+
 export interface BrandingData {
     profile: BrandingProfile
     positioning: BrandingPositioning
@@ -78,6 +83,7 @@ export interface BrandingData {
     knowledgeBase: BrandingKnowledgeBase
     dosDonts: BrandingDosDonts
     inspiration: BrandingInspiration
+    meta: BrandingMeta
 }
 
 // ---------------------------------------------------------------------------
@@ -117,5 +123,8 @@ export const DEFAULT_BRANDING: BrandingData = {
     inspiration: {
         posts: [],
         creators: [],
+    },
+    meta: {
+        onboardedAt: null,
     },
 }
