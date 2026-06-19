@@ -16,6 +16,9 @@ export function Header() {
                     <Navbar />
                 </div>
                 <div className='flex items-center gap-3'>
+                    <Button asChild variant='outline' size='lg' className='hidden rounded-lg bg-white md:flex'>
+                        <Link href={Routes.Dashboard}>Dashboard</Link>
+                    </Button>
                     <Button asChild size='lg' className='hidden rounded-lg md:flex'>
                         <Link href={Routes.Tool}>Get Started</Link>
                     </Button>

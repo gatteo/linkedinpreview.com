@@ -24,7 +24,7 @@
  * tracking is needed to know which variant each user saw.
  */
 import Link from 'next/link'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, ArrowRight } from 'lucide-react'
 import { useFeatureFlagVariantKey } from 'posthog-js/react'
 
 import { Routes } from '@/config/routes'
@@ -71,14 +71,16 @@ export function HeroCTA() {
                     </Button>
                 </TrackClick>
             </div>
-            <p className='text-muted-foreground text-xs'>
-                or{' '}
+            <TrackClick
+                event='cta_button_clicked'
+                properties={{ button_name: 'open_dashboard', source: 'hero', variant: variantKey }}>
                 <Link
                     href={Routes.Dashboard}
-                    className='text-primary hover:text-primary/80 underline underline-offset-2'>
-                    open the full dashboard
+                    className='text-muted-foreground hover:text-foreground group inline-flex items-center gap-1.5 text-sm font-medium transition-colors'>
+                    or open the full dashboard
+                    <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
                 </Link>
-            </p>
+            </TrackClick>
         </div>
     )
 }

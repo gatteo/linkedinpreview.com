@@ -2,6 +2,7 @@ import { type Organization, type SoftwareApplication, type WebSite, type WithCon
 
 import { site } from '@/config/site'
 import { CtaSection } from '@/components/home/cta-section'
+import { DashboardShowcase } from '@/components/home/dashboard-showcase'
 import { EmbedSection } from '@/components/home/embed-section'
 import { FAQs } from '@/components/home/faqs'
 import { Features } from '@/components/home/features'
@@ -81,6 +82,7 @@ export default function Page() {
                 <Hero />
                 <Tool />
                 <HowToUse />
+                <DashboardShowcase />
             </div>
 
             <OpenSource />

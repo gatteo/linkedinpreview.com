@@ -53,7 +53,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
 
     if (!processedContent) {
         return (
-            <div className='mt-3 text-sm whitespace-pre-line'>
+            <div className='mt-3 text-sm whitespace-pre-line text-neutral-900'>
                 {'Start writing and your post will appear here..\nYou can add images, links, '}
                 <span className='font-semibold text-[#0a66c2]'>#hashtags</span>
                 {' and emojis 🤩'}
@@ -66,7 +66,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
             <div
                 ref={contentRef}
                 className={cn(
-                    'relative text-sm leading-5 whitespace-pre-line',
+                    'relative text-sm leading-5 whitespace-pre-line text-neutral-900',
                     !isExpanded && 'line-clamp-3 overflow-hidden',
                 )}>
                 {renderWithHashtags(processedContent)}

@@ -12,10 +12,11 @@ interface PostCardProps {
     content: any
     media: Media | null
     author?: PreviewAuthor
+    promptBranding?: boolean
     className?: string
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ content, media, author, className }) => {
+export const PostCard: React.FC<PostCardProps> = ({ content, media, author, promptBranding, className }) => {
     return (
         <div
             className={cn(
@@ -23,7 +24,7 @@ export const PostCard: React.FC<PostCardProps> = ({ content, media, author, clas
                 className,
             )}>
             <div className='pt-3 pr-4 pb-1 pl-4'>
-                <UserInfo author={author} />
+                <UserInfo author={author} promptBranding={promptBranding} />
                 <ContentSection content={content} />
             </div>
             {media && (

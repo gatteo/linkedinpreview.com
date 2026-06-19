@@ -1,7 +1,15 @@
 import Link from 'next/link'
+import { LayoutDashboardIcon } from 'lucide-react'
 
+import { Routes } from '@/config/routes'
 import { HeaderLinks } from '@/config/urls'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 import { Icon, Icons } from '../icon'
 import { Button } from '../ui/button'
@@ -28,6 +36,13 @@ export function MobileNav() {
                         </Link>
                     </DropdownMenuItem>
                 ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                    <Link href={Routes.Dashboard} className='text-primary flex items-center gap-3 font-medium'>
+                        <LayoutDashboardIcon className='size-4' />
+                        <div>Open Dashboard</div>
+                    </Link>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

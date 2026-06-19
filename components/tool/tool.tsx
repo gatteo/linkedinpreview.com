@@ -2,12 +2,14 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { Eye, PenLine } from 'lucide-react'
+import { ArrowRight, Eye, PenLine } from 'lucide-react'
+import posthog from 'posthog-js'
 import { Group, Panel } from 'react-resizable-panels'
+import { toast } from 'sonner'
 
 import { Routes } from '@/config/routes'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
-import { hasTextContent } from '@/lib/editor-utils'
+import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
 
@@ -30,6 +32,9 @@ type MobileTab = 'editor' | 'preview'
 
 const STORAGE_KEY = 'linkedinpreview-draft'
 const SAVE_DELAY_MS = 2000
+// One-time nudge toward the dashboard once the user has written a real post.
+const NUDGE_KEY = 'lip-dashboard-nudge-seen'
+const NUDGE_MIN_CHARS = 160
 
 function loadLocalDraft(): any | null {
     try {
@@ -121,18 +126,62 @@ export function Tool({ variant = 'default' }: ToolProps) {
         if (!content) return
         const encoded = await encodeDraft(content)
         if (!encoded) return
+        posthog.capture('feed_preview_opened')
         window.open(`/preview?draft=${encoded}`, '_blank')
     }, [content])
 
-    const handleOpenDashboard = React.useCallback(async () => {
-        if (!content) return
-        const encoded = await encodeDraft(content)
-        if (!encoded) {
-            window.location.href = Routes.Dashboard
-            return
+    const handleOpenDashboard = React.useCallback(
+        async (source: string) => {
+            posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
+            if (!content) {
+                window.location.href = Routes.Dashboard
+                return
+            }
+            const encoded = await encodeDraft(content)
+            if (!encoded) {
+                window.location.href = Routes.Dashboard
+                return
+            }
+            window.location.href = `/dashboard/editor?import=${encoded}`
+        },
+        [content],
+    )
+
+    // Light, one-time nudge: once the user has written a real post, invite them to
+    // continue in the dashboard (which carries this draft over via ?import=).
+    const nudgeShownRef = React.useRef(false)
+    React.useEffect(() => {
+        if (variant !== 'default' || nudgeShownRef.current) return
+        if (extractPlainText(content).length < NUDGE_MIN_CHARS) return
+
+        // Arm the once-per-session guard now that we've decided to act, then bail
+        // if a previous session already showed it. localStorage may be unavailable
+        // (private mode); the ref then keeps it to once per session.
+        let alreadySeen = false
+        try {
+            alreadySeen = !!localStorage.getItem(NUDGE_KEY)
+        } catch {
+            // ignore - fall back to once-per-session via the ref
         }
-        window.location.href = `/dashboard/editor?import=${encoded}`
-    }, [content])
+        nudgeShownRef.current = true
+        if (alreadySeen) return
+        try {
+            localStorage.setItem(NUDGE_KEY, '1')
+        } catch {
+            // ignore - persisted guard unavailable, ref still prevents re-firing this session
+        }
+
+        posthog.capture('dashboard_nudge_shown', { source: 'tool' })
+        toast('Nice post! Want to save it?', {
+            description:
+                'Continue in the dashboard to save this draft, schedule it, and write more with AI - free, no sign-up.',
+            duration: 12000,
+            action: {
+                label: 'Open dashboard',
+                onClick: () => handleOpenDashboard('tool_nudge'),
+            },
+        })
+    }, [content, variant, handleOpenDashboard])
 
     if (isLoading) {
         return null
@@ -190,6 +239,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         <PreviewPanel
                             content={content}
                             media={media}
+                            promptBranding={variant === 'default'}
                             onOpenFeedPreview={handleOpenFeedPreview}
                             hasContent={hasTextContent(content)}
                         />
@@ -211,6 +261,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                             <PreviewPanel
                                 content={content}
                                 media={media}
+                                promptBranding={variant === 'default'}
                                 onOpenFeedPreview={handleOpenFeedPreview}
                                 hasContent={hasTextContent(content)}
                             />
@@ -221,13 +272,17 @@ export function Tool({ variant = 'default' }: ToolProps) {
 
             {/* Dashboard prompt - shown when user has written content */}
             {variant === 'default' && hasTextContent(content) && (
-                <div className='border-border bg-muted/30 text-muted-foreground flex items-center justify-center gap-2 border-t px-4 py-2 text-xs'>
-                    <span>Want to save and manage drafts?</span>
+                <div className='border-border bg-muted/30 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 border-t px-4 py-2.5 text-xs'>
+                    <span className='text-foreground font-medium'>Like what you see?</span>
+                    <span className='text-muted-foreground hidden sm:inline'>
+                        Save this draft, schedule it, and write your next posts with AI.
+                    </span>
                     <button
                         type='button'
-                        onClick={handleOpenDashboard}
-                        className='text-primary hover:text-primary/80 font-medium underline underline-offset-2'>
-                        Open full editor
+                        onClick={() => handleOpenDashboard('tool_footer')}
+                        className='text-primary hover:text-primary/80 group inline-flex items-center gap-1 font-semibold'>
+                        Continue in dashboard
+                        <ArrowRight className='size-3 transition-transform group-hover:translate-x-0.5' />
                     </button>
                 </div>
             )}
