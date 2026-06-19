@@ -94,7 +94,7 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 065 | [Posts list page](features/completed/065-posts-list-page.md)                   | SHIPPED |
 | 066 | [Dashboard editor](features/completed/066-dashboard-editor.md)                 | SHIPPED |
 | 067 | [New post creation wizard](features/completed/067-new-post-creation-wizard.md) | SHIPPED |
-| 068 | [Tutorial dialog](features/completed/068-tutorial-dialog.md)                   | SHIPPED |
+| 068 | [Onboarding](features/completed/068-onboarding.md)                             | SHIPPED |
 | 069 | [Dark mode](features/completed/069-dark-mode.md)                               | SHIPPED |
 
 ### Content Strategy

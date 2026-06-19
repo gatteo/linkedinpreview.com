@@ -83,8 +83,9 @@ All components are shadcn/ui primitives wrapping Radix UI, located in `component
 
 - **Description**: Primary interactive element for all user actions
 - **Variants**: default (primary blue), secondary, outline, ghost, destructive, link
-- **Sizes**: sm, default, lg, icon
+- **Sizes**: xs, sm, default, lg, icon, icon-xs, icon-sm, icon-lg
 - **States**: default, hover, active, disabled, loading (spinner)
+- **3D "clicky" feel**: a global treatment baked into the cva so it propagates everywhere - a resting layered shadow, a hover lift (`-translate-y-px` + elevated shadow), an active depress (`translate-y-0` + `scale-[0.98]` + reduced shadow), and a hairline top highlight on primary. `ghost`/`link` opt out of the lift. Transitions are ~150ms; the translate/scale are dropped under `prefers-reduced-motion` (the shadow stays)
 - **Notes**: `cursor-pointer` is set globally. Icon-only buttons use `size="icon"` with an `aria-label`
 
 ### Card
@@ -167,11 +168,27 @@ All components are shadcn/ui primitives wrapping Radix UI, located in `component
 - **States**: visible, dismissed
 - **Notes**: Sonner library - not shadcn toast. Call `toast.success()`, `toast.error()`, `toast.info()` directly. Configured once in the root layout
 
+### Popover
+
+- **Description**: Floating panel anchored to a trigger, for lightweight contextual UI
+- **Variants**: default
+- **Sizes**: controlled via `className` on `PopoverContent`
+- **States**: open, closed (animated; `transform-origin` driven)
+- **Notes**: Radix-based (`components/ui/popover.tsx`). `Popover`, `PopoverTrigger`, `PopoverContent`
+
+### EmptyState
+
+- **Description**: Reusable empty-surface pattern - illustration + headline + copy + primary/secondary action - so every empty surface reads consistently
+- **Variants**: default, `compact` (sidebar-scale)
+- **Sizes**: fluid
+- **States**: content fades/scales in on mount (honors reduced motion)
+- **Notes**: `components/dashboard/empty-state.tsx`. Pair with an illustration from `components/dashboard/illustrations/*`
+
 ## Icons & Assets
 
 - **Icon library**: Lucide React (primary), Tabler Icons (supplementary via `components/icon.tsx`)
 - **Icon size default**: 16px (`size-4`) inline in buttons, 20px (`size-5`) standalone
-- **Illustration style**: None - icons only
+- **Illustration style**: Clean, minimal, geometric line-art as inline React SVGs in `components/dashboard/illustrations/*`. Two-color only - `currentColor` for line work + `--primary` for the single accent - so they theme automatically for light/dark and any future rebrand. Milestone art (`WelcomeMark`, `BuildingSetup`, `SetupComplete`) is animated via Framer Motion; empty-state art (`EmptyPosts`, `EmptyDrafts`, `EmptyCalendar`, `EmptyStrategy`) is static
 - **Image treatment**: `next/image` for all images. Remote patterns configured for `substack.com`
 
 ## Motion & Animation
@@ -180,6 +197,7 @@ All components are shadcn/ui primitives wrapping Radix UI, located in `component
 - **Hover transitions**: color, background-color, border-color
 - **Page transitions**: None - instant navigation
 - **Loading patterns**: Skeleton screens for content loading, spinner for action buttons
+- **Motion tokens**: `lib/motion.ts` is the single source of truth for Framer Motion work - the house `EASE_OUT` curve (`[0.16, 1, 0.3, 1]`), durations, and shared variants (`fadeUp`, `popIn`, `staggerContainer`/`staggerItem`, direction-aware `slideStep`, `pressable`). Wrap motion roots in `<MotionConfig reducedMotion="user">` so `prefers-reduced-motion` is handled once globally rather than per-component (used by the onboarding modal)
 
 ### Custom Animations (defined in `styles/globals.css`)
 

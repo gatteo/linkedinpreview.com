@@ -49,7 +49,7 @@ status, the `idx_drafts_due` index, and the `claim_due_linkedin_posts` (service-
 | data       | jsonb       | NOT NULL                | All branding fields as JSON  |
 | updated_at | timestamptz | NOT NULL, default now() | Last modification            |
 
-The `data` jsonb contains: profile (avatarUrl, name, headline), positioning (statement), role, expertise (topics array), writingStyle (language, sentenceLength, postLength, emojiFrequency), footer (enabled, text), knowledgeBase (notes), dosDonts (dos[], donts[]), inspiration (posts[], creators[]).
+The `data` jsonb contains: profile (avatarUrl, name, headline), positioning (statement), role, expertise (topics array), writingStyle (language, sentenceLength, postLength, emojiFrequency), footer (enabled, text), knowledgeBase (notes), dosDonts (dos[], donts[]), inspiration (posts[], creators[]), meta (onboardedAt - ISO timestamp that gates the onboarding modal; see feature 068).
 
 **Relationships:** One-to-one with User.
 

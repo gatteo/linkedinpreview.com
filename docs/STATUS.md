@@ -4,6 +4,12 @@
 > Verified against the code on 2026-06-15 (branch `feat/dashboard-overhaul`). Detailed dated
 > history is in [CHANGELOG.md](CHANGELOG.md); the per-feature truth is in
 > [features/](features/) with `file:line` evidence; the phase plan is in [ROADMAP.md](ROADMAP.md).
+>
+> **2026-06-19 update:** the dashboard onboarding was rebuilt from a 4-slide placeholder into a full
+> interactive setup wizard that prefills branding + strategy (068), and shared UX foundations were
+> added (motion tokens, 3D "clicky" buttons, `<EmptyState>`, an illustration set - see
+> [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)). All code/build-verified (type-check, lint, build pass) on the
+> branch; not yet exercised via a live click-through and not yet through the code-quality review gate.
 
 ## The short version
 
@@ -32,8 +38,8 @@ verified against LinkedIn. See "Wave 4 setup required before it works" below.
   generation, content extraction, post-from-voice, post-from-file. Rate limits match `config/ai.ts`
   and the `check_and_record_usage` RPC. (030-036, 038, 039)
 - **Dashboard** - sidebar shell, anonymous auth, multi-draft CRUD, posts list (search/filter/
-  paginate), editor with 2s auto-save, creation wizard, tutorial, dark mode, theme selector, reset
-  all data. (060, 061, 062, 065, 066, 067, 068, 069, 100, 103)
+  paginate), editor with 2s auto-save, creation wizard, interactive onboarding, dark mode, theme
+  selector, reset all data. (060, 061, 062, 065, 066, 067, 068, 069, 100, 103)
 - **Branding** - role, expertise, writing style, knowledge base, auto-save indicator (these fields
   genuinely feed AI generation). (082, 083, 084, 086, 090)
 - **Content strategy** - 7-step wizard persisted to Supabase. (200)

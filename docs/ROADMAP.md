@@ -90,7 +90,7 @@ Transform from a single-page tool into a proper app with dashboard, multi-draft 
 | [065 - Posts list page](features/completed/065-posts-list-page.md)                     | SHIPPED | TanStack table, search/filter/paginate                  |
 | [066 - Dashboard editor](features/completed/066-dashboard-editor.md)                   | SHIPPED | TipTap + preview + AI + 2s auto-save                    |
 | [067 - New post creation wizard](features/completed/067-new-post-creation-wizard.md)   | SHIPPED | Blank / notes / file / URL / voice                      |
-| [068 - Tutorial dialog](features/completed/068-tutorial-dialog.md)                     | SHIPPED | 4-slide onboarding                                      |
+| [068 - Onboarding](features/completed/068-onboarding.md)                               | SHIPPED | Interactive setup wizard; prefills branding + strategy  |
 | [069 - Dark mode](features/completed/069-dark-mode.md)                                 | SHIPPED | Dashboard-scoped light/dark/system                      |
 | [080 - Profile section](features/completed/080-profile-section.md)                     | SHIPPED | Avatar cropping; name/headline/avatar in post preview   |
 | [081 - Positioning statement](features/completed/081-positioning-statement.md)         | SHIPPED | Reaches chat + analyze via branding context             |

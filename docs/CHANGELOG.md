@@ -4,6 +4,37 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-19 — Onboarding rebuild + dashboard UX foundations
+
+- **Rebuilt onboarding from a placeholder into an interactive setup wizard (068).** The old 4-slide
+  tutorial dialog (gray "video" placeholders, set no data) was replaced with a non-dismissable,
+  animated 11-step flow: Welcome → Connect LinkedIn → Profile (with a live LinkedIn preview card) →
+  Role → Goals → Audience → Expertise → Writing style → Cadence → an animated "Building your setup"
+  payoff (calls `/api/strategy/{positioning,formats}` in parallel) → a "You're all set" reveal with
+  on-brand confetti. Reuses the existing strategy `wizard-steps/*` and writes branding + strategy
+  once at the end, so the happy path lands a fully-configured account. New
+  `components/dashboard/onboarding/*` (controller, modal, steps, types, confetti).
+- **Gate moved off the per-device localStorage flag.** Onboarding is now gated by
+  `branding.meta.onboardedAt` (new `BrandingMeta` on the branding JSONB - no migration; merged in
+  `lib/supabase/branding.ts`), so it is per-user and survives across devices. Pre-existing users
+  (with a strategy or role) are silently backfilled so they are never re-prompted. The old
+  `tutorial-dialog.tsx` + `lp-tutorial-seen` flag were removed.
+- **LinkedIn redirect-resume.** Because OAuth navigates away, the LinkedIn step stashes wizard state
+  in `localStorage` (`lp-onboarding-state`); the controller (mounted in the dashboard layout, which
+  also wraps `/dashboard/settings` where the callback lands) rehydrates on return, prefills the
+  synced profile, advances past the step, and cleans the URL.
+- **UX foundations (from the dashboard polish plan).** Added `lib/motion.ts` (shared `EASE_OUT` +
+  variants, `MotionConfig reducedMotion="user"`), a global 3D "clicky" treatment on the shadcn button
+  (layered shadow, hover lift, active depress, reduced-motion safe), a reusable
+  `components/dashboard/empty-state.tsx`, and a `currentColor`/`--primary` illustration set
+  (`components/dashboard/illustrations/*`). Skeleton shimmer intentionally skipped (already exists).
+  Confetti uses Framer Motion (no new dependency). [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) updated.
+- **Verification level (honest).** `pnpm type-check`, `pnpm lint` (baseline; 2 pre-existing
+  warnings), and `pnpm build` (all routes incl. `/dashboard`) pass. The end-to-end runtime flow is
+  **not** yet live click-through tested and the change has **not** been through the code-quality
+  review gate; feature 068's ACs are code-verified with `file:line` evidence. Tracked under the
+  68 feature spec's known-gaps.
+
 ## 2026-06-17 — LinkedIn as login: account conversion, resolution & switching (PARTIAL)
 
 - **Connect now establishes identity, not just a publish token (220).** On first connect the
