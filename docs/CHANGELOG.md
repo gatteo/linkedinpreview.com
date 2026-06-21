@@ -47,8 +47,8 @@
   engagement and surfaces the strongest "drivers" (lift vs their baseline) once 4+ posts have metrics.
 - **AI Insights coach.** `POST /api/analytics/insights` builds a server-side digest from the member's
   RLS-scoped data and generates grounded wins/opportunities/experiments + a next-post recommendation
-  (`generateObject`, rate-limited 5/day via the new `insights` action, migration 013). Results are
-  persisted per user (migration 014) so they show across devices. Day/time advice uses the client's
+  (`generateObject`, rate-limited 5/day via the new `insights` action, migration 014). Results are
+  persisted per user (migration 015) so they show across devices. Day/time advice uses the client's
   timezone offset so it matches the dashboard.
 - **LinkedIn auto-sync scaffold (inert).** `lib/linkedin/analytics.ts` + `app/api/cron/sync-analytics`
   pull `memberCreatorPostAnalytics` when `LINKEDIN_ANALYTICS_ENABLED` is set and the app holds the

@@ -19,6 +19,11 @@ export const env = createEnv({
         LINKEDIN_TOKEN_ENC_KEY: z.string().optional(),
         // Shared secret Vercel Cron sends as the Authorization header.
         CRON_SECRET: z.string().optional(),
+        // Wave 5 analytics: opt-in to pulling member post analytics from the
+        // memberCreatorPostAnalytics API. Requires LinkedIn Community Management
+        // API approval + the `r_member_postAnalytics` scope. Left unset, the
+        // analytics sync stays inert and the dashboard relies on manual/CSV entry.
+        LINKEDIN_ANALYTICS_ENABLED: z.string().optional(),
         // Supabase service-role key - used ONLY by the cron publisher to read due
         // posts and tokens across users (no user session). Never exposed to the client.
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -39,6 +44,7 @@ export const env = createEnv({
         LINKEDIN_REDIRECT_URI: process.env.LINKEDIN_REDIRECT_URI,
         LINKEDIN_TOKEN_ENC_KEY: process.env.LINKEDIN_TOKEN_ENC_KEY,
         CRON_SECRET: process.env.CRON_SECRET,
+        LINKEDIN_ANALYTICS_ENABLED: process.env.LINKEDIN_ANALYTICS_ENABLED,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GTM_MEASUREMENT_ID,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,

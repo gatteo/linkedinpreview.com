@@ -3,7 +3,7 @@ import { generateObject } from 'ai'
 import type { z } from 'zod'
 
 import { env } from '@/env.mjs'
-import { AI_ERROR_CODES } from '@/config/ai'
+import { AI_ERROR_CODES, DEFAULT_LLM_MODEL } from '@/config/ai'
 import { ANALYZE_SYSTEM_PROMPT, analyzeUserPrompt } from '@/config/prompts'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     let object: z.infer<typeof analysisSchema>
     try {
         const result = await generateObject({
-            model: openai(env.LLM_MODEL ?? 'gpt-4o-mini'),
+            model: openai(env.LLM_MODEL ?? DEFAULT_LLM_MODEL),
             schema: analysisSchema,
             system: ANALYZE_SYSTEM_PROMPT,
             prompt: analyzeUserPrompt(parsed.data),

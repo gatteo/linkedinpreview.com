@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import { LINKEDIN_OAUTH, LINKEDIN_SCOPES, linkedInRedirectUri } from '@/config/linkedin'
+import { LINKEDIN_OAUTH, linkedInRedirectUri, linkedInScopes } from '@/config/linkedin'
 
 // ---------------------------------------------------------------------------
 // LinkedIn OAuth 2.0 authorization-code flow.
@@ -34,7 +34,7 @@ export function buildAuthorizeUrl(state: string): string {
         client_id: env.LINKEDIN_CLIENT_ID ?? '',
         redirect_uri: linkedInRedirectUri(),
         state,
-        scope: LINKEDIN_SCOPES.join(' '),
+        scope: linkedInScopes().join(' '),
     })
     return `${LINKEDIN_OAUTH.authorize}?${params.toString()}`
 }

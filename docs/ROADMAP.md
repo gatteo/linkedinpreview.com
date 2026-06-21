@@ -256,19 +256,22 @@ Deep LinkedIn performance insights without expensive tools.
 
 ### Features
 
-| Feature                                               | Status  | Notes                                                                                                            |
-| ----------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
-| [230 - Analytics](backlog/230-analytics-dashboard.md) | PLANNED | Post performance, engagement trends, content insights (top formats, best hooks, optimal length), reach in editor |
+| Feature                                                | Status  | Notes                                                                                                                                                                                 |
+| ------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [230 - Analytics](features/230-analytics-dashboard.md) | PARTIAL | Built: dashboard, KPIs, engagement trends, content insights, per-post table, manual + CSV metric entry. Auto API sync scaffolded but inert (needs Community Management API approval). |
 
 ### To complete this wave
 
-Not started. Build each feature below and open a `T-NNN` ticket per feature at kickoff:
+Built and usable via manual / CSV-imported metrics. To finish (230-AC-9):
 
-- [230 - Analytics](backlog/230-analytics-dashboard.md)
+- Secure LinkedIn **Community Management API** approval + the `r_member_postAnalytics` scope, set
+  `LINKEDIN_ANALYTICS_ENABLED=true`, and verify the `memberCreatorPostAnalytics` sync cron against the
+  live API (re-confirm the request/response shape - LinkedIn marks these counts "best-effort").
 
 ### Dependencies
 
-Wave 4 (requires LinkedIn API access).
+Wave 4 (published posts). Automatic sync additionally requires LinkedIn Community Management API
+access; until then the dashboard runs on manually entered / CSV-imported metrics.
 
 ---
 
