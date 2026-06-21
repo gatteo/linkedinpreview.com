@@ -6,6 +6,7 @@ export const AI_RATE_LIMITS = {
     quickAction: 10,
     ideas: 3,
     insights: 5,
+    import: 10,
     carouselGenerate: 3,
 } as const
 

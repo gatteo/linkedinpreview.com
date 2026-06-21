@@ -4,6 +4,22 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-21 — Analytics: import existing LinkedIn posts via API (230-AC-12)
+
+- **The dashboard only knew about posts created in the app**, so a member with a long LinkedIn history
+  but no in-app published posts saw the empty state. Added an on-demand **API import** that backfills
+  their existing LinkedIn posts (history + text + recent metrics) as `published` posts so they appear
+  in analytics, Content DNA, and the per-post table.
+- New: `lib/linkedin/import.ts` (`fetchMemberPosts` via the Posts API author finder, commentary ->
+  TipTap), `app/api/analytics/import-linkedin/route.ts` (GET availability + POST import: dedup by URN,
+  create published-post records, best-effort metrics for the recent batch; rate-limited `import` action,
+  migration 016), `createImportedPublishedPost` / `findDraftIdByLinkedInUrn` in `lib/supabase/drafts.ts`,
+  and a self-hiding `import-linkedin-button.tsx` (empty state + page header).
+- **Inert until enabled.** Gated by the same `LINKEDIN_ANALYTICS_ENABLED` + `r_member_postAnalytics`
+  (Community Management API) gate as the sync cron; the button self-hides otherwise. The posts
+  author-finder/response shape is best-guess against current docs and needs live re-verification on
+  first enable. type-check, lint (0 errors), build pass.
+
 ## 2026-06-19 — Carousel creator (Wave 3, features 210-212)
 
 - **Shipped the carousel creator at `/dashboard/carousel`** (sidebar "Carousel" is now live, not "Soon").

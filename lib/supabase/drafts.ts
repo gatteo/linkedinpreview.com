@@ -139,6 +139,68 @@ export async function createDraft(
     return rowToEntry(data as DraftRow)
 }
 
+// ---------------------------------------------------------------------------
+// LinkedIn import (Wave 5 analytics): backfill the member's existing published
+// posts as `published` drafts so they appear in analytics.
+// ---------------------------------------------------------------------------
+
+/** Find the draft id for a given LinkedIn post URN owned by the user, if any. */
+export async function findDraftIdByLinkedInUrn(
+    client: SupabaseClient,
+    userId: string,
+    urn: string,
+): Promise<string | null> {
+    const { data, error } = await client
+        .from('drafts')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('linkedin_post_urn', urn)
+        .maybeSingle()
+    if (error) throw error
+    return (data?.id as string | undefined) ?? null
+}
+
+/**
+ * Create a `published` post draft from an imported LinkedIn post. Returns the new
+ * draft id. The caller is responsible for deduping by URN first (see
+ * `findDraftIdByLinkedInUrn`).
+ */
+export async function createImportedPublishedPost(
+    client: SupabaseClient,
+    userId: string,
+    input: { content: any; urn: string; url: string; publishedAtMs: number | null },
+): Promise<string> {
+    const id = crypto.randomUUID()
+    const title = extractTitle(input.content)
+    const stats = computeStats(input.content)
+    const published = input.publishedAtMs ? new Date(input.publishedAtMs).toISOString() : new Date().toISOString()
+
+    const { data, error } = await client
+        .from('drafts')
+        .insert({
+            id,
+            user_id: userId,
+            title,
+            kind: 'post',
+            content: input.content,
+            media: null,
+            status: 'published',
+            label: null,
+            word_count: stats.wordCount,
+            char_count: stats.charCount,
+            created_at: published,
+            updated_at: published,
+            published_at: published,
+            linkedin_post_urn: input.urn,
+            linkedin_post_url: input.url,
+        })
+        .select('id')
+        .single()
+
+    if (error) throw error
+    return (data as { id: string }).id
+}
+
 /**
  * Update a draft's content, media, and/or status.
  * Re-computes title and stats when content is provided.

@@ -20,6 +20,7 @@ import { ContentDnaSection } from './content-dna-section'
 import { ContentInsights } from './content-insights'
 import { EngagementTrendChart } from './engagement-trend-chart'
 import { GoldenHourCard } from './golden-hour-card'
+import { ImportLinkedInButton } from './import-linkedin-button'
 import { ImportMetricsDialog } from './import-metrics-dialog'
 import { KpiCards } from './kpi-cards'
 import { PostsPerformanceTable } from './posts-performance-table'
@@ -93,9 +94,10 @@ export function AnalyticsPage() {
     return (
         <>
             <PageHeader title='Analytics'>
+                <ImportLinkedInButton variant='outline' />
                 <Button variant='outline' size='sm' onClick={() => setImportOpen(true)}>
                     <UploadIcon className='mr-1.5 size-3.5' />
-                    Import
+                    Import CSV
                 </Button>
             </PageHeader>
             <MotionConfig reducedMotion='user'>

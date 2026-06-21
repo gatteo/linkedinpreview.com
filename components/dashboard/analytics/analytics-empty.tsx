@@ -4,6 +4,8 @@ import { BarChart3Icon, PencilLineIcon, TrendingUpIcon, UploadIcon } from 'lucid
 
 import { Button } from '@/components/ui/button'
 
+import { ImportLinkedInButton } from './import-linkedin-button'
+
 type AnalyticsEmptyProps = {
     onImport: () => void
 }
@@ -46,10 +48,14 @@ export function AnalyticsEmpty({ onImport }: AnalyticsEmptyProps) {
                     ))}
                 </ul>
 
-                <Button variant='outline' onClick={onImport}>
-                    <UploadIcon className='mr-1.5 size-4' />
-                    Import from LinkedIn
-                </Button>
+                <div className='flex flex-col items-center gap-2'>
+                    {/* Self-hides unless LinkedIn API import is available. */}
+                    <ImportLinkedInButton />
+                    <Button variant='outline' onClick={onImport}>
+                        <UploadIcon className='mr-1.5 size-4' />
+                        Import CSV
+                    </Button>
+                </div>
             </div>
         </div>
     )

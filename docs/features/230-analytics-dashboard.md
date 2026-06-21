@@ -21,8 +21,13 @@
 - Engagement numbers come from a **layered** data model. Because LinkedIn's member post analytics API
   (`memberCreatorPostAnalytics`) is gated behind Community Management API approval, the dashboard does
   not assume API access: a member can **enter metrics by hand** per post or **import a LinkedIn CSV
-  export**, and - once an operator is approved and opts in - a daily cron **auto-syncs** the same
-  numbers from the API. Whichever source last wrote a post's metrics wins.
+  export**, and - once an operator is approved and opts in - they can **import their existing LinkedIn
+  posts** (history + text + metrics) on demand and a daily cron **auto-syncs** the same numbers from
+  the API. Whichever source last wrote a post's metrics wins.
+- The dashboard only reflects posts that exist in the app as `published` drafts. Posts written
+  directly on LinkedIn before/outside the app are not visible until imported (CSV match by URL, or the
+  API import which backfills them as `published` posts). This is why a brand-new connection can show
+  an empty state despite a long LinkedIn history.
 
 ## Why
 
@@ -67,6 +72,13 @@
       `app/api/cron/sync-analytics/route.ts` returns `skipped` until `LINKEDIN_ANALYTICS_ENABLED` is set
       and the app holds the `r_member_postAnalytics` scope (`config/linkedin.ts:45,52,61`). Requires
       LinkedIn Community Management API approval; not verifiable without it.)_
+- [ ] 230-AC-12 With Community Management API access, a member can import their existing LinkedIn posts
+      (history + text + metrics) into analytics on demand _(built but inert/unverifiable without
+      approval: availability + import `app/api/analytics/import-linkedin/route.ts`, posts author-finder
+      `lib/linkedin/import.ts` (`fetchMemberPosts`), backfill `lib/supabase/drafts.ts`
+      (`createImportedPublishedPost`), self-hiding UI `components/dashboard/analytics/import-linkedin-button.tsx`;
+      `import` rate-limit action migration 016. Posts author-finder request/response shape needs live
+      re-verification on enable.)_
 
 > Acceptance IDs are stable forever. A box is checked `[x]` **only** when verified against the code
 > with a `file:line` citation. Anything unverified or contradicted stays `[ ]` with a gap note.
@@ -87,17 +99,20 @@
 - Data layer: table `supabase/migrations/012_post_metrics.sql`; CRUD `lib/supabase/post-metrics.ts`;
   state `hooks/use-post-metrics.ts`.
 - Manual / CSV entry: `metrics-entry-dialog.tsx`, `import-metrics-dialog.tsx`, parser `lib/analytics/csv.ts`.
-- API sync scaffold (inert): scope `config/linkedin.ts` (`linkedInScopes`), client
-  `lib/linkedin/analytics.ts` (`memberCreatorPostAnalytics`), cron `app/api/cron/sync-analytics/route.ts`
-  (daily, `vercel.json`), opt-in env `LINKEDIN_ANALYTICS_ENABLED` (`env.mjs`).
+- API sync scaffold (inert): scope `config/linkedin.ts` (`linkedInScopes`), analytics client
+  `lib/linkedin/analytics.ts` (`memberCreatorPostAnalytics`), posts author-finder `lib/linkedin/import.ts`
+  (`fetchMemberPosts`), refresh cron `app/api/cron/sync-analytics/route.ts` (daily, `vercel.json`),
+  on-demand history import `app/api/analytics/import-linkedin/route.ts` + self-hiding
+  `import-linkedin-button.tsx`, backfill `lib/supabase/drafts.ts` (`createImportedPublishedPost`),
+  opt-in env `LINKEDIN_ANALYTICS_ENABLED` (`env.mjs`).
 - Activity heatmap/streak reuse `lib/strategy-metrics.ts` + `components/dashboard/strategy/contribution-grid.tsx`.
 
 ## Dependencies
 
 - Published posts (status `published`) drive the dashboard; publishing/scheduling is Wave 4 (220-222).
-- Automatic sync (230-AC-9) depends on LinkedIn **Community Management API** approval +
-  `r_member_postAnalytics` scope (registered legal entity + verified company page). Until then the
-  dashboard runs on manual/CSV-entered metrics.
+- Automatic sync (230-AC-9) and the API history import (230-AC-12) depend on LinkedIn **Community
+  Management API** approval + `r_member_postAnalytics` scope (registered legal entity + verified company
+  page). Until then the dashboard runs on manual/CSV-entered metrics.
 - Charting: `recharts` via `components/ui/chart.tsx`.
 
 ## Open questions / known gaps
@@ -107,7 +122,13 @@
   documented metric set but must be re-verified against the live API when first enabled (LinkedIn
   documents these counts as "best-effort" and notes they can lag the native UI).
 - CSV import matches rows to drafts by the stored LinkedIn post URL, so it only covers posts published
-  through this app; posts created elsewhere are reported as unmatched.
+  through this app; posts created elsewhere are reported as unmatched. The API import (230-AC-12) is the
+  path for backfilling posts written directly on LinkedIn.
+- The API import's posts author-finder (`lib/linkedin/import.ts`, `GET /rest/posts?q=author`) and the
+  per-post analytics shape are best-guess against current docs and MUST be re-verified against the live
+  API on first enable (the finder/permission and field names are the most likely points of drift).
+  Import is bounded to 300 posts/run and inline metrics to the most recent batch; the rest backfill via
+  the daily sync cron.
 - Metrics are stored as one current snapshot per post (latest values), not per-day time series; the
   trend chart plots one point per post. Per-day snapshot history is a future extension.
 - Unblocks Best Time to Post phase-2 personalization (224-AC-5), which is still not built.

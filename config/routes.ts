@@ -3,6 +3,7 @@ export const ApiRoutes = {
     Suggestions: '/api/suggestions',
     Analyze: '/api/analyze',
     AnalyticsInsights: '/api/analytics/insights',
+    AnalyticsImportLinkedIn: '/api/analytics/import-linkedin',
     Generate: '/api/generate',
     Extract: '/api/extract',
     LinkedInAuth: '/api/linkedin/auth',
