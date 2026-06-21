@@ -105,6 +105,19 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 201 | [Content strategy dashboard](features/completed/201-content-strategy-dashboard.md) | SHIPPED |
 | 202 | [Weekly AI post ideas](features/completed/202-weekly-ai-post-ideas.md)             | SHIPPED |
 
+### Carousel (Wave 3)
+
+| ID  | Feature                                         | Status  |
+| --- | ----------------------------------------------- | ------- |
+| 210 | [Carousel creator](plans/carousel-creator.md)   | SHIPPED |
+| 211 | [Carousel templates](plans/carousel-creator.md) | SHIPPED |
+| 212 | [Carousel export](plans/carousel-creator.md)    | SHIPPED |
+
+Slide/canvas editor for LinkedIn carousel (PDF document) posts at `/dashboard/carousel`: drag-and-drop
+elements (text/image/shape/icon), 14 templates, 11 themes, AI generation from a topic/text/URL, and
+watermark-free PDF/PNG/ZIP export. Export fidelity wants a real-browser smoke test before being marked
+fully verified. See [plans/carousel-creator.md](plans/carousel-creator.md).
+
 ### Branding & Personalization
 
 | ID  | Feature                                                                          | Status  |
@@ -136,20 +149,17 @@ Status key: **SHIPPED** = built and every acceptance criterion verified against 
 | 111 | [Article helpfulness](features/completed/111-article-helpfulness.md) | SHIPPED |
 | 112 | [PostHog analytics](features/completed/112-posthog-analytics.md)     | SHIPPED |
 | 113 | [Google Tag Manager](features/completed/113-google-tag-manager.md)   | SHIPPED |
+| 230 | [Analytics dashboard](features/230-analytics-dashboard.md)           | PARTIAL |
 
 ### Planned (backlog)
 
 | ID  | Feature                                                           | Wave |
 | --- | ----------------------------------------------------------------- | ---- |
-| 210 | [Carousel creator](backlog/210-carousel-creator.md)               | 3    |
-| 211 | [Carousel templates](backlog/211-carousel-templates.md)           | 3    |
-| 212 | [Carousel export](backlog/212-carousel-export.md)                 | 3    |
 | 220 | [LinkedIn OAuth](backlog/220-linkedin-oauth.md)                   | 4    |
 | 221 | [One-click publish](backlog/221-one-click-publish.md)             | 4    |
 | 222 | [Post scheduling](backlog/222-post-scheduling.md)                 | 4    |
 | 223 | [Content calendar](backlog/223-content-calendar.md)               | 4    |
 | 224 | [Best time to post](backlog/224-best-time-to-post.md)             | 4    |
-| 230 | [Analytics dashboard](backlog/230-analytics-dashboard.md)         | 5    |
 | 240 | [Team collaboration](backlog/240-team-collaboration.md)           | 6    |
 | 241 | [Chrome extension](backlog/241-chrome-extension.md)               | 6    |
 | 242 | [Content repurposing](backlog/242-content-repurposing.md)         | 6    |

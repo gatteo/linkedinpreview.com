@@ -5,7 +5,12 @@ export const AI_RATE_LIMITS = {
     wizard: 5,
     quickAction: 10,
     ideas: 3,
+    insights: 5,
+    carouselGenerate: 3,
 } as const
+
+/** Default model id when LLM_MODEL is unset. Shared by all AI routes. */
+export const DEFAULT_LLM_MODEL = 'gpt-4o-mini'
 
 export const AI_ERROR_CODES = {
     RATE_LIMITED: 'RATE_LIMITED',

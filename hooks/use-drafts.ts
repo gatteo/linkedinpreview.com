@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
+import { type DraftKind, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
 import {
     createDraft as createDraftApi,
     deleteDraft as deleteDraftApi,
@@ -14,7 +14,13 @@ import {
 } from '@/lib/supabase/drafts'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
-export function useDrafts() {
+/**
+ * Loads and mutates the current user's drafts. Scoped by `kind` (defaults to
+ * 'post') so text-post surfaces and the carousel surface stay separated while
+ * sharing the same table and CRUD primitives.
+ */
+export function useDrafts(opts: { kind?: DraftKind } = {}) {
+    const kind: DraftKind = opts.kind ?? 'post'
     const { isReady, userId, supabase } = useAuth()
     const [drafts, setDrafts] = React.useState<DraftManifestEntry[]>([])
     const [isLoading, setIsLoading] = React.useState(true)
@@ -26,7 +32,7 @@ export function useDrafts() {
         let cancelled = false
         setIsLoading(true)
 
-        fetchDrafts(supabase)
+        fetchDrafts(supabase, { kind })
             .then((data) => {
                 if (!cancelled) {
                     setDrafts(data)
@@ -41,16 +47,16 @@ export function useDrafts() {
         return () => {
             cancelled = true
         }
-    }, [isReady, userId, supabase])
+    }, [isReady, userId, supabase, kind])
 
     const createDraft = React.useCallback(
-        async (initialContent?: any): Promise<DraftManifestEntry> => {
+        async (initialContent?: any, createOpts?: { label?: string | null }): Promise<DraftManifestEntry> => {
             if (!userId) throw new Error('Not authenticated')
-            const entry = await createDraftApi(supabase, userId, initialContent)
+            const entry = await createDraftApi(supabase, userId, initialContent, createOpts?.label ?? null, kind)
             setDrafts((prev) => [entry, ...prev])
             return entry
         },
-        [supabase, userId],
+        [supabase, userId, kind],
     )
 
     const deleteDraft = React.useCallback(

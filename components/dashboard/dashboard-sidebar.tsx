@@ -123,11 +123,15 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton disabled tooltip='Carousel'>
-                                    <LayoutGridIcon />
-                                    <span>Carousel</span>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={pathname.startsWith('/dashboard/carousel')}
+                                    tooltip='Carousel'>
+                                    <Link href='/dashboard/carousel'>
+                                        <LayoutGridIcon />
+                                        <span>Carousel</span>
+                                    </Link>
                                 </SidebarMenuButton>
-                                <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton
@@ -141,11 +145,15 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
-                                <SidebarMenuButton disabled tooltip='Analytics'>
-                                    <BarChart3Icon />
-                                    <span>Analytics</span>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isActive('/dashboard/analytics')}
+                                    tooltip='Analytics'>
+                                    <Link href='/dashboard/analytics'>
+                                        <BarChart3Icon />
+                                        <span>Analytics</span>
+                                    </Link>
                                 </SidebarMenuButton>
-                                <SidebarMenuBadge className='text-[10px] opacity-60'>Soon</SidebarMenuBadge>
                             </SidebarMenuItem>
                             <SidebarMenuItem>
                                 <SidebarMenuButton disabled tooltip='Inspiration'>

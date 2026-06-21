@@ -1,8 +1,14 @@
+import { carouselStats, carouselTitle } from '@/lib/carousel/serialize'
+import { isCarouselDocument } from '@/lib/carousel/types'
+
 // ---------------------------------------------------------------------------
 // Draft schema
 // ---------------------------------------------------------------------------
 
 export type DraftStatus = 'draft' | 'scheduled' | 'published' | 'failed'
+
+/** A draft is either a text post or a carousel (document post). */
+export type DraftKind = 'post' | 'carousel'
 
 /**
  * Manual status labels offered in the editor's status picker. `failed` is a
@@ -27,6 +33,7 @@ export const STATUS_LABELS: Record<DraftStatus, string> = {
 export interface DraftManifestEntry {
     id: string
     title: string
+    kind: DraftKind
     status: DraftStatus
     label: string | null
     createdAt: number
@@ -76,6 +83,7 @@ export interface DraftContent {
  * Extract a title from TipTap JSON - text from the first paragraph, truncated to 60 chars.
  */
 export function extractTitle(content: any): string {
+    if (isCarouselDocument(content)) return carouselTitle(content)
     if (!content?.content) return 'Untitled'
     for (const node of content.content) {
         if (node.content) {
@@ -93,6 +101,7 @@ export function extractTitle(content: any): string {
 
 /** Compute character and word count from TipTap JSON */
 export function computeStats(content: any): { charCount: number; wordCount: number } {
+    if (isCarouselDocument(content)) return carouselStats(content)
     if (!content?.content) return { charCount: 0, wordCount: 0 }
 
     let text = ''

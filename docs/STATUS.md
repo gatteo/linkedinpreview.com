@@ -131,12 +131,14 @@ Verified on 2026-06-14 on branch `feat/dashboard-overhaul`.
 1. Deploy: env + Supabase are configured and the build is verified, so the branch is ready to merge
    and ship. Run the deploy in the real environment and smoke-test the live anonymous-auth + AI flows.
 2. Optionally do the pre-shipping cleanup below (dead scaffolding, route registration).
-3. Then start the next wave from [backlog/](backlog/) - Wave 3 (carousel) and Wave 4 (LinkedIn
-   OAuth + scheduling) are the biggest product gaps; LinkedIn API approval has lead time, so apply
-   early.
+3. Then start the next wave from [backlog/](backlog/) - Wave 4 (LinkedIn OAuth + scheduling) is the
+   biggest remaining product gap; LinkedIn API approval has lead time, so apply early. (Wave 3
+   carousel is now built - see below.)
 
 ## Out of scope for "working product" (planned, in backlog/)
 
-Wave 3 carousel (210-212), Wave 5 analytics (230), Wave 6 advanced (240-244), and the SEO template
-libraries (007-009). These appear as disabled "Soon" items or are absent by design. (Wave 4
-scheduling/publishing (220-224) is now built but PARTIAL - see "What is PARTIAL" above.)
+Wave 6 advanced (240-244) and the SEO template libraries (007-009). These appear as disabled "Soon"
+items or are absent by design. (Wave 3 carousel (210-212), Wave 4 scheduling/publishing (220-224), and
+Wave 5 analytics (230) are now built - carousel is feature-complete for v1 with export and AI;
+publish/analytics remain PARTIAL - see "What is PARTIAL" above. Carousel export fidelity wants a
+real-browser smoke test before calling it fully verified.)

@@ -4,6 +4,57 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-19 — Carousel creator (Wave 3, features 210-212)
+
+- **Shipped the carousel creator at `/dashboard/carousel`** (sidebar "Carousel" is now live, not "Soon").
+  A DOM-based slide/canvas editor for LinkedIn carousel (PDF document) posts: a slide rail
+  (add / duplicate / delete / drag-reorder), a fixed-artboard canvas with selectable, draggable,
+  resizable, rotatable elements (text via TipTap, image, shape, icon), alignment snapping, multi-select,
+  keyboard nudge/delete/duplicate, and batched undo/redo. A contextual inspector edits the element,
+  the slide background/role, and the deck theme/ratio/branding chrome.
+- **Editor store.** A scoped `useSyncExternalStore` store (`lib/carousel/store.ts`, bound in
+  `use-carousel-store.tsx`) with immutable updates and gesture-coalesced history - deliberately not a
+  global state library, per conventions. Switching aspect ratio re-lays-out elements proportionally.
+- **14 templates + 11 themes.** Typed slide-role template library (`lib/carousel/templates.ts`) and a
+  3-tier design-token theme system with hex palettes (never the app's oklch vars, so export is
+  fidelity-proof) and self-hosted Google Font pairings (`lib/carousel/{theme,fonts}.ts`).
+- **AI generation.** `/api/carousel/generate` turns a topic, pasted text, or article URL (reusing
+  `/api/extract`) into a themed, branding-aware deck; `/api/carousel/edit` powers per-slide
+  rewrite / shorten / punch-up. Both mirror the existing `generateObject` route shape (auth, rate
+  limit `carouselGenerate`, OpenAI provider) and treat user/branding content as inert reference data.
+- **Export.** Client-side, watermark-free: each slide rasterized at 2x via `modern-screenshot`
+  (foreignObject, so webfonts/emoji/gradients paint correctly), assembled into a flattened multi-page
+  PDF with `pdf-lib`, or a ZIP of per-slide PNGs + the PDF via `fflate` (`lib/carousel/export.ts`,
+  lazy-loaded). Download PDF is the primary path; native document publishing is a later best-effort add.
+- **Persistence.** Carousels live in the existing `drafts` table, discriminated by a new `kind` column
+  (migration 013, defaults `'post'`). `useDrafts` is now kind-scoped so carousels and text posts stay
+  in separate surfaces while sharing one table and CRUD. New runtime deps: `modern-screenshot`,
+  `pdf-lib`, `fflate`. Plan: [plans/carousel-creator.md](plans/carousel-creator.md).
+
+## 2026-06-19 — Analytics dashboard (Wave 5, feature 230)
+
+- **Shipped the Analytics dashboard at `/dashboard/analytics`** (sidebar "Analytics" is now live, not
+  "Soon"). Headline KPI cards (published, impressions, engagements, avg engagement rate) with
+  animated counters, 30-day deltas, and sparklines; an engagement-over-time chart (30 / 90 / all);
+  a publishing-activity heatmap + streak and a draft -> scheduled -> published -> failed pipeline;
+  content insights (top formats, length, best day); a golden-hour day x time grid; and a per-post
+  performance table. New `components/dashboard/analytics/*`, pure aggregation in `lib/analytics/*`.
+- **Layered metrics model (no LinkedIn API dependency to start).** New `post_metrics` table (migration 012) stores one engagement snapshot per published post. Members enter metrics by hand
+  (`metrics-entry-dialog`) or import a LinkedIn CSV export (`lib/analytics/csv.ts`, matched to posts
+  by stored URL). Null counts are treated as "unknown", never zero.
+- **Content DNA correlation engine.** `lib/analytics/content-dna.ts` relates deterministic content
+  features (media, length, hashtags, hook style, structure, format, posting day) to the member's own
+  engagement and surfaces the strongest "drivers" (lift vs their baseline) once 4+ posts have metrics.
+- **AI Insights coach.** `POST /api/analytics/insights` builds a server-side digest from the member's
+  RLS-scoped data and generates grounded wins/opportunities/experiments + a next-post recommendation
+  (`generateObject`, rate-limited 5/day via the new `insights` action, migration 013). Results are
+  persisted per user (migration 014) so they show across devices. Day/time advice uses the client's
+  timezone offset so it matches the dashboard.
+- **LinkedIn auto-sync scaffold (inert).** `lib/linkedin/analytics.ts` + `app/api/cron/sync-analytics`
+  pull `memberCreatorPostAnalytics` when `LINKEDIN_ANALYTICS_ENABLED` is set and the app holds the
+  `r_member_postAnalytics` scope (LinkedIn Community Management API approval). Off by default; the
+  dashboard runs on manual/CSV metrics until then. Spec: `docs/features/230-analytics-dashboard.md`.
+
 ## 2026-06-19 — Onboarding rebuild + dashboard UX foundations
 
 - **Rebuilt onboarding from a placeholder into an interactive setup wizard (068).** The old 4-slide

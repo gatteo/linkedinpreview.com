@@ -404,3 +404,19 @@ pre.shiki .highlighted {
 .dark .ProseMirror p {
     color: var(--foreground);
 }
+
+/* ─── Carousel inline text editor ─── */
+.ProseMirror.cf-editable {
+    outline: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    width: 100%;
+}
+.ProseMirror.cf-editable p {
+    margin: 0;
+    color: inherit;
+}
+/* Beat the dark-mode .ProseMirror color rule so slide text keeps its theme color. */
+.dark .ProseMirror.cf-editable p {
+    color: inherit;
+}

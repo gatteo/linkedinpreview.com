@@ -1,6 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { computeStats, extractTitle, type DraftContent, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
+import {
+    computeStats,
+    extractTitle,
+    type DraftContent,
+    type DraftKind,
+    type DraftManifestEntry,
+    type DraftStatus,
+} from '@/lib/drafts'
 
 // ---------------------------------------------------------------------------
 // Row type returned by Supabase
@@ -10,6 +17,7 @@ interface DraftRow {
     id: string
     user_id: string
     title: string
+    kind: DraftKind
     content: any
     media: any
     status: DraftStatus
@@ -25,7 +33,7 @@ interface DraftRow {
 }
 
 const ENTRY_COLUMNS =
-    'id, title, status, label, word_count, char_count, created_at, updated_at, scheduled_at, published_at, linkedin_post_url, publish_error'
+    'id, title, kind, status, label, word_count, char_count, created_at, updated_at, scheduled_at, published_at, linkedin_post_url, publish_error'
 
 // ---------------------------------------------------------------------------
 // Mapping helpers
@@ -35,6 +43,7 @@ function rowToEntry(row: DraftRow): DraftManifestEntry {
     return {
         id: row.id,
         title: row.title,
+        kind: row.kind ?? 'post',
         status: row.status,
         label: row.label ?? null,
         createdAt: new Date(row.created_at).getTime(),
@@ -62,8 +71,13 @@ function rowToContent(row: DraftRow): DraftContent {
 /**
  * Fetch all drafts for the current user, ordered by updated_at desc.
  */
-export async function fetchDrafts(client: SupabaseClient): Promise<DraftManifestEntry[]> {
-    const { data, error } = await client.from('drafts').select(ENTRY_COLUMNS).order('updated_at', { ascending: false })
+export async function fetchDrafts(
+    client: SupabaseClient,
+    opts: { kind?: DraftKind } = {},
+): Promise<DraftManifestEntry[]> {
+    let query = client.from('drafts').select(ENTRY_COLUMNS).order('updated_at', { ascending: false })
+    if (opts.kind) query = query.eq('kind', opts.kind)
+    const { data, error } = await query
 
     if (error) throw error
     return (data as DraftRow[]).map(rowToEntry)
@@ -95,6 +109,7 @@ export async function createDraft(
     userId: string,
     initialContent?: any,
     label?: string | null,
+    kind: DraftKind = 'post',
 ): Promise<DraftManifestEntry> {
     const id = crypto.randomUUID()
     const title = extractTitle(initialContent)
@@ -107,6 +122,7 @@ export async function createDraft(
             id,
             user_id: userId,
             title,
+            kind,
             content: initialContent ?? null,
             media: null,
             status: 'draft',
@@ -181,6 +197,11 @@ export async function deleteEmptyDrafts(
     let query = client
         .from('drafts')
         .delete()
+        // Scope to text posts: only the post editor eager-creates blank drafts.
+        // Carousels keep their content in `content` (media is always null) and an
+        // image/icon-only deck has char_count 0, so an unscoped purge would wipe
+        // real carousels.
+        .eq('kind', 'post')
         .eq('status', 'draft')
         .eq('char_count', 0)
         .is('media', null)
@@ -214,6 +235,7 @@ export async function duplicateDraft(
             id: newId,
             user_id: userId,
             title: source.entry.title,
+            kind: source.entry.kind,
             content: source.content.content,
             media: source.content.media,
             status: 'draft',
