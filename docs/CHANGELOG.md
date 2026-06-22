@@ -4,6 +4,21 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-06-22 — Analytics: split LinkedIn analytics onto a separate app (App B)
+
+- LinkedIn requires the **Community Management API to be the only product on an app**, so member post
+  analytics can't share the existing Sign In + Share app (App A). Refactored the analytics integration
+  to a **two-app model**: App A keeps login/publishing; a new **App B** holds the Community Management
+  API and member post analytics. Members connect LinkedIn twice (publishing + analytics).
+- New: `LINKEDIN_ANALYTICS_CLIENT_ID/_SECRET/_REDIRECT_URI` (replaces the `LINKEDIN_ANALYTICS_ENABLED`
+  flag); `isLinkedInAnalyticsConfigured` / `linkedInAnalyticsRedirectUri` / `LINKEDIN_ANALYTICS_SCOPES`;
+  App B OAuth helpers + `app/api/linkedin/analytics/{auth,callback}`; token store
+  `linkedin_analytics_connections` (migration 017) via `lib/linkedin/analytics-connections.ts`.
+- The import/sync now use **App B's token** for analytics calls and reuse the **App A** connection's
+  person URN as the post author. The "Sync from LinkedIn" button now first offers **Connect for
+  analytics** (App B consent), then imports. Still inert until App B is configured + connected.
+- type-check, lint (0 errors), build pass.
+
 ## 2026-06-21 — Analytics: import existing LinkedIn posts via API (230-AC-12)
 
 - **The dashboard only knew about posts created in the app**, so a member with a long LinkedIn history

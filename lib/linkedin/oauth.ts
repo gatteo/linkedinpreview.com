@@ -1,5 +1,11 @@
 import { env } from '@/env.mjs'
-import { LINKEDIN_OAUTH, linkedInRedirectUri, linkedInScopes } from '@/config/linkedin'
+import {
+    LINKEDIN_ANALYTICS_SCOPES,
+    LINKEDIN_OAUTH,
+    linkedInAnalyticsRedirectUri,
+    linkedInRedirectUri,
+    linkedInScopes,
+} from '@/config/linkedin'
 
 // ---------------------------------------------------------------------------
 // LinkedIn OAuth 2.0 authorization-code flow.
@@ -77,4 +83,43 @@ export async function fetchUserInfo(accessToken: string): Promise<LinkedInUserIn
 /** The LinkedIn person URN used as the `author` of a post. */
 export function personUrn(sub: string): string {
     return `urn:li:person:${sub}`
+}
+
+// ---------------------------------------------------------------------------
+// Analytics app (App B) OAuth - separate client/redirect/scopes from App A.
+// ---------------------------------------------------------------------------
+
+/** Build the App B (analytics) consent URL. `state` is an opaque CSRF token. */
+export function buildAnalyticsAuthorizeUrl(state: string): string {
+    const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: env.LINKEDIN_ANALYTICS_CLIENT_ID ?? '',
+        redirect_uri: linkedInAnalyticsRedirectUri(),
+        state,
+        scope: [...LINKEDIN_ANALYTICS_SCOPES].join(' '),
+    })
+    return `${LINKEDIN_OAUTH.authorize}?${params.toString()}`
+}
+
+/** Exchange an App B authorization code for an analytics access token. */
+export async function exchangeAnalyticsCodeForToken(code: string): Promise<LinkedInTokenResponse> {
+    const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        client_id: env.LINKEDIN_ANALYTICS_CLIENT_ID ?? '',
+        client_secret: env.LINKEDIN_ANALYTICS_CLIENT_SECRET ?? '',
+        redirect_uri: linkedInAnalyticsRedirectUri(),
+    })
+
+    const res = await fetch(LINKEDIN_OAUTH.token, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+    })
+
+    if (!res.ok) {
+        const detail = await res.text().catch(() => '')
+        throw new Error(`LinkedIn analytics token exchange failed (${res.status}): ${detail}`)
+    }
+    return (await res.json()) as LinkedInTokenResponse
 }

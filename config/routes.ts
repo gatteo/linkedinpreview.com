@@ -7,6 +7,7 @@ export const ApiRoutes = {
     Generate: '/api/generate',
     Extract: '/api/extract',
     LinkedInAuth: '/api/linkedin/auth',
+    LinkedInAnalyticsAuth: '/api/linkedin/analytics/auth',
     LinkedInStatus: '/api/linkedin/status',
     LinkedInDisconnect: '/api/linkedin/disconnect',
     LinkedInPublish: '/api/linkedin/publish',

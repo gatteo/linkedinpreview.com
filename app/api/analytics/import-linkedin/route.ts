@@ -1,12 +1,8 @@
 import { AI_ERROR_CODES } from '@/config/ai'
-import {
-    isLinkedInAnalyticsEnabled,
-    isLinkedInConfigured,
-    LINKEDIN_ANALYTICS_SYNC_BATCH,
-    LINKEDIN_ERROR_CODES,
-} from '@/config/linkedin'
+import { isLinkedInAnalyticsConfigured, LINKEDIN_ANALYTICS_SYNC_BATCH, LINKEDIN_ERROR_CODES } from '@/config/linkedin'
 import { hasAnyMetric } from '@/lib/analytics/metrics'
 import { fetchMemberPostAnalytics } from '@/lib/linkedin/analytics'
+import { getAnalyticsConnectionRow, hasValidAnalyticsConnection } from '@/lib/linkedin/analytics-connections'
 import { getConnectionRow, isExpired } from '@/lib/linkedin/connections'
 import { decryptToken } from '@/lib/linkedin/crypto'
 import { commentaryToTiptapDoc, fetchMemberPosts } from '@/lib/linkedin/import'
@@ -19,31 +15,42 @@ import { createClient } from '@/lib/supabase/server'
 
 export const maxDuration = 60
 
-/** Whether API import is available to this member right now. */
+/**
+ * Whether API import is available to this member: the analytics app (App B) is
+ * configured, the member has connected it (valid token), and we know their person
+ * URN from the publishing connection (App A) to use as the post author.
+ */
 export async function GET() {
-    const configured = isLinkedInConfigured()
-    const enabled = isLinkedInAnalyticsEnabled()
-
-    if (!configured || !enabled) {
-        return Response.json({ available: false, configured, enabled, connected: false })
+    const configured = isLinkedInAnalyticsConfigured()
+    if (!configured) {
+        return Response.json({ available: false, configured, connected: false, needsPublishConnection: false })
     }
 
     const supabase = await createClient()
     const {
         data: { user },
     } = await supabase.auth.getUser()
-    if (!user) return Response.json({ available: false, configured, enabled, connected: false })
+    if (!user) {
+        return Response.json({ available: false, configured, connected: false, needsPublishConnection: false })
+    }
 
-    const row = await getConnectionRow(supabase, user.id).catch(() => null)
-    const connected = Boolean(row?.access_token && !isExpired(row.expires_at))
-    return Response.json({ available: connected, configured, enabled, connected })
+    const connected = await hasValidAnalyticsConnection(supabase, user.id)
+    const appA = await getConnectionRow(supabase, user.id).catch(() => null)
+    const hasAuthor = Boolean(appA?.linkedin_sub)
+
+    return Response.json({
+        available: connected && hasAuthor,
+        configured,
+        connected,
+        needsPublishConnection: connected && !hasAuthor,
+    })
 }
 
 /** Import the member's existing LinkedIn posts (+ recent metrics) into analytics. */
 export async function POST() {
-    if (!isLinkedInConfigured() || !isLinkedInAnalyticsEnabled()) {
+    if (!isLinkedInAnalyticsConfigured()) {
         return Response.json(
-            { error: 'LinkedIn analytics import is not enabled', code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED },
+            { error: 'LinkedIn analytics is not configured', code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED },
             { status: 400 },
         )
     }
@@ -56,16 +63,29 @@ export async function POST() {
         return Response.json({ error: 'Authentication required', code: AI_ERROR_CODES.AUTH_REQUIRED }, { status: 401 })
     }
 
-    const conn = await getConnectionRow(supabase, user.id).catch(() => null)
-    if (!conn || !conn.access_token) {
+    // App B token (analytics) for the API calls.
+    const analyticsConn = await getAnalyticsConnectionRow(supabase, user.id).catch(() => null)
+    if (!analyticsConn || !analyticsConn.access_token) {
         return Response.json(
-            { error: 'Connect your LinkedIn account first', code: LINKEDIN_ERROR_CODES.NOT_CONNECTED },
+            { error: 'Connect LinkedIn for analytics first', code: LINKEDIN_ERROR_CODES.NOT_CONNECTED },
             { status: 400 },
         )
     }
-    if (isExpired(conn.expires_at)) {
+    if (isExpired(analyticsConn.expires_at)) {
         return Response.json(
-            { error: 'LinkedIn connection expired - reconnect to import', code: LINKEDIN_ERROR_CODES.TOKEN_EXPIRED },
+            { error: 'Analytics connection expired - reconnect to import', code: LINKEDIN_ERROR_CODES.TOKEN_EXPIRED },
+            { status: 400 },
+        )
+    }
+
+    // App A connection supplies the member's person URN (the post author).
+    const appA = await getConnectionRow(supabase, user.id).catch(() => null)
+    if (!appA?.linkedin_sub) {
+        return Response.json(
+            {
+                error: 'Connect your LinkedIn account (publishing) so we can identify your posts',
+                code: LINKEDIN_ERROR_CODES.NOT_CONNECTED,
+            },
             { status: 400 },
         )
     }
@@ -78,8 +98,8 @@ export async function POST() {
         )
     }
 
-    const token = decryptToken(conn.access_token)
-    const authorUrn = personUrn(conn.linkedin_sub)
+    const token = decryptToken(analyticsConn.access_token)
+    const authorUrn = personUrn(appA.linkedin_sub)
 
     // Phase 1: fetch the member's posts and create a published-post record for any
     // not already in the app (dedup by URN). Records persist immediately, so a

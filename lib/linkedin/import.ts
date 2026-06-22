@@ -8,9 +8,11 @@ import { LinkedInApiError } from './posts'
 // finder. Paired with memberCreatorPostAnalytics (see ./analytics) this backfills
 // the analytics dashboard with real history.
 //
-// Like the rest of the analytics-sync path this is INERT until the operator opts
-// in (LINKEDIN_ANALYTICS_ENABLED) and the app holds Community Management API
-// access. The exact author-finder/response shape should be re-verified against
+// Like the rest of the analytics-sync path this is INERT until the operator
+// configures the analytics app (App B - LINKEDIN_ANALYTICS_CLIENT_ID/SECRET) and
+// the member connects it, which requires Community Management API access. The
+// token used here is App B's; the author URN is reused from the App A connection.
+// The exact author-finder/response shape should be re-verified against
 // the live API on first enable (LinkedIn versions the Posts API monthly); the
 // parser below is deliberately tolerant of field/shape drift.
 // ---------------------------------------------------------------------------

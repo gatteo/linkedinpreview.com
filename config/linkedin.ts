@@ -37,29 +37,36 @@ export const LINKEDIN_RESTLI_VERSION = '2.0.0'
  */
 export const LINKEDIN_SCOPES = ['openid', 'profile', 'email', 'w_member_social'] as const
 
-/**
- * Read scope for member post analytics. Part of the Community Management API,
- * which requires LinkedIn approval (registered legal entity + verified company
- * page). Only requested when analytics sync is enabled - see `linkedInScopes()`.
- */
-export const LINKEDIN_ANALYTICS_SCOPE = 'r_member_postAnalytics' as const
-
-/**
- * Whether the analytics sync is opted in. Off by default: the dashboard works
- * from manually entered / CSV-imported metrics until a member's app has been
- * granted the Community Management API and this flag is set.
- */
-export function isLinkedInAnalyticsEnabled(): boolean {
-    return env.LINKEDIN_ANALYTICS_ENABLED === 'true' || env.LINKEDIN_ANALYTICS_ENABLED === '1'
+/** The OAuth scopes the publishing/login app (App A) requests. */
+export function linkedInScopes(): string[] {
+    return [...LINKEDIN_SCOPES]
 }
 
-/**
- * The OAuth scopes to request. Adds the analytics read scope only when sync is
- * enabled, so the existing connect flow is unaffected for self-serve apps that
- * lack Community Management API access.
- */
-export function linkedInScopes(): string[] {
-    return isLinkedInAnalyticsEnabled() ? [...LINKEDIN_SCOPES, LINKEDIN_ANALYTICS_SCOPE] : [...LINKEDIN_SCOPES]
+// ---------------------------------------------------------------------------
+// Analytics app (App B) - Community Management API.
+//
+// LinkedIn requires the Community Management API to be the ONLY product on an
+// app ("for legal and security reasons"), so member post analytics cannot live on
+// the same app as Sign In + Share on LinkedIn. It needs its own developer app
+// with its own client id/secret, redirect, OAuth consent, and access token. The
+// member therefore connects LinkedIn twice: once for publishing (App A) and once
+// for analytics (App B). The person URN (author) is reused from the App A
+// connection - it identifies the same member.
+// ---------------------------------------------------------------------------
+
+/** Read scope for member post analytics (Community Management API, App B). */
+export const LINKEDIN_ANALYTICS_SCOPES = ['r_member_postAnalytics'] as const
+
+/** Whether the analytics app (App B) is configured on the server. */
+export function isLinkedInAnalyticsConfigured(): boolean {
+    return Boolean(
+        env.LINKEDIN_ANALYTICS_CLIENT_ID && env.LINKEDIN_ANALYTICS_CLIENT_SECRET && env.LINKEDIN_TOKEN_ENC_KEY,
+    )
+}
+
+/** The exact redirect URI registered on the analytics app (App B). */
+export function linkedInAnalyticsRedirectUri(): string {
+    return env.LINKEDIN_ANALYTICS_REDIRECT_URI || `${site.url}/api/linkedin/analytics/callback`
 }
 
 /** LinkedIn post character limit. */

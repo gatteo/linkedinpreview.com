@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 
 import { env } from '@/env.mjs'
-import { isLinkedInAnalyticsEnabled, isLinkedInConfigured, LINKEDIN_ANALYTICS_SYNC_BATCH } from '@/config/linkedin'
+import { isLinkedInAnalyticsConfigured, LINKEDIN_ANALYTICS_SYNC_BATCH } from '@/config/linkedin'
 import { fetchMemberPostAnalytics } from '@/lib/linkedin/analytics'
 import { isExpired } from '@/lib/linkedin/connections'
 import { decryptToken } from '@/lib/linkedin/crypto'
@@ -23,14 +23,15 @@ interface ConnectionRow {
 }
 
 /**
- * Analytics sync cron. When opted in (LINKEDIN_ANALYTICS_ENABLED) and configured,
- * refreshes engagement metrics for the most recently published posts from the
- * memberCreatorPostAnalytics API. Idempotent: it upserts one row per draft, so a
- * missed or duplicated run only changes how fresh the numbers are.
+ * Analytics sync cron. When the analytics app (App B) is configured, refreshes
+ * engagement metrics for the most recently published posts from the
+ * memberCreatorPostAnalytics API using each member's App B token. Idempotent: it
+ * upserts one row per draft, so a missed or duplicated run only changes how fresh
+ * the numbers are.
  *
- * Inert by default - returns `skipped` when the integration is not configured or
- * analytics sync has not been enabled, so the dashboard simply relies on manual /
- * CSV-imported metrics until an operator turns this on.
+ * Inert by default - returns `skipped` when App B is not configured, so the
+ * dashboard simply relies on manual / CSV-imported metrics until an operator
+ * sets up the Community Management API app.
  */
 export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization')
@@ -38,11 +39,8 @@ export async function GET(request: NextRequest) {
         return new Response('Unauthorized', { status: 401 })
     }
 
-    if (!isLinkedInConfigured()) {
-        return Response.json({ ok: true, skipped: 'not_configured' })
-    }
-    if (!isLinkedInAnalyticsEnabled()) {
-        return Response.json({ ok: true, skipped: 'analytics_not_enabled' })
+    if (!isLinkedInAnalyticsConfigured()) {
+        return Response.json({ ok: true, skipped: 'analytics_not_configured' })
     }
 
     const admin = createAdminClient()
@@ -90,10 +88,10 @@ export async function GET(request: NextRequest) {
     return Response.json({ ok: true, processed: posts.length, synced, failed })
 }
 
-/** Decrypt a user's LinkedIn token, or null when not connected / expired. */
+/** Decrypt a user's analytics (App B) token, or null when not connected / expired. */
 async function resolveToken(admin: ReturnType<typeof createAdminClient>, userId: string): Promise<string | null> {
     const { data } = await admin
-        .from('linkedin_connections')
+        .from('linkedin_analytics_connections')
         .select('access_token, expires_at')
         .eq('user_id', userId)
         .maybeSingle()

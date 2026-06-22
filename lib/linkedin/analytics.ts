@@ -9,8 +9,9 @@ import { LinkedInApiError } from './posts'
 //
 // Returns engagement metrics for the authenticated member's OWN posts. Requires
 // the `r_member_postAnalytics` scope, which is gated behind LinkedIn Community
-// Management API approval - so this path is INERT until an operator opts in via
-// LINKEDIN_ANALYTICS_ENABLED and their app has been approved.
+// Management API approval - so this path is INERT until the operator configures
+// the separate analytics app (App B) and the member connects it. Called with App
+// B's access token.
 //
 // The request/response shapes below follow the documented metric set but should
 // be re-verified against the live API when the integration is first switched on

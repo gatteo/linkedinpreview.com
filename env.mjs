@@ -19,11 +19,16 @@ export const env = createEnv({
         LINKEDIN_TOKEN_ENC_KEY: z.string().optional(),
         // Shared secret Vercel Cron sends as the Authorization header.
         CRON_SECRET: z.string().optional(),
-        // Wave 5 analytics: opt-in to pulling member post analytics from the
-        // memberCreatorPostAnalytics API. Requires LinkedIn Community Management
-        // API approval + the `r_member_postAnalytics` scope. Left unset, the
-        // analytics sync stays inert and the dashboard relies on manual/CSV entry.
-        LINKEDIN_ANALYTICS_ENABLED: z.string().optional(),
+        // Wave 5 analytics: the SEPARATE LinkedIn app (App B) for the Community
+        // Management API. LinkedIn requires that API to be the only product on an
+        // app, so member post analytics cannot share App A (Sign In + Share). All
+        // optional: when unset, the analytics sync/import stay inert and the
+        // dashboard relies on manual/CSV entry. Reuses LINKEDIN_TOKEN_ENC_KEY to
+        // encrypt App B tokens at rest.
+        LINKEDIN_ANALYTICS_CLIENT_ID: z.string().optional(),
+        LINKEDIN_ANALYTICS_CLIENT_SECRET: z.string().optional(),
+        // Optional override; defaults to `${site.url}/api/linkedin/analytics/callback`.
+        LINKEDIN_ANALYTICS_REDIRECT_URI: z.string().optional(),
         // Supabase service-role key - used ONLY by the cron publisher to read due
         // posts and tokens across users (no user session). Never exposed to the client.
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -44,7 +49,9 @@ export const env = createEnv({
         LINKEDIN_REDIRECT_URI: process.env.LINKEDIN_REDIRECT_URI,
         LINKEDIN_TOKEN_ENC_KEY: process.env.LINKEDIN_TOKEN_ENC_KEY,
         CRON_SECRET: process.env.CRON_SECRET,
-        LINKEDIN_ANALYTICS_ENABLED: process.env.LINKEDIN_ANALYTICS_ENABLED,
+        LINKEDIN_ANALYTICS_CLIENT_ID: process.env.LINKEDIN_ANALYTICS_CLIENT_ID,
+        LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,
+        LINKEDIN_ANALYTICS_REDIRECT_URI: process.env.LINKEDIN_ANALYTICS_REDIRECT_URI,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GTM_MEASUREMENT_ID,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,

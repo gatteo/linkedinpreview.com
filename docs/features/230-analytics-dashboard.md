@@ -69,16 +69,18 @@
       `components/dashboard/analytics/ai-insights-section.tsx`; `insights` rate-limit action migration 014;
       `analytics_insights` table migration 015)_
 - [ ] 230-AC-9 Metrics sync automatically from the LinkedIn API _(gap: scaffold built but inert -
-      `app/api/cron/sync-analytics/route.ts` returns `skipped` until `LINKEDIN_ANALYTICS_ENABLED` is set
-      and the app holds the `r_member_postAnalytics` scope (`config/linkedin.ts:45,52,61`). Requires
-      LinkedIn Community Management API approval; not verifiable without it.)_
+      `app/api/cron/sync-analytics/route.ts` returns `skipped` until the analytics app (App B) is
+      configured (`isLinkedInAnalyticsConfigured`) and the member has connected it. Requires a separate
+      LinkedIn app with Community Management API + `r_member_postAnalytics` (it cannot share App A);
+      not verifiable without approval.)_
 - [ ] 230-AC-12 With Community Management API access, a member can import their existing LinkedIn posts
       (history + text + metrics) into analytics on demand _(built but inert/unverifiable without
       approval: availability + import `app/api/analytics/import-linkedin/route.ts`, posts author-finder
       `lib/linkedin/import.ts` (`fetchMemberPosts`), backfill `lib/supabase/drafts.ts`
       (`createImportedPublishedPost`), self-hiding UI `components/dashboard/analytics/import-linkedin-button.tsx`;
-      `import` rate-limit action migration 016. Posts author-finder request/response shape needs live
-      re-verification on enable.)_
+      `import` rate-limit action migration 016. Uses the separate App B OAuth connection
+      (`linkedin_analytics_connections`, migration 017) for the token and the App A connection for the
+      author URN. Posts author-finder request/response shape needs live re-verification on enable.)_
 
 > Acceptance IDs are stable forever. A box is checked `[x]` **only** when verified against the code
 > with a `file:line` citation. Anything unverified or contradicted stays `[ ]` with a gap note.
@@ -99,28 +101,41 @@
 - Data layer: table `supabase/migrations/012_post_metrics.sql`; CRUD `lib/supabase/post-metrics.ts`;
   state `hooks/use-post-metrics.ts`.
 - Manual / CSV entry: `metrics-entry-dialog.tsx`, `import-metrics-dialog.tsx`, parser `lib/analytics/csv.ts`.
-- API sync scaffold (inert): scope `config/linkedin.ts` (`linkedInScopes`), analytics client
-  `lib/linkedin/analytics.ts` (`memberCreatorPostAnalytics`), posts author-finder `lib/linkedin/import.ts`
-  (`fetchMemberPosts`), refresh cron `app/api/cron/sync-analytics/route.ts` (daily, `vercel.json`),
-  on-demand history import `app/api/analytics/import-linkedin/route.ts` + self-hiding
-  `import-linkedin-button.tsx`, backfill `lib/supabase/drafts.ts` (`createImportedPublishedPost`),
-  opt-in env `LINKEDIN_ANALYTICS_ENABLED` (`env.mjs`).
+- Two-app model (inert): analytics lives on a SEPARATE LinkedIn app (App B) because LinkedIn requires
+  the Community Management API to be the only product on an app. Config `config/linkedin.ts`
+  (`isLinkedInAnalyticsConfigured`, `linkedInAnalyticsRedirectUri`, `LINKEDIN_ANALYTICS_SCOPES`), env
+  `LINKEDIN_ANALYTICS_CLIENT_ID/_SECRET/_REDIRECT_URI` (`env.mjs`). Separate OAuth: helpers in
+  `lib/linkedin/oauth.ts` (`buildAnalyticsAuthorizeUrl`, `exchangeAnalyticsCodeForToken`), connect/callback
+  `app/api/linkedin/analytics/{auth,callback}/route.ts`, token store `linkedin_analytics_connections`
+  (migration 017) via `lib/linkedin/analytics-connections.ts`. The member's person URN (post author) is
+  reused from the App A publishing connection.
+- Analytics calls: client `lib/linkedin/analytics.ts` (`memberCreatorPostAnalytics`), posts author-finder
+  `lib/linkedin/import.ts` (`fetchMemberPosts`), refresh cron `app/api/cron/sync-analytics/route.ts`
+  (daily, `vercel.json`), on-demand history import `app/api/analytics/import-linkedin/route.ts` +
+  self-hiding `import-linkedin-button.tsx` (connect vs sync), backfill `lib/supabase/drafts.ts`
+  (`createImportedPublishedPost`). All use App B's token.
 - Activity heatmap/streak reuse `lib/strategy-metrics.ts` + `components/dashboard/strategy/contribution-grid.tsx`.
 
 ## Dependencies
 
 - Published posts (status `published`) drive the dashboard; publishing/scheduling is Wave 4 (220-222).
-- Automatic sync (230-AC-9) and the API history import (230-AC-12) depend on LinkedIn **Community
-  Management API** approval + `r_member_postAnalytics` scope (registered legal entity + verified company
-  page). Until then the dashboard runs on manual/CSV-entered metrics.
+- Automatic sync (230-AC-9) and the API history import (230-AC-12) depend on a **separate LinkedIn app
+  (App B)** with the **Community Management API** + `r_member_postAnalytics` scope (registered legal
+  entity + verified company page). LinkedIn requires that API to be the only product on an app, so it
+  cannot share App A (Sign In + Share). Members connect LinkedIn twice (publishing + analytics). Until
+  App B is set up, the dashboard runs on manual/CSV-entered metrics.
 - Charting: `recharts` via `components/ui/chart.tsx`.
 
 ## Open questions / known gaps
 
-- Automatic API sync (230-AC-9) is built but inert pending Community Management API approval. The
-  `memberCreatorPostAnalytics` request/response shape in `lib/linkedin/analytics.ts` follows the
-  documented metric set but must be re-verified against the live API when first enabled (LinkedIn
-  documents these counts as "best-effort" and notes they can lag the native UI).
+- Automatic API sync (230-AC-9) is built but inert pending the App B (Community Management API) setup +
+  approval. The `memberCreatorPostAnalytics` request/response shape in `lib/linkedin/analytics.ts`
+  follows the documented metric set but must be re-verified against the live API when first enabled
+  (LinkedIn documents these counts as "best-effort" and notes they can lag the native UI).
+- Two-app assumption: the App B token comes from a separate OAuth connection, but the post author URN
+  is reused from the App A publishing connection (same member). If a member connected App B as a
+  different LinkedIn account than App A, the author URN would mismatch and the import would find no
+  posts. Acceptable edge case; flagged for live verification.
 - CSV import matches rows to drafts by the stored LinkedIn post URL, so it only covers posts published
   through this app; posts created elsewhere are reported as unmatched. The API import (230-AC-12) is the
   path for backfilling posts written directly on LinkedIn.
