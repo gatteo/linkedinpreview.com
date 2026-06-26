@@ -79,15 +79,22 @@ The `withContentlayer` Next.js plugin was removed because it re-runs contentlaye
 
 ## Routing
 
-| Route          | Type    | Description                                  |
-| -------------- | ------- | -------------------------------------------- |
-| `/`            | Static  | Landing page with tool, features, FAQ        |
-| `/blog`        | Static  | Blog index with search                       |
-| `/blog/[slug]` | SSG     | Individual blog posts (generateStaticParams) |
-| `/llms.txt`    | Dynamic | AI-readable site content index               |
-| `/rss.xml`     | Dynamic | RSS feed                                     |
-| `/sitemap.xml` | Dynamic | XML sitemap                                  |
-| `/robots.txt`  | Dynamic | Robots directives                            |
+| Route             | Type    | Description                                      |
+| ----------------- | ------- | ------------------------------------------------ |
+| `/`               | Static  | Landing page with tool, features, FAQ            |
+| `/formatter`      | Static  | Dedicated LinkedIn post formatter tool page      |
+| `/preview`        | Dynamic | Feed preview (SEO landing when visited no-draft) |
+| `/blog`           | Static  | Blog index with search                           |
+| `/blog/[slug]`    | SSG     | Individual blog posts (generateStaticParams)     |
+| `/compare/[slug]` | SSG     | Competitor "free alternative" comparison pages   |
+| `/llms.txt`       | Dynamic | AI-readable site content index                   |
+| `/rss.xml`        | Dynamic | RSS feed                                         |
+| `/sitemap.xml`    | Dynamic | XML sitemap                                      |
+| `/robots.txt`     | Dynamic | Robots directives                                |
+
+### Redirects
+
+`next.config.mjs` exports an `async redirects()` built from the `seoRedirects` array: permanent (301) redirects from pruned or duplicate blog slugs to the strongest surviving page. This consolidates link equity and keeps old URLs from 404ing after content pruning. It is the only redirect mechanism (there is none in `proxy.ts`).
 
 ## Analytics & Tracking
 
@@ -136,8 +143,11 @@ Validated at build time via `@t3-oss/env-nextjs` in `env.mjs`:
 
 ## SEO
 
-- JSON-LD schemas: Organization, WebSite, SoftwareApplication (home), Article + BreadcrumbList (blog posts), HowTo (tutorial posts)
+- JSON-LD schemas: Organization, WebSite, SoftwareApplication (home), Article + BreadcrumbList (blog posts), HowTo (tutorial posts), SoftwareApplication + FAQPage (`/formatter`)
 - Open Graph and Twitter Card meta tags on all pages
 - Canonical URLs
 - Dynamic sitemap and RSS feed
 - `llms.txt` for AI content discovery
+- Dedicated tool landing pages for transactional intent (`/formatter`); blog posts are reserved for informational intent (see `docs/content-guidelines.md`)
+- 301 redirect consolidation of pruned/duplicate posts via `seoRedirects` in `next.config.mjs`
+- Full implementation log in `docs/SEO_IMPROVEMENTS.md`

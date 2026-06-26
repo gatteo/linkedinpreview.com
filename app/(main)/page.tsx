@@ -1,3 +1,4 @@
+import { type Metadata } from 'next'
 import { type Organization, type SoftwareApplication, type WebSite, type WithContext } from 'schema-dts'
 
 import { site } from '@/config/site'
@@ -10,6 +11,15 @@ import { HowToUse } from '@/components/home/how-to-use'
 import { OpenSource } from '@/components/home/opensource'
 import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
+
+export const metadata: Metadata = {
+    title: { absolute: 'LinkedIn Post Preview, Formatter & Editor - Free, No Signup' },
+    description:
+        'Free LinkedIn post preview, formatter, and editor. Write, format (bold, italic, underline, lists), and preview your post on mobile and desktop before publishing. No signup required.',
+    alternates: {
+        canonical: site.url,
+    },
+}
 
 export default function Page() {
     const organizationSchema: WithContext<Organization> = {
