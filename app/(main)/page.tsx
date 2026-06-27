@@ -2,6 +2,7 @@ import { type Metadata } from 'next'
 import { type Organization, type SoftwareApplication, type WebSite, type WithContext } from 'schema-dts'
 
 import { site } from '@/config/site'
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { CtaSection } from '@/components/home/cta-section'
 import { EmbedSection } from '@/components/home/embed-section'
 import { FAQs } from '@/components/home/faqs'
@@ -63,6 +64,13 @@ export default function Page() {
             '@type': 'Offer',
             'price': '0',
             'priceCurrency': 'USD',
+        },
+        'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': SOCIAL_PROOF.rating,
+            'bestRating': '5',
+            'worstRating': '1',
+            'ratingCount': SOCIAL_PROOF.count.replace(/,/g, ''),
         },
         'featureList': [
             'Real-time LinkedIn post preview',

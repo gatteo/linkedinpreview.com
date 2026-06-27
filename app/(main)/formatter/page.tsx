@@ -6,6 +6,7 @@ import { type FAQPage, type SoftwareApplication, type WithContext } from 'schema
 
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AnimateIn } from '@/components/ui/animate-in'
 import { Button } from '@/components/ui/button'
@@ -234,6 +235,13 @@ export default function FormatterPage() {
             '@type': 'Offer',
             'price': '0',
             'priceCurrency': 'USD',
+        },
+        'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': SOCIAL_PROOF.rating,
+            'bestRating': '5',
+            'worstRating': '1',
+            'ratingCount': SOCIAL_PROOF.count.replace(/,/g, ''),
         },
         'featureList': [
             'Bold, italic, underline, strikethrough text formatting',

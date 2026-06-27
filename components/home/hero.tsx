@@ -76,7 +76,7 @@ export function Hero() {
                         <StarRating />
 
                         <span className='text-xs font-medium text-neutral-500 sm:text-sm'>
-                            {SOCIAL_PROOF.rating} from {SOCIAL_PROOF.count} reviews
+                            {SOCIAL_PROOF.rating}/5 from {SOCIAL_PROOF.count} reviews
                         </span>
                     </div>
                 </AnimateIn>
