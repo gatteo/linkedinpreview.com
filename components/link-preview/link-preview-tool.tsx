@@ -88,7 +88,7 @@ export function LinkPreviewTool() {
     }
 
     return (
-        <div id='tool' className='scroll-mt-24 px-6 py-12 md:py-16'>
+        <div id='tool' className='border-border scroll-mt-24 border-t px-6 py-12 md:py-16'>
             <div className='mx-auto max-w-3xl'>
                 <form onSubmit={onSubmit} noValidate className='flex flex-col gap-3 sm:flex-row'>
                     <div className='relative flex-1'>
