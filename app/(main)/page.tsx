@@ -1,6 +1,8 @@
 import { type Metadata } from 'next'
+import { absoluteUrl } from '@/utils/urls'
 import { type Organization, type SoftwareApplication, type WebSite, type WithContext } from 'schema-dts'
 
+import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { SOCIAL_PROOF } from '@/config/social-proof'
 import { CtaSection } from '@/components/home/cta-section'
@@ -19,6 +21,11 @@ export const metadata: Metadata = {
         'Free LinkedIn post preview, formatter, and editor. Write, format (bold, italic, underline, lists), and preview your post on mobile and desktop before publishing. No signup required.',
     alternates: {
         canonical: site.url,
+        languages: {
+            'de-DE': absoluteUrl(Routes.Vorschau),
+            'en': site.url,
+            'x-default': site.url,
+        },
     },
 }
 
@@ -70,7 +77,7 @@ export default function Page() {
             'ratingValue': SOCIAL_PROOF.rating,
             'bestRating': '5',
             'worstRating': '1',
-            'ratingCount': SOCIAL_PROOF.count.replace(/,/g, ''),
+            'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
         },
         'featureList': [
             'Real-time LinkedIn post preview',

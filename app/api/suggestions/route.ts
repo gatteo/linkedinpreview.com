@@ -4,6 +4,8 @@ import { z } from 'zod'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
+import { assertSameOrigin, checkIpRateLimit } from '@/lib/ai-guard'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
 const bodySchema = z.object({
@@ -11,6 +13,17 @@ const bodySchema = z.object({
 })
 
 export async function POST(request: Request) {
+    const originBlock = assertSameOrigin(request)
+    if (originBlock) return originBlock
+
+    const ipLimit = checkIpRateLimit(request, { id: 'suggestions', limit: 30, windowMs: 10 * 60 * 1000 })
+    if (!ipLimit.allowed) {
+        return Response.json(
+            { error: 'Too many requests', code: AI_ERROR_CODES.RATE_LIMITED, resetAt: ipLimit.resetAt },
+            { status: 429 },
+        )
+    }
+
     let body: unknown
     try {
         body = await request.json()
@@ -31,6 +44,16 @@ export async function POST(request: Request) {
 
     if (!user) {
         return Response.json({ error: 'Authentication required', code: AI_ERROR_CODES.AUTH_REQUIRED }, { status: 401 })
+    }
+
+    // Per-user daily cap. Suggestions fire automatically after each generation/refinement,
+    // so this stops a holder of a free anonymous session from looping the endpoint.
+    const rateLimit = await checkRateLimit(supabase, 'suggestions')
+    if (!rateLimit.allowed) {
+        return Response.json(
+            { error: 'Daily suggestions limit reached', code: AI_ERROR_CODES.RATE_LIMITED, resetAt: rateLimit.resetAt },
+            { status: 429 },
+        )
     }
 
     const openai = createOpenAI({ apiKey: env.LLM_API_KEY })

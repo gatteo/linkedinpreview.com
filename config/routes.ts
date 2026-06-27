@@ -2,6 +2,7 @@ export const ApiRoutes = {
     Chat: '/api/chat',
     Suggestions: '/api/suggestions',
     Analyze: '/api/analyze',
+    LinkPreview: '/api/link-preview',
 }
 
 export const Routes = {
@@ -18,6 +19,9 @@ export const Routes = {
     Compare: '/compare',
     ComparePost: (slug: string) => `/compare/${slug}`,
     Formatter: '/formatter',
+    Generator: '/linkedin-post-generator',
+    LinkPreview: '/linkedin-link-preview',
+    Vorschau: '/linkedin-vorschau',
     Embed: '/embed',
     EmbedSection: '/#embed',
 }

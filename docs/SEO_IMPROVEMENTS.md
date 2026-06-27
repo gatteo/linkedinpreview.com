@@ -735,4 +735,42 @@ Implementation of the GSC + PostHog search audit. Source backlog lives in the gi
 - **Internal linking.** One natural `/formatter` link added to each of 16 surviving formatting posts.
 - **Build fix.** Repaired 6 pre-existing MDX files with invalid JSX (`description='...''...'`) that were breaking `contentlayer build`.
 
+---
+
+## 🚀 TASK-10 + TASK-13 Implementation (June 2026)
+
+Two build-lean SEO bets: dedicated tool pages for transactional clusters the homepage ranked poorly for, plus one scoped German landing page. Demand was inferred from SERP saturation (not a verified volume tool), so scope was kept tight.
+
+### TASK-10 Part A: `/linkedin-post-generator` (new)
+
+Targets the "linkedin post generator" cluster (a transactional, dedicated-tool-page SERP). The product already had the AI engine but only as a buried in-editor modal with no indexable URL. The wedge vs gated competitors is genuinely free, no-signup generation + live preview + formatting.
+
+- `app/(main)/linkedin-post-generator/page.tsx` clones the `/formatter` pattern: generator hero, the inline generator centerpiece, reused home sections, an internal-link cluster, and unique `SoftwareApplication` + `FAQPage` JSON-LD.
+- `components/generator/generator-tool.tsx` surfaces the generation flow inline and ungated (reuses `/api/chat` + an invisible anonymous session) and injects the result into the live `<Tool/>` preview via the new `injectedDoc` prop.
+- Hardened the now-indexable AI endpoints: `lib/ai-guard.ts` (same-origin + in-memory per-IP limit) and added rate limiting to the previously-unmetered `/api/suggestions`. Per-user Supabase caps unchanged. Known residuals (header-less same-origin bypass, per-instance IP limiter, DNS-rebinding TOCTOU on the link-preview fetch) are documented for a persistent-store / IP-pinning upgrade before heavy promotion.
+
+### TASK-10 Part B: `/linkedin-link-preview` (net-new feature)
+
+Targets the "linkedin link preview / url preview / og preview" cluster, which the homepage was ranking for with a mismatched intent (it is a post-text editor, not a link-card preview).
+
+- Server route `app/api/link-preview/route.ts` fetches raw HTML like LinkedIn's crawler (no JS), parses Open Graph / Twitter meta (zero-dependency), and returns the link card + an Open Graph issue checklist with copy-paste fixes (missing tags, WebP, image size, JS-rendered tags, stale cache).
+- SSRF-hardened: scheme allowlist, private/reserved IP blocklist (IPv4 + IPv6 + cloud metadata), DNS-rebinding mitigation, per-hop redirect re-validation, fetch + DNS timeouts, 2 MB streamed size cap, per-IP rate limit, no internal leakage.
+- Honest about LinkedIn's cache: links to the official Post Inspector rather than implying a third party can force a refresh.
+- Supporting informational post `how-to-fix-linkedin-link-previews.mdx` (CtaCard above the fold).
+
+### TASK-13: `/linkedin-vorschau` (German landing, no full i18n)
+
+Targets the growing German preview/formatter long-tails ("linkedin post vorschau", "linkedin beitrag vorschau", "linkedin post formatieren") that the English homepage already ranks for on German page 1.
+
+- One static German page reusing `<Tool/>` (tool UI kept English) with genuinely localized German copy and German `FAQPage` + `SoftwareApplication` (`inLanguage: de-DE`) JSON-LD.
+- German differentiators featured honestly: Unicode bold/italic has no glyphs for the umlauts or sz; DSGVO / client-side local processing.
+- Manual reciprocal hreflang (`de-DE` / `en` / `x-default`) on both the German page and the homepage via `Metadata.alternates.languages`. No next-intl / locale routing. Measure in GSC for ~1 quarter before expanding.
+
+### Shared
+
+- `config/routes.ts`: added `Generator`, `LinkPreview`, `Vorschau`, `ApiRoutes.LinkPreview`. All three pages added to `app/sitemap.ts`. New tool pages + Formatter added to the footer "Product" column for sitewide internal linking. Generator internal links added to 3 AI/writing blog posts.
+- Fixed a pre-existing `ratingCount` schema-dts type error (string to Number) across the homepage, `/formatter`, and the 3 new pages.
+
+**Verification:** `pnpm type-check` shows no errors in any new or modified file (only the 3 pre-existing untouched files remain), and `pnpm build` is green with all new routes generated.
+
 **Last Updated:** June 26, 2026

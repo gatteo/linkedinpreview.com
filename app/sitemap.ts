@@ -19,6 +19,9 @@ const sitemap = async () => {
         Routes.Preview,
         Routes.Compare,
         Routes.Formatter,
+        Routes.Generator,
+        Routes.LinkPreview,
+        Routes.Vorschau,
         ...cmsPages,
     ].map((route) => ({
         url: absoluteUrl(route),
