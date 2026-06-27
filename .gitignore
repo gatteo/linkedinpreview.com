@@ -48,3 +48,5 @@ dev
 
 .claude
 .mcp.json
+# SEO audit working files (not committed)
+seo-audit/

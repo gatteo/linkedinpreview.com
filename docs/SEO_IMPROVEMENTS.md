@@ -709,3 +709,30 @@ The site now has enterprise-level SEO implementation with:
 
 **Last Updated:** January 23, 2025  
 **Next Review Date:** February 23, 2025
+
+---
+
+## 🔎 SEO Audit Implementation (June 2026)
+
+Implementation of the GSC + PostHog search audit. Source backlog lives in the gitignored `seo-audit/` workspace; this section is the committed summary.
+
+### Code / infrastructure
+
+- **301 redirect mechanism (new).** `next.config.mjs` now exports `async redirects()` built from a `seoRedirects` array. Previously the codebase had no redirect mechanism.
+- **Duplicate CTA page fixed.** The thin `linkedin-cta-examples` was indexed instead of the strong `linkedin-call-to-action-examples` (7,745 impr). Deleted the thin one and 301'd it to the canonical.
+- **Content pruning.** 46 mature zero-impression posts (+ 1 template stub) deleted and 301'd to the strongest surviving topical page. Blog count 193 → 145. Shrinks crawl surface and removes a scaled-content quality liability.
+- **Homepage metadata.** `app/(main)/page.tsx` exports `metadata` with an absolute title `LinkedIn Post Preview, Formatter & Editor - Free, No Signup` and a formatter/editor/preview description, targeting the position-8 head terms while preserving the canonical.
+- **`/formatter` tool page (new).** `app/(main)/formatter/page.tsx` renders the real editor with formatter-led H1/title/copy, a formatting-guides internal-link cluster, and its own `SoftwareApplication` + `FAQPage` JSON-LD. Added `Routes.Formatter` and to the sitemap. Captures "linkedin post formatter"/"linkedin post editor" intent that blog posts failed to rank for.
+- **`/preview` landing.** Direct (no-draft) visits now server-render an SEO landing (unique H1, "how it differs from the editor" copy, CTA) instead of a spinner; the in-tool draft experience is unchanged. Sharper title/description.
+
+### Content
+
+- **Content guardrail.** `docs/content-guidelines.md` + a CLAUDE.md section: tool/transactional queries get tool pages, never blog posts; blog posts must be informational, distinct, embed the tool above the fold, and internally link.
+- **Compare pages reframed.** All 6 `contents/compare/*.mdx` retitled to "free alternative" intent with an above-the-fold tool CTA.
+- **Preview-cluster defense.** Homepage hero subhead + 4 new FAQs surface "editor / formatter / checker / see-more tester" language (feeds the FAQPage schema).
+- **CTR title rewrites.** `/blog` listing and `linkedin-posts-text-formatting` (106k impr) retitled to front-load the query.
+- **Tool-embed CTAs.** Above-the-fold `CtaCard` added to the high-impression, low-conversion posts that lacked one.
+- **Internal linking.** One natural `/formatter` link added to each of 16 surviving formatting posts.
+- **Build fix.** Repaired 6 pre-existing MDX files with invalid JSX (`description='...''...'`) that were breaking `contentlayer build`.
+
+**Last Updated:** June 26, 2026
