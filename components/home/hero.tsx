@@ -8,7 +8,6 @@ import { Icons } from '../icon'
 import { TrackClick } from '../tracking/track-click'
 import { AnimateIn } from '../ui/animate-in'
 import { Avatar, AvatarFallback } from '../ui/avatar'
-import { DotBackground } from '../ui/dot-background'
 import { HeroCTA } from './hero-cta'
 import { StarRating } from './star-rating'
 
@@ -16,8 +15,18 @@ const AVATARS = [{ fallback: 'JD' }, { fallback: 'MK' }, { fallback: 'AS' }]
 
 export function Hero() {
     return (
-        <DotBackground className='overflow-hidden'>
-            <div className='mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
+        <div className='relative overflow-hidden'>
+            {/* Landscape backdrop - anchored low so the full composition (foreground hill + orange tree) shows */}
+            <div
+                aria-hidden='true'
+                className='pointer-events-none absolute inset-0 bg-cover bg-bottom bg-no-repeat'
+                style={{ backgroundImage: 'url(/images/home/backgrounds/rolling-hills-wide-2.jpg)' }}
+            />
+            {/* Uniform white overlay to soften the image and match the other sections */}
+            <div aria-hidden='true' className='pointer-events-none absolute inset-0 bg-white/30' />
+            {/* Gentle fade into the next section, confined to the very bottom */}
+
+            <div className='relative mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
                 {/* Announcement chip - single pill with GitHub link inside */}
                 <AnimateIn delay={0}>
                     <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
@@ -34,26 +43,26 @@ export function Hero() {
                     </TrackClick>
                 </AnimateIn>
 
-                {/* Headline - bigger, bolder */}
-                <AnimateIn delay={0.1}>
-                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
-                        Format and Preview your{' '}
-                        <span className='text-primary inline-flex items-baseline whitespace-nowrap'>
-                            <Icons.linkedinLogo
-                                aria-hidden='true'
-                                className='bg-primary mr-1 inline-block size-8 translate-y-0.5 rotate-[-6deg] self-center rounded-sm p-1 text-white md:mr-1.5 md:size-11 md:translate-y-1 md:rounded-xl md:p-1.5 lg:mr-2 lg:size-14 lg:p-2'
-                            />
-                            LinkedIn
-                        </span>{' '}
-                        Posts
-                    </h1>
-                </AnimateIn>
+                {/* Heading + subtitle on a frosted-glass card for local contrast */}
+                <AnimateIn delay={0.1} className='mb-8'>
+                    <div className='flex max-w-3xl flex-col items-center rounded-2xl border border-white/40 bg-white/55 px-6 py-8 shadow-lg backdrop-blur sm:px-12'>
+                        <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
+                            Format and Preview your{' '}
+                            <span className='text-primary inline-flex items-baseline whitespace-nowrap'>
+                                <Icons.linkedinLogo
+                                    aria-hidden='true'
+                                    className='bg-primary mr-1 inline-block size-8 translate-y-0.5 rotate-[-6deg] self-center rounded-sm p-1 text-white md:mr-1.5 md:size-11 md:translate-y-1 md:rounded-xl md:p-1.5 lg:mr-2 lg:size-14 lg:p-2'
+                                />
+                                LinkedIn
+                            </span>{' '}
+                            Posts
+                        </h1>
 
-                <AnimateIn delay={0.2}>
-                    <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
-                        A free LinkedIn post editor and formatter with a live preview. Write, format, and check how your
-                        post looks on mobile and desktop before you publish - and boost your engagement.
-                    </p>
+                        <p className='max-w-[540px] text-center text-lg leading-7 text-neutral-700 md:text-xl md:leading-8'>
+                            A free tool to write, format, and preview your LinkedIn posts. Improve your Linkedin
+                            presence and engagement.
+                        </p>
+                    </div>
                 </AnimateIn>
 
                 {/* Social proof - avatar group + stars + review count */}
@@ -86,6 +95,6 @@ export function Hero() {
                     <HeroCTA />
                 </AnimateIn>
             </div>
-        </DotBackground>
+        </div>
     )
 }

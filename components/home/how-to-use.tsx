@@ -57,15 +57,14 @@ export function HowToUse() {
                             ))}
                         </div>
 
-                        {/* Right: video with diagonal lines bg */}
+                        {/* Right: video over a soft landscape backdrop */}
                         <div className='dash-left relative flex items-center p-6'>
                             <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
-                                style={{
-                                    backgroundImage:
-                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
-                                }}
+                                aria-hidden='true'
+                                className='pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat'
+                                style={{ backgroundImage: 'url(/images/home/backgrounds/valley-fog.jpg)' }}
                             />
+                            <div aria-hidden='true' className='pointer-events-none absolute inset-0 bg-white/45' />
                             <video
                                 autoPlay
                                 loop

@@ -59,15 +59,14 @@ export function Reason() {
                             </Button>
                         </div>
 
-                        {/* Right: reason cards with diagonal lines bg */}
+                        {/* Right: reason cards over a soft landscape backdrop */}
                         <div className='dash-left relative flex items-center p-6'>
                             <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
-                                style={{
-                                    backgroundImage:
-                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
-                                }}
+                                aria-hidden='true'
+                                className='pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat'
+                                style={{ backgroundImage: 'url(/images/home/backgrounds/tuscan-hills.jpg)' }}
                             />
+                            <div aria-hidden='true' className='pointer-events-none absolute inset-0 bg-white/45' />
                             <div className='divide-border relative w-full divide-y overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-sm'>
                                 {Reasons.map(({ icon, title, description }) => (
                                     <div key={title} className='flex items-start gap-4 p-6'>
