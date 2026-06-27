@@ -41,9 +41,11 @@ LinkedIn Post Preview is a Next.js 16 application deployed on Vercel. It consist
 │   └── robots.ts             # Robots.txt
 ├── components/
 │   ├── tool/                 # Editor + preview panel
-│   │   ├── editor-panel.tsx  # TipTap editor with copy/image actions
+│   │   ├── editor-panel.tsx  # TipTap editor with copy/image actions (+ injectedDoc)
 │   │   ├── toolbar.tsx       # Formatting toolbar
 │   │   └── preview/          # LinkedIn preview (header, content, reactions, actions)
+│   ├── generator/            # Inline ungated AI generator (generator page)
+│   ├── link-preview/         # LinkedIn link-card UI + Open Graph issue checklist
 │   ├── blog/                 # Blog components (cards, share, search)
 │   ├── feedback/             # Tally.so feedback components
 │   ├── home/                 # Landing page sections
@@ -54,6 +56,9 @@ LinkedIn Post Preview is a Next.js 16 application deployed on Vercel. It consist
 ├── contents/blog/            # MDX blog post files
 ├── hooks/                    # Custom React hooks
 ├── lib/                      # Utilities, blog helpers, MDX plugins
+│   ├── ai-guard.ts           # Same-origin + in-memory per-IP guards for AI endpoints
+│   ├── ip-rate-limit.ts      # Generic in-memory per-IP sliding-window limiter
+│   └── link-preview/         # SSRF guard, guarded fetch, zero-dep OG parser, analyzer
 ├── types/                    # TypeScript type definitions
 └── public/                   # Static assets (images, favicons)
 ```
@@ -79,18 +84,23 @@ The `withContentlayer` Next.js plugin was removed because it re-runs contentlaye
 
 ## Routing
 
-| Route             | Type    | Description                                      |
-| ----------------- | ------- | ------------------------------------------------ |
-| `/`               | Static  | Landing page with tool, features, FAQ            |
-| `/formatter`      | Static  | Dedicated LinkedIn post formatter tool page      |
-| `/preview`        | Dynamic | Feed preview (SEO landing when visited no-draft) |
-| `/blog`           | Static  | Blog index with search                           |
-| `/blog/[slug]`    | SSG     | Individual blog posts (generateStaticParams)     |
-| `/compare/[slug]` | SSG     | Competitor "free alternative" comparison pages   |
-| `/llms.txt`       | Dynamic | AI-readable site content index                   |
-| `/rss.xml`        | Dynamic | RSS feed                                         |
-| `/sitemap.xml`    | Dynamic | XML sitemap                                      |
-| `/robots.txt`     | Dynamic | Robots directives                                |
+| Route                                           | Type    | Description                                                            |
+| ----------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| `/`                                             | Static  | Landing page with tool, features, FAQ                                  |
+| `/formatter`                                    | Static  | Dedicated LinkedIn post formatter tool page                            |
+| `/linkedin-post-generator`                      | Static  | Free AI post generator: inline ungated generation + live preview       |
+| `/linkedin-link-preview`                        | Static  | URL to LinkedIn link-card preview + Open Graph issue checklist         |
+| `/linkedin-vorschau`                            | Static  | German landing page (reuses the tool, localized copy, hreflang)        |
+| `/api/link-preview`                             | Dynamic | SSRF-guarded server fetch + Open Graph parser for the link preview     |
+| `/api/chat`, `/api/suggestions`, `/api/analyze` | Dynamic | AI endpoints (anonymous-auth gated, rate limited, same-origin guarded) |
+| `/preview`                                      | Dynamic | Feed preview (SEO landing when visited no-draft)                       |
+| `/blog`                                         | Static  | Blog index with search                                                 |
+| `/blog/[slug]`                                  | SSG     | Individual blog posts (generateStaticParams)                           |
+| `/compare/[slug]`                               | SSG     | Competitor "free alternative" comparison pages                         |
+| `/llms.txt`                                     | Dynamic | AI-readable site content index                                         |
+| `/rss.xml`                                      | Dynamic | RSS feed                                                               |
+| `/sitemap.xml`                                  | Dynamic | XML sitemap                                                            |
+| `/robots.txt`                                   | Dynamic | Robots directives                                                      |
 
 ### Redirects
 
@@ -143,11 +153,12 @@ Validated at build time via `@t3-oss/env-nextjs` in `env.mjs`:
 
 ## SEO
 
-- JSON-LD schemas: Organization, WebSite, SoftwareApplication (home), Article + BreadcrumbList (blog posts), HowTo (tutorial posts), SoftwareApplication + FAQPage (`/formatter`)
+- JSON-LD schemas: Organization, WebSite, SoftwareApplication (home), Article + BreadcrumbList (blog posts), HowTo (tutorial posts), SoftwareApplication + FAQPage (`/formatter`, `/linkedin-post-generator`, `/linkedin-link-preview`, `/linkedin-vorschau`)
 - Open Graph and Twitter Card meta tags on all pages
 - Canonical URLs
 - Dynamic sitemap and RSS feed
 - `llms.txt` for AI content discovery
-- Dedicated tool landing pages for transactional intent (`/formatter`); blog posts are reserved for informational intent (see `docs/content-guidelines.md`)
+- Dedicated tool landing pages for transactional intent (`/formatter`, `/linkedin-post-generator`, `/linkedin-link-preview`); blog posts are reserved for informational intent (see `docs/content-guidelines.md`)
+- Manual hreflang (no i18n framework): the German `/linkedin-vorschau` page and the homepage declare reciprocal `de-DE` / `en` / `x-default` alternates via `Metadata.alternates.languages`. Each page is self-canonical
 - 301 redirect consolidation of pruned/duplicate posts via `seoRedirects` in `next.config.mjs`
 - Full implementation log in `docs/SEO_IMPROVEMENTS.md`

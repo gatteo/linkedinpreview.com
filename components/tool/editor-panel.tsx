@@ -42,11 +42,13 @@ const listStyles = `
 
 export function EditorPanel({
     initialContent,
+    injectedDoc,
     onChange,
     onMediaChange,
     onShare,
 }: {
     initialContent?: any
+    injectedDoc?: any
     onChange: (json: any) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
@@ -95,6 +97,14 @@ export function EditorPanel({
             onChange(editor.getJSON())
         },
     })
+
+    // Apply an externally injected document (e.g. an AI-generated post) live.
+    // A new doc object on each generation re-fires this effect.
+    React.useEffect(() => {
+        if (!editor || !injectedDoc) return
+        editor.commands.setContent(injectedDoc, true)
+        onChange(editor.getJSON())
+    }, [editor, injectedDoc, onChange])
 
     const getEditorContent = React.useCallback(() => {
         if (!editor) return null

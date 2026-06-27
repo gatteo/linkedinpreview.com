@@ -57,6 +57,27 @@ export function Footer() {
                                 <li>
                                     <Link
                                         className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.Generator}>
+                                        LinkedIn Post Generator
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.LinkPreview}>
+                                        LinkedIn Link Preview
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
+                                        href={Routes.Formatter}>
+                                        LinkedIn Post Formatter
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        className='text-xs text-neutral-500 transition-colors hover:text-neutral-900'
                                         href={Routes.AllFeatures}>
                                         All Features
                                     </Link>

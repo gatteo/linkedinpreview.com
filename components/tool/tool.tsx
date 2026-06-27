@@ -32,6 +32,7 @@ function hasTextContent(doc: any): boolean {
 
 type ToolProps = {
     variant?: 'default' | 'embed'
+    injectedDoc?: any
 }
 
 type MobileTab = 'editor' | 'preview'
@@ -84,7 +85,7 @@ function useDraftPersistence(content: any) {
     }, [content])
 }
 
-export function Tool({ variant = 'default' }: ToolProps) {
+export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
@@ -123,9 +124,12 @@ export function Tool({ variant = 'default' }: ToolProps) {
 
     useDraftPersistence(content)
 
-    const handleContentChange = (json: any) => {
+    // Memoized so the EditorPanel inject effect (which depends on onChange) does not
+    // re-fire on every render. An unstable identity here causes an infinite
+    // setContent -> render -> new onChange -> effect loop when injectedDoc is set.
+    const handleContentChange = React.useCallback((json: any) => {
         setContent(json)
-    }
+    }, [])
 
     const handleMediaChange = (newMedia: Media | null) => {
         setMedia(newMedia)
@@ -193,6 +197,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                     <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col'>
                         <EditorPanel
                             initialContent={initialContent}
+                            injectedDoc={injectedDoc}
                             onChange={handleContentChange}
                             onMediaChange={handleMediaChange}
                             onShare={handleShare}
@@ -214,6 +219,7 @@ export function Tool({ variant = 'default' }: ToolProps) {
                         <div className='flex min-w-0 flex-1 flex-col'>
                             <EditorPanel
                                 initialContent={initialContent}
+                                injectedDoc={injectedDoc}
                                 onChange={handleContentChange}
                                 onMediaChange={handleMediaChange}
                                 onShare={handleShare}

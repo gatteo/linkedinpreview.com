@@ -74,6 +74,40 @@ The home page (`app/page.tsx`) is a single-page layout with these sections:
 
 JSON-LD schemas (Organization, WebSite, SoftwareApplication) are embedded for SEO.
 
+## LinkedIn Post Generator (`/linkedin-post-generator`)
+
+A dedicated, indexable tool page that surfaces the existing AI generation engine inline and ungated (no modal, no signup wall).
+
+- **`components/generator/generator-tool.tsx`** - an inline topic + tone form that streams a post from `/api/chat` via `useChat` (the same engine as the in-editor `AIGenerateSheet`). An invisible anonymous Supabase session is created via `useAnonymousAuth().ensureSession()` before generating, so the page stays no-signup.
+- On completion the generated text is converted to a TipTap doc (`toTipTapParagraphs`) and passed to `<Tool injectedDoc={doc} />`, which renders it live in the preview. The page then smooth-scrolls to the preview.
+- Renders a generator-specific FAQ plus `SoftwareApplication` and `FAQPage` JSON-LD, reuses the home How-To / Reason / Features / CTA sections, and links across to `/`, `/formatter`, and `/linkedin-link-preview` with distinct anchors so the tool pages do not cannibalize each other.
+
+### Tool content injection (`injectedDoc`)
+
+`Tool` accepts an optional `injectedDoc` prop, threaded down to `EditorPanel`. When it changes, an effect calls `editor.commands.setContent(injectedDoc, true)` and emits `onChange`, updating the live preview. `handleContentChange` in `tool.tsx` is memoized with `useCallback` so the effect does not enter an infinite render loop. Default `Tool` usage (home / formatter / embed / German page) passes no `injectedDoc`, so the URL `?draft` and localStorage behavior is unchanged.
+
+### AI endpoint hardening (`lib/ai-guard.ts`, `lib/ip-rate-limit.ts`)
+
+Because the generator makes `/api/chat` indexable and ungated, the AI routes are hardened:
+
+- `assertSameOrigin(request)` rejects cross-origin POSTs (Origin/Referer host vs request host). Known gap: a client omitting both headers is allowed (documented in the file).
+- `checkIpRateLimit(...)` is a best-effort in-memory per-IP backstop ahead of the per-user Supabase limit (resets per instance; a persistent store like Upstash is the production upgrade). `getClientIp` prefers the platform-trusted `x-vercel-forwarded-for`.
+- `/api/suggestions` gained both an IP limit and a per-user `suggestions` daily cap (it previously had none); `/api/analyze` and `/api/chat` keep their per-user caps. The authoritative limit remains the per-user Supabase `check_and_record_usage` RPC (generation 1/day, unchanged).
+
+## LinkedIn Link Preview (`/linkedin-link-preview`)
+
+A net-new tool: paste a URL and see how its link card renders on LinkedIn (desktop + mobile, small left-thumbnail format) plus an Open Graph issue checklist with copy-paste fixes.
+
+- **`app/api/link-preview/route.ts`** (Node runtime, dynamic) fetches the target's raw HTML like a crawler (no JS execution), parses Open Graph / Twitter meta, and returns the card data + issues.
+- **SSRF defenses (`lib/link-preview/`)**: scheme allowlist; private/reserved IPv4 + IPv6 blocklist (incl. cloud metadata and IPv4-mapped IPv6); `resolveAndCheck` rejects hostnames that resolve to private IPs (DNS-rebinding mitigation, with a documented TOCTOU residual); manual redirects re-validated per hop; 8s fetch timeout + 5s DNS-lookup timeout; 2 MB streamed size cap; per-IP rate limit; safe error messages (no internal IP leakage). The meta parser is zero-dependency and strips comments in a single linear pass to avoid ReDoS.
+- **Honest copy**: a third party cannot force-refresh LinkedIn's cached preview, so the UI and checklist link to LinkedIn's official Post Inspector instead.
+- UI: `link-card.tsx` (desktop + mobile variants), `issue-checklist.tsx` (severity icon + copy-paste fix), `link-preview-tool.tsx` (URL input, loading/error/empty states).
+- Supporting informational post: `contents/blog/how-to-fix-linkedin-link-previews.mdx` (embeds the tool above the fold).
+
+## German Landing Page (`/linkedin-vorschau`)
+
+A single scoped German landing page (a capped experiment, not site-wide i18n). It reuses the `<Tool/>` component with the tool UI kept in English and original German marketing copy around it: hero, "So funktioniert's", benefits, an honest note that Unicode bold/italic has no glyphs for the umlauts (a/o/u) or sz, a DSGVO / local-processing angle, and a German FAQ + CTA. Targets the clean-intent long-tails ("linkedin post vorschau", "linkedin beitrag vorschau", "linkedin post formatieren"). Ships German `FAQPage` + `SoftwareApplication` (`inLanguage: de-DE`) JSON-LD and declares reciprocal hreflang with the homepage via `Metadata.alternates.languages`. No next-intl or locale routing was added.
+
 ## Blog
 
 A content marketing blog with 12 articles about LinkedIn best practices.

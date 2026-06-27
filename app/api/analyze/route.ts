@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
+import { assertSameOrigin } from '@/lib/ai-guard'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -36,6 +37,9 @@ const analysisSchema = z.object({
 })
 
 export async function POST(request: Request) {
+    const originBlock = assertSameOrigin(request)
+    if (originBlock) return originBlock
+
     let body: unknown
     try {
         body = await request.json()

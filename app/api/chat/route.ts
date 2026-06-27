@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
+import { assertSameOrigin, checkIpRateLimit } from '@/lib/ai-guard'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -80,6 +81,25 @@ const bodySchema = z.object({
 })
 
 export async function POST(request: Request) {
+    // Block naive cross-origin calls before doing any work.
+    const originBlock = assertSameOrigin(request)
+    if (originBlock) return originBlock
+
+    // Per-IP backstop ahead of the per-user Supabase limit (blunts bursts).
+    const ipLimit = checkIpRateLimit(request, { id: 'chat', limit: 30, windowMs: 10 * 60 * 1000 })
+    if (!ipLimit.allowed) {
+        return new Response(
+            JSON.stringify({
+                error: 'Too many requests',
+                code: AI_ERROR_CODES.RATE_LIMITED,
+                action: 'generation',
+                resetAt: ipLimit.resetAt,
+                remaining: ipLimit.remaining,
+            }),
+            { status: 429, headers: { 'Content-Type': 'application/json' } },
+        )
+    }
+
     let body: unknown
     try {
         body = await request.json()
@@ -131,7 +151,15 @@ export async function POST(request: Request) {
     const openai = createOpenAI({ apiKey: env.LLM_API_KEY })
     const model = env.LLM_MODEL ?? 'gpt-4o-mini'
 
-    const modelMessages = await convertToModelMessages(parsed.data.messages as UIMessage[])
+    let modelMessages: Awaited<ReturnType<typeof convertToModelMessages>>
+    try {
+        modelMessages = await convertToModelMessages(parsed.data.messages as UIMessage[])
+    } catch {
+        return new Response(JSON.stringify({ error: 'Invalid message format' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        })
+    }
 
     const result = streamText({
         model: openai(model),

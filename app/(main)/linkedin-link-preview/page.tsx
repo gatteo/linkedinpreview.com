@@ -12,62 +12,57 @@ import { AnimateIn } from '@/components/ui/animate-in'
 import { Button } from '@/components/ui/button'
 import { DotBackground } from '@/components/ui/dot-background'
 import { CtaSection } from '@/components/home/cta-section'
-import { Features } from '@/components/home/features'
-import { HowToUse } from '@/components/home/how-to-use'
-import { Reason } from '@/components/home/reason'
 import { StarRating } from '@/components/home/star-rating'
-import { Tool } from '@/components/tool/tool'
+import { LinkPreviewTool } from '@/components/link-preview/link-preview-tool'
+
+const description =
+    'Free LinkedIn link preview tool. Paste a URL to test how your link looks on LinkedIn, check its Open Graph tags, and fix preview issues before you share. No signup.'
 
 export const metadata: Metadata = {
-    title: { absolute: 'LinkedIn Post Formatter - Bold, Italic & Lists Tool' },
-    description:
-        'Free LinkedIn post formatter. Add bold, italic, underline text and bullet or numbered lists, then preview your post on mobile and desktop before publishing. No signup.',
+    title: { absolute: 'LinkedIn Link Preview - Test Your URL Open Graph Card' },
+    description,
     alternates: {
-        canonical: absoluteUrl(Routes.Formatter),
+        canonical: absoluteUrl(Routes.LinkPreview),
     },
     openGraph: {
-        title: 'LinkedIn Post Formatter - Bold, Italic & Lists Tool',
-        description:
-            'Free LinkedIn post formatter. Add bold, italic, underline text and bullet or numbered lists, then preview your post on mobile and desktop before publishing. No signup.',
-        url: absoluteUrl(Routes.Formatter),
+        title: 'LinkedIn Link Preview - Test Your URL Open Graph Card',
+        description,
+        url: absoluteUrl(Routes.LinkPreview),
     },
 }
 
-const FormatterFAQList = [
+const LinkPreviewFAQList = [
     {
-        question: 'Is the LinkedIn post formatter free?',
-        answer: 'Yes, the LinkedIn Post Formatter is completely free to use. No account, no signup, and no hidden fees - just open the page and start formatting.',
+        question: 'Why does my LinkedIn link preview look wrong?',
+        answer: "LinkedIn builds its link card from the Open Graph tags in your page's raw HTML. If your og:title, og:description, or og:image are missing, malformed, or rendered with JavaScript, the card can show the wrong text, no image, or a bare URL. Paste your link above to see exactly which tags LinkedIn can read.",
     },
     {
-        question: 'Does LinkedIn support bold and italic text natively?',
-        answer: 'LinkedIn does not support standard HTML bold or italic tags in posts. The formatter uses Unicode lookalike characters to achieve bold and italic styling that renders correctly inside LinkedIn posts and comments.',
+        question: 'How do I refresh a LinkedIn link preview?',
+        answer: "LinkedIn caches a link preview for about 7 days, and no third-party tool can force a refresh. To update it, change your Open Graph tags, then either re-share the link (adding a query parameter like ?v=2 makes it a new URL) or run the link through LinkedIn's official Post Inspector, which re-scrapes the page for you.",
     },
     {
-        question: 'How does the formatter add bold and italic text?',
-        answer: 'When you apply bold or italic formatting in the editor, the tool converts your text to Unicode Mathematical Alphanumeric Symbols. These characters look like bold or italic letters but are accepted by LinkedIn as plain text, so your formatting survives the copy-paste step.',
+        question: 'What image size does LinkedIn use for link previews?',
+        answer: 'Use an og:image that is 1200x627 pixels (a 1.91:1 ratio) for the best result. Keep the file in JPG or PNG and under roughly 5 MB, since LinkedIn rejects oversized files. Smaller or square images may render as a small thumbnail card instead of a large one.',
     },
     {
-        question: 'Will my formatting look right on mobile?',
-        answer: 'Yes. The preview panel shows your post exactly as it would appear on mobile, tablet, and desktop. Switch between device sizes before copying to make sure your hook line and formatting look as intended on every screen.',
+        question: 'Why is my image not showing in the LinkedIn preview?',
+        answer: 'The most common causes are a missing og:image tag, an image in WebP format (LinkedIn does not render WebP), an oversized file, or an image URL that is not publicly reachable. Switch to a JPG or PNG at 1200x627 and make sure the image URL returns a 200 response without requiring a login.',
     },
     {
-        question: 'Can I add bullet point and numbered lists to LinkedIn posts?',
-        answer: 'Absolutely. The formatter supports both bullet point lists and numbered lists. Select your lines, apply the list format, and the editor inserts Unicode list markers that display correctly inside LinkedIn.',
+        question: 'Why are my Open Graph tags not detected?',
+        answer: 'LinkedIn reads the raw HTML of your page and does not run JavaScript. If your site injects Open Graph tags client-side with a framework, the crawler never sees them. Render your og: tags server-side or pre-render them so they appear in the initial HTML response.',
     },
 ]
 
-// Section: Formatting guides
-const FormattingGuides = [
-    { href: '/blog/linkedin-posts-text-formatting', label: 'LinkedIn text formatting guide' },
-    { href: '/blog/how-to-add-bold-text-to-linkedin-posts', label: 'How to add bold text' },
-    { href: '/blog/how-to-add-italics-text-to-linkedin-posts', label: 'How to add italic text' },
-    { href: '/blog/how-to-underline-text-in-linkedin-posts', label: 'How to underline text' },
-    { href: '/blog/how-to-add-strikethrough-text-to-linkedin-posts', label: 'How to add strikethrough' },
-    { href: '/blog/how-to-add-bullet-point-lists-to-linkedin-posts', label: 'How to add bullet lists' },
-    { href: '/blog/how-to-add-numbered-lists-to-linkedin-posts', label: 'How to add numbered lists' },
+// Section: Cross-tool and guide links
+const LinkPreviewLinks = [
+    { href: Routes.Home || '/', label: 'LinkedIn post preview' },
+    { href: Routes.Formatter, label: 'LinkedIn post formatter' },
+    { href: Routes.Generator, label: 'LinkedIn post generator' },
+    { href: Routes.BlogPost('how-to-fix-linkedin-link-previews'), label: 'How to fix LinkedIn link previews' },
 ]
 
-function FormatterHero() {
+function LinkPreviewHero() {
     return (
         <DotBackground className='overflow-hidden'>
             <div className='mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
@@ -79,14 +74,14 @@ function FormatterHero() {
 
                 <AnimateIn delay={0.1}>
                     <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
-                        LinkedIn Post Formatter
+                        LinkedIn Link Preview
                     </h1>
                 </AnimateIn>
 
                 <AnimateIn delay={0.2}>
                     <p className='mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
-                        The free LinkedIn post editor for bold, italic, underline, and lists. Format your post, then
-                        preview it on mobile and desktop before you publish.
+                        Paste a URL to see how your link card will look on LinkedIn, on desktop and mobile. Then check
+                        your Open Graph tags and fix any issues before you share.
                     </p>
                 </AnimateIn>
 
@@ -102,7 +97,7 @@ function FormatterHero() {
                 <AnimateIn delay={0.4}>
                     <Button asChild size='lg' className='rounded-lg'>
                         <Link href='#tool'>
-                            Open Formatter
+                            Preview a Link
                             <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
                         </Link>
                     </Button>
@@ -112,26 +107,26 @@ function FormatterHero() {
     )
 }
 
-function FormattingGuidesSection() {
+function LinkPreviewLinksSection() {
     return (
         <section className='border-border border-t'>
             <div className='pt-20 md:pt-24'>
                 <AnimateIn className='mb-6 px-6'>
-                    <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>Learn more</p>
+                    <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>Explore more</p>
                     <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
-                        LinkedIn formatting guides
+                        More LinkedIn tools and guides
                     </h2>
                     <p className='mt-3 max-w-lg text-base text-neutral-500'>
-                        Step-by-step articles covering every formatting option available in LinkedIn posts.
+                        Preview, format, and write better LinkedIn posts with our free tools and step-by-step guides.
                     </p>
                 </AnimateIn>
 
                 <AnimateIn>
-                    <div className='dash-top grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-                        {FormattingGuides.map((guide) => (
+                    <div className='dash-top grid sm:grid-cols-2 lg:grid-cols-4'>
+                        {LinkPreviewLinks.map((link) => (
                             <Link
-                                key={guide.href}
-                                href={guide.href}
+                                key={link.href}
+                                href={link.href}
                                 className='border-border group flex items-center gap-3 p-6 transition-colors hover:bg-neutral-50'>
                                 <div className='bg-primary/10 flex size-8 shrink-0 items-center justify-center rounded-lg'>
                                     <svg
@@ -149,7 +144,7 @@ function FormattingGuidesSection() {
                                     </svg>
                                 </div>
                                 <span className='text-sm font-medium text-neutral-800 group-hover:text-neutral-900'>
-                                    {guide.label}
+                                    {link.label}
                                 </span>
                             </Link>
                         ))}
@@ -160,11 +155,11 @@ function FormattingGuidesSection() {
     )
 }
 
-function FormatterFAQSection() {
+function LinkPreviewFAQSection() {
     const faqSchema: WithContext<FAQPage> = {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
-        'mainEntity': FormatterFAQList.map((faq) => ({
+        'mainEntity': LinkPreviewFAQList.map((faq) => ({
             '@type': 'Question',
             'name': faq.question,
             'acceptedAnswer': {
@@ -184,7 +179,7 @@ function FormatterFAQSection() {
                         Frequently Asked Questions
                     </h2>
                     <p className='mt-3 max-w-lg text-base text-neutral-500'>
-                        Common questions about the LinkedIn Post Formatter.
+                        Common questions about LinkedIn link previews and Open Graph tags.
                     </p>
                 </AnimateIn>
 
@@ -192,7 +187,7 @@ function FormatterFAQSection() {
                     <div className='dash-top grid lg:grid-cols-[5fr_3fr]'>
                         <div className='dash-right p-6'>
                             <Accordion type='multiple'>
-                                {FormatterFAQList.map((faq) => (
+                                {LinkPreviewFAQList.map((faq) => (
                                     <AccordionItem key={faq.question} value={faq.question} className='border-border'>
                                         <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
                                             {faq.question}
@@ -221,16 +216,15 @@ function FormatterFAQSection() {
     )
 }
 
-export default function FormatterPage() {
+export default function LinkPreviewPage() {
     const softwareSchema: WithContext<SoftwareApplication> = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        'name': 'LinkedIn Post Formatter',
+        'name': 'LinkedIn Link Preview',
         'applicationCategory': 'BusinessApplication',
         'operatingSystem': 'Web Browser',
-        'url': `${site.url}/formatter#tool`,
-        'description':
-            'Free LinkedIn post formatter. Add bold, italic, underline text and bullet or numbered lists, then preview your post on mobile and desktop before publishing. No signup.',
+        'url': `${site.url}/linkedin-link-preview#tool`,
+        'description': description,
         'offers': {
             '@type': 'Offer',
             'price': '0',
@@ -244,11 +238,11 @@ export default function FormatterPage() {
             'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
         },
         'featureList': [
-            'Bold, italic, underline, strikethrough text formatting',
-            'Bullet point and numbered lists',
-            'Real-time LinkedIn post preview',
-            'Mobile and desktop preview',
-            'Character counter',
+            'URL Open Graph and Twitter card preview',
+            'Desktop and mobile LinkedIn link card preview',
+            'Open Graph tag checklist with copy-paste fixes',
+            'WebP and image size warnings',
+            'Reads raw HTML like the LinkedIn crawler',
             'Free to use, no signup',
         ],
         'screenshot': `${site.url}/images/og/og.png`,
@@ -264,16 +258,13 @@ export default function FormatterPage() {
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
 
             <div className='max-w-content border-border mx-auto border-x'>
-                <FormatterHero />
-                <Tool />
-                <HowToUse />
+                <LinkPreviewHero />
+                <LinkPreviewTool />
             </div>
 
             <div className='max-w-content border-border mx-auto border-x'>
-                <Reason />
-                <Features />
-                <FormattingGuidesSection />
-                <FormatterFAQSection />
+                <LinkPreviewLinksSection />
+                <LinkPreviewFAQSection />
             </div>
 
             <CtaSection />
