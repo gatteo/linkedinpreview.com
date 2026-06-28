@@ -8,6 +8,8 @@ import { AuthGate } from '@/components/dashboard/auth-gate'
 import { AuthProvider } from '@/components/dashboard/auth-provider'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { OnboardingController } from '@/components/dashboard/onboarding/onboarding-controller'
+import { PlanProvider } from '@/components/dashboard/plan-provider'
+import { UpgradeProvider } from '@/components/dashboard/upgrade-provider'
 import { TallyScript } from '@/components/feedback/tally-script'
 
 export const metadata: Metadata = {
@@ -26,24 +28,30 @@ export default function DashboardLayout({
             <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
                 <AuthProvider>
                     <AuthGate>
-                        <div className='mx-auto h-svh w-full max-w-[1500px]' style={{ transform: 'translateZ(0)' }}>
-                            <SidebarProvider
-                                className='h-full !min-h-0'
-                                style={
-                                    {
-                                        '--sidebar-width': '280px',
-                                        '--header-height': 'calc(var(--spacing) * 12)',
-                                    } as React.CSSProperties
-                                }>
-                                <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
-                                    <DashboardSidebar variant='inset' />
-                                </Suspense>
-                                <SidebarInset className='overflow-hidden border'>
-                                    <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
-                                </SidebarInset>
-                            </SidebarProvider>
-                        </div>
-                        <OnboardingController />
+                        <PlanProvider>
+                            <UpgradeProvider>
+                                <div
+                                    className='mx-auto h-svh w-full max-w-[1500px]'
+                                    style={{ transform: 'translateZ(0)' }}>
+                                    <SidebarProvider
+                                        className='h-full !min-h-0'
+                                        style={
+                                            {
+                                                '--sidebar-width': '280px',
+                                                '--header-height': 'calc(var(--spacing) * 12)',
+                                            } as React.CSSProperties
+                                        }>
+                                        <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
+                                            <DashboardSidebar variant='inset' />
+                                        </Suspense>
+                                        <SidebarInset className='overflow-hidden border'>
+                                            <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
+                                        </SidebarInset>
+                                    </SidebarProvider>
+                                </div>
+                                <OnboardingController />
+                            </UpgradeProvider>
+                        </PlanProvider>
                     </AuthGate>
                 </AuthProvider>
             </ThemeProvider>

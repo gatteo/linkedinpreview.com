@@ -14,11 +14,13 @@ import {
     PaletteIcon,
     PlusIcon,
     SettingsIcon,
+    SparklesIcon,
     TargetIcon,
 } from 'lucide-react'
 
 import { feedbackConfig } from '@/config/feedback'
 import { useDrafts } from '@/hooks/use-drafts'
+import { usePlan } from '@/hooks/use-plan'
 import { Button } from '@/components/ui/button'
 import {
     Sidebar,
@@ -38,12 +40,15 @@ import {
 import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
 import { GettingStartedChecklist } from '@/components/dashboard/getting-started-checklist'
 import { SidebarProfile } from '@/components/dashboard/sidebar-profile'
+import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
 
 export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
     const searchParams = useSearchParams()
     const currentDraftId = searchParams.get('draft')
     const { recentDrafts } = useDrafts()
+    const { isPaid } = usePlan()
+    const { openUpgrade } = useUpgradePrompt()
     const [newPostOpen, setNewPostOpen] = React.useState(false)
 
     const isActive = (path: string) => pathname === path
@@ -208,6 +213,17 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
+                            {!isPaid && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        tooltip='Upgrade'
+                                        onClick={() => openUpgrade('sidebar')}
+                                        className='text-primary hover:text-primary'>
+                                        <SparklesIcon />
+                                        <span>Upgrade</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
                             <SidebarMenuItem>
                                 <SidebarMenuButton
                                     asChild

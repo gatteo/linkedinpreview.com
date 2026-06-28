@@ -24,6 +24,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
 
 import { ChatPhase } from './chat-phase'
 import { ConfigPhase } from './config-phase'
@@ -43,6 +44,7 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
     const [suggestionsLoading, setSuggestionsLoading] = React.useState(false)
     const { isAuthReady, ensureSession } = useAnonymousAuth()
     const { branding } = useBranding()
+    const { openUpgrade } = useUpgradePrompt()
     const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
 
     // Refs to avoid stale closures in useChat callbacks
@@ -94,6 +96,10 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
                 const timeStr = formatResetTime(aiError.resetAt)
                 const label = aiError.action === 'generation' ? 'generation' : 'refinement'
                 posthog.capture('ai_rate_limited', { action: aiError.action, reset_at: aiError.resetAt })
+
+                // Contextual re-prompt: a free user who hit the daily cap is the
+                // strongest upgrade moment (monetization doc Phase 1).
+                openUpgrade('ai_limit')
 
                 // Inject a synthetic assistant message so the limit shows in the chat
                 setMessages((prev) => [

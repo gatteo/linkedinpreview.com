@@ -29,9 +29,17 @@ export const env = createEnv({
         LINKEDIN_ANALYTICS_CLIENT_SECRET: z.string().optional(),
         // Optional override; defaults to `${site.url}/api/linkedin/analytics/callback`.
         LINKEDIN_ANALYTICS_REDIRECT_URI: z.string().optional(),
-        // Supabase service-role key - used ONLY by the cron publisher to read due
-        // posts and tokens across users (no user session). Never exposed to the client.
+        // Supabase service-role key - used by the cron publisher AND the Stripe
+        // webhook to write across users (no user session). Never exposed to the client.
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+        // Stripe billing. All optional: when blank, checkout/webhook stay inert and
+        // the offer screen falls back to "Continue on the free plan" (mirrors the
+        // LinkedIn pattern). Fill these in once the Stripe account is set up.
+        STRIPE_SECRET_KEY: z.string().optional(),
+        STRIPE_WEBHOOK_SECRET: z.string().optional(),
+        // Stripe Price IDs created in the Stripe dashboard for each plan.
+        STRIPE_PRICE_MONTHLY: z.string().optional(),
+        STRIPE_PRICE_LIFETIME: z.string().optional(),
     },
     client: {
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: z.string().min(1),
@@ -39,6 +47,8 @@ export const env = createEnv({
         NEXT_PUBLIC_TALLY_FORM_ID: z.string().optional(),
         NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
         NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+        // Stripe publishable key for Embedded Checkout. Optional until billing is live.
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     },
     runtimeEnv: {
         NODE_ENV: process.env.NODE_ENV,
@@ -53,10 +63,15 @@ export const env = createEnv({
         LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,
         LINKEDIN_ANALYTICS_REDIRECT_URI: process.env.LINKEDIN_ANALYTICS_REDIRECT_URI,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+        STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+        STRIPE_PRICE_MONTHLY: process.env.STRIPE_PRICE_MONTHLY,
+        STRIPE_PRICE_LIFETIME: process.env.STRIPE_PRICE_LIFETIME,
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GTM_MEASUREMENT_ID,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_TALLY_FORM_ID: process.env.NEXT_PUBLIC_TALLY_FORM_ID,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     },
 })

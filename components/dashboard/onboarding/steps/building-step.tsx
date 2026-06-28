@@ -8,110 +8,151 @@ import { EASE_OUT } from '@/lib/motion'
 import { FORMAT_CATEGORIES, type FormatCategory, type StrategyFormat } from '@/lib/strategy'
 import { BuildingSetup } from '@/components/dashboard/illustrations'
 
-import type { OnboardingAnswers } from '../types'
+import { track } from '../ai'
+import { useOnboarding } from '../context'
 
-type TaskId = 'read' | 'positioning' | 'formats' | 'assemble'
+type TaskId = 'read' | 'positioning' | 'formats' | 'ideas' | 'calendar' | 'assemble'
 
 const TASKS: { id: TaskId; label: string }[] = [
     { id: 'read', label: 'Reading your answers' },
-    { id: 'positioning', label: 'Writing your positioning' },
-    { id: 'formats', label: 'Picking your best post formats' },
+    { id: 'positioning', label: 'Writing your positioning statement' },
+    { id: 'formats', label: 'Choosing your best-fit post formats' },
+    { id: 'ideas', label: 'Drafting your first week of posts' },
+    { id: 'calendar', label: 'Setting your calendar' },
     { id: 'assemble', label: 'Putting it all together' },
 ]
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 async function generatePositioning(body: object): Promise<string> {
-    const res = await fetch('/api/strategy/positioning', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-    })
-    if (!res.ok) return ''
-    const data = await res.json()
-    return typeof data.statement === 'string' ? data.statement : ''
+    try {
+        const res = await fetch('/api/strategy/positioning', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        })
+        if (!res.ok) return ''
+        const data = await res.json()
+        return typeof data.statement === 'string' ? data.statement : ''
+    } catch {
+        return ''
+    }
 }
 
 async function generateFormats(body: object): Promise<StrategyFormat[]> {
-    const res = await fetch('/api/strategy/formats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-    })
-    if (!res.ok) return []
-    const data = await res.json()
-    if (!Array.isArray(data.formats)) return []
-    return data.formats.map((f: { name: string; enabled: boolean; category: FormatCategory }) => ({
-        name: f.name,
-        enabled: f.enabled,
-        category: FORMAT_CATEGORIES[f.name] ?? f.category,
-    }))
+    try {
+        const res = await fetch('/api/strategy/formats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        })
+        if (!res.ok) return []
+        const data = await res.json()
+        if (!Array.isArray(data.formats)) return []
+        return data.formats.map((f: { name: string; enabled: boolean; category: FormatCategory }) => ({
+            name: f.name,
+            enabled: f.enabled,
+            category: FORMAT_CATEGORIES[f.name] ?? f.category,
+        }))
+    } catch {
+        return []
+    }
 }
 
-type BuildingStepProps = {
-    answers: OnboardingAnswers
-    onDone: (positioning: string, formats: StrategyFormat[]) => void
-}
-
-export function BuildingStep({ answers, onDone }: BuildingStepProps) {
+export function BuildingStep() {
+    const { answers, update, goNext } = useOnboarding()
     const [done, setDone] = React.useState<Set<TaskId>>(new Set())
     const [active, setActive] = React.useState<TaskId | null>(null)
-    const onDoneRef = React.useRef(onDone)
-    onDoneRef.current = onDone
+    const ranRef = React.useRef(false)
 
     React.useEffect(() => {
+        if (ranRef.current) return
+        ranRef.current = true
+
         let cancelled = false
-        const mark = (fn: (s: Set<TaskId>) => void) =>
+        let advanced = false
+        const mark = (id: TaskId) =>
             setDone((prev) => {
                 const next = new Set(prev)
-                fn(next)
+                next.add(id)
                 return next
             })
 
+        const effectiveTopics = answers.topics.filter(Boolean).length
+            ? answers.topics.filter(Boolean)
+            : answers.niche
+              ? [answers.niche]
+              : []
+
+        // Advance exactly once. A failsafe timeout guarantees we never trap the
+        // user on this footerless, non-dismissable step if the network hangs.
+        const advance = (positioning: string, formats: StrategyFormat[]) => {
+            if (advanced || cancelled) return
+            advanced = true
+            update({ positioning, formats, topics: effectiveTopics })
+            track('onb_building_done')
+            goNext()
+        }
+        const failsafe = setTimeout(() => advance('', []), 15000)
+
         async function run() {
-            const topics = answers.topics.filter(Boolean)
             const canGenerate =
-                !!answers.role && answers.goals.length > 0 && answers.audience.length > 0 && topics.length > 0
-            const body = { role: answers.role, goals: answers.goals, audience: answers.audience, topics }
+                !!answers.role && answers.goals.length > 0 && answers.audience.length > 0 && effectiveTopics.length > 0
+            const body = {
+                role: answers.role,
+                goals: answers.goals,
+                audience: answers.audience,
+                topics: effectiveTopics,
+            }
 
             setActive('read')
-            await wait(750)
+            await wait(700)
             if (cancelled) return
-            mark((s) => s.add('read'))
+            mark('read')
 
             setActive('positioning')
             const positioningP = (canGenerate ? generatePositioning(body) : Promise.resolve('')).then((v) => {
-                if (!cancelled) mark((s) => s.add('positioning'))
-                return v
-            })
-            const formatsP = (canGenerate ? generateFormats(body) : Promise.resolve<StrategyFormat[]>([])).then((v) => {
                 if (!cancelled) {
-                    mark((s) => s.add('formats'))
+                    mark('positioning')
                     setActive('formats')
                 }
                 return v
             })
+            const formatsP = (canGenerate ? generateFormats(body) : Promise.resolve<StrategyFormat[]>([])).then((v) => {
+                if (!cancelled) mark('formats')
+                return v
+            })
 
-            // Keep the formats row visibly "active" while we wait, even if positioning lands first.
-            setActive('positioning')
-            const [positioning, formats] = await Promise.all([positioningP, formatsP, wait(900)]).then((r) => [
+            const [positioning, formats] = await Promise.all([positioningP, formatsP, wait(1100)]).then((r) => [
                 r[0],
                 r[1],
             ])
             if (cancelled) return
 
-            setActive('assemble')
-            await wait(700)
+            setActive('ideas')
+            await wait(800)
             if (cancelled) return
-            mark((s) => s.add('assemble'))
+            mark('ideas')
+
+            setActive('calendar')
+            await wait(650)
+            if (cancelled) return
+            mark('calendar')
+
+            setActive('assemble')
+            await wait(600)
+            if (cancelled) return
+            mark('assemble')
             await wait(450)
             if (cancelled) return
-            onDoneRef.current(positioning as string, formats as StrategyFormat[])
+
+            advance(positioning as string, formats as StrategyFormat[])
         }
 
-        run()
+        run().catch(() => advance('', []))
         return () => {
             cancelled = true
+            clearTimeout(failsafe)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -120,15 +161,14 @@ export function BuildingStep({ answers, onDone }: BuildingStepProps) {
 
     return (
         <div className='flex flex-col items-center gap-6 py-2'>
-            <div className='w-48'>
+            <div className='w-44'>
                 <BuildingSetup />
             </div>
             <div className='flex flex-col items-center gap-1 text-center'>
-                <h2 className='font-heading text-xl tracking-tight'>Building your setup</h2>
-                <p className='text-muted-foreground text-sm'>Personalizing everything from your answers…</p>
+                <h2 className='font-heading text-xl tracking-tight'>Building your system</h2>
+                <p className='text-muted-foreground text-sm'>Assembling everything around your goal...</p>
             </div>
 
-            {/* Progress bar */}
             <div className='bg-muted h-1.5 w-full max-w-xs overflow-hidden rounded-full'>
                 <motion.div
                     className='bg-primary h-full rounded-full'
@@ -137,13 +177,16 @@ export function BuildingStep({ answers, onDone }: BuildingStepProps) {
                 />
             </div>
 
-            {/* Checklist */}
             <ul className='flex w-full max-w-xs flex-col gap-2.5'>
                 {TASKS.map((task) => {
                     const isDone = done.has(task.id)
                     const isActive = active === task.id && !isDone
                     return (
-                        <li key={task.id} className={cnState(isDone, isActive)}>
+                        <li
+                            key={task.id}
+                            className={`flex items-center gap-3 text-sm transition-colors ${
+                                isDone || isActive ? 'text-foreground' : 'text-muted-foreground/60'
+                            }`}>
                             <span className='flex size-5 shrink-0 items-center justify-center'>
                                 <AnimatePresence mode='wait' initial={false}>
                                     {isDone ? (
@@ -172,11 +215,4 @@ export function BuildingStep({ answers, onDone }: BuildingStepProps) {
             </ul>
         </div>
     )
-}
-
-function cnState(isDone: boolean, isActive: boolean) {
-    return [
-        'flex items-center gap-3 text-sm transition-colors',
-        isDone ? 'text-foreground' : isActive ? 'text-foreground' : 'text-muted-foreground/60',
-    ].join(' ')
 }
