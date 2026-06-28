@@ -1,0 +1,135 @@
+---
+title: 'How to Fix LinkedIn Link Previews (Open Graph Guide)'
+createdAt: '2026-06-27T00:00:00Z'
+modifiedAt: '2026-06-27T00:00:00Z'
+summary: 'Your LinkedIn link preview shows no image or the wrong title? Learn how LinkedIn reads Open Graph tags, why previews break, and how to fix each cause.'
+image: '/images/blog/how-to-fix-linkedin-link-previews/og.png'
+authorId: matteo
+tags: ['linkedin', 'open graph', 'link preview', 'seo', 'troubleshooting']
+---
+
+## Introduction
+
+You paste a link into a LinkedIn post, expecting a clean card with your title, description, and a sharp image. Instead you get a blank rectangle, the wrong headline, or no card at all. It looks unprofessional, it kills clicks, and it is one of the most common frustrations for anyone sharing content on LinkedIn.
+
+The good news is that link previews follow predictable rules. LinkedIn builds the card from a small set of Open Graph tags on your page, and almost every broken preview traces back to one of six causes. Once you know what LinkedIn is looking for, fixing it is straightforward. This guide walks through how the preview is built, why it breaks, and exactly how to repair each problem.
+
+<CtaCard
+    title='Test Your LinkedIn Link Preview'
+    description='See exactly how your URL will look as a LinkedIn link card and catch broken Open Graph tags before you post. Free, no signup.'
+    primaryButtonText='Preview Your Link'
+    primaryButtonUrl='/linkedin-link-preview'
+    pattern='circles'
+    align='center'
+/>
+
+## How LinkedIn Builds a Link Preview
+
+When you paste a URL into the LinkedIn composer, LinkedIn sends a crawler (its bot, identified as `LinkedInBot`) to fetch that page. The crawler does not render the page like a browser does. It reads the raw HTML and looks for a handful of `<meta>` tags in the `<head>` called Open Graph tags. Those tags tell LinkedIn what to display.
+
+The three that matter for the card are:
+
+- **`og:title`** - the bold headline shown on the card
+- **`og:description`** - the smaller gray line of text below the title
+- **`og:image`** - the large image at the top of the card
+
+A minimal, correct set looks like this:
+
+```html
+<meta property="og:title" content="How to Fix LinkedIn Link Previews" />
+<meta property="og:description" content="A practical guide to repairing broken Open Graph cards." />
+<meta property="og:image" content="https://example.com/images/preview.jpg" />
+<meta property="og:url" content="https://example.com/article" />
+```
+
+If those tags are present, valid, and reachable by the crawler, LinkedIn assembles a clean card. If any of them is missing, malformed, or invisible to the bot, the preview degrades or disappears. Everything below is a variation of one of those failures.
+
+## Why Your LinkedIn Link Preview Is Broken (and How to Fix Each Cause)
+
+### 1. Missing or incorrect og:title and og:description
+
+If LinkedIn cannot find an `og:title`, it falls back to the HTML `<title>` tag, and if that is missing too, it may show the bare URL. A missing `og:description` leaves the card looking thin, or LinkedIn pulls a random snippet of body text that does not read like a description.
+
+**How to fix it:** Add explicit `og:title` and `og:description` tags to the `<head>` of the page. Keep the title under about 60 characters so it does not get truncated, and write the description as one clear sentence of roughly 100 to 160 characters. Do not leave these to chance by relying on fallbacks.
+
+### 2. Missing or unreachable og:image
+
+A card with no image is the most common complaint, and it is almost always the `og:image` tag. The usual culprits are a tag that is missing entirely, a relative path (`/images/preview.jpg`) instead of an absolute URL, or an image URL that the crawler cannot reach because it sits behind a login, a hotlink block, or a firewall rule.
+
+**How to fix it:** Add an `og:image` tag with a full, absolute, publicly accessible HTTPS URL. Open the image URL in a private browser window with no cookies. If you can see the image without logging in, so can LinkedIn. If it 404s or asks you to sign in, the crawler gets the same result and shows no image.
+
+### 3. Your image is a WebP file
+
+WebP is excellent for page-speed optimization, but LinkedIn's crawler does not reliably process it. If your `og:image` URL ends in `.webp`, LinkedIn often skips it and shows a no-image card, even though everything else is correct. This trips up a lot of modern sites that auto-convert images to WebP for performance.
+
+**How to fix it:** Serve the Open Graph image specifically as a JPEG or PNG. You can keep WebP everywhere else on the page for speed and point `og:image` at a dedicated JPG or PNG version. JPEG at high quality is the safest choice across LinkedIn, Facebook, Slack, and the rest.
+
+### 4. Your image is the wrong size
+
+LinkedIn renders the link card image at a 1.91:1 aspect ratio. The recommended size is **1200 by 627 pixels**. Images narrower than 1200 pixels tend to look blurry, very small images may be ignored and shown as a tiny thumbnail beside the text instead of a full-width banner, and images with the wrong ratio get awkwardly cropped, often cutting off your headline or logo.
+
+**How to fix it:** Export your Open Graph image at 1200 by 627 pixels (1.91:1), keep the file under about 5 MB, and keep any text or faces inside the centered safe zone so cropping never removes the important part. One 1200 by 627 JPEG works for LinkedIn and every other major platform.
+
+### 5. Your Open Graph tags are rendered by JavaScript
+
+This one is subtle and very common on modern single-page apps. If your Open Graph tags are injected client-side by JavaScript after the page loads, a normal browser sees them, but LinkedIn's crawler does not. The crawler reads the initial HTML response and does not wait for or execute your JavaScript, so to LinkedIn the tags simply are not there.
+
+**How to fix it:** The Open Graph tags must be present in the server-rendered HTML, the raw response the server sends before any JavaScript runs. Use server-side rendering or static generation for your meta tags. If you view source (not the inspector, but the literal page source) and your `og:` tags are not in the HTML, the crawler cannot see them either. Frameworks like Next.js handle this correctly when you set metadata server-side.
+
+### 6. LinkedIn cached an old version of your preview
+
+You fixed the tags, you re-share the link, and LinkedIn still shows the old broken card. This is not your tags failing. LinkedIn caches link previews aggressively, for roughly seven days, so the first version it scraped sticks around even after you have corrected the page.
+
+**How to fix it:** Force LinkedIn to re-scrape the page. The official, reliable way is covered in the next section.
+
+## The Honest Truth About Refreshing LinkedIn's Cache
+
+There is a lot of bad advice online promising tricks to instantly clear LinkedIn's cache from a third-party tool. Here is the honest version: you cannot make LinkedIn refresh its cache from an external service, and no tool that lives outside LinkedIn can force LinkedIn's servers to re-fetch your page on demand. Be skeptical of anything that claims otherwise.
+
+There are exactly two reliable options.
+
+**Use LinkedIn's official Post Inspector.** Go to [linkedin.com/post-inspector](https://www.linkedin.com/post-inspector/), paste your URL, and click Inspect. This is LinkedIn's own tool, and the act of inspecting forces LinkedIn to re-scrape the page and refresh its cached preview. It also reports which tags it found and any errors it hit, which makes it the fastest way to confirm your fix actually worked. This is the single most effective step after editing your Open Graph tags.
+
+**Wait out the cache, or change the URL.** If you would rather not use the inspector, the cache expires on its own after about a week, and the next share will pull the updated preview. If you need a correct card immediately and cannot use the inspector, sharing a slightly different URL (for example, adding a harmless query parameter like `?v=2`) makes LinkedIn treat it as a new page with no cached preview - though the cleaner path is simply to run the inspector.
+
+A useful sequence is this: fix your tags, run the page through the Post Inspector to flush the cache and confirm the card looks right, then share.
+
+<CtaCard
+    title='Catch Preview Problems Before You Publish'
+    description='Paste your URL to see the LinkedIn card and a checklist of Open Graph issues, so you fix them before the cache locks in a broken preview.'
+    primaryButtonText='Preview Your Link'
+    primaryButtonUrl='/linkedin-link-preview'
+    pattern='circles'
+    align='center'
+/>
+
+## A Quick Pre-Publish Checklist
+
+Before you share any link on LinkedIn, run through this:
+
+1. `og:title` is present, under ~60 characters, and reads as a real headline
+2. `og:description` is present and roughly 100 to 160 characters
+3. `og:image` is an absolute HTTPS URL, publicly reachable with no login
+4. The image is a JPEG or PNG (not WebP), at 1200 by 627 pixels
+5. All Open Graph tags appear in the server-rendered page source, not just after JavaScript runs
+6. You have run the URL through the [Post Inspector](https://www.linkedin.com/post-inspector/) after any change to flush the cache
+
+If all six pass, your card will render correctly. The fastest way to check the first five at a glance is to run the URL through a [LinkedIn link preview tool](/linkedin-link-preview), which fetches the same tags LinkedIn reads and flags what is missing, before a broken version ever gets cached.
+
+## How This Connects to the Rest of Your Post
+
+A clean link card is only part of a post that performs. The text wrapped around the link matters just as much. Once your preview renders correctly, make sure the post itself is formatted to stop the scroll: a strong first line above the "see more" fold, deliberate line breaks, and bold text on the points that matter. You can compose and preview the full post, link card included, with the free editor at [linkedinpreview.com](/), and apply real LinkedIn formatting with the [text formatter](/formatter) so your bold and bullets actually render in the feed.
+
+If your goal is to drive clicks to a link, it is also worth knowing the mechanics of how LinkedIn treats outbound links in the feed. The guide on [how to post a link on LinkedIn](/blog/how-to-post-a-link-on-linkedin) covers placement, the link-in-comments debate, and getting the most reach out of a post that points off-platform.
+
+## Conclusion
+
+Broken LinkedIn link previews feel mysterious, but they almost never are. LinkedIn builds the card from `og:title`, `og:description`, and `og:image`, and a broken card comes down to one of six things: a missing title or description, a missing or unreachable image, a WebP image, the wrong image size, JavaScript-rendered tags the crawler cannot see, or a stale cached preview.
+
+Work through the six causes, fix the one that applies, then run the URL through LinkedIn's official Post Inspector to flush the cache and confirm the card looks right. Do that once and a clean, professional preview becomes the default every time you share.
+
+For more on getting your LinkedIn posts right before you publish:
+
+- [How to post a link on LinkedIn](/blog/how-to-post-a-link-on-linkedin)
+- [LinkedIn posts text formatting guide](/blog/linkedin-posts-text-formatting)
+- [How to add bold text to LinkedIn posts](/blog/how-to-add-bold-text-to-linkedin-posts)

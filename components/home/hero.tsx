@@ -51,8 +51,8 @@ export function Hero() {
 
                 <AnimateIn delay={0.2}>
                     <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
-                        A free tool to write, format, and preview your LinkedIn posts. Improve your Linkedin presence
-                        and engagement.
+                        A free LinkedIn post editor and formatter with a live preview. Write, format, and check how your
+                        post looks on mobile and desktop before you publish - and boost your engagement.
                     </p>
                 </AnimateIn>
 
@@ -76,7 +76,7 @@ export function Hero() {
                         <StarRating />
 
                         <span className='text-xs font-medium text-neutral-500 sm:text-sm'>
-                            {SOCIAL_PROOF.rating} from {SOCIAL_PROOF.count} reviews
+                            {SOCIAL_PROOF.rating}/5 from {SOCIAL_PROOF.count} reviews
                         </span>
                     </div>
                 </AnimateIn>

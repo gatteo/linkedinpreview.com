@@ -12,12 +12,21 @@ const sitemap = async () => {
     const cmsPages = allPages.map((page) => `/${page.slug}`)
 
     // Static pages (without images)
-    const staticPages = [Routes.Home, Routes.Blog, Routes.Changelog, Routes.Preview, Routes.Compare, ...cmsPages].map(
-        (route) => ({
-            url: absoluteUrl(route),
-            lastModified: new Date().toISOString().split('T')[0],
-        }),
-    )
+    const staticPages = [
+        Routes.Home,
+        Routes.Blog,
+        Routes.Changelog,
+        Routes.Preview,
+        Routes.Compare,
+        Routes.Formatter,
+        Routes.Generator,
+        Routes.LinkPreview,
+        Routes.Vorschau,
+        ...cmsPages,
+    ].map((route) => ({
+        url: absoluteUrl(route),
+        lastModified: new Date().toISOString().split('T')[0],
+    }))
 
     // Blog posts with images
     const blogPages = allBlogPosts.map((post) => ({

@@ -48,6 +48,22 @@ const FAQList = [
         question: 'Can I embed the LinkedIn preview tool on my own website?',
         answer: 'Yes! You can embed the LinkedInPreview.com tool on your website using a simple iframe code snippet. The embed includes auto-resize support so it fits seamlessly into your page. Visit the Embed section on our homepage to copy the code and see a live preview.',
     },
+    {
+        question: 'Is LinkedInPreview.com a LinkedIn post formatter and text editor?',
+        answer: "Yes. It works as a LinkedIn post formatter and rich text editor in one. Write your post in the editor, apply bold, italic, underline, and list formatting that the native LinkedIn composer doesn't support, and watch the live preview update as you type.",
+    },
+    {
+        question: 'Can I use it as a LinkedIn post checker before I publish?',
+        answer: 'Absolutely. Think of LinkedInPreview.com as a LinkedIn post checker: it lets you review your formatting, opening line, character count, and the see-more cutoff before publishing, so you catch issues that would otherwise hurt readability and engagement.',
+    },
+    {
+        question: 'Does the tool show where my post gets cut off by "see more"?',
+        answer: 'Yes. The live preview doubles as a see-more tester, showing exactly where LinkedIn truncates your post on mobile, tablet, and desktop. Use it to test different opening lines so your hook lands before the cutoff.',
+    },
+    {
+        question: 'How is this different from a plain text formatter?',
+        answer: 'A plain text formatter only converts characters into bold or italic Unicode. LinkedInPreview.com combines a text formatter, a rich text editor, and a live preview checker in one, so you can format, review, and test how your post actually looks across devices before publishing.',
+    },
 ]
 
 export function FAQs() {

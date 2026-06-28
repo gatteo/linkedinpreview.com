@@ -5,6 +5,7 @@ import type { z } from 'zod'
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES, DEFAULT_LLM_MODEL } from '@/config/ai'
 import { ANALYZE_SYSTEM_PROMPT, analyzeUserPrompt } from '@/config/prompts'
+import { assertSameOrigin } from '@/lib/ai-guard'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -13,6 +14,9 @@ import { analysisSchema, bodySchema } from './route.schema'
 export const maxDuration = 30
 
 export async function POST(request: Request) {
+    const originBlock = assertSameOrigin(request)
+    if (originBlock) return originBlock
+
     let body: unknown
     try {
         body = await request.json()
