@@ -1,10 +1,10 @@
 import React from 'react'
 
 import { getTOC } from '@/lib/blog'
-import TableOfContents from '@/components/blog/post-toc'
+import { TableOfContents } from '@/components/blog/post-toc'
 
 import { ShareIcons } from './blog/share-icons'
-import Mdx from './mdx/mdx'
+import { Mdx } from './mdx/mdx'
 
 type Props = {
     url: string

@@ -1,25 +1,41 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import { AI_RATE_LIMITS } from '@/config/ai'
+import { aiLimitsForPlan, type AiAction } from '@/config/ai'
+import type { Plan } from '@/lib/billing'
 
-interface RateLimitResult {
+type RateLimitResult = {
     allowed: boolean
     remaining: number
     resetAt: string | null
 }
 
-export async function checkRateLimit(
-    supabase: SupabaseClient,
-    action: keyof typeof AI_RATE_LIMITS,
-): Promise<RateLimitResult> {
+/**
+ * Read the current user's plan from the billing table (RLS-scoped to them).
+ * Fails closed to 'free' so a transient DB error never silently grants paid
+ * limits. Anonymous/new users with no billing row are 'free'.
+ */
+async function getPlan(supabase: SupabaseClient): Promise<Plan> {
+    try {
+        const { data, error } = await supabase.from('billing').select('plan').maybeSingle()
+        if (error || !data) return 'free'
+        return (data.plan as Plan) ?? 'free'
+    } catch {
+        return 'free'
+    }
+}
+
+export async function checkRateLimit(supabase: SupabaseClient, action: AiAction): Promise<RateLimitResult> {
     if (process.env.NODE_ENV === 'development') {
         return { allowed: true, remaining: 999, resetAt: null }
     }
 
     try {
+        const plan = await getPlan(supabase)
+        const limit = aiLimitsForPlan(plan)[action]
+
         const { data, error } = await supabase.rpc('check_and_record_usage', {
             p_action: action,
-            p_limit: AI_RATE_LIMITS[action],
+            p_limit: limit,
         })
 
         if (error) {

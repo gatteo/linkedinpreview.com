@@ -1,14 +1,19 @@
 import Link from 'next/link'
 
-import { HeaderLinks } from '@/config/urls'
+const NAV_LINKS = [
+    { text: 'Features', href: '/#all-features' },
+    { text: 'How it works', href: '/#how-it-works' },
+    { text: 'Open source', href: '/#opensource' },
+    { text: 'FAQ', href: '/#faqs' },
+]
 
 export function Navbar() {
     return (
-        <ul className='hidden items-center gap-1 md:flex'>
-            {HeaderLinks.map((link) => (
+        <ul className='hidden items-center gap-6 md:flex'>
+            {NAV_LINKS.map((link) => (
                 <li key={link.text}>
                     <Link
-                        className='rounded-lg px-3 py-2 text-sm font-medium text-neutral-700 transition-colors duration-150 hover:bg-neutral-100 hover:text-neutral-900'
+                        className='text-muted-foreground hover:text-foreground text-sm transition-colors duration-150'
                         href={link.href}
                         scroll>
                         {link.text}

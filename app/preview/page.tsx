@@ -54,24 +54,24 @@ export default async function PreviewPage({ searchParams }: Props) {
 
     return (
         <div className='flex min-h-screen flex-col'>
-            <header className='border-border border-b bg-white'>
+            <header className='border-border bg-card border-b'>
                 <div className='mx-auto flex h-14 max-w-[1128px] items-center px-4'>
-                    <Link href='/' className='font-heading text-sm font-semibold tracking-tight text-neutral-900'>
+                    <Link href='/' className='font-heading text-foreground text-sm font-semibold tracking-tight'>
                         LinkedIn Post Preview
                     </Link>
                 </div>
             </header>
 
             <main className='mx-auto w-full max-w-3xl flex-1 px-6 py-16 text-center'>
-                <span className='border-border text-primary shadow-subtle mb-4 inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                <span className='border-border text-primary shadow-subtle bg-background mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium'>
                     Feed Preview
                 </span>
 
-                <h1 className='font-heading mb-4 text-4xl font-bold tracking-tight text-balance text-neutral-900 md:text-5xl'>
+                <h1 className='font-heading text-foreground mb-4 text-4xl font-bold tracking-tight text-balance md:text-5xl'>
                     LinkedIn Feed Preview
                 </h1>
 
-                <p className='mx-auto mb-8 max-w-xl text-lg leading-7 text-neutral-500'>
+                <p className='text-muted-foreground mx-auto mb-8 max-w-xl text-lg leading-7'>
                     See how your LinkedIn post looks inside a realistic feed, on desktop and mobile, before you hit
                     publish. Preview it next to other posts to check formatting, readability, and the see-more cutoff.
                 </p>
@@ -89,23 +89,23 @@ export default async function PreviewPage({ searchParams }: Props) {
                 </div>
 
                 <div className='border-border bg-muted/30 rounded-2xl border p-8 text-left'>
-                    <h2 className='font-heading mb-6 text-center text-2xl font-bold tracking-tight text-neutral-900'>
+                    <h2 className='font-heading text-foreground mb-6 text-center text-2xl font-bold tracking-tight'>
                         How the feed preview is different from the editor
                     </h2>
                     <div className='grid gap-6 sm:grid-cols-3'>
                         {DIFFERENTIATORS.map((item) => (
                             <div key={item.title}>
-                                <div className='border-border text-primary shadow-subtle mb-3 inline-flex size-9 items-center justify-center rounded-lg border bg-white'>
+                                <div className='border-border text-primary shadow-subtle bg-card mb-3 inline-flex size-9 items-center justify-center rounded-lg border'>
                                     <item.icon className='size-4' />
                                 </div>
-                                <h3 className='mb-1.5 text-sm font-semibold text-neutral-900'>{item.title}</h3>
-                                <p className='text-sm leading-6 text-neutral-500'>{item.body}</p>
+                                <h3 className='text-foreground mb-1.5 text-sm font-semibold'>{item.title}</h3>
+                                <p className='text-muted-foreground text-sm leading-6'>{item.body}</p>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <p className='mt-10 text-sm text-neutral-500'>
+                <p className='text-muted-foreground mt-10 text-sm'>
                     To preview your own post, start in the{' '}
                     <Link href='/#tool' className='text-primary font-medium underline underline-offset-4'>
                         free editor
@@ -114,9 +114,9 @@ export default async function PreviewPage({ searchParams }: Props) {
                 </p>
             </main>
 
-            <footer className='border-border border-t bg-white py-4'>
+            <footer className='border-border bg-card border-t py-4'>
                 <div className='mx-auto max-w-[1128px] px-4 text-center'>
-                    <Link href='/' className='text-sm text-neutral-500 transition-colors hover:text-neutral-900'>
+                    <Link href='/' className='text-muted-foreground hover:text-foreground text-sm transition-colors'>
                         &copy; {new Date().getFullYear()} LinkedIn Post Preview
                     </Link>
                 </div>

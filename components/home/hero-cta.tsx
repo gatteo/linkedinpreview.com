@@ -24,7 +24,7 @@
  * tracking is needed to know which variant each user saw.
  */
 import Link from 'next/link'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, ArrowRight } from 'lucide-react'
 import { useFeatureFlagVariantKey } from 'posthog-js/react'
 
 import { Routes } from '@/config/routes'
@@ -51,23 +51,35 @@ export function HeroCTA() {
     const copy = CTA_VARIANTS[variantKey] || CONTROL
 
     return (
-        <div className='flex items-center gap-3'>
+        <div className='flex flex-col items-center gap-3'>
+            <div className='flex items-center gap-3'>
+                <TrackClick
+                    event='cta_button_clicked'
+                    properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
+                    <Button asChild size='lg' className='rounded-lg'>
+                        <Link href={Routes.Tool}>
+                            {copy.primary}
+                            <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
+                        </Link>
+                    </Button>
+                </TrackClick>
+                <TrackClick
+                    event='cta_button_clicked'
+                    properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
+                    <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
+                        <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
+                    </Button>
+                </TrackClick>
+            </div>
             <TrackClick
                 event='cta_button_clicked'
-                properties={{ button_name: 'get_started', source: 'hero', variant: variantKey }}>
-                <Button asChild size='lg' className='rounded-lg'>
-                    <Link href={Routes.Tool}>
-                        {copy.primary}
-                        <ArrowDown className='animate-bounce-down ml-0.5 size-4' />
-                    </Link>
-                </Button>
-            </TrackClick>
-            <TrackClick
-                event='cta_button_clicked'
-                properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
-                    <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
-                </Button>
+                properties={{ button_name: 'open_dashboard', source: 'hero', variant: variantKey }}>
+                <Link
+                    href={Routes.Dashboard}
+                    className='text-muted-foreground hover:text-foreground group inline-flex items-center gap-1.5 text-sm font-medium transition-colors'>
+                    or open the full dashboard
+                    <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />
+                </Link>
             </TrackClick>
         </div>
     )

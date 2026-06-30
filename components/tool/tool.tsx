@@ -2,11 +2,18 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { Eye, PenLine } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowUpRight, Eye, PenLine } from 'lucide-react'
+import posthog from 'posthog-js'
 import { Group, Panel } from 'react-resizable-panels'
+import { toast } from 'sonner'
 
+import { Routes } from '@/config/routes'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
+import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/hooks/use-is-desktop'
+import { Button } from '@/components/ui/button'
 
 import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
@@ -19,17 +26,6 @@ const EditorPanel = dynamic(() => import('./editor-panel').then((mod) => ({ defa
 
 export type Media = { type: 'image' | 'video'; src: string }
 
-// Helper to check if TipTap JSON has actual text content
-function hasTextContent(doc: any): boolean {
-    if (!doc?.content) return false
-    return doc.content.some((node: any) => {
-        if (node.content) {
-            return node.content.some((child: any) => child.text?.trim())
-        }
-        return false
-    })
-}
-
 type ToolProps = {
     variant?: 'default' | 'embed'
     injectedDoc?: any
@@ -39,21 +35,9 @@ type MobileTab = 'editor' | 'preview'
 
 const STORAGE_KEY = 'linkedinpreview-draft'
 const SAVE_DELAY_MS = 2000
-const DESKTOP_BREAKPOINT = 768
-
-function useIsDesktop() {
-    const [isDesktop, setIsDesktop] = React.useState(false)
-
-    React.useEffect(() => {
-        const mql = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`)
-        const onChange = () => setIsDesktop(mql.matches)
-        onChange()
-        mql.addEventListener('change', onChange)
-        return () => mql.removeEventListener('change', onChange)
-    }, [])
-
-    return isDesktop
-}
+// One-time nudge toward the dashboard once the user has written a real post.
+const NUDGE_KEY = 'lip-dashboard-nudge-seen'
+const NUDGE_MIN_CHARS = 160
 
 function loadLocalDraft(): any | null {
     try {
@@ -148,8 +132,62 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         if (!content) return
         const encoded = await encodeDraft(content)
         if (!encoded) return
+        posthog.capture('feed_preview_opened')
         window.open(`/preview?draft=${encoded}`, '_blank')
     }, [content])
+
+    const handleOpenDashboard = React.useCallback(
+        async (source: string) => {
+            posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
+            if (!content) {
+                window.location.href = Routes.Dashboard
+                return
+            }
+            const encoded = await encodeDraft(content)
+            if (!encoded) {
+                window.location.href = Routes.Dashboard
+                return
+            }
+            window.location.href = `/dashboard/editor?import=${encoded}`
+        },
+        [content],
+    )
+
+    // Light, one-time nudge: once the user has written a real post, invite them to
+    // continue in the dashboard (which carries this draft over via ?import=).
+    const nudgeShownRef = React.useRef(false)
+    React.useEffect(() => {
+        if (variant !== 'default' || nudgeShownRef.current) return
+        if (extractPlainText(content).length < NUDGE_MIN_CHARS) return
+
+        // Arm the once-per-session guard now that we've decided to act, then bail
+        // if a previous session already showed it. localStorage may be unavailable
+        // (private mode); the ref then keeps it to once per session.
+        let alreadySeen = false
+        try {
+            alreadySeen = !!localStorage.getItem(NUDGE_KEY)
+        } catch {
+            // ignore - fall back to once-per-session via the ref
+        }
+        nudgeShownRef.current = true
+        if (alreadySeen) return
+        try {
+            localStorage.setItem(NUDGE_KEY, '1')
+        } catch {
+            // ignore - persisted guard unavailable, ref still prevents re-firing this session
+        }
+
+        posthog.capture('dashboard_nudge_shown', { source: 'tool' })
+        toast('Nice post! Want to save it?', {
+            description:
+                'Continue in the dashboard to save this draft, schedule it, and write more with AI - free, no sign-up.',
+            duration: 12000,
+            action: {
+                label: 'Open dashboard',
+                onClick: () => handleOpenDashboard('tool_nudge'),
+            },
+        })
+    }, [content, variant, handleOpenDashboard])
 
     if (isLoading) {
         return null
@@ -208,6 +246,7 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                         <PreviewPanel
                             content={content}
                             media={media}
+                            promptBranding={variant === 'default'}
                             onOpenFeedPreview={handleOpenFeedPreview}
                             hasContent={hasTextContent(content)}
                         />
@@ -230,11 +269,26 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                             <PreviewPanel
                                 content={content}
                                 media={media}
+                                promptBranding={variant === 'default'}
                                 onOpenFeedPreview={handleOpenFeedPreview}
                                 hasContent={hasTextContent(content)}
                             />
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Dashboard prompt - shown when user has written content */}
+            {variant === 'default' && hasTextContent(content) && (
+                <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-3.5'>
+                    <span className='text-muted-foreground text-[13.5px] leading-snug'>
+                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Save it, schedule it,
+                        and write your next ten posts in the full editor.
+                    </span>
+                    <Button variant='outline' size='sm' onClick={() => handleOpenDashboard('tool_footer')}>
+                        Continue in the full editor
+                        <ArrowUpRight className='size-3.5' />
+                    </Button>
                 </div>
             )}
         </div>
@@ -245,11 +299,28 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     }
 
     return (
-        <section
-            id='tool'
-            className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{ height: 'max(70vh, 520px)' }}>
-            <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
+        <section id='tool' className='border-border bg-canvas scroll-mt-[var(--header-height)] border-t'>
+            <div className='max-w-content border-border mx-auto border-x px-7 py-16'>
+                <div className='mb-6 flex flex-wrap items-end justify-between gap-6'>
+                    <div>
+                        <p className='tracking-label mb-3 font-mono text-xs font-medium text-[color:var(--orange-600)] uppercase'>
+                            Try it now
+                        </p>
+                        <h2 className='font-heading max-w-[560px] text-[clamp(28px,3.6vw,38px)] leading-[1.06] font-bold tracking-[-0.025em]'>
+                            Write on the left, watch the feed on the right.
+                        </h2>
+                    </div>
+                    <Button asChild variant='outline'>
+                        <Link href={Routes.DashboardEditor()}>
+                            Open in full editor
+                            <ArrowUpRight className='size-4' />
+                        </Link>
+                    </Button>
+                </div>
+                <div className='flex flex-col' style={{ height: 'max(70vh, 520px)' }}>
+                    {inner}
+                </div>
+            </div>
         </section>
     )
 }

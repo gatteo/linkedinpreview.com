@@ -6,15 +6,17 @@ import type { Media } from '../tool'
 import { ActionButtons } from './action-buttons'
 import { ContentSection } from './content-section'
 import { Reactions } from './reactions'
-import { UserInfo } from './user-info'
+import { UserInfo, type PreviewAuthor } from './user-info'
 
 interface PostCardProps {
     content: any
     media: Media | null
+    author?: PreviewAuthor
+    promptBranding?: boolean
     className?: string
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ content, media, className }) => {
+export const PostCard: React.FC<PostCardProps> = ({ content, media, author, promptBranding, className }) => {
     return (
         <div
             className={cn(
@@ -22,7 +24,7 @@ export const PostCard: React.FC<PostCardProps> = ({ content, media, className })
                 className,
             )}>
             <div className='pt-3 pr-4 pb-1 pl-4'>
-                <UserInfo />
+                <UserInfo author={author} promptBranding={promptBranding} />
                 <ContentSection content={content} />
             </div>
             {media && (

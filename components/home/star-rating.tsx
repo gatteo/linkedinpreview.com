@@ -6,7 +6,7 @@ export function StarRating() {
     return (
         <div className='flex gap-0.5' aria-label='5 star rating'>
             {STARS.map((n) => (
-                <Icons.star key={n} className='size-4 fill-amber-400 text-amber-400' />
+                <Icons.star key={n} className='fill-warning text-warning size-4' />
             ))}
         </div>
     )

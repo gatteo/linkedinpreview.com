@@ -1,90 +1,81 @@
-'use client'
-
+import Image from 'next/image'
 import Link from 'next/link'
+import { ArrowRight, CheckCircle2, Heart, ThumbsUp } from 'lucide-react'
 
 import { Routes } from '@/config/routes'
 
-import { Icons } from '../icon'
 import { AnimateIn } from '../ui/animate-in'
 import { Button } from '../ui/button'
+import { FeatureItem, Section, SectionHead } from './_shared'
 
-const Reasons = [
+const REASONS = [
     {
-        title: 'Make Your Posts Easy to Read',
+        icon: CheckCircle2,
+        title: 'Make your posts easy to read',
         description:
-            'Good formatting helps organize your ideas clearly. It makes your posts simpler to follow and keeps your readers interested.',
-        icon: <Icons.checkCircle className='text-primary size-5' />,
+            'Good formatting organizes your ideas clearly. It makes your posts simpler to follow and keeps readers interested.',
     },
     {
-        title: 'Make a Great First Impression',
+        icon: ThumbsUp,
+        title: 'Make a great first impression',
         description:
-            'People notice neat and tidy posts. Previewing lets you see how your post will look on different screens, ensuring it always looks its best.',
-        icon: <Icons.thumsUp className='text-primary size-5' />,
+            'People notice neat, tidy posts. Previewing lets you see how it looks on different screens, so it always looks its best.',
     },
     {
-        title: 'Get More Likes and Comments',
+        icon: Heart,
+        title: 'Get more likes and comments',
         description:
-            'Write posts that people want to interact with. Well formatted and attractive posts are more likely to be liked, commented on, and shared.',
-        icon: <Icons.commentHeart className='text-primary size-5' />,
+            'Write posts people want to interact with. Well-formatted, attractive posts get liked, commented on, and shared.',
     },
 ]
 
 export function Reason() {
     return (
-        <section id='reason' className='border-border border-t'>
-            <div className='pt-20 md:pt-24'>
-                {/* Header */}
-                <AnimateIn className='mb-6 px-6 text-center max-lg:text-left'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-balance text-neutral-900 sm:text-4xl md:text-5xl'>
-                        Why <span className='text-primary'>Format</span> and{' '}
-                        <span className='text-primary'>Preview</span> Your LinkedIn Posts?
-                    </h2>
-                </AnimateIn>
-
-                {/* Blueprint grid */}
-                <AnimateIn>
-                    <div className='dash-top grid lg:grid-cols-[2fr_3fr]'>
-                        {/* Left: copy */}
-                        <div className='dash-bottom-mobile space-y-6 p-6'>
-                            <p className='text-lg leading-relaxed text-neutral-500 lg:max-w-lg'>
-                                The appearance of posts on LinkedIn can significantly influence your professional
-                                reputation and how much engagement your content receives. Rich text formatting enables
-                                you to design posts that not only stand out but also truly resonate with your audience.
-                                Also, with real-time preview you are sure your linkedin post content and opening line
-                                look exactly what you expect before going live, across any device.
-                            </p>
-
-                            <Button asChild size='default' className='rounded-lg'>
-                                <Link href={Routes.Tool}>Get Started, It&apos;s Free</Link>
+        <Section id='reason' innerClassName='pt-16'>
+            <AnimateIn className='mb-9'>
+                <SectionHead title='Why format and preview your LinkedIn posts?' />
+            </AnimateIn>
+            <AnimateIn>
+                <div className='border-border -mx-7 grid border-t md:grid-cols-2'>
+                    <div className='flex flex-col gap-5.5 p-7'>
+                        <p className='text-muted-foreground text-[17px] leading-[1.62]'>
+                            How posts appear on LinkedIn can significantly influence your professional reputation and
+                            how much engagement your content receives. Rich text formatting lets you design posts that
+                            stand out and truly resonate. And with real-time preview, you know your opening line looks
+                            exactly right before going live - across any device.
+                        </p>
+                        <div>
+                            <Button asChild>
+                                <Link href={Routes.Tool}>
+                                    Get started, it&apos;s free
+                                    <ArrowRight className='size-4' />
+                                </Link>
                             </Button>
                         </div>
-
-                        {/* Right: reason cards with diagonal lines bg */}
-                        <div className='dash-left relative flex items-center p-6'>
-                            <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
-                                style={{
-                                    backgroundImage:
-                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
-                                }}
-                            />
-                            <div className='divide-border relative w-full divide-y overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-sm'>
-                                {Reasons.map(({ icon, title, description }) => (
-                                    <div key={title} className='flex items-start gap-4 p-6'>
-                                        <div className='bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-lg'>
-                                            {icon}
-                                        </div>
-                                        <div>
-                                            <h3 className='mb-1 text-base font-semibold text-neutral-900'>{title}</h3>
-                                            <p className='text-sm leading-relaxed text-neutral-500'>{description}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                    </div>
+                    <div className='border-border bg-secondary relative flex items-center overflow-hidden p-7 max-md:border-t md:border-l'>
+                        <Image
+                            src='/images/illustrations/valley-fog.jpg'
+                            alt=''
+                            fill
+                            sizes='(max-width: 768px) 100vw, 50vw'
+                            className='object-cover'
+                        />
+                        <span className='absolute inset-0 bg-gradient-to-br from-[oklch(0.97_0.006_220_/_0.66)] to-[oklch(0.94_0.012_222_/_0.46)]' />
+                        <span
+                            className='grain absolute inset-0'
+                            style={{ '--grain-opacity': 0.18 } as React.CSSProperties}
+                        />
+                        <div className='bg-card relative w-full overflow-hidden rounded-xl shadow-[var(--card-shadow)]'>
+                            {REASONS.map((r, i) => (
+                                <div key={r.title} className={'px-5.5 py-5' + (i > 0 ? ' border-border border-t' : '')}>
+                                    <FeatureItem icon={r.icon} title={r.title} body={r.description} />
+                                </div>
+                            ))}
                         </div>
                     </div>
-                </AnimateIn>
-            </div>
-        </section>
+                </div>
+            </AnimateIn>
+        </Section>
     )
 }

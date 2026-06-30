@@ -63,7 +63,7 @@ export function ShareDialog({
                         type='button'
                         onClick={handleCopy}
                         className={buttonVariants({ size: 'icon', variant: 'outline' }) + ' shrink-0'}>
-                        {copied ? <Check className='size-4 text-green-600' /> : <Copy className='size-4' />}
+                        {copied ? <Check className='text-success size-4' /> : <Copy className='size-4' />}
                     </button>
                 </div>
 

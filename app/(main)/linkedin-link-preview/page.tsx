@@ -67,28 +67,28 @@ function LinkPreviewHero() {
         <DotBackground className='overflow-hidden'>
             <div className='mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
                 <AnimateIn delay={0}>
-                    <p className='border-border shadow-subtle mb-6 flex items-center gap-2 rounded-full border bg-white px-4 py-1 text-xs text-neutral-600 sm:text-sm'>
+                    <p className='border-border shadow-subtle bg-background text-muted-foreground mb-6 flex items-center gap-2 rounded-full border px-4 py-1 text-xs sm:text-sm'>
                         Free - No signup required
                     </p>
                 </AnimateIn>
 
                 <AnimateIn delay={0.1}>
-                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
+                    <h1 className='font-heading text-foreground mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance md:text-6xl lg:text-7xl'>
                         LinkedIn Link Preview
                     </h1>
                 </AnimateIn>
 
                 <AnimateIn delay={0.2}>
-                    <p className='mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
+                    <p className='text-muted-foreground mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 md:text-xl md:leading-8'>
                         Paste a URL to see how your link card will look on LinkedIn, on desktop and mobile. Then check
                         your Open Graph tags and fix any issues before you share.
                     </p>
                 </AnimateIn>
 
                 <AnimateIn delay={0.3}>
-                    <div className='mb-8 flex items-center gap-2 rounded-full bg-neutral-50 px-4 py-2'>
+                    <div className='bg-secondary mb-8 flex items-center gap-2 rounded-full px-4 py-2'>
                         <StarRating />
-                        <span className='text-xs font-medium text-neutral-500 sm:text-sm'>
+                        <span className='text-muted-foreground text-xs font-medium sm:text-sm'>
                             Trusted by thousands of LinkedIn creators
                         </span>
                     </div>
@@ -113,10 +113,10 @@ function LinkPreviewLinksSection() {
             <div className='pt-20 md:pt-24'>
                 <AnimateIn className='mb-6 px-6'>
                     <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>Explore more</p>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         More LinkedIn tools and guides
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         Preview, format, and write better LinkedIn posts with our free tools and step-by-step guides.
                     </p>
                 </AnimateIn>
@@ -127,7 +127,7 @@ function LinkPreviewLinksSection() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className='border-border group flex items-center gap-3 p-6 transition-colors hover:bg-neutral-50'>
+                                className='border-border group hover:bg-accent flex items-center gap-3 p-6 transition-colors'>
                                 <div className='bg-primary/10 flex size-8 shrink-0 items-center justify-center rounded-lg'>
                                     <svg
                                         className='text-primary size-4'
@@ -143,7 +143,7 @@ function LinkPreviewLinksSection() {
                                         />
                                     </svg>
                                 </div>
-                                <span className='text-sm font-medium text-neutral-800 group-hover:text-neutral-900'>
+                                <span className='text-muted-foreground group-hover:text-foreground text-sm font-medium'>
                                     {link.label}
                                 </span>
                             </Link>
@@ -175,10 +175,10 @@ function LinkPreviewFAQSection() {
                 <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
                 <AnimateIn className='mb-6 px-6'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         Frequently Asked Questions
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         Common questions about LinkedIn link previews and Open Graph tags.
                     </p>
                 </AnimateIn>
@@ -189,10 +189,10 @@ function LinkPreviewFAQSection() {
                             <Accordion type='multiple'>
                                 {LinkPreviewFAQList.map((faq) => (
                                     <AccordionItem key={faq.question} value={faq.question} className='border-border'>
-                                        <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
+                                        <AccordionTrigger className='text-foreground gap-4 text-start text-base font-medium hover:no-underline'>
                                             {faq.question}
                                         </AccordionTrigger>
-                                        <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
+                                        <AccordionContent className='text-muted-foreground text-sm leading-relaxed'>
                                             {faq.answer}
                                         </AccordionContent>
                                     </AccordionItem>
@@ -202,7 +202,7 @@ function LinkPreviewFAQSection() {
 
                         <div className='dash-left relative hidden lg:block'>
                             <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
+                                className='text-border pointer-events-none absolute inset-0'
                                 style={{
                                     backgroundImage:
                                         'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',

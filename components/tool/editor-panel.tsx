@@ -10,6 +10,7 @@ import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
+import { countWords } from '@/lib/content-scoring'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
@@ -21,12 +22,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { EditorLoading } from './editor-loading'
 import { ShareDialog } from './share-dialog'
 import type { Media } from './tool'
-import Toolbar from './toolbar'
+import { Toolbar } from './toolbar'
 import { processNodes, toPlainText } from './utils'
 
-const AIGenerateSheet = dynamic(() => import('../ai-chat/sheet').then((mod) => ({ default: mod.AIGenerateSheet })), {
-    ssr: false,
-})
+const AIGenerateSheet = dynamic(
+    () => import('../ai-chat/ai-generate-sheet').then((mod) => ({ default: mod.AIGenerateSheet })),
+    {
+        ssr: false,
+    },
+)
 
 const listStyles = `
   .ProseMirror ul, .ProseMirror ol {
@@ -46,12 +50,16 @@ export function EditorPanel({
     onChange,
     onMediaChange,
     onShare,
+    contentReplace,
+    onContentReplaceApplied,
 }: {
     initialContent?: any
     injectedDoc?: any
     onChange: (json: any) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
+    contentReplace?: string | null
+    onContentReplaceApplied?: () => void
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
@@ -87,7 +95,7 @@ export function EditorPanel({
         ],
         editorProps: {
             attributes: {
-                class: 'prose-md focus:outline-hidden resize-none block w-full p-0 text-neutral-900 border-none appearance-none placeholder:text-neutral-500 focus:ring-0 overflow-y-auto h-full',
+                class: 'prose-md focus:outline-hidden resize-none block w-full p-0 text-foreground border-none appearance-none placeholder:text-muted-foreground focus:ring-0 overflow-y-auto h-full',
             },
         },
         onCreate: ({ editor }) => {
@@ -241,18 +249,27 @@ export function EditorPanel({
         posthog.capture('media_removed', { media_type: mediaType })
     }, [handleMediaChangeWrapper, currentMedia])
 
+    React.useEffect(() => {
+        if (!contentReplace || !editor) return
+        const paragraphs = toTipTapParagraphs(contentReplace)
+        editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
+        onChange(editor.getJSON())
+        onContentReplaceApplied?.()
+    }, [contentReplace]) // eslint-disable-line react-hooks/exhaustive-deps
+
     if (!editor) {
         return <EditorLoading />
     }
 
     const text = editor.getText()
     const charCount = text.length
+    const wordCount = countWords(text)
 
     return (
         <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='border-border flex h-14 shrink-0 border-b'>
+            <div className='bg-card border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>
@@ -276,10 +293,13 @@ export function EditorPanel({
                 </div>
             </div>
 
-            {/** Character count */}
-            <div className='shrink-0 px-4 pb-1 sm:px-6'>
+            {/** Character and word count */}
+            <div className='flex shrink-0 items-center gap-3 px-4 pb-1 sm:px-6'>
                 <span className='text-muted-foreground text-xs tabular-nums'>
                     {charCount} {charCount === 1 ? 'char' : 'chars'}
+                </span>
+                <span className='text-muted-foreground text-xs tabular-nums'>
+                    {wordCount} {wordCount === 1 ? 'word' : 'words'}
                 </span>
             </div>
 
@@ -287,18 +307,6 @@ export function EditorPanel({
             <div className='border-border shrink-0 border-t px-4 py-3 sm:px-6'>
                 <div className='flex flex-row gap-2 sm:items-center sm:justify-between sm:gap-6'>
                     <div className='flex items-center justify-start gap-2'>
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
-                                <Icons.emoji className='size-4' />
-                            </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Insert Emoji
-                            </span>
-                        </div> */}
-
                         <input
                             ref={fileInputRef}
                             type='file'
@@ -320,18 +328,6 @@ export function EditorPanel({
                             </TooltipTrigger>
                             <TooltipContent>{currentMedia ? 'Remove Media' : 'Add Image or Video'}</TooltipContent>
                         </Tooltip>
-
-                        {/* <div className='group relative'>
-                            <Button
-                                variant='outline'
-                                size='icon'
-                                onClick={() => toast.info('Feature not available yet')}>
-                                <Icons.carousel className='size-4' />
-                            </Button>
-                            <span className='absolute -top-10 left-1/2 -translate-x-1/2 scale-0 whitespace-nowrap rounded-md bg-neutral-900 px-3 py-2 text-xs font-semibold text-white transition-all duration-200 group-hover:scale-100'>
-                                Add Carousel
-                            </span>
-                        </div> */}
 
                         <Tooltip>
                             <TooltipTrigger asChild>

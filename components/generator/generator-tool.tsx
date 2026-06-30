@@ -9,13 +9,13 @@ import posthog from 'posthog-js'
 
 import { Tone, TONE_OPTIONS } from '@/config/ai'
 import { ApiRoutes } from '@/config/routes'
+import { extractTextFromMessage, getRefusalReason, REFUSAL_PREFIX } from '@/lib/ai-chat'
 import { formatResetTime, isRateLimitError, parseAIError } from '@/lib/ai-error'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { cn } from '@/lib/utils'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { extractTextFromMessage, getRefusalReason, REFUSAL_PREFIX } from '@/components/ai-chat/message-utils'
 import { Tool } from '@/components/tool/tool'
 
 const TONE_ICONS: Record<Tone, LucideIcon> = {
@@ -120,7 +120,7 @@ export function GeneratorTool() {
             <section className='border-border border-t px-6 py-12 md:py-16'>
                 <div className='mx-auto flex max-w-2xl flex-col gap-5'>
                     <div className='flex flex-col gap-2'>
-                        <label htmlFor='generator-topic' className='text-sm font-medium text-neutral-900'>
+                        <label htmlFor='generator-topic' className='text-foreground text-sm font-medium'>
                             What do you want to post about?
                         </label>
                         <Textarea
@@ -135,7 +135,7 @@ export function GeneratorTool() {
                     </div>
 
                     <div className='flex flex-col gap-2'>
-                        <p className='text-sm font-medium text-neutral-900'>Choose a tone</p>
+                        <p className='text-foreground text-sm font-medium'>Choose a tone</p>
                         <div className='flex flex-wrap gap-1.5' role='radiogroup' aria-label='Tone'>
                             {TONE_OPTIONS.map((option) => {
                                 const Icon = TONE_ICONS[option.value]
@@ -172,12 +172,12 @@ export function GeneratorTool() {
                     </Button>
 
                     {showStreaming && (
-                        <div className='border-border rounded-lg border bg-neutral-50 p-4'>
+                        <div className='border-border bg-secondary rounded-lg border p-4'>
                             <div className='text-muted-foreground mb-2 flex items-center gap-2 text-xs font-medium'>
                                 <Sparkles className='text-primary size-3.5 animate-pulse' />
                                 Generating your post...
                             </div>
-                            <p className='text-sm leading-relaxed whitespace-pre-wrap text-neutral-700'>
+                            <p className='text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap'>
                                 {streamingText}
                             </p>
                         </div>
@@ -188,14 +188,16 @@ export function GeneratorTool() {
                             role='alert'
                             className={cn(
                                 'flex items-start gap-3 rounded-lg border p-4',
-                                error.variant === 'rate' ? 'border-blue-200 bg-blue-50' : 'border-red-200 bg-red-50',
+                                error.variant === 'rate'
+                                    ? 'border-info/50 bg-info-soft'
+                                    : 'border-error/50 bg-error-soft',
                             )}>
                             {error.variant === 'rate' ? (
-                                <Clock className='mt-0.5 size-5 shrink-0 text-blue-600' />
+                                <Clock className='text-info mt-0.5 size-5 shrink-0' />
                             ) : (
-                                <TriangleAlert className='mt-0.5 size-5 shrink-0 text-red-600' />
+                                <TriangleAlert className='text-error mt-0.5 size-5 shrink-0' />
                             )}
-                            <p className={cn('text-sm', error.variant === 'rate' ? 'text-blue-700' : 'text-red-700')}>
+                            <p className={cn('text-sm', error.variant === 'rate' ? 'text-info' : 'text-error')}>
                                 {error.message}
                             </p>
                         </div>
@@ -204,11 +206,11 @@ export function GeneratorTool() {
                     {refusalReason && (
                         <div
                             role='alert'
-                            className='flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4'>
-                            <TriangleAlert className='mt-0.5 size-5 shrink-0 text-amber-600' />
+                            className='border-warning/50 bg-warning-soft flex items-start gap-3 rounded-lg border p-4'>
+                            <TriangleAlert className='text-warning mt-0.5 size-5 shrink-0' />
                             <div>
-                                <p className='font-medium text-amber-900'>Unable to generate</p>
-                                <p className='mt-1 text-sm text-amber-700'>{refusalReason}</p>
+                                <p className='text-warning font-medium'>Unable to generate</p>
+                                <p className='text-warning mt-1 text-sm'>{refusalReason}</p>
                             </div>
                         </div>
                     )}

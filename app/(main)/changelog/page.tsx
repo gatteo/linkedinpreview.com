@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { absoluteUrl } from '@/utils/urls'
 
 import { Routes } from '@/config/routes'
-import { getAllChangelogs } from '@/lib/changelog'
-import Mdx from '@/components/mdx/mdx'
+import { getAllChangelogs, groupEntriesByMonth } from '@/lib/changelog'
+import { Mdx } from '@/components/mdx/mdx'
 
 const title = 'Changelog'
 const description = 'New features, improvements, and fixes - see what we have been building.'
@@ -43,19 +43,20 @@ function formatDate(date: Date): string {
 
 export default function ChangelogPage() {
     const entries = getAllChangelogs()
+    const groups = groupEntriesByMonth(entries)
 
     return (
         <main>
             {/* Hero */}
             <section className='dot-grid'>
                 <div className='max-w-content mx-auto flex flex-col items-center px-6 pt-20 pb-16 md:pt-28'>
-                    <span className='border-border text-primary shadow-subtle mb-4 inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                    <span className='border-border text-primary shadow-subtle bg-background mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium'>
                         Product Updates
                     </span>
-                    <h1 className='font-heading mb-5 text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl'>
+                    <h1 className='font-heading text-foreground mb-5 text-center text-4xl font-bold tracking-tight md:text-5xl'>
                         Changelog
                     </h1>
-                    <p className='mx-auto max-w-[540px] text-center text-lg leading-7 text-neutral-500'>
+                    <p className='text-muted-foreground mx-auto max-w-[540px] text-center text-lg leading-7'>
                         New features, improvements, and fixes - see what we have been building.
                     </p>
                 </div>
@@ -64,42 +65,52 @@ export default function ChangelogPage() {
             {/* Entries */}
             <section className='border-border border-t'>
                 <div className='max-w-content mx-auto px-6 pb-24'>
-                    {entries.map((entry) => (
-                        <article key={entry.slug} className='border-border border-b'>
-                            <div className='flex flex-col gap-6 py-12 md:flex-row md:gap-16'>
-                                {/* Date - sticky on desktop */}
-                                <div className='md:w-1/4 md:shrink-0'>
-                                    <div className='md:sticky md:top-[calc(var(--header-height)+2rem)]'>
-                                        <time
-                                            dateTime={entry.date.toISOString()}
-                                            className='text-sm font-medium text-neutral-500'>
-                                            {formatDate(entry.date)}
-                                        </time>
-                                    </div>
-                                </div>
+                    {groups.map((group) => (
+                        <section key={group.key} aria-labelledby={`group-${group.key}`}>
+                            <h2
+                                id={`group-${group.key}`}
+                                className='border-border text-primary border-b pt-12 pb-4 text-sm font-semibold tracking-wide uppercase'>
+                                {group.label}
+                            </h2>
 
-                                {/* Content */}
-                                <div className='min-w-0 flex-1'>
-                                    <h2 className='mb-4 text-2xl font-semibold tracking-tight text-neutral-900'>
-                                        {entry.title}
-                                    </h2>
-
-                                    {entry.image && (
-                                        <div className='border-border mb-6 overflow-hidden rounded-xl border'>
-                                            <Image
-                                                src={entry.image}
-                                                alt={entry.title}
-                                                width={1200}
-                                                height={675}
-                                                className='w-full object-cover'
-                                            />
+                            {group.entries.map((entry) => (
+                                <article key={entry.slug} className='border-border border-b'>
+                                    <div className='flex flex-col gap-6 py-12 md:flex-row md:gap-16'>
+                                        {/* Date - sticky on desktop */}
+                                        <div className='md:w-1/4 md:shrink-0'>
+                                            <div className='md:sticky md:top-[calc(var(--header-height)+2rem)]'>
+                                                <time
+                                                    dateTime={entry.date.toISOString()}
+                                                    className='text-muted-foreground text-sm font-medium'>
+                                                    {formatDate(entry.date)}
+                                                </time>
+                                            </div>
                                         </div>
-                                    )}
 
-                                    <Mdx code={entry.body.code} />
-                                </div>
-                            </div>
-                        </article>
+                                        {/* Content */}
+                                        <div className='min-w-0 flex-1'>
+                                            <h3 className='text-foreground mb-4 text-2xl font-semibold tracking-tight'>
+                                                {entry.title}
+                                            </h3>
+
+                                            {entry.image && (
+                                                <div className='border-border mb-6 overflow-hidden rounded-xl border'>
+                                                    <Image
+                                                        src={entry.image}
+                                                        alt={entry.title}
+                                                        width={1200}
+                                                        height={675}
+                                                        className='w-full object-cover'
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <Mdx code={entry.body.code} />
+                                        </div>
+                                    </div>
+                                </article>
+                            ))}
+                        </section>
                     ))}
                 </div>
             </section>
