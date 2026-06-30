@@ -52,7 +52,7 @@ const TableOfContents = (props: TableOfContentsProps) => {
 
     return (
         <nav aria-label='Table of contents'>
-            <div className='text-muted-foreground/70 mb-3 text-xs font-medium tracking-wider uppercase'>
+            <div className='text-muted-foreground/70 tracking-label mb-3 font-mono text-xs font-medium uppercase'>
                 On this page
             </div>
             <div>

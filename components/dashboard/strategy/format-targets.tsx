@@ -45,7 +45,7 @@ export function FormatTargets({ formats, monthlyTarget, postsByFormat }: FormatT
                                     <div
                                         className={cn(
                                             'h-full rounded-full transition-all duration-300',
-                                            pct >= 100 ? 'bg-green-500' : 'bg-primary',
+                                            pct >= 100 ? 'bg-success' : 'bg-primary',
                                         )}
                                         style={{ width: `${pct}%` }}
                                     />

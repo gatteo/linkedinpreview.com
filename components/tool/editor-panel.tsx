@@ -95,7 +95,7 @@ export function EditorPanel({
         ],
         editorProps: {
             attributes: {
-                class: 'prose-md focus:outline-hidden resize-none block w-full p-0 text-neutral-900 border-none appearance-none placeholder:text-neutral-500 focus:ring-0 overflow-y-auto h-full',
+                class: 'prose-md focus:outline-hidden resize-none block w-full p-0 text-foreground border-none appearance-none placeholder:text-muted-foreground focus:ring-0 overflow-y-auto h-full',
             },
         },
         onCreate: ({ editor }) => {
@@ -269,7 +269,7 @@ export function EditorPanel({
         <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
             {/** Panel title */}
-            <div className='border-border flex h-14 shrink-0 border-b'>
+            <div className='bg-card border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>
                     <Toolbar editor={editor} />
                 </div>

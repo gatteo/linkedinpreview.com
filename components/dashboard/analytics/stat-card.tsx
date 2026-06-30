@@ -11,10 +11,26 @@ import { Sparkline } from './sparkline'
 export type Accent = 'blue' | 'violet' | 'emerald' | 'amber'
 
 const ACCENTS: Record<Accent, { icon: string; spark: string; glow: string }> = {
-    blue: { icon: 'bg-blue-500/10 text-blue-500', spark: '#3b82f6', glow: 'from-blue-500/10' },
-    violet: { icon: 'bg-violet-500/10 text-violet-500', spark: '#8b5cf6', glow: 'from-violet-500/10' },
-    emerald: { icon: 'bg-emerald-500/10 text-emerald-500', spark: '#10b981', glow: 'from-emerald-500/10' },
-    amber: { icon: 'bg-amber-500/10 text-amber-500', spark: '#f59e0b', glow: 'from-amber-500/10' },
+    blue: {
+        icon: 'bg-[var(--chart-1)]/10 text-[color:var(--chart-1)]',
+        spark: 'oklch(0.29 0.045 218)',
+        glow: 'from-[var(--chart-1)]/10',
+    },
+    violet: {
+        icon: 'bg-[var(--chart-2)]/10 text-[color:var(--chart-2)]',
+        spark: 'oklch(0.52 0.055 212)',
+        glow: 'from-[var(--chart-2)]/10',
+    },
+    emerald: {
+        icon: 'bg-[var(--chart-4)]/10 text-[color:var(--chart-4)]',
+        spark: 'oklch(0.77 0.125 42)',
+        glow: 'from-[var(--chart-4)]/10',
+    },
+    amber: {
+        icon: 'bg-[var(--chart-5)]/10 text-[color:var(--chart-5)]',
+        spark: 'oklch(0.64 0.15 39)',
+        glow: 'from-[var(--chart-5)]/10',
+    },
 }
 
 type StatCardProps = {
@@ -71,9 +87,7 @@ export function StatCard({ label, value, format, hint, icon: Icon, accent, delta
                         <span
                             className={cn(
                                 'inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium',
-                                delta >= 0
-                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                    : 'bg-red-500/10 text-red-600 dark:text-red-400',
+                                delta >= 0 ? 'bg-success/15 text-success' : 'bg-error/15 text-error',
                             )}>
                             {delta >= 0 ? (
                                 <ArrowUpRightIcon className='size-3' />

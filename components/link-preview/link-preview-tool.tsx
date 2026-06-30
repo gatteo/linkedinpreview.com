@@ -92,7 +92,7 @@ export function LinkPreviewTool() {
             <div className='mx-auto max-w-3xl'>
                 <form onSubmit={onSubmit} noValidate className='flex flex-col gap-3 sm:flex-row'>
                     <div className='relative flex-1'>
-                        <Search className='absolute top-1/2 left-3 size-4 -translate-y-1/2 text-neutral-400' />
+                        <Search className='text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2' />
                         <Input
                             type='url'
                             inputMode='url'
@@ -136,7 +136,9 @@ export function LinkPreviewTool() {
                     </div>
 
                     <div className='mt-10'>
-                        <h2 className='mb-4 text-lg font-semibold text-neutral-900'>Open Graph checklist</h2>
+                        <h2 className='font-heading text-foreground mb-4 text-lg font-semibold tracking-tight'>
+                            Open Graph checklist
+                        </h2>
                         <IssueChecklist issues={result.issues} />
                     </div>
 
@@ -162,8 +164,8 @@ function Preview({
 }) {
     return (
         <div className='flex flex-col items-center gap-3'>
-            <p className='text-xs font-medium tracking-wider text-neutral-500 uppercase'>{label}</p>
-            <div className='flex w-full justify-center rounded-xl bg-neutral-50 p-6'>
+            <p className='tracking-label text-muted-foreground font-mono text-xs font-medium uppercase'>{label}</p>
+            <div className='bg-secondary flex w-full justify-center rounded-xl p-6'>
                 <LinkCard data={data} variant={variant} />
             </div>
         </div>
@@ -172,8 +174,8 @@ function Preview({
 
 function CacheCallout({ className }: { className?: string }) {
     return (
-        <div className={cn('border-border rounded-lg border bg-neutral-50 p-4', className)}>
-            <p className='text-sm text-neutral-600'>
+        <div className={cn('border-border bg-secondary rounded-lg border p-4', className)}>
+            <p className='text-muted-foreground text-sm'>
                 LinkedIn caches link previews for about 7 days, and no third-party tool can force a refresh. To update a
                 cached preview, edit your Open Graph tags, then re-share the link or run it through LinkedIn&apos;s
                 official tool.

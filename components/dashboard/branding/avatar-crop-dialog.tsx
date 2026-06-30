@@ -133,7 +133,7 @@ export function AvatarCropDialog({ open, src, onCancel, onCrop }: AvatarCropDial
 
                 <div className='flex flex-col items-center gap-4'>
                     <div
-                        className='focus-visible:ring-ring relative size-64 cursor-grab touch-none overflow-hidden rounded-full bg-neutral-100 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:cursor-grabbing'
+                        className='focus-visible:ring-ring bg-muted relative size-64 cursor-grab touch-none overflow-hidden rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:cursor-grabbing'
                         style={backgroundStyle}
                         onPointerDown={handlePointerDown}
                         onPointerMove={handlePointerMove}

@@ -78,12 +78,15 @@ export function FilteredPosts({ posts, initialSearch }: { posts: BlogPostPreview
                         id='search'
                     />
                     <Label htmlFor='search'>
-                        <IconSearch className='absolute top-1/2 left-4 -translate-y-1/2 text-neutral-400' size={20} />
+                        <IconSearch
+                            className='text-muted-foreground absolute top-1/2 left-4 -translate-y-1/2'
+                            size={20}
+                        />
                     </Label>
                 </div>
 
                 {filteredPosts.length === 0 && (
-                    <div className='py-16 text-center text-lg text-neutral-500'>No articles found</div>
+                    <div className='text-muted-foreground py-16 text-center text-lg'>No articles found</div>
                 )}
 
                 <div className='grid gap-6 sm:grid-cols-2'>

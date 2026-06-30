@@ -35,10 +35,10 @@ type FilterTab = 'all' | FormatCategory
 // ---------------------------------------------------------------------------
 
 const CATEGORY_COLORS: Record<FormatCategory, string> = {
-    personal: 'bg-violet-500',
-    educational: 'bg-blue-500',
-    organizational: 'bg-emerald-500',
-    promotional: 'bg-amber-500',
+    personal: 'bg-primary',
+    educational: 'bg-info',
+    organizational: 'bg-warning',
+    promotional: 'bg-success',
 }
 
 // ---------------------------------------------------------------------------

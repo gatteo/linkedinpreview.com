@@ -49,7 +49,7 @@ const components: MDXComponents = {
     pre: Pre,
     code: (props: React.ComponentPropsWithoutRef<'code'>) => (
         <code
-            className='rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-sm text-neutral-800 before:content-none after:content-none dark:bg-neutral-800 dark:text-neutral-200'
+            className='bg-secondary text-foreground rounded px-1.5 py-0.5 font-mono text-sm before:content-none after:content-none'
             {...props}
         />
     ),

@@ -26,7 +26,7 @@ function SaveIndicator({ visible }: { visible: boolean }) {
                 'text-muted-foreground flex items-center gap-1.5 text-xs transition-opacity duration-300',
                 visible ? 'opacity-100' : 'opacity-0',
             )}>
-            <CheckIcon className='size-3.5 text-green-500' />
+            <CheckIcon className='text-success size-3.5' />
             All changes saved
         </div>
     )

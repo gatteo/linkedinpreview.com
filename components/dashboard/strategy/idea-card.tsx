@@ -20,10 +20,10 @@ type IdeaCardProps = {
 }
 
 const CATEGORY_STYLES: Record<string, string> = {
-    personal: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
-    educational: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
-    organizational: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-    promotional: 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300',
+    personal: 'bg-accent text-accent-foreground',
+    educational: 'bg-info-soft text-info',
+    organizational: 'bg-warning-soft text-warning',
+    promotional: 'bg-success-soft text-success',
 }
 
 export function IdeaCard({ idea, onDismiss }: IdeaCardProps) {

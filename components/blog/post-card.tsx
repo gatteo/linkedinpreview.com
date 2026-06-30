@@ -24,7 +24,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
                 content: 'post_card',
             })}
             onClick={handleClick}
-            className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white transition-all duration-200 hover:-translate-y-0.5'>
+            className='group border-border shadow-subtle hover:shadow-elevated bg-card flex flex-col overflow-hidden rounded-xl border transition-all duration-200 hover:-translate-y-0.5'>
             <Image
                 src={post.image ?? '/images/blog-post-placeholder.png'}
                 width={1280}
@@ -34,15 +34,15 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
             />
 
             <div className='flex flex-1 flex-col p-5'>
-                <h2 className='group-hover:text-primary mb-2 text-lg font-semibold text-neutral-900 transition-colors'>
+                <h2 className='group-hover:text-primary font-heading text-foreground mb-2 text-lg font-semibold transition-colors'>
                     {post.title}
                 </h2>
-                <p className='mb-4 flex-1 text-sm leading-relaxed text-neutral-500'>
+                <p className='text-muted-foreground mb-4 flex-1 text-sm leading-relaxed'>
                     {post.summary.slice(0, 120)}
                     {post.summary.length > 120 && '...'}
                 </p>
 
-                <div className='flex flex-wrap items-center gap-2 text-xs text-neutral-400'>
+                <div className='text-muted-foreground flex flex-wrap items-center gap-2 text-xs'>
                     <span>{formatDate(post.date)}</span>
                     {post.tags && post.tags.length > 0 && (
                         <>
@@ -51,7 +51,7 @@ export function PostCard({ post }: { post: BlogPostPreview }) {
                                 <Badge
                                     key={t}
                                     variant='outline'
-                                    className='border-border text-xs font-normal text-neutral-500'>
+                                    className='border-border text-muted-foreground text-xs font-normal'>
                                     {t}
                                 </Badge>
                             ))}

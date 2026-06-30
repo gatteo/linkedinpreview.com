@@ -68,9 +68,7 @@ export function ContentDnaSection({ posts, features }: ContentDnaSectionProps) {
                                             <span
                                                 className={cn(
                                                     'flex shrink-0 items-center gap-0.5 text-lg font-bold',
-                                                    up
-                                                        ? 'text-emerald-600 dark:text-emerald-400'
-                                                        : 'text-red-600 dark:text-red-400',
+                                                    up ? 'text-success' : 'text-error',
                                                 )}>
                                                 {up ? (
                                                     <ArrowUpRightIcon className='size-4' />
@@ -83,10 +81,7 @@ export function ContentDnaSection({ posts, features }: ContentDnaSectionProps) {
                                         </div>
                                         <div className='bg-muted h-1.5 w-full overflow-hidden rounded-full'>
                                             <div
-                                                className={cn(
-                                                    'h-full rounded-full',
-                                                    up ? 'bg-emerald-500' : 'bg-red-500',
-                                                )}
+                                                className={cn('h-full rounded-full', up ? 'bg-success' : 'bg-error')}
                                                 style={{ width: `${Math.max(6, width)}%` }}
                                             />
                                         </div>

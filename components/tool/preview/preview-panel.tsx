@@ -42,44 +42,41 @@ function PreviewPanelContent({
 
     return (
         <div className='flex h-full flex-col'>
+            {/* Nav header (white): realistic-feed entry (left) + size switcher (right) */}
+            <div className='bg-card border-border flex h-14 shrink-0 items-center gap-2 border-b px-3'>
+                {hasContent && onOpenFeedPreview && (
+                    <button
+                        type='button'
+                        onClick={onOpenFeedPreview}
+                        className='bg-info/10 text-info hover:bg-info/20 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors'>
+                        <ExternalLink className='size-3' />
+                        Open realistic feed preview
+                    </button>
+                )}
+                <div className='bg-muted ml-auto inline-flex items-center rounded-lg p-1'>
+                    {sizes.map((size) => {
+                        const Icon = sizeIcons[size]
+                        return (
+                            <button
+                                key={size}
+                                onClick={() => setScreenSize(size)}
+                                className={cn(
+                                    'rounded-md p-1.5 transition-colors',
+                                    screenSize === size
+                                        ? 'bg-background text-foreground shadow-sm'
+                                        : 'text-muted-foreground hover:text-foreground',
+                                )}>
+                                <Icon className='size-4' />
+                            </button>
+                        )
+                    })}
+                </div>
+            </div>
             {/* Preview area */}
             <div className='bg-muted/30 flex flex-1 flex-col items-center overflow-auto px-3 dark:bg-neutral-900/30'>
-                {/* Device artboard: switcher and card share one centered column so
-                    the switcher's right edge stays aligned to the card. */}
                 <div className={cn('flex w-full flex-col transition-all duration-300', containerWidth[screenSize])}>
-                    {/* Top controls: realistic-feed entry (left) + size switcher (right),
-                        aligned to the card's edges. */}
-                    <div className='flex flex-wrap items-center gap-2 pt-3 pb-1'>
-                        {hasContent && onOpenFeedPreview && (
-                            <button
-                                type='button'
-                                onClick={onOpenFeedPreview}
-                                className='flex items-center gap-1.5 rounded-full bg-[#0a66c2]/10 px-2.5 py-1 text-xs font-medium text-[#0a66c2] transition-colors hover:bg-[#0a66c2]/20'>
-                                <ExternalLink className='size-3' />
-                                Open realistic feed preview
-                            </button>
-                        )}
-                        <div className='bg-muted ml-auto inline-flex items-center rounded-lg p-1'>
-                            {sizes.map((size) => {
-                                const Icon = sizeIcons[size]
-                                return (
-                                    <button
-                                        key={size}
-                                        onClick={() => setScreenSize(size)}
-                                        className={cn(
-                                            'rounded-md p-1.5 transition-colors',
-                                            screenSize === size
-                                                ? 'bg-background text-foreground shadow-sm'
-                                                : 'text-muted-foreground hover:text-foreground',
-                                        )}>
-                                        <Icon className='size-4' />
-                                    </button>
-                                )
-                            })}
-                        </div>
-                    </div>
                     {/* Card */}
-                    <div className='pb-5'>
+                    <div className='pt-4 pb-5'>
                         <PostCard content={content} media={media} author={author} promptBranding={promptBranding} />
                     </div>
                 </div>

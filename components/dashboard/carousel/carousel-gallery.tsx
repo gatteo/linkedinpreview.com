@@ -61,7 +61,9 @@ export function CarouselGallery() {
                         <div className='bg-primary/10 text-primary mb-4 flex size-14 items-center justify-center rounded-2xl'>
                             <LayoutGridIcon className='size-7' />
                         </div>
-                        <h2 className='text-xl font-semibold'>Create your first carousel</h2>
+                        <h2 className='font-heading text-xl font-semibold tracking-tight'>
+                            Create your first carousel
+                        </h2>
                         <p className='text-muted-foreground mt-1.5 text-sm'>
                             Design a swipeable LinkedIn document post. Start from scratch, a template, or let AI draft
                             it from a topic.

@@ -29,26 +29,26 @@ type InsightsResult = { headline: string; insights: Insight[]; nextPost: { recom
 const KIND_STYLE: Record<InsightKind, { icon: LucideIcon; ring: string; chip: string; label: string }> = {
     win: {
         icon: TrophyIcon,
-        ring: 'text-emerald-500',
-        chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+        ring: 'text-success',
+        chip: 'bg-success/15 text-success',
         label: 'Win',
     },
     opportunity: {
         icon: LightbulbIcon,
-        ring: 'text-blue-500',
-        chip: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+        ring: 'text-info',
+        chip: 'bg-info/15 text-info',
         label: 'Opportunity',
     },
     experiment: {
         icon: FlaskConicalIcon,
-        ring: 'text-violet-500',
-        chip: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+        ring: 'text-primary',
+        chip: 'bg-primary/15 text-primary',
         label: 'Experiment',
     },
     warning: {
         icon: TriangleAlertIcon,
-        ring: 'text-amber-500',
-        chip: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        ring: 'text-warning',
+        chip: 'bg-warning/15 text-warning',
         label: 'Watch out',
     },
 }
@@ -129,10 +129,10 @@ export function AiInsightsSection() {
     return (
         <div className='border-border relative overflow-hidden rounded-xl border'>
             {/* Gradient header */}
-            <div className='relative bg-gradient-to-br from-violet-500/10 via-blue-500/5 to-transparent p-4'>
+            <div className='from-primary/10 via-primary/5 relative bg-gradient-to-br to-transparent p-4'>
                 <div className='flex items-start justify-between gap-3'>
                     <div className='flex items-center gap-2.5'>
-                        <div className='flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 text-white shadow-sm'>
+                        <div className='flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--chart-1)] to-[var(--chart-5)] text-white shadow-sm'>
                             <SparklesIcon className='size-4' />
                         </div>
                         <div>

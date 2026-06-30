@@ -30,7 +30,7 @@ export function AnalyticsEmpty({ onImport }: AnalyticsEmptyProps) {
                 </div>
 
                 <div className='space-y-2'>
-                    <h2 className='text-2xl font-bold'>No published posts yet</h2>
+                    <h2 className='font-heading text-2xl font-bold tracking-tight'>No published posts yet</h2>
                     <p className='text-muted-foreground text-sm'>
                         Once you publish posts, your performance analytics will appear here. Mark a post as published
                         (or publish through LinkedIn) to get started.

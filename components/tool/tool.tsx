@@ -2,7 +2,8 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { ArrowRight, Eye, PenLine } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowUpRight, Eye, PenLine } from 'lucide-react'
 import posthog from 'posthog-js'
 import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
@@ -12,6 +13,7 @@ import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
+import { Button } from '@/components/ui/button'
 
 import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
@@ -278,18 +280,15 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
 
             {/* Dashboard prompt - shown when user has written content */}
             {variant === 'default' && hasTextContent(content) && (
-                <div className='border-border bg-muted/30 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 border-t px-4 py-2.5 text-xs'>
-                    <span className='text-foreground font-medium'>Like what you see?</span>
-                    <span className='text-muted-foreground hidden sm:inline'>
-                        Save this draft, schedule it, and write your next posts with AI.
+                <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-3.5'>
+                    <span className='text-muted-foreground text-[13.5px] leading-snug'>
+                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Save it, schedule it,
+                        and write your next ten posts in the full editor.
                     </span>
-                    <button
-                        type='button'
-                        onClick={() => handleOpenDashboard('tool_footer')}
-                        className='text-primary hover:text-primary/80 group inline-flex items-center gap-1 font-semibold'>
-                        Continue in dashboard
-                        <ArrowRight className='size-3 transition-transform group-hover:translate-x-0.5' />
-                    </button>
+                    <Button variant='outline' size='sm' onClick={() => handleOpenDashboard('tool_footer')}>
+                        Continue in the full editor
+                        <ArrowUpRight className='size-3.5' />
+                    </Button>
                 </div>
             )}
         </div>
@@ -300,11 +299,28 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     }
 
     return (
-        <section
-            id='tool'
-            className='border-border scroll-mt-[var(--header-height)] border-t'
-            style={{ height: 'max(70vh, 520px)' }}>
-            <div className='max-w-content mx-auto flex h-full flex-col p-2 md:p-3'>{inner}</div>
+        <section id='tool' className='border-border bg-canvas scroll-mt-[var(--header-height)] border-t'>
+            <div className='max-w-content border-border mx-auto border-x px-7 py-16'>
+                <div className='mb-6 flex flex-wrap items-end justify-between gap-6'>
+                    <div>
+                        <p className='tracking-label mb-3 font-mono text-xs font-medium text-[color:var(--orange-600)] uppercase'>
+                            Try it now
+                        </p>
+                        <h2 className='font-heading max-w-[560px] text-[clamp(28px,3.6vw,38px)] leading-[1.06] font-bold tracking-[-0.025em]'>
+                            Write on the left, watch the feed on the right.
+                        </h2>
+                    </div>
+                    <Button asChild variant='outline'>
+                        <Link href={Routes.DashboardEditor()}>
+                            Open in full editor
+                            <ArrowUpRight className='size-4' />
+                        </Link>
+                    </Button>
+                </div>
+                <div className='flex flex-col' style={{ height: 'max(70vh, 520px)' }}>
+                    {inner}
+                </div>
+            </div>
         </section>
     )
 }

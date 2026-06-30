@@ -271,7 +271,7 @@ export function PublishControls({
                                         size='sm'
                                         className='text-xs'
                                         onClick={() => setDateValue(toLocalInputValue(s.date))}>
-                                        {s.tier === 'best' && <CheckIcon className='size-3 text-green-600' />}
+                                        {s.tier === 'best' && <CheckIcon className='text-success size-3' />}
                                         {s.date.toLocaleString(undefined, {
                                             weekday: 'short',
                                             hour: 'numeric',

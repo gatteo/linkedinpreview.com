@@ -50,13 +50,13 @@ export default function ChangelogPage() {
             {/* Hero */}
             <section className='dot-grid'>
                 <div className='max-w-content mx-auto flex flex-col items-center px-6 pt-20 pb-16 md:pt-28'>
-                    <span className='border-border text-primary shadow-subtle mb-4 inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                    <span className='border-border text-primary shadow-subtle bg-background mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium'>
                         Product Updates
                     </span>
-                    <h1 className='font-heading mb-5 text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl'>
+                    <h1 className='font-heading text-foreground mb-5 text-center text-4xl font-bold tracking-tight md:text-5xl'>
                         Changelog
                     </h1>
-                    <p className='mx-auto max-w-[540px] text-center text-lg leading-7 text-neutral-500'>
+                    <p className='text-muted-foreground mx-auto max-w-[540px] text-center text-lg leading-7'>
                         New features, improvements, and fixes - see what we have been building.
                     </p>
                 </div>
@@ -81,7 +81,7 @@ export default function ChangelogPage() {
                                             <div className='md:sticky md:top-[calc(var(--header-height)+2rem)]'>
                                                 <time
                                                     dateTime={entry.date.toISOString()}
-                                                    className='text-sm font-medium text-neutral-500'>
+                                                    className='text-muted-foreground text-sm font-medium'>
                                                     {formatDate(entry.date)}
                                                 </time>
                                             </div>
@@ -89,7 +89,7 @@ export default function ChangelogPage() {
 
                                         {/* Content */}
                                         <div className='min-w-0 flex-1'>
-                                            <h3 className='mb-4 text-2xl font-semibold tracking-tight text-neutral-900'>
+                                            <h3 className='text-foreground mb-4 text-2xl font-semibold tracking-tight'>
                                                 {entry.title}
                                             </h3>
 

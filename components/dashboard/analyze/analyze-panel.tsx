@@ -226,9 +226,9 @@ export function AnalyzePanel({
                             <div className='flex items-center gap-3'>
                                 <div className='flex items-center gap-1 text-xs'>
                                     {analysis.has_hook ? (
-                                        <CheckCircle className='size-3 text-green-500' />
+                                        <CheckCircle className='text-success size-3' />
                                     ) : (
-                                        <XCircle className='size-3 text-red-500' />
+                                        <XCircle className='text-error size-3' />
                                     )}
                                     <span className='text-muted-foreground'>Hook</span>
                                     {analysis.has_hook && (
@@ -237,9 +237,9 @@ export function AnalyzePanel({
                                 </div>
                                 <div className='flex items-center gap-1 text-xs'>
                                     {analysis.has_cta ? (
-                                        <CheckCircle className='size-3 text-green-500' />
+                                        <CheckCircle className='text-success size-3' />
                                     ) : (
-                                        <XCircle className='size-3 text-red-500' />
+                                        <XCircle className='text-error size-3' />
                                     )}
                                     <span className='text-muted-foreground'>CTA</span>
                                 </div>
@@ -266,7 +266,7 @@ export function AnalyzePanel({
                             <ul className='space-y-1.5'>
                                 {analysis.strengths.map((s, i) => (
                                     <li key={i} className='flex items-start gap-2 text-xs'>
-                                        <CheckCircle className='mt-0.5 size-3 shrink-0 text-green-500' />
+                                        <CheckCircle className='text-success mt-0.5 size-3 shrink-0' />
                                         <span className='text-muted-foreground'>{s}</span>
                                     </li>
                                 ))}

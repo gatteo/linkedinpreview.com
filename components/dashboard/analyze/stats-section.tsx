@@ -7,11 +7,11 @@ export function StatsSection({ text }: { text: string }) {
     const stats = React.useMemo(() => computeContentStats(text), [text])
     const dist = stats.sentenceDistribution
     const distEntries = [
-        { key: 'tiny', label: 'Tiny', value: dist.tiny, color: 'bg-blue-400' },
-        { key: 'short', label: 'Short', value: dist.short, color: 'bg-green-400' },
-        { key: 'medium', label: 'Medium', value: dist.medium, color: 'bg-yellow-400' },
-        { key: 'long', label: 'Long', value: dist.long, color: 'bg-orange-400' },
-        { key: 'veryLong', label: 'Very Long', value: dist.veryLong, color: 'bg-red-400' },
+        { key: 'tiny', label: 'Tiny', value: dist.tiny, color: 'bg-[var(--chart-1)]' },
+        { key: 'short', label: 'Short', value: dist.short, color: 'bg-[var(--chart-2)]' },
+        { key: 'medium', label: 'Medium', value: dist.medium, color: 'bg-[var(--chart-3)]' },
+        { key: 'long', label: 'Long', value: dist.long, color: 'bg-[var(--chart-4)]' },
+        { key: 'veryLong', label: 'Very Long', value: dist.veryLong, color: 'bg-[var(--chart-5)]' },
     ]
 
     return (
@@ -81,7 +81,7 @@ export function StatsSection({ text }: { text: string }) {
                         <span
                             className={cn(
                                 'text-xs font-medium',
-                                stats.lengthStatus === 'optimal' ? 'text-green-500' : 'text-red-500',
+                                stats.lengthStatus === 'optimal' ? 'text-success' : 'text-error',
                             )}>
                             {stats.lengthStatus === 'optimal'
                                 ? 'Optimal'
