@@ -13,7 +13,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-primary text-primary-foreground [a]:hover:bg-primary/80 shadow-[0_1px_2px_rgba(0,0,0,0.18),inset_0_1px_0_0_rgba(255,255,255,0.18)] hover:shadow-[0_5px_12px_-3px_rgba(0,0,0,0.28),inset_0_1px_0_0_rgba(255,255,255,0.18)] active:shadow-[0_1px_1px_rgba(0,0,0,0.2),inset_0_1px_0_0_rgba(255,255,255,0.08)]',
+                    'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--btn-rest)] hover:shadow-[var(--btn-hover)] active:shadow-[var(--btn-active)]',
                 outline:
                     'border-border bg-background hover:bg-muted hover:text-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 aria-expanded:bg-muted aria-expanded:text-foreground shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevated)] active:shadow-none',
                 secondary:

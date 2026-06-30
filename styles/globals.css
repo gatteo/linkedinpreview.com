@@ -11,7 +11,11 @@
     max-width: 1200px;
 }
 
-@theme {
+/* `inline` so color utilities reference --background/--foreground/etc. directly.
+   This lets a mid-page `.dark` ancestor (e.g. the open-source band, dashboard
+   mockup) re-theme correctly - without it, --color-* resolves once at :root and
+   a nested .dark only works when applied to <html>. */
+@theme inline {
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
@@ -39,23 +43,69 @@
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
 
+    --color-border-strong: var(--border-strong);
+    --color-info: var(--info);
+    --color-info-soft: var(--info-soft);
+    --color-success: var(--green);
+    --color-success-soft: var(--green-soft);
+    --color-warning: var(--amber);
+    --color-warning-soft: var(--amber-soft);
+    --color-error: var(--red);
+    --color-error-soft: var(--red-soft);
+    --color-linkedin: var(--linkedin);
+
+    /* Petrol / ink ramp (structural) */
+    --color-petrol-50: var(--petrol-50);
+    --color-petrol-100: var(--petrol-100);
+    --color-petrol-200: var(--petrol-200);
+    --color-petrol-300: var(--petrol-300);
+    --color-petrol-400: var(--petrol-400);
+    --color-petrol-500: var(--petrol-500);
+    --color-petrol-600: var(--petrol-600);
+    --color-petrol-700: var(--petrol-700);
+    --color-petrol-800: var(--petrol-800);
+    --color-petrol-900: var(--petrol-900);
+    --color-petrol-950: var(--petrol-950);
+
+    /* Vermilion / coral ramp (the spark accent) */
+    --color-orange-50: var(--orange-50);
+    --color-orange-100: var(--orange-100);
+    --color-orange-200: var(--orange-200);
+    --color-orange-300: var(--orange-300);
+    --color-orange-400: var(--orange-400);
+    --color-orange-500: var(--orange-500);
+    --color-orange-600: var(--orange-600);
+    --color-orange-700: var(--orange-700);
+
+    --color-paper: var(--paper);
+    --color-cream: var(--cream);
+    --color-canvas: var(--canvas);
+
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-heading: var(--font-cal), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-heading: var(--font-bricolage), var(--font-inter), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: var(--font-jetbrains), ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
+    --radius-xl: 0.75rem;
 
-    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-prominent: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --shadow-hero: 0 20px 20px rgba(0, 0, 0, 0.09);
+    --tracking-tight: -0.025em;
+    --tracking-label: 0.12em;
+
+    /* Petrol-tinted, soft elevation */
+    --shadow-subtle: 0 1px 2px oklch(0.22 0.03 222 / 0.06);
+    --shadow-elevated: 0 4px 10px -2px oklch(0.22 0.03 222 / 0.1), 0 2px 4px -2px oklch(0.22 0.03 222 / 0.08);
+    --shadow-prominent: 0 14px 28px -8px oklch(0.22 0.03 222 / 0.16), 0 6px 12px -8px oklch(0.22 0.03 222 / 0.12);
+    --shadow-hero: 0 30px 60px -18px oklch(0.2 0.03 222 / 0.32);
 
     --max-width-content: 1200px;
     --max-width-prose-narrow: 700px;
     --max-width-narrow: 576px;
+
+    --animate-float: float 6s ease-in-out infinite;
 
     --animate-accordion-down: accordion-down 0.2s ease-out;
     --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -111,77 +161,166 @@
 
 @layer base {
     :root {
-        --header-height: 60px;
+        --header-height: 64px;
 
-        /* Dub.co-inspired monochrome palette with LinkedIn blue accent */
-        --background: oklch(1 0 0);
-        --foreground: oklch(0.145 0 0);
+        /* ── Petrol / ink ramp (the structural color) ── */
+        --petrol-50: oklch(0.96 0.012 210);
+        --petrol-100: oklch(0.92 0.02 208);
+        --petrol-200: oklch(0.86 0.028 206);
+        --petrol-300: oklch(0.75 0.038 208);
+        --petrol-400: oklch(0.62 0.05 210);
+        --petrol-500: oklch(0.52 0.055 212);
+        --petrol-600: oklch(0.43 0.055 214);
+        --petrol-700: oklch(0.36 0.05 216);
+        --petrol-800: oklch(0.29 0.045 218);
+        --petrol-900: oklch(0.23 0.038 220);
+        --petrol-950: oklch(0.18 0.03 222);
+
+        /* ── Coral / vermilion ramp (the spark accent) ── */
+        --orange-50: oklch(0.965 0.018 48);
+        --orange-100: oklch(0.93 0.04 46);
+        --orange-200: oklch(0.88 0.07 44);
+        --orange-300: oklch(0.82 0.1 43);
+        --orange-400: oklch(0.77 0.125 42);
+        --orange-500: oklch(0.71 0.145 41);
+        --orange-600: oklch(0.64 0.15 39);
+        --orange-700: oklch(0.56 0.14 37);
+
+        /* ── Paper & cream (warm light surfaces) ── */
+        --paper: oklch(0.98 0.006 200);
+        --cream: oklch(0.96 0.018 90);
+        --canvas: oklch(0.985 0.004 225);
+
+        /* ── Functional LinkedIn blue (demoted to --info) ── */
+        --info: oklch(0.62 0.095 240);
+        --info-soft: oklch(0.95 0.025 240);
+        --linkedin: #0a66c2;
+
+        /* ── Status (muted / pastel) ── */
+        --green: oklch(0.68 0.095 165);
+        --green-soft: oklch(0.95 0.03 165);
+        --amber: oklch(0.78 0.105 72);
+        --amber-soft: oklch(0.95 0.04 80);
+        --red: oklch(0.66 0.145 25);
+        --red-soft: oklch(0.95 0.03 27);
+
+        /* ── Chart ramp (petrol → vermilion) ── */
+        --chart-1: var(--petrol-800);
+        --chart-2: var(--petrol-500);
+        --chart-3: var(--petrol-300);
+        --chart-4: var(--orange-400);
+        --chart-5: var(--orange-600);
+
+        /* ════════ SEMANTIC ALIASES — LIGHT ════════ */
+        --background: var(--paper);
+        --foreground: var(--petrol-950);
         --card: oklch(1 0 0);
-        --card-foreground: oklch(0.145 0 0);
+        --card-foreground: var(--petrol-950);
         --popover: oklch(1 0 0);
-        --popover-foreground: oklch(0.145 0 0);
-        --primary: oklch(0.546 0.13 242.3);
-        --primary-foreground: oklch(0.985 0 0);
-        --secondary: oklch(0.97 0 0);
-        --secondary-foreground: oklch(0.205 0 0);
-        --muted: oklch(0.97 0 0);
-        --muted-foreground: oklch(0.556 0 0);
-        --accent: oklch(0.97 0 0);
-        --accent-foreground: oklch(0.205 0 0);
-        --destructive: oklch(0.58 0.22 27);
-        --destructive-foreground: oklch(0.985 0 0);
-        --border: oklch(0.922 0 0);
-        --input: oklch(0.922 0 0);
-        --ring: oklch(0.546 0.13 242.3);
+        --popover-foreground: var(--petrol-950);
+
+        --primary: var(--orange-500);
+        --primary-foreground: oklch(0.99 0.01 80);
+
+        --secondary: var(--petrol-50);
+        --secondary-foreground: var(--petrol-800);
+        --muted: oklch(0.95 0.01 205);
+        --muted-foreground: var(--petrol-500);
+        --accent: var(--orange-50);
+        --accent-foreground: var(--orange-700);
+
+        --destructive: var(--red);
+        --destructive-foreground: oklch(0.99 0 0);
+
+        --border: oklch(0.89 0.015 210);
+        --border-strong: oklch(0.82 0.022 210);
+        --input: oklch(0.88 0.016 210);
+        --ring: var(--orange-500);
+
         --radius: 0.625rem;
-        --chart-1: oklch(0.809 0.105 251.813);
-        --chart-2: oklch(0.623 0.214 259.815);
-        --chart-3: oklch(0.546 0.245 262.881);
-        --chart-4: oklch(0.488 0.243 264.376);
-        --chart-5: oklch(0.424 0.199 265.638);
-        --sidebar: oklch(0.985 0 0);
-        --sidebar-foreground: oklch(0.145 0 0);
-        --sidebar-primary: oklch(0.205 0 0);
-        --sidebar-primary-foreground: oklch(0.985 0 0);
-        --sidebar-accent: oklch(0.93 0 0);
-        --sidebar-accent-foreground: oklch(0.205 0 0);
-        --sidebar-border: oklch(0.922 0 0);
-        --sidebar-ring: oklch(0.708 0 0);
+
+        /* Sidebar (dashboard chrome) */
+        --sidebar: var(--petrol-50);
+        --sidebar-foreground: var(--petrol-950);
+        --sidebar-primary: var(--petrol-900);
+        --sidebar-primary-foreground: var(--petrol-50);
+        --sidebar-accent: oklch(0.93 0.018 208);
+        --sidebar-accent-foreground: var(--petrol-900);
+        --sidebar-border: oklch(0.89 0.015 210);
+        --sidebar-ring: var(--orange-500);
+
+        /* Glow tints (Linear-style soft radial behind hero elements) */
+        --glow-warm: oklch(0.67 0.2 40 / 0.28);
+        --glow-cool: oklch(0.55 0.08 212 / 0.22);
+
+        /* Card: inset hairline highlight + ring + soft drop */
+        --card-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.6), 0 0 0 1px var(--border),
+            0 2px 4px oklch(0.22 0.03 222 / 0.05), 0 8px 24px -12px oklch(0.22 0.03 222 / 0.14);
+        --ring-hairline: 0 0 0 1px var(--border);
+
+        /* "Clicky" primary button (soft coral) */
+        --btn-rest: 0 1px 2px oklch(0.5 0.14 38 / 0.38), inset 0 1px 0 0 oklch(1 0 0 / 0.3);
+        --btn-hover: 0 6px 16px -4px oklch(0.5 0.14 38 / 0.46), inset 0 1px 0 0 oklch(1 0 0 / 0.3);
+        --btn-active: 0 1px 1px oklch(0.5 0.14 38 / 0.38), inset 0 1px 2px oklch(0.4 0.1 38 / 0.4);
+
+        /* LinkedIn post-card shadow */
+        --shadow-post: 0 0 0 1px oklch(0.22 0.03 222 / 0.06), 0 1px 3px oklch(0.22 0.03 222 / 0.1);
+
+        /* Motion */
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --duration-fast: 150ms;
+        --duration-base: 300ms;
+        --duration-slow: 600ms;
     }
 
     .dark {
-        --background: oklch(0.145 0 0);
-        --foreground: oklch(0.985 0 0);
-        --card: oklch(0.205 0 0);
-        --card-foreground: oklch(0.985 0 0);
-        --popover: oklch(0.205 0 0);
-        --popover-foreground: oklch(0.985 0 0);
-        --primary: oklch(0.654 0.154 241.7);
-        --primary-foreground: oklch(0.98 0 0);
-        --secondary: oklch(0.269 0 0);
-        --secondary-foreground: oklch(0.985 0 0);
-        --muted: oklch(0.269 0 0);
-        --muted-foreground: oklch(0.708 0 0);
-        --accent: oklch(0.371 0 0);
-        --accent-foreground: oklch(0.985 0 0);
-        --destructive: oklch(0.704 0.191 22.216);
-        --destructive-foreground: oklch(0.985 0 0);
-        --border: oklch(1 0 0 / 10%);
-        --input: oklch(1 0 0 / 15%);
-        --ring: oklch(0.654 0.154 241.7);
-        --chart-1: oklch(0.809 0.105 251.813);
-        --chart-2: oklch(0.623 0.214 259.815);
-        --chart-3: oklch(0.546 0.245 262.881);
-        --chart-4: oklch(0.488 0.243 264.376);
-        --chart-5: oklch(0.424 0.199 265.638);
-        --sidebar: oklch(0.205 0 0);
-        --sidebar-foreground: oklch(0.985 0 0);
-        --sidebar-primary: oklch(0.488 0.243 264.376);
-        --sidebar-primary-foreground: oklch(0.985 0 0);
-        --sidebar-accent: oklch(0.3 0 0);
-        --sidebar-accent-foreground: oklch(0.985 0 0);
-        --sidebar-border: oklch(1 0 0 / 10%);
-        --sidebar-ring: oklch(0.556 0 0);
+        --background: var(--petrol-950);
+        --foreground: var(--petrol-50);
+        --card: var(--petrol-900);
+        --card-foreground: var(--petrol-50);
+        --popover: var(--petrol-900);
+        --popover-foreground: var(--petrol-50);
+
+        --primary: var(--orange-500);
+        --primary-foreground: oklch(0.99 0.01 80);
+
+        --secondary: var(--petrol-800);
+        --secondary-foreground: var(--petrol-50);
+        --muted: var(--petrol-800);
+        --muted-foreground: var(--petrol-300);
+        --accent: oklch(0.32 0.06 38);
+        --accent-foreground: var(--orange-100);
+
+        --destructive: oklch(0.62 0.18 25);
+        --destructive-foreground: oklch(0.99 0 0);
+
+        --border: oklch(0.92 0.02 210 / 0.12);
+        --border-strong: oklch(0.92 0.02 210 / 0.22);
+        --input: oklch(0.92 0.02 210 / 0.16);
+        --ring: var(--orange-500);
+
+        --canvas: oklch(0.21 0.032 221);
+
+        --info-soft: oklch(0.4 0.08 242);
+        --green-soft: oklch(0.36 0.07 168);
+        --amber-soft: oklch(0.4 0.07 80);
+        --red-soft: oklch(0.38 0.08 27);
+
+        --sidebar: oklch(0.2 0.032 221);
+        --sidebar-foreground: var(--petrol-50);
+        --sidebar-primary: var(--orange-500);
+        --sidebar-primary-foreground: oklch(0.99 0.01 80);
+        --sidebar-accent: oklch(0.3 0.04 219);
+        --sidebar-accent-foreground: var(--petrol-50);
+        --sidebar-border: oklch(0.92 0.02 210 / 0.1);
+        --sidebar-ring: var(--orange-500);
+
+        --glow-warm: oklch(0.67 0.2 40 / 0.35);
+        --glow-cool: oklch(0.6 0.1 212 / 0.3);
+
+        --card-shadow: inset 0 1px 0 0 oklch(1 0 0 / 0.06), 0 0 0 1px var(--border), 0 2px 6px oklch(0 0 0 / 0.3),
+            0 12px 28px -14px oklch(0 0 0 / 0.5);
     }
     * {
         @apply border-border outline-ring/50;
@@ -203,38 +342,181 @@
     }
 }
 
-/* ─── Dashed borders (Attio-style: 4px dash, 6px gap) ─── */
+/* ─── Hairline / dashed grid (Attio-style: 5px dash, 6px gap) ─── */
+.dash-x {
+    background-image: repeating-linear-gradient(90deg, var(--border-strong) 0 5px, transparent 5px 11px);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+}
 .dash-top {
-    background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-image: repeating-linear-gradient(90deg, var(--border-strong) 0 5px, transparent 5px 11px);
     background-size: 100% 1px;
     background-repeat: no-repeat;
     background-position: top;
 }
 .dash-bottom {
-    background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-image: repeating-linear-gradient(90deg, var(--border-strong) 0 5px, transparent 5px 11px);
     background-size: 100% 1px;
     background-repeat: no-repeat;
     background-position: bottom;
 }
 .dash-left {
-    background-image: repeating-linear-gradient(0deg, var(--color-border) 0 4px, transparent 4px 10px);
+    background-image: repeating-linear-gradient(0deg, var(--border-strong) 0 5px, transparent 5px 11px);
     background-size: 1px 100%;
     background-repeat: no-repeat;
     background-position: left;
 }
 @media (max-width: 1023px) {
     .dash-bottom-mobile {
-        background-image: repeating-linear-gradient(90deg, var(--color-border) 0 4px, transparent 4px 10px);
+        background-image: repeating-linear-gradient(90deg, var(--border-strong) 0 5px, transparent 5px 11px);
         background-size: 100% 1px;
         background-repeat: no-repeat;
         background-position: bottom;
     }
 }
 
-/* ─── Dot Grid Background (dub.co pattern) ─── */
+/* ─── Faint engineering dot grid ─── */
 .dot-grid {
-    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
+/* ════════════════════════ FILM GRAIN ════════════════════════ */
+.grain {
+    position: relative;
+}
+.grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity, 0.4);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    mix-blend-mode: overlay;
+}
+.dark .grain::after {
+    mix-blend-mode: soft-light;
+    opacity: var(--grain-opacity, 0.5);
+}
+/* Lifts grain content above the ::after texture. Lives in @layer components (below
+   utilities) so a child's own position utility still wins - unlayered, this would beat
+   Tailwind's .absolute and force absolute decorative layers (glow, dot-grid) into flow. */
+@layer components {
+    .grain > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+/* ════════════════════════ SOFT GLOW ════════════════════════ */
+.glow-warm {
+    background: radial-gradient(60% 60% at 50% 40%, var(--glow-warm), transparent 70%);
+}
+.glow-cool {
+    background: radial-gradient(60% 60% at 50% 40%, var(--glow-cool), transparent 70%);
+}
+
+/* ════════════════════ STICKER ILLUSTRATION ════════════════════ */
+.sticker {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow:
+        inset 0 0 0 1px oklch(1 0 0 / 0.18),
+        var(--shadow-prominent);
+    isolation: isolate;
+}
+.sticker img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.sticker::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 140px 140px;
+}
+
+/* ════════════════════ ANIMATED GRADIENT BORDER ════════════════════ */
+.gradient-border {
+    position: relative;
+    display: inline-block;
+    padding: 1.5px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    isolation: isolate;
+}
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    left: 50%;
+    width: 320%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: conic-gradient(
+        var(--orange-700),
+        var(--orange-600),
+        var(--orange-400),
+        oklch(0.92 0.05 60),
+        var(--orange-400),
+        var(--orange-600),
+        var(--orange-700)
+    );
+    animation: lp-spin 6s linear infinite;
+}
+.gradient-border--white::before {
+    background: conic-gradient(
+        var(--border-strong),
+        oklch(0.94 0.006 220),
+        oklch(1 0 0),
+        oklch(0.94 0.006 220),
+        var(--border-strong)
+    );
+}
+.gradient-border > * {
+    position: relative;
+    z-index: 1;
+}
+@keyframes lp-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .gradient-border::before {
+        animation: none;
+    }
+}
+
+/* ════════════════════════ KEYFRAMES ════════════════════════ */
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+@keyframes dashpulse {
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+    30%,
+    70% {
+        opacity: 1;
+    }
 }
 
 /* ─── Gentle arrow bounce ─── */
