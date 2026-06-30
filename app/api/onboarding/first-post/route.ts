@@ -74,6 +74,8 @@ export async function POST(request: Request) {
             schema: firstPostSchema,
             system: FIRST_POST_SYSTEM_PROMPT,
             prompt,
+            abortSignal: request.signal,
+            maxRetries: 1,
         })
 
         return Response.json({ text: object.text })

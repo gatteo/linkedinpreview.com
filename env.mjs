@@ -19,6 +19,14 @@ export const env = createEnv({
         LINKEDIN_TOKEN_ENC_KEY: z.string().optional(),
         // Shared secret Vercel Cron sends as the Authorization header.
         CRON_SECRET: z.string().optional(),
+        // Optional: a scraping/residential-proxy API that returns a target URL's
+        // raw HTML, used to fetch public LinkedIn profiles reliably from
+        // datacenter IPs (which LinkedIn blocks). When unset, the onboarding
+        // profile fetch falls back to a direct request (works from residential
+        // IPs / local dev). Called as `${URL}?url=<target>` with the optional
+        // KEY as a Bearer token. See lib/linkedin/public-profile.ts.
+        LINKEDIN_SCRAPE_API_URL: z.string().optional(),
+        LINKEDIN_SCRAPE_API_KEY: z.string().optional(),
         // Wave 5 analytics: the SEPARATE LinkedIn app (App B) for the Community
         // Management API. LinkedIn requires that API to be the only product on an
         // app, so member post analytics cannot share App A (Sign In + Share). All
@@ -59,6 +67,8 @@ export const env = createEnv({
         LINKEDIN_REDIRECT_URI: process.env.LINKEDIN_REDIRECT_URI,
         LINKEDIN_TOKEN_ENC_KEY: process.env.LINKEDIN_TOKEN_ENC_KEY,
         CRON_SECRET: process.env.CRON_SECRET,
+        LINKEDIN_SCRAPE_API_URL: process.env.LINKEDIN_SCRAPE_API_URL,
+        LINKEDIN_SCRAPE_API_KEY: process.env.LINKEDIN_SCRAPE_API_KEY,
         LINKEDIN_ANALYTICS_CLIENT_ID: process.env.LINKEDIN_ANALYTICS_CLIENT_ID,
         LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,
         LINKEDIN_ANALYTICS_REDIRECT_URI: process.env.LINKEDIN_ANALYTICS_REDIRECT_URI,
