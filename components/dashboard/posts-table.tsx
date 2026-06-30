@@ -24,8 +24,9 @@ import {
 } from 'lucide-react'
 
 import { Routes } from '@/config/routes'
-import { type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
+import { type DraftManifestEntry } from '@/lib/drafts'
 import { formatRelativeDate } from '@/lib/format-date'
+import { POST_STATUS_BADGE } from '@/lib/status-styles'
 import { cn } from '@/lib/utils'
 import {
     AlertDialog,
@@ -49,17 +50,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { labelColor } from '@/components/dashboard/label-picker'
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const STATUS_STYLES: Record<DraftStatus, string> = {
-    draft: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    scheduled: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-    published: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    failed: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-}
 
 // ---------------------------------------------------------------------------
 // Actions cell - separate component so each row has isolated dialog state
@@ -185,7 +175,7 @@ function createColumns(
                     <div className='flex flex-col gap-0.5'>
                         <Badge
                             variant='secondary'
-                            className={cn('w-fit px-1.5 py-0 text-[10px] capitalize', STATUS_STYLES[status])}>
+                            className={cn('w-fit px-1.5 py-0 text-[10px] capitalize', POST_STATUS_BADGE[status])}>
                             {status}
                         </Badge>
                         {status === 'scheduled' && scheduledAt && (

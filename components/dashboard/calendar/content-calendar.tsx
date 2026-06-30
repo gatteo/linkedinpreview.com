@@ -22,6 +22,7 @@ import { toast } from 'sonner'
 import { BEST_TIME_SLOTS, BEST_TIME_SUMMARY } from '@/config/best-time'
 import { Routes } from '@/config/routes'
 import { type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
+import { POST_STATUS_BADGE, POST_STATUS_DOT } from '@/lib/status-styles'
 import { setDraftSchedule } from '@/lib/supabase/drafts'
 import { cn } from '@/lib/utils'
 import { useDrafts } from '@/hooks/use-drafts'
@@ -29,22 +30,6 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
 type View = 'month' | 'week'
-
-const STATUS_DOT: Record<DraftStatus, string> = {
-    draft: 'bg-amber-500',
-    scheduled: 'bg-blue-500',
-    published: 'bg-green-500',
-    failed: 'bg-red-500',
-}
-
-const STATUS_CHIP: Record<DraftStatus, string> = {
-    draft: 'border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200',
-    scheduled:
-        'border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-200',
-    published:
-        'border-green-300 bg-green-50 text-green-900 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-200',
-    failed: 'border-red-300 bg-red-50 text-red-900 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200',
-}
 
 const BEST_DAYS = new Set(BEST_TIME_SLOTS.filter((s) => s.tier === 'best').map((s) => s.day))
 
@@ -166,7 +151,7 @@ export function ContentCalendar() {
             <div className='text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-xs'>
                 {(['scheduled', 'published', 'failed', 'draft'] as DraftStatus[]).map((s) => (
                     <span key={s} className='flex items-center gap-1.5 capitalize'>
-                        <span className={cn('size-2 rounded-full', STATUS_DOT[s])} />
+                        <span className={cn('size-2 rounded-full', POST_STATUS_DOT[s])} />
                         {s}
                     </span>
                 ))}
@@ -209,9 +194,7 @@ export function ContentCalendar() {
                                     {format(day, 'd')}
                                 </span>
                                 {isBestDay && inMonth && (
-                                    <span
-                                        className='text-[9px] text-green-600 dark:text-green-500'
-                                        title='Good day to post'>
+                                    <span className='text-success text-[9px]' title='Good day to post'>
                                         ●
                                     </span>
                                 )}
@@ -230,7 +213,7 @@ export function ContentCalendar() {
                                             title={item.title || 'Untitled'}
                                             className={cn(
                                                 'flex w-full items-center gap-1 truncate rounded border px-1 py-0.5 text-left text-[10px] leading-tight transition-opacity hover:opacity-80',
-                                                STATUS_CHIP[item.status],
+                                                POST_STATUS_BADGE[item.status],
                                                 item.status !== 'published' && 'cursor-grab active:cursor-grabbing',
                                             )}>
                                             {ts && (

@@ -1,23 +1,11 @@
 'use client'
 
 import { POST_FORMATS } from '@/lib/drafts'
+import { labelColor } from '@/lib/status-styles'
 import { cn } from '@/lib/utils'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-export function labelColor(label: string): string {
-    const colors: Record<string, string> = {
-        'Personal Milestones': 'bg-blue-500',
-        'Mindset & Motivation': 'bg-purple-500',
-        'Career Before & After': 'bg-green-500',
-        'Tool & Resource Insights': 'bg-orange-500',
-        'Case Studies': 'bg-cyan-500',
-        'Actionable Guides': 'bg-emerald-500',
-        'Culture Moments': 'bg-pink-500',
-        'Offer Highlight': 'bg-amber-500',
-        'Client Success Story': 'bg-teal-500',
-    }
-    return colors[label] ?? 'bg-gray-500'
-}
+export { labelColor }
 
 type LabelPickerProps = {
     'value': string | null
