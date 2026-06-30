@@ -2,6 +2,7 @@ import { type FAQPage, type WithContext } from 'schema-dts'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import { AnimateIn } from '../ui/animate-in'
+import { Eyebrow } from './_shared'
 
 const FAQList = [
     {
@@ -81,49 +82,34 @@ export function FAQs() {
     }
 
     return (
-        <section id='faqs' className='border-border border-t'>
-            <div className='pt-20 md:pt-24'>
+        <section id='faqs' className='scroll-mt-[var(--header-height)]'>
+            <div className='max-w-content border-border mx-auto border-x px-7'>
                 <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-
-                {/* Header */}
-                <AnimateIn className='mb-6 px-6'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
-                        Frequently Asked Questions
-                    </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
-                        Find answers to common questions about LinkedInPreview.com and how it can help you create better
-                        LinkedIn posts.
-                    </p>
-                </AnimateIn>
-
-                {/* Blueprint grid */}
                 <AnimateIn>
-                    <div className='dash-top grid lg:grid-cols-[5fr_3fr]'>
-                        {/* Accordion */}
-                        <div className='dash-right p-6'>
-                            <Accordion type='multiple'>
+                    <div className='border-border -mx-7 grid border-t border-b md:grid-cols-2'>
+                        <div className='border-border px-7 py-11 max-md:border-b md:border-r'>
+                            <Eyebrow className='mb-3'>FAQ</Eyebrow>
+                            <h2 className='font-heading text-[clamp(28px,3.6vw,40px)] leading-[1.08] font-bold tracking-[-0.025em]'>
+                                Frequently asked questions
+                            </h2>
+                            <p className='text-muted-foreground mt-4 max-w-[380px] text-base leading-relaxed'>
+                                Find answers to common questions about LinkedInPreview.com and how it helps you create
+                                better posts.
+                            </p>
+                        </div>
+                        <div className='px-7 py-2'>
+                            <Accordion type='single' collapsible>
                                 {FAQList.map((faq) => (
                                     <AccordionItem key={faq.question} value={faq.question} className='border-border'>
-                                        <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
+                                        <AccordionTrigger className='gap-4 text-start text-[15.5px] font-medium hover:no-underline'>
                                             {faq.question}
                                         </AccordionTrigger>
-                                        <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
+                                        <AccordionContent className='text-muted-foreground max-w-[640px] text-sm leading-relaxed'>
                                             {faq.answer}
                                         </AccordionContent>
                                     </AccordionItem>
                                 ))}
                             </Accordion>
-                        </div>
-
-                        {/* Empty with diagonal lines */}
-                        <div className='dash-left relative hidden lg:block'>
-                            <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
-                                style={{
-                                    backgroundImage:
-                                        'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
-                                }}
-                            />
                         </div>
                     </div>
                 </AnimateIn>

@@ -103,22 +103,15 @@ export default function Page() {
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
 
-            <div className='max-w-content border-border mx-auto border-x'>
-                <Hero />
-                <Tool />
-                <HowToUse />
-                <DashboardShowcase />
-            </div>
-
+            <Hero />
+            <Tool />
+            <HowToUse />
+            <DashboardShowcase />
             <OpenSource />
-
-            <div className='max-w-content border-border mx-auto border-x'>
-                <Reason />
-                <Features />
-                <EmbedSection />
-                <FAQs />
-            </div>
-
+            <Reason />
+            <Features />
+            <EmbedSection />
+            <FAQs />
             <CtaSection />
         </>
     )
