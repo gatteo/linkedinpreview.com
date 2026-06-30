@@ -249,7 +249,7 @@ project-root/
 ├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, etc.)
 ├── lib/
 │   ├── supabase/            # Server/client/admin Supabase instances + CRUD, migration
-│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize
+│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, public-profile fetch (onboarding enrichment)
 │   └── mdx/plugins/         # Remark and rehype plugins for MDX processing
 ├── types/                   # Shared TypeScript type definitions
 ├── styles/                  # globals.css - Tailwind v4 theme via @theme + @plugin
@@ -277,21 +277,23 @@ project-root/
 
 ## Environment Variables
 
-| Variable                       | Description                                                                | Required                  | Example                           |
-| ------------------------------ | -------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
-| NODE_ENV                       | Runtime environment                                                        | Yes                       | production                        |
-| LLM_API_KEY                    | OpenAI API key for AI features                                             | Yes (server)              | sk-...                            |
-| LLM_MODEL                      | OpenAI model name                                                          | No (default: gpt-4o-mini) | gpt-4o                            |
-| NEXT_PUBLIC_GTM_MEASUREMENT_ID | Google Tag Manager ID                                                      | Yes (client)              | GTM-XXXXX                         |
-| NEXT_PUBLIC_POSTHOG_KEY        | PostHog project key                                                        | Yes (client)              | phc\_...                          |
-| NEXT_PUBLIC_SUPABASE_URL       | Supabase project URL                                                       | Yes (client)              | https://xxx.supabase.co           |
-| NEXT_PUBLIC_SUPABASE_ANON_KEY  | Supabase anonymous key                                                     | Yes (client)              | eyJ...                            |
-| LINKEDIN_CLIENT_ID             | LinkedIn app client id                                                     | No (server, Wave 4)       | 86abc...                          |
-| LINKEDIN_CLIENT_SECRET         | LinkedIn app client secret                                                 | No (server, Wave 4)       | WPL\_...                          |
-| LINKEDIN_REDIRECT_URI          | OAuth redirect override (defaults to `${site.url}/api/linkedin/callback`)  | No (server, Wave 4)       | https://.../api/linkedin/callback |
-| LINKEDIN_TOKEN_ENC_KEY         | AES-256-GCM key for token encryption (64-char hex; `openssl rand -hex 32`) | No (server, Wave 4)       | a1b2c3...                         |
-| CRON_SECRET                    | Bearer token the Vercel Cron publisher sends                               | No (server, Wave 4)       | (random secret)                   |
-| SUPABASE_SERVICE_ROLE_KEY      | Service-role key, used only by the cron publisher (bypasses RLS)           | No (server, Wave 4)       | eyJ...                            |
+| Variable                       | Description                                                                                                                                                                                                    | Required                  | Example                           |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
+| NODE_ENV                       | Runtime environment                                                                                                                                                                                            | Yes                       | production                        |
+| LLM_API_KEY                    | OpenAI API key for AI features                                                                                                                                                                                 | Yes (server)              | sk-...                            |
+| LLM_MODEL                      | OpenAI model name                                                                                                                                                                                              | No (default: gpt-4o-mini) | gpt-4o                            |
+| NEXT_PUBLIC_GTM_MEASUREMENT_ID | Google Tag Manager ID                                                                                                                                                                                          | Yes (client)              | GTM-XXXXX                         |
+| NEXT_PUBLIC_POSTHOG_KEY        | PostHog project key                                                                                                                                                                                            | Yes (client)              | phc\_...                          |
+| NEXT_PUBLIC_SUPABASE_URL       | Supabase project URL                                                                                                                                                                                           | Yes (client)              | https://xxx.supabase.co           |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY  | Supabase anonymous key                                                                                                                                                                                         | Yes (client)              | eyJ...                            |
+| LINKEDIN_CLIENT_ID             | LinkedIn app client id                                                                                                                                                                                         | No (server, Wave 4)       | 86abc...                          |
+| LINKEDIN_CLIENT_SECRET         | LinkedIn app client secret                                                                                                                                                                                     | No (server, Wave 4)       | WPL\_...                          |
+| LINKEDIN_REDIRECT_URI          | OAuth redirect override (defaults to `${site.url}/api/linkedin/callback`)                                                                                                                                      | No (server, Wave 4)       | https://.../api/linkedin/callback |
+| LINKEDIN_TOKEN_ENC_KEY         | AES-256-GCM key for token encryption (64-char hex; `openssl rand -hex 32`)                                                                                                                                     | No (server, Wave 4)       | a1b2c3...                         |
+| LINKEDIN_SCRAPE_API_URL        | Scrape/residential-proxy API returning a target URL's raw HTML, used to fetch public profiles for onboarding enrichment from datacenter IPs. Unset = direct-request fallback. Called as `${URL}?url=<target>`. | No (server)               | https://scrape.example/get        |
+| LINKEDIN_SCRAPE_API_KEY        | Optional Bearer token for `LINKEDIN_SCRAPE_API_URL`                                                                                                                                                            | No (server)               | (api key)                         |
+| CRON_SECRET                    | Bearer token the Vercel Cron publisher sends                                                                                                                                                                   | No (server, Wave 4)       | (random secret)                   |
+| SUPABASE_SERVICE_ROLE_KEY      | Service-role key, used only by the cron publisher (bypasses RLS)                                                                                                                                               | No (server, Wave 4)       | eyJ...                            |
 
 The Wave 4 LinkedIn vars are all optional: when blank the publishing/scheduling features stay inert
 and the UI presents them as "not configured" (mirrors the GTM/Tally pattern). The full setup steps
