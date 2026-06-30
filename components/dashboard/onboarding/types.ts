@@ -56,8 +56,6 @@ export type OnboardingAnswers = {
     opportunityLine?: string
     /** Confidence (0-1) the enrichment returned; gates the "guessed" Mirror UI. */
     enrichConfidence?: number
-    /** The first generated post, stashed as a draft so it survives into the dashboard. */
-    firstDraftId?: string
     /** The first post text kept in state for the Voice/Recap screens. */
     firstPostText?: string
     /** Posting cadence commitment (maps to frequency + schedule). */
@@ -106,7 +104,11 @@ export function readOnboarding(): OnboardingResumeState | null {
     try {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (!raw) return null
-        return JSON.parse(raw) as OnboardingResumeState
+        const parsed = JSON.parse(raw) as OnboardingResumeState
+        // Guard against stale/corrupt blobs from an older shape so the gate that
+        // reads `answers.profile` can never throw and silently drop the user.
+        if (!parsed?.answers?.profile || typeof parsed.resumeAt !== 'string') return null
+        return parsed
     } catch {
         return null
     }

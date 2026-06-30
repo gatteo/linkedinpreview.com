@@ -20,6 +20,8 @@ export type EnrichResult = {
     toneSummary: string
     opportunityLine: string
     confidence: number
+    /** Real identity read from the public profile, when the fetch succeeded. */
+    profile?: { name: string; headline: string; avatarUrl: string }
 }
 
 export type EnrichInput = {
@@ -30,13 +32,29 @@ export type EnrichInput = {
     welcomeGoal?: StrategyGoal
 }
 
+/** Abort a fetch after `ms`; the caller's catch turns the abort into a fallback. */
+async function fetchWithTimeout(input: RequestInfo, init: RequestInit, ms: number): Promise<Response> {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), ms)
+    try {
+        return await fetch(input, { ...init, signal: controller.signal })
+    } finally {
+        clearTimeout(timer)
+    }
+}
+
 export async function enrichProfile(input: EnrichInput): Promise<EnrichResult | null> {
     try {
-        const res = await fetch('/api/onboarding/enrich', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(input),
-        })
+        const res = await fetchWithTimeout(
+            '/api/onboarding/enrich',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(input),
+            },
+            // Generous: a real profile fetch (up to ~10s) plus the LLM call.
+            22000,
+        )
         if (!res.ok) return null
         return (await res.json()) as EnrichResult
     } catch {
@@ -55,11 +73,15 @@ export type FirstPostInput = {
 
 export async function generateFirstPost(input: FirstPostInput): Promise<string | null> {
     try {
-        const res = await fetch('/api/onboarding/first-post', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(input),
-        })
+        const res = await fetchWithTimeout(
+            '/api/onboarding/first-post',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(input),
+            },
+            25000,
+        )
         if (!res.ok) return null
         const data = (await res.json()) as { text?: string }
         return typeof data.text === 'string' ? data.text : null

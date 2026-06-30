@@ -5,10 +5,11 @@ import { motion } from 'framer-motion'
 import { BarChart3Icon, CalendarDaysIcon, LayoutGridIcon, LightbulbIcon, type LucideIcon } from 'lucide-react'
 
 import { SPOTLIGHT_CONTENT } from '@/config/onboarding-personalization'
-import { fadeUp, staggerContainer, staggerItem } from '@/lib/motion'
+import { popIn, staggerContainer, staggerItem } from '@/lib/motion'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
+import { H2, Sub } from '../primitives'
 
 const ICONS: Record<string, LucideIcon> = {
     BarChart3: BarChart3Icon,
@@ -32,23 +33,27 @@ export function SpotlightStep() {
             variants={staggerContainer}
             initial='hidden'
             animate='visible'
-            className='flex flex-col items-center gap-5 py-3 text-center'>
+            className='flex flex-col items-center gap-5 py-2.5 text-center'>
             <motion.div
-                variants={fadeUp}
-                className='from-primary/15 to-primary/5 text-primary flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br'>
-                <Icon className='size-9' />
+                variants={popIn}
+                style={{
+                    background:
+                        'linear-gradient(150deg, color-mix(in oklch, var(--primary) 18%, transparent), color-mix(in oklch, var(--primary) 5%, transparent))',
+                }}
+                className='text-primary flex size-[78px] items-center justify-center rounded-3xl'>
+                <Icon className='size-[34px]' />
             </motion.div>
-            <motion.div variants={staggerItem} className='flex flex-col gap-2'>
-                <span className='text-primary text-xs font-medium tracking-wide uppercase'>{content.eyebrow}</span>
-                <h2 className='font-heading mx-auto max-w-md text-xl tracking-tight text-balance'>
-                    {content.headline}
-                </h2>
-                <p className='text-muted-foreground mx-auto max-w-sm text-sm text-pretty'>{content.line}</p>
+            <motion.div variants={staggerItem} className='flex flex-col items-center gap-2'>
+                <span className='text-primary tracking-label font-mono text-[11.5px] font-semibold uppercase'>
+                    {content.eyebrow}
+                </span>
+                <H2 className='max-w-[420px] text-xl'>{content.headline}</H2>
+                <Sub className='max-w-[360px]'>{content.line}</Sub>
             </motion.div>
             <motion.span
                 variants={staggerItem}
-                className='bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium'>
-                Included in your plan
+                className='bg-primary/10 text-primary rounded-full px-3 py-[5px] text-xs font-medium'>
+                In your toolkit
             </motion.span>
         </motion.div>
     )

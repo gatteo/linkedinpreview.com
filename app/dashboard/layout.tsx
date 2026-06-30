@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AuthGate } from '@/components/dashboard/auth-gate'
 import { AuthProvider } from '@/components/dashboard/auth-provider'
+import { DashboardDebugMenu } from '@/components/dashboard/dashboard-debug-menu'
 import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { OnboardingController } from '@/components/dashboard/onboarding/onboarding-controller'
 import { PlanProvider } from '@/components/dashboard/plan-provider'
@@ -50,6 +51,7 @@ export default function DashboardLayout({
                                     </SidebarProvider>
                                 </div>
                                 <OnboardingController />
+                                {process.env.NODE_ENV === 'development' && <DashboardDebugMenu />}
                             </UpgradeProvider>
                         </PlanProvider>
                     </AuthGate>

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 
 import { track } from './ai'
+import { BrandStage } from './brand-stage'
 import { Confetti } from './confetti'
 import { OnboardingProvider } from './context'
 import { BuildingStep } from './steps/building-step'
@@ -56,7 +57,9 @@ type FooterConfig = { back: boolean; skip: 'data' | null; primary: string | null
 const FOOTER: Record<StepId, FooterConfig> = {
     welcome: { back: false, skip: null, primary: null },
     connect: { back: true, skip: 'data', primary: null },
-    mirror: { back: true, skip: null, primary: 'Looks right, continue' },
+    // Mirror owns its own forward button (rendered in the body) so it can't be
+    // confirmed while the "reading" spinner is still running.
+    mirror: { back: true, skip: null, primary: null },
     goal: { back: true, skip: 'data', primary: 'Continue' },
     proof: { back: true, skip: null, primary: 'Continue' },
     preview: { back: true, skip: null, primary: 'Continue' },
@@ -195,8 +198,13 @@ export function OnboardingModal({
         goNext()
     }
 
+    // Don't let the user skip past the "aha" before the first post has rendered.
+    const primaryDisabled = step === 'preview' && !answers.firstPostText
+
     const dataDone = DATA_STEPS.filter((s) => STEP_ORDER.indexOf(s) < index).length
     const progress = (dataDone / DATA_STEPS.length) * 100
+    const isData = DATA_STEPS.includes(step)
+    const metaLabel = isData ? `Step ${dataDone + 1}` : 'Your tailored setup'
 
     return (
         <Dialog open={open}>
@@ -205,67 +213,106 @@ export function OnboardingModal({
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onInteractOutside={(e) => e.preventDefault()}
-                className='flex max-h-[90vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'>
+                className='flex h-[min(790px,90vh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] p-0 shadow-[0_40px_90px_-24px_oklch(0.12_0.03_222_/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222_/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
                     {step === 'done' && converted && <Confetti />}
-
-                    {/* Progress */}
-                    <div className='bg-muted h-1 w-full shrink-0'>
-                        <motion.div
-                            className='bg-primary h-full'
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.4, ease: EASE_OUT }}
-                        />
-                    </div>
 
                     <DialogTitle className='sr-only'>Set up your LinkedIn growth system</DialogTitle>
                     <DialogDescription className='sr-only'>
                         A short, personalized setup for your LinkedIn content.
                     </DialogDescription>
 
-                    {/* Body */}
-                    <div className='flex-1 overflow-y-auto px-6 pt-6 pb-4'>
-                        <OnboardingProvider value={ctxValue}>
-                            <AnimatePresence mode='wait' custom={direction} initial={false}>
-                                <motion.div
-                                    key={step}
-                                    custom={direction}
-                                    variants={slideStep}
-                                    initial='enter'
-                                    animate='center'
-                                    exit='exit'>
-                                    <StepBody step={step} />
-                                </motion.div>
-                            </AnimatePresence>
-                        </OnboardingProvider>
-                    </div>
+                    <div className='flex h-full overflow-hidden max-md:flex-col'>
+                        <BrandStage step={step} dataDone={dataDone} total={DATA_STEPS.length} />
 
-                    {/* Footer */}
-                    {showFooter && (
-                        <div className='bg-muted/40 flex shrink-0 items-center justify-between gap-2 border-t px-6 py-3.5'>
-                            <div>
-                                {showBack && (
-                                    <Button variant='ghost' size='sm' onClick={goBack}>
-                                        <ArrowLeftIcon className='size-4' />
-                                        Back
-                                    </Button>
-                                )}
+                        {/* Content column */}
+                        <div
+                            className='grain bg-background relative flex min-w-0 flex-1 flex-col'
+                            style={{ '--grain-opacity': 0.05 } as React.CSSProperties}>
+                            {/* Top: meta + progress */}
+                            <div className='shrink-0 px-[clamp(20px,4vw,56px)] pt-[clamp(18px,2.4vw,26px)]'>
+                                <div className='mb-3 flex items-center justify-between pr-8'>
+                                    <span className='text-muted-foreground font-mono text-[11px] font-medium tracking-[0.1em] whitespace-nowrap uppercase'>
+                                        {metaLabel}
+                                    </span>
+                                    {step !== 'welcome' && (
+                                        <span className='text-muted-foreground font-mono text-[11px]'>
+                                            {Math.round(progress)}%
+                                        </span>
+                                    )}
+                                </div>
+                                <div className='bg-muted h-1 w-full overflow-hidden rounded-full'>
+                                    <motion.div
+                                        className='bg-primary h-full rounded-full'
+                                        animate={{ width: `${progress}%` }}
+                                        transition={{ duration: 0.45, ease: EASE_OUT }}
+                                    />
+                                </div>
                             </div>
-                            <div className='flex items-center gap-2'>
-                                {footer.skip && (
-                                    <Button variant='ghost' size='sm' className='text-muted-foreground' onClick={skip}>
-                                        {step === 'connect' ? "I'll set it up manually" : 'Skip for now'}
-                                    </Button>
-                                )}
-                                {footer.primary && (
-                                    <Button onClick={handlePrimary}>
-                                        {footer.primary}
-                                        <ArrowRightIcon className='size-4' />
-                                    </Button>
-                                )}
+
+                            {/* Body - vertically centered when short */}
+                            <div className='flex flex-1 flex-col overflow-y-auto'>
+                                <div className='m-auto w-full max-w-[580px] px-[clamp(20px,4vw,56px)] py-[clamp(24px,3vw,40px)]'>
+                                    <OnboardingProvider value={ctxValue}>
+                                        <AnimatePresence mode='wait' custom={direction} initial={false}>
+                                            <motion.div
+                                                key={step}
+                                                custom={direction}
+                                                variants={slideStep}
+                                                initial='enter'
+                                                animate='center'
+                                                exit='exit'>
+                                                <StepBody step={step} />
+                                            </motion.div>
+                                        </AnimatePresence>
+                                    </OnboardingProvider>
+                                </div>
                             </div>
+
+                            {/* Footer */}
+                            {showFooter && (
+                                <div className='border-border flex shrink-0 items-center justify-between gap-2 border-t px-[clamp(20px,4vw,56px)] py-3.5'>
+                                    <div>
+                                        {showBack && (
+                                            <Button
+                                                variant='ghost'
+                                                size='sm'
+                                                className='text-muted-foreground'
+                                                onClick={goBack}>
+                                                <ArrowLeftIcon className='size-4' />
+                                                Back
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                        {footer.skip && (
+                                            <Button
+                                                variant='ghost'
+                                                size='sm'
+                                                className='text-muted-foreground'
+                                                onClick={skip}>
+                                                {step === 'connect' ? "I'll set it up manually" : 'Skip for now'}
+                                            </Button>
+                                        )}
+                                        {footer.primary &&
+                                            (footer.primary === 'See my offer' ? (
+                                                <span className='gradient-border'>
+                                                    <Button onClick={handlePrimary} disabled={primaryDisabled}>
+                                                        {footer.primary}
+                                                        <ArrowRightIcon className='size-4' />
+                                                    </Button>
+                                                </span>
+                                            ) : (
+                                                <Button onClick={handlePrimary} disabled={primaryDisabled}>
+                                                    {footer.primary}
+                                                    <ArrowRightIcon className='size-4' />
+                                                </Button>
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </MotionConfig>
             </DialogContent>
         </Dialog>

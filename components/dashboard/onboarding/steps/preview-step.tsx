@@ -9,9 +9,11 @@ import { computeContentStats } from '@/lib/content-scoring'
 import { fadeUp, staggerContainer, staggerItem } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { PostCard } from '@/components/tool/preview/post-card'
+import { ScreenSizeProvider } from '@/components/tool/preview/preview-size-context'
 
 import { generateFirstPost, postTextToDoc, refinePost, track } from '../ai'
 import { useOnboarding } from '../context'
+import { H2, Sub } from '../primitives'
 
 const LENGTH_LABEL: Record<string, string> = {
     optimal: 'Good length',
@@ -24,6 +26,10 @@ export function PreviewStep() {
     const [generating, setGenerating] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
     const startedRef = React.useRef(false)
+    // Latest post text, so a failed regenerate keeps the current post instead of
+    // silently swapping it for a canned fallback.
+    const textRef = React.useRef('')
+    textRef.current = answers.firstPostText ?? ''
 
     const runGenerate = React.useCallback(async () => {
         setGenerating(true)
@@ -35,7 +41,7 @@ export function PreviewStep() {
             tone: answers.tone,
             name: answers.profile.name || undefined,
         })
-        update({ firstPostText: text ?? fallbackPost(answers.role, answers.niche) })
+        update({ firstPostText: text ?? (textRef.current || fallbackPost(answers.role, answers.niche)) })
         setGenerating(false)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [answers.role, answers.niche, answers.primaryGoal, answers.audience, answers.tone, answers.profile.name])
@@ -69,7 +75,7 @@ export function PreviewStep() {
             <div className='flex flex-col items-center gap-5 py-10'>
                 <Loader2Icon className='text-primary size-8 animate-spin' />
                 <p className='text-foreground font-heading text-lg tracking-tight'>Writing your first post...</p>
-                <p className='text-muted-foreground text-sm'>In your voice, on your niche.</p>
+                <Sub>Built around your goal and niche.</Sub>
             </div>
         )
     }
@@ -79,26 +85,24 @@ export function PreviewStep() {
     return (
         <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-4'>
             <motion.div variants={staggerItem} className='flex flex-col gap-1 text-center'>
-                <h2 className='font-heading text-xl tracking-tight'>
-                    Here&apos;s a post we wrote for you. In your voice.
-                </h2>
-                <p className='text-muted-foreground text-sm'>
-                    This took us 4 seconds. Imagine never staring at a blank editor again.
-                </p>
+                <H2 className='text-xl'>Here&apos;s a first post, built around your goal.</H2>
+                <Sub>Built in seconds. Imagine never staring at a blank editor again.</Sub>
             </motion.div>
 
             <motion.div
                 variants={fadeUp}
                 className={cn('relative transition-opacity', (busy || generating) && 'opacity-60')}>
-                <PostCard
-                    content={postTextToDoc(text)}
-                    media={null}
-                    author={{
-                        name: answers.profile.name,
-                        headline: answers.profile.headline,
-                        avatarUrl: answers.profile.avatarUrl,
-                    }}
-                />
+                <ScreenSizeProvider initialSize='desktop'>
+                    <PostCard
+                        content={postTextToDoc(text)}
+                        media={null}
+                        author={{
+                            name: answers.profile.name,
+                            headline: answers.profile.headline,
+                            avatarUrl: answers.profile.avatarUrl,
+                        }}
+                    />
+                </ScreenSizeProvider>
                 {(busy || generating) && (
                     <div className='absolute inset-0 flex items-center justify-center'>
                         <Loader2Icon className='text-primary size-6 animate-spin' />

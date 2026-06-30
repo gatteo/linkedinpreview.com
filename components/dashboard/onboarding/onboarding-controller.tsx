@@ -10,6 +10,7 @@ import { useStrategy } from '@/hooks/use-strategy'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
 import { postTextToDoc } from './ai'
+import { onOnboardingDebug } from './debug-events'
 import { OnboardingModal } from './onboarding-modal'
 import {
     clearOnboarding,
@@ -19,6 +20,11 @@ import {
     type OnboardingAnswers,
     type StepId,
 } from './types'
+
+// The `?linkedin=` statuses that belong to onboarding. Account-switch statuses
+// (merge-prompt/linked-elsewhere/welcome/signin-failed) are owned by the
+// settings page and must not be hijacked by the onboarding resume gate.
+const ONBOARDING_LINKEDIN_STATUSES = ['connected', 'denied', 'error', 'session', 'unavailable']
 
 // ---------------------------------------------------------------------------
 // OnboardingController - gates the conversion flow and bridges it to persistence.
@@ -56,6 +62,13 @@ export function OnboardingController() {
         if (branding.meta.onboardedAt) {
             decidedRef.current = true
             if (saved) clearOnboarding()
+            return
+        }
+
+        // A non-onboarding LinkedIn status (account switch/merge) is the settings
+        // page's concern - don't open onboarding or strip its query param.
+        if (linkedinStatus && !ONBOARDING_LINKEDIN_STATUSES.includes(linkedinStatus)) {
+            decidedRef.current = true
             return
         }
 
@@ -105,6 +118,22 @@ export function OnboardingController() {
         decidedRef.current = true
         setOpen(true)
     }, [ready, branding, strategy, updateBranding, router])
+
+    // Dev-only debug menu drives the live modal (open/close) via a window event bus.
+    React.useEffect(() => {
+        return onOnboardingDebug((command) => {
+            if (command === 'open') {
+                setResumeAnswers(null)
+                setStartStepId('welcome')
+                setLinkedinError(null)
+                decidedRef.current = true
+                finishedRef.current = false
+                setOpen(true)
+            } else if (command === 'close') {
+                setOpen(false)
+            }
+        })
+    }, [])
 
     const handlePersist = React.useCallback((answers: OnboardingAnswers, step: StepId) => {
         persistOnboarding(answers, step)
@@ -165,8 +194,15 @@ export function OnboardingController() {
     const handleComplete = React.useCallback(async () => {
         let id: string | null = null
         try {
-            const entry = await firstDraftPromiseRef.current
-            id = entry?.id ?? null
+            const pending = firstDraftPromiseRef.current
+            if (pending) {
+                // Never trap the user on the celebration screen if the insert hangs.
+                const entry = await Promise.race([
+                    pending,
+                    new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
+                ])
+                id = entry?.id ?? null
+            }
         } catch {
             // Fall back to the dashboard if the draft never landed.
         }

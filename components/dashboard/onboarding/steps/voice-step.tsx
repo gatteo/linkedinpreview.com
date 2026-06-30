@@ -5,12 +5,11 @@ import { motion } from 'framer-motion'
 import { TONE_OPTIONS, type Tone } from '@/config/ai'
 import { toneFromSummary } from '@/config/onboarding-personalization'
 import { staggerContainer, staggerItem } from '@/lib/motion'
-import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
+import { FieldLabel, Pill } from '../primitives'
 
 export function VoiceStep() {
     const { answers, update } = useOnboarding()
@@ -22,34 +21,23 @@ export function VoiceStep() {
     }
 
     return (
-        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-6'>
+        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-[26px]'>
             <motion.div variants={staggerItem} className='flex flex-col gap-3'>
-                <p className='text-foreground text-sm font-medium'>Pick the voice that sounds most like you.</p>
+                <FieldLabel>Pick the voice that sounds most like you.</FieldLabel>
                 <div className='flex flex-wrap justify-center gap-2.5'>
-                    {TONE_OPTIONS.map((option) => {
-                        const selected = tone === option.value
-                        return (
-                            <button
-                                key={option.value}
-                                type='button'
-                                onClick={() => choose(option.value)}
-                                className={cn(
-                                    'inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium transition-all',
-                                    selected
-                                        ? 'border-primary bg-primary text-primary-foreground'
-                                        : 'border-border bg-muted/30 text-foreground hover:border-border/80 hover:bg-muted/50',
-                                )}>
-                                {option.label}
-                            </button>
-                        )
-                    })}
+                    {TONE_OPTIONS.map((option) => (
+                        <Pill key={option.value} selected={tone === option.value} onClick={() => choose(option.value)}>
+                            {option.label}
+                        </Pill>
+                    ))}
                 </div>
             </motion.div>
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
-                <Label htmlFor='ob-notes'>Anything we should avoid? (optional)</Label>
+            <motion.div variants={staggerItem} className='flex flex-col gap-[7px]'>
+                <FieldLabel>
+                    Anything we should avoid? <span className='text-muted-foreground font-normal'>(optional)</span>
+                </FieldLabel>
                 <Input
-                    id='ob-notes'
                     value={answers.writingNotes ?? ''}
                     onChange={(e) => update({ writingNotes: e.target.value })}
                     placeholder='e.g. no buzzwords, no emojis, never salesy'

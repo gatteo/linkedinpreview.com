@@ -6,10 +6,10 @@ import { CheckIcon, Loader2Icon } from 'lucide-react'
 
 import { EASE_OUT } from '@/lib/motion'
 import { FORMAT_CATEGORIES, type FormatCategory, type StrategyFormat } from '@/lib/strategy'
-import { BuildingSetup } from '@/components/dashboard/illustrations'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
+import { H2, Spinner, Sub } from '../primitives'
 
 type TaskId = 'read' | 'positioning' | 'formats' | 'ideas' | 'calendar' | 'assemble'
 
@@ -17,7 +17,7 @@ const TASKS: { id: TaskId; label: string }[] = [
     { id: 'read', label: 'Reading your answers' },
     { id: 'positioning', label: 'Writing your positioning statement' },
     { id: 'formats', label: 'Choosing your best-fit post formats' },
-    { id: 'ideas', label: 'Drafting your first week of posts' },
+    { id: 'ideas', label: 'Planning your first week' },
     { id: 'calendar', label: 'Setting your calendar' },
     { id: 'assemble', label: 'Putting it all together' },
 ]
@@ -160,16 +160,21 @@ export function BuildingStep() {
     const progress = Math.round((done.size / TASKS.length) * 100)
 
     return (
-        <div className='flex flex-col items-center gap-6 py-2'>
-            <div className='w-44'>
-                <BuildingSetup />
+        <div className='flex flex-col items-center gap-6 py-3'>
+            <div
+                style={{
+                    background:
+                        'linear-gradient(150deg, color-mix(in oklch, var(--primary) 16%, transparent), color-mix(in oklch, var(--primary) 4%, transparent))',
+                }}
+                className='text-primary flex size-[60px] items-center justify-center rounded-[18px]'>
+                <Spinner className='size-[26px]' />
             </div>
             <div className='flex flex-col items-center gap-1 text-center'>
-                <h2 className='font-heading text-xl tracking-tight'>Building your system</h2>
-                <p className='text-muted-foreground text-sm'>Assembling everything around your goal...</p>
+                <H2 className='text-[22px]'>Building your system</H2>
+                <Sub>Assembling everything around your goal...</Sub>
             </div>
 
-            <div className='bg-muted h-1.5 w-full max-w-xs overflow-hidden rounded-full'>
+            <div className='bg-muted h-1.5 w-full max-w-[260px] overflow-hidden rounded-full'>
                 <motion.div
                     className='bg-primary h-full rounded-full'
                     animate={{ width: `${progress}%` }}
@@ -177,7 +182,7 @@ export function BuildingStep() {
                 />
             </div>
 
-            <ul className='flex w-full max-w-xs flex-col gap-2.5'>
+            <ul className='flex w-full max-w-[280px] flex-col gap-2.5'>
                 {TASKS.map((task) => {
                     const isDone = done.has(task.id)
                     const isActive = active === task.id && !isDone
@@ -185,7 +190,7 @@ export function BuildingStep() {
                         <li
                             key={task.id}
                             className={`flex items-center gap-3 text-sm transition-colors ${
-                                isDone || isActive ? 'text-foreground' : 'text-muted-foreground/60'
+                                isDone || isActive ? 'text-foreground' : 'text-muted-foreground/55'
                             }`}>
                             <span className='flex size-5 shrink-0 items-center justify-center'>
                                 <AnimatePresence mode='wait' initial={false}>

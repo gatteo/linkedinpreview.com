@@ -7,9 +7,10 @@
 // keyed on the user's role and cross-cut by primary goal. PMs/designers tune copy
 // here without touching flow logic.
 //
-// IMPORTANT: all proof stats and testimonials are PLACEHOLDERs (flagged below and
-// inventoried in §9). They must be replaced with real, substantiated, or clearly
-// illustrative content before public launch (guardrail §1.5).
+// Social proof (the Proof screen) is sourced from TESTIMONIALS below - it is
+// EMPTY by default and must be filled with real, consented, attributable quotes.
+// Until a role has one, the Proof screen shows an honest, non-fabricated value
+// message. Never put invented names, quotes, or metrics here.
 // ---------------------------------------------------------------------------
 
 import type { Tone } from '@/config/ai'
@@ -31,12 +32,6 @@ export type Testimonial = {
 export type RoleContent = {
     /** Mirror screen: the role's "biggest opportunity" line. */
     mirrorOpportunity: string
-    /** Proof screen: tailored social proof (PLACEHOLDER values). */
-    proof: {
-        stat: string
-        claim: string
-        testimonial: Testimonial
-    }
     /** Spotlight screen: the single high-value feature to showcase. */
     spotlight: SpotlightFeature
     defaultGoal: StrategyGoal
@@ -44,115 +39,60 @@ export type RoleContent = {
 }
 
 // --- §3.2 Per-role content matrix -----------------------------------------
-// All `proof` values are PLACEHOLDER - replace before launch (§9).
 
 export const ROLE_CONTENT: Record<Role, RoleContent> = {
     'founder': {
         mirrorOpportunity: 'Turn your expertise into inbound - your audience is buyers, not peers.',
-        proof: {
-            stat: '5x', // PLACEHOLDER
-            claim: 'Founders posting 3x/week book 5x more inbound calls in 90 days.', // PLACEHOLDER
-            testimonial: {
-                quote: 'Closed two deals from 10-minute posts. It sounds like me, not ChatGPT.',
-                name: 'Marco R.', // PLACEHOLDER
-                title: 'SaaS founder',
-            },
-        },
         spotlight: 'analytics',
         defaultGoal: 'revenue-growth',
         defaultAudience: ['new-clients'],
     },
     'freelancer': {
         mirrorOpportunity: "Consistent authority posts = a pipeline that doesn't depend on referrals.",
-        proof: {
-            stat: '3.2x', // PLACEHOLDER
-            claim: 'Freelancers here land 3.2x more discovery calls per month.', // PLACEHOLDER
-            testimonial: {
-                quote: 'Booked out 6 weeks from LinkedIn alone.',
-                name: 'Sara T.', // PLACEHOLDER
-                title: 'Brand designer',
-            },
-        },
         spotlight: 'carousels',
         defaultGoal: 'revenue-growth',
         defaultAudience: ['new-clients'],
     },
     'consultant': {
         mirrorOpportunity: 'Your insight is the product - package it so prospects come pre-sold.',
-        proof: {
-            stat: '4x', // PLACEHOLDER
-            claim: 'Consultants grow profile views 4x and inbound 2x in 60 days.', // PLACEHOLDER
-            testimonial: {
-                quote: "My discovery calls now start at 'I've read your posts'.",
-                name: 'David K.', // PLACEHOLDER
-                title: 'Ops consultant',
-            },
-        },
         spotlight: 'analytics',
         defaultGoal: 'revenue-growth',
         defaultAudience: ['new-clients'],
     },
     'agency': {
         mirrorOpportunity: 'Scale a posting machine across clients without the manual grind.',
-        proof: {
-            stat: '10 hrs', // PLACEHOLDER
-            claim: 'Agencies save 10+ hrs/week managing client content here.', // PLACEHOLDER
-            testimonial: {
-                quote: 'We run 12 client accounts from one calendar.',
-                name: 'Lena M.', // PLACEHOLDER
-                title: 'Agency owner',
-            },
-        },
         spotlight: 'calendar',
         defaultGoal: 'company-awareness',
         defaultAudience: ['partners'],
     },
     'team-lead': {
         mirrorOpportunity: 'Lead in public - your team and your hires are watching.',
-        proof: {
-            stat: '2.5x', // PLACEHOLDER
-            claim: 'Team leads grow reach 2.5x and attract 2x more qualified applicants.', // PLACEHOLDER
-            testimonial: {
-                quote: 'Three of my best hires found me through these posts.',
-                name: 'Priya S.', // PLACEHOLDER
-                title: 'Eng director',
-            },
-        },
         spotlight: 'calendar',
         defaultGoal: 'employer-branding',
         defaultAudience: ['talents'],
     },
     'employee': {
         mirrorOpportunity: 'Stand out without spending hours - show your work, get noticed.',
-        proof: {
-            stat: '4x', // PLACEHOLDER
-            claim: 'Members posting weekly get 4x more profile views from recruiters.', // PLACEHOLDER
-            testimonial: {
-                quote: 'Two recruiters reached out in a month.',
-                name: 'Tom B.', // PLACEHOLDER
-                title: 'Product manager',
-            },
-        },
         spotlight: 'weekly-ideas',
         defaultGoal: 'career-opportunities',
         defaultAudience: ['potential-employers'],
     },
     'creator': {
         mirrorOpportunity: 'Compound your audience - formats that get saved and shared.',
-        proof: {
-            stat: '6x', // PLACEHOLDER
-            claim: 'Creators here grow followers 6x faster with carousel + hook tools.', // PLACEHOLDER
-            testimonial: {
-                quote: 'Went from 800 to 12k followers in 4 months.',
-                name: 'Aisha N.', // PLACEHOLDER
-                title: 'Creator',
-            },
-        },
         spotlight: 'carousels',
         defaultGoal: 'company-awareness',
         defaultAudience: ['new-clients'],
     },
 }
+
+// --- Real social proof (Proof screen) --------------------------------------
+// FILL THIS with real, consented, attributable testimonials, keyed by role.
+// Until a role has one, the Proof screen shows an honest, non-fabricated value
+// message (see proof-step.tsx). NEVER add invented names, quotes, or metrics -
+// they would render as real customer proof right before the paid offer.
+// Example shape:
+//   founder: { quote: 'Real quote.', name: 'Real Name', title: 'Founder, Acme', metric: 'Optional real result' },
+export const TESTIMONIALS: Partial<Record<Role, Testimonial>> = {}
 
 /** Role fallback when unknown (skipped LinkedIn + skipped role): creator/generalist (§3.1). */
 export const DEFAULT_ROLE: Role = 'creator'
@@ -284,14 +224,14 @@ export const SPOTLIGHT_CONTENT: Record<SpotlightFeature, SpotlightContent> = {
     'analytics': {
         icon: 'BarChart3',
         eyebrow: 'Analytics',
-        headline: 'See which posts actually drive profile views and DMs.',
+        headline: 'See which posts actually drive your profile views.',
         line: 'Know what to write next from your own numbers, not guesswork.',
     },
     'calendar': {
         icon: 'CalendarDays',
         eyebrow: 'Calendar & scheduling',
-        headline: 'Plan a month of posts in one sitting, auto-published.',
-        line: 'Set it once and your week runs itself - no daily scramble.',
+        headline: 'Plan a month of posts in one sitting.',
+        line: 'Schedule once and auto-publish when LinkedIn is connected - no daily scramble.',
     },
     'carousels': {
         icon: 'LayoutGrid',
@@ -301,9 +241,9 @@ export const SPOTLIGHT_CONTENT: Record<SpotlightFeature, SpotlightContent> = {
     },
     'weekly-ideas': {
         icon: 'Lightbulb',
-        eyebrow: 'Weekly AI ideas',
-        headline: 'Never wonder what to post - 5 ideas waiting every Monday.',
-        line: 'Fresh hooks tailored to your niche, ready to write.',
+        eyebrow: 'AI post ideas',
+        headline: 'Never wonder what to post - generate 5 fresh ideas anytime.',
+        line: 'Hooks tailored to your niche, ready to write whenever you are stuck.',
     },
 }
 
