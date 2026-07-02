@@ -4,6 +4,49 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-02 — Onboarding: progress/width polish, answer persistence, LinkedIn-URL error handling
+
+- **Progress bar** is now a thin full-bleed strip flush at the top of the content panel (reads as its
+  top border); removed the `Step N` / `%` meta row (`onboarding-modal.tsx`).
+- **Uniform step width:** one shared content width (`max-w-[520px]`, was 580) across all steps; removed
+  `connect-step`'s `max-w-[340px]` cap that made it narrower. `BrandStage` widened
+  (`clamp(320px,40%,520px) → clamp(340px,43%,540px)`) so the content panel is a touch smaller.
+- **Answer persistence / remount trap:** steps render inside `AnimatePresence mode='wait'`, so nav
+  remounts them and wipes local `useState`. Moved `welcome-step`'s selection into
+  `answers.welcomeSelections` and the mirror manual-fallback flag into `answers.mirrorManual` so
+  back-navigation restores state instead of resetting it.
+- **Pasted LinkedIn URL that can't be read** no longer drops silently onto the manual form: `mirror-step`
+  shows an explicit error ("We couldn't read that profile") with **Continue manually** / **Try a
+  different URL** when `hasUrl && lowConfidence && !mirrorManual`. `connect-step` clears
+  `enrichConfidence` (+`mirrorManual`) on URL submit so re-submits re-fetch; the controller drops
+  `profileUrl`+`enrichConfidence` on successful OAuth so a connected identity re-enriches. Reliable
+  production fetching needs `LINKEDIN_SCRAPE_API_URL` set to a residential-proxy HTML scraper
+  (e.g. ScrapingBee) — LinkedIn blocks datacenter IPs.
+- **Uniform question font:** promoted `goal-step`'s `Question` heading (19px) into `primitives.tsx` and
+  reused it in `voice-step` so its prompts match the other data steps (were 14px `FieldLabel`s).
+- type-check + lint (0 errors); verified via a multi-lens adversarial review.
+
+## 2026-06-30 — Onboarding: manual-flow overhaul + StrictMode loading-hang fix
+
+- **Fixed "Building your system" hanging forever** in dev. Root cause: React StrictMode runs an effect
+  setup→cleanup→setup; the old building/mirror effects set `cancelled=true` + cleared their failsafe on
+  cleanup, then early-returned on a `ranRef` in the second setup, so nothing re-armed the failsafe or
+  advanced. Reworked both `building-step.tsx` and the `mirror-step.tsx` enrich effect to `startedRef`
+  (guards the AI run once) + `advancedRef`/`settledRef` (idempotent commit) + a failsafe re-armed on
+  every mount, dropping the per-mount `cancelled` gating.
+- **Flow reorder:** inserted a new `reinforce` social-proof step after `mirror`, and moved `voice`
+  before `preview` so the first generated post reflects the chosen tone. New machine:
+  `welcome → connect → mirror → reinforce → goal → proof → voice → preview → spotlight → cadence → building → recap → offer → done`.
+- **Welcome** is now multi-select (Continue button; "Other" preserves seeded goals) and the "Skip setup"
+  escape was removed (plumbing deleted from context/modal/controller). **Connect** copy shortened.
+  **Mirror** manual form now collects name + role + niche (a `NICHE_OPTIONS` dropdown) and requires
+  them; voice/notes moved to the dedicated Voice step. **Goal** questions restyled to stand out, skip
+  removed. **Reinforce** shows a deterministic, fabricated-but-stable count (`socialProofCount`).
+- **Layout test:** brand image moved to the right (`max-md:flex-col-reverse`), content left-aligned,
+  setup-tick stepper removed from the brand stage; swapped the hazy welcome illustration for a crisp one.
+- New in `config/onboarding-personalization.ts`: `ROLE_LABELS`, `rolePlural`, `NICHE_OPTIONS`,
+  `socialProofCount`. type-check + lint (0 errors); build not run (dev server holds `.next`).
+
 ## 2026-06-22 — Analytics: split LinkedIn analytics onto a separate app (App B)
 
 - LinkedIn requires the **Community Management API to be the only product on an app**, so member post

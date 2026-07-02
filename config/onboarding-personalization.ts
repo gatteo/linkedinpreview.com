@@ -20,6 +20,59 @@ import type { ScheduleSlot, StrategyAudience, StrategyGoal } from '@/lib/strateg
 /** The 7 concrete roles (BrandingRole minus the empty default). */
 export type Role = Exclude<BrandingRole, ''>
 
+/** Human labels for each role, shared across the onboarding steps. */
+export const ROLE_LABELS: Record<Role, string> = {
+    'founder': 'Founder',
+    'freelancer': 'Freelancer',
+    'team-lead': 'Team lead',
+    'employee': 'Employee',
+    'creator': 'Creator',
+    'consultant': 'Consultant',
+    'agency': 'Agency owner',
+}
+
+/** Plural label for the social-proof reinforce screen ("3,200 Founders ..."). */
+export function rolePlural(role: Role): string {
+    return `${ROLE_LABELS[role]}s`
+}
+
+// --- Niche options (Mirror manual setup dropdown) --------------------------
+// A curated shortlist keeps the niche a single, consistent string (used as the
+// first-post topic and in the reinforce screen) instead of free-form typing.
+
+export const NICHE_OPTIONS: string[] = [
+    'B2B SaaS',
+    'Marketing & growth',
+    'Sales',
+    'Product management',
+    'Software engineering',
+    'Design & UX',
+    'Data & AI',
+    'Finance & fintech',
+    'HR & recruiting',
+    'Leadership & management',
+    'Startups & entrepreneurship',
+    'Consulting',
+    'E-commerce',
+    'Real estate',
+    'Healthcare',
+    'Coaching',
+    'Career development',
+    'Content creation',
+]
+
+// A deterministic "you're in good company" count for the reinforce screen.
+// Fake-but-stable: the same role + niche always yields the same number, so it
+// never looks like it shifts on a re-render. Never presented as a live metric.
+export function socialProofCount(role: Role, niche: string): number {
+    const seed = `${role}:${niche.trim().toLowerCase()}`
+    let h = 0
+    for (let i = 0; i < seed.length; i++) {
+        h = (h * 31 + seed.charCodeAt(i)) >>> 0
+    }
+    return 1400 + (h % 8200)
+}
+
 export type SpotlightFeature = 'analytics' | 'calendar' | 'carousels' | 'weekly-ideas'
 
 export type Testimonial = {

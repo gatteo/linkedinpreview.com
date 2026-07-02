@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
-import { FieldLabel, Pill } from '../primitives'
+import { Pill, Question } from '../primitives'
 
 export function VoiceStep() {
     const { answers, update } = useOnboarding()
@@ -21,10 +21,10 @@ export function VoiceStep() {
     }
 
     return (
-        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-[26px]'>
-            <motion.div variants={staggerItem} className='flex flex-col gap-3'>
-                <FieldLabel>Pick the voice that sounds most like you.</FieldLabel>
-                <div className='flex flex-wrap justify-center gap-2.5'>
+        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-9'>
+            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
+                <Question>Pick the voice that sounds most like you.</Question>
+                <div className='flex flex-wrap gap-2.5'>
                     {TONE_OPTIONS.map((option) => (
                         <Pill key={option.value} selected={tone === option.value} onClick={() => choose(option.value)}>
                             {option.label}
@@ -33,10 +33,11 @@ export function VoiceStep() {
                 </div>
             </motion.div>
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-[7px]'>
-                <FieldLabel>
-                    Anything we should avoid? <span className='text-muted-foreground font-normal'>(optional)</span>
-                </FieldLabel>
+            <motion.div variants={staggerItem} className='flex flex-col gap-2.5'>
+                <Question>
+                    Anything we should avoid?{' '}
+                    <span className='text-muted-foreground text-sm font-normal'>(optional)</span>
+                </Question>
                 <Input
                     value={answers.writingNotes ?? ''}
                     onChange={(e) => update({ writingNotes: e.target.value })}

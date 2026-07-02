@@ -22,6 +22,7 @@ import { OfferStep } from './steps/offer-step'
 import { PreviewStep } from './steps/preview-step'
 import { ProofStep } from './steps/proof-step'
 import { RecapStep } from './steps/recap-step'
+import { ReinforceStep } from './steps/reinforce-step'
 import { SpotlightStep } from './steps/spotlight-step'
 import { VoiceStep } from './steps/voice-step'
 import { WelcomeStep } from './steps/welcome-step'
@@ -35,10 +36,11 @@ const STEP_ORDER: StepId[] = [
     'welcome',
     'connect',
     'mirror',
+    'reinforce',
     'goal',
     'proof',
-    'preview',
     'voice',
+    'preview',
     'spotlight',
     'cadence',
     'building',
@@ -58,9 +60,11 @@ const FOOTER: Record<StepId, FooterConfig> = {
     welcome: { back: false, skip: null, primary: null },
     connect: { back: true, skip: 'data', primary: null },
     // Mirror owns its own forward button (rendered in the body) so it can't be
-    // confirmed while the "reading" spinner is still running.
+    // confirmed while the "reading" spinner is still running or before the
+    // manual form is complete.
     mirror: { back: true, skip: null, primary: null },
-    goal: { back: true, skip: 'data', primary: 'Continue' },
+    reinforce: { back: true, skip: null, primary: 'Continue' },
+    goal: { back: true, skip: null, primary: 'Continue' },
     proof: { back: true, skip: null, primary: 'Continue' },
     preview: { back: true, skip: null, primary: 'Continue' },
     voice: { back: true, skip: 'data', primary: 'Continue' },
@@ -86,7 +90,6 @@ type OnboardingModalProps = {
     onPersist: (answers: OnboardingAnswers, step: StepId) => void
     onFinish: (answers: OnboardingAnswers, converted: boolean) => void
     onComplete: () => void
-    onSkipSetup: () => void
     onConnectLinkedin: (answers: OnboardingAnswers) => void
 }
 
@@ -98,7 +101,6 @@ export function OnboardingModal({
     onPersist,
     onFinish,
     onComplete,
-    onSkipSetup,
     onConnectLinkedin,
 }: OnboardingModalProps) {
     const [answers, setAnswers] = React.useState(initialAnswers)
@@ -143,7 +145,6 @@ export function OnboardingModal({
         [answers, onFinish, goTo],
     )
 
-    const skipSetup = React.useCallback(() => onSkipSetup(), [onSkipSetup])
     const connectLinkedin = React.useCallback(() => onConnectLinkedin(answers), [answers, onConnectLinkedin])
 
     // Incremental persistence: stash answers + current step after each change so a
@@ -168,7 +169,6 @@ export function OnboardingModal({
             goTo,
             finishOffer,
             complete: onComplete,
-            skipSetup,
             connectLinkedin,
             linkedinError,
             converted,
@@ -182,7 +182,6 @@ export function OnboardingModal({
             goTo,
             finishOffer,
             onComplete,
-            skipSetup,
             connectLinkedin,
             linkedinError,
             converted,
@@ -203,8 +202,6 @@ export function OnboardingModal({
 
     const dataDone = DATA_STEPS.filter((s) => STEP_ORDER.indexOf(s) < index).length
     const progress = (dataDone / DATA_STEPS.length) * 100
-    const isData = DATA_STEPS.includes(step)
-    const metaLabel = isData ? `Step ${dataDone + 1}` : 'Your tailored setup'
 
     return (
         <Dialog open={open}>
@@ -222,37 +219,25 @@ export function OnboardingModal({
                         A short, personalized setup for your LinkedIn content.
                     </DialogDescription>
 
-                    <div className='flex h-full overflow-hidden max-md:flex-col'>
-                        <BrandStage step={step} dataDone={dataDone} total={DATA_STEPS.length} />
-
+                    {/* Image lives on the right on desktop; on mobile flex-col-reverse
+                        floats it back up to the top. */}
+                    <div className='flex h-full overflow-hidden max-md:flex-col-reverse'>
                         {/* Content column */}
                         <div
                             className='grain bg-background relative flex min-w-0 flex-1 flex-col'
                             style={{ '--grain-opacity': 0.05 } as React.CSSProperties}>
-                            {/* Top: meta + progress */}
-                            <div className='shrink-0 px-[clamp(20px,4vw,56px)] pt-[clamp(18px,2.4vw,26px)]'>
-                                <div className='mb-3 flex items-center justify-between pr-8'>
-                                    <span className='text-muted-foreground font-mono text-[11px] font-medium tracking-[0.1em] whitespace-nowrap uppercase'>
-                                        {metaLabel}
-                                    </span>
-                                    {step !== 'welcome' && (
-                                        <span className='text-muted-foreground font-mono text-[11px]'>
-                                            {Math.round(progress)}%
-                                        </span>
-                                    )}
-                                </div>
-                                <div className='bg-muted h-1 w-full overflow-hidden rounded-full'>
-                                    <motion.div
-                                        className='bg-primary h-full rounded-full'
-                                        animate={{ width: `${progress}%` }}
-                                        transition={{ duration: 0.45, ease: EASE_OUT }}
-                                    />
-                                </div>
+                            {/* Progress: a thin full-bleed bar reading as the panel's top border. */}
+                            <div className='bg-muted h-1 w-full shrink-0 overflow-hidden'>
+                                <motion.div
+                                    className='bg-primary h-full'
+                                    animate={{ width: `${progress}%` }}
+                                    transition={{ duration: 0.45, ease: EASE_OUT }}
+                                />
                             </div>
 
                             {/* Body - vertically centered when short */}
                             <div className='flex flex-1 flex-col overflow-y-auto'>
-                                <div className='m-auto w-full max-w-[580px] px-[clamp(20px,4vw,56px)] py-[clamp(24px,3vw,40px)]'>
+                                <div className='m-auto w-full max-w-[520px] px-[clamp(20px,4vw,56px)] py-[clamp(24px,3vw,40px)]'>
                                     <OnboardingProvider value={ctxValue}>
                                         <AnimatePresence mode='wait' custom={direction} initial={false}>
                                             <motion.div
@@ -312,6 +297,8 @@ export function OnboardingModal({
                                 </div>
                             )}
                         </div>
+
+                        <BrandStage step={step} />
                     </div>
                 </MotionConfig>
             </DialogContent>
@@ -331,6 +318,8 @@ function StepBody({ step }: { step: StepId }) {
             return <ConnectStep />
         case 'mirror':
             return <MirrorStep />
+        case 'reinforce':
+            return <ReinforceStep />
         case 'goal':
             return <GoalStep />
         case 'proof':

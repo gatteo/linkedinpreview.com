@@ -5,7 +5,6 @@ import LogoImage from '@/public/images/logo-rounded-rectangle.png'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { EASE_OUT } from '@/lib/motion'
-import { cn } from '@/lib/utils'
 
 import type { StepId } from './types'
 
@@ -22,11 +21,11 @@ type Stage = { img: string; eyebrow: string; title: string; sub: string; focus: 
 
 const STAGE: Record<StepId, Stage> = {
     welcome: {
-        img: 'valley-fog.jpg',
+        img: 'coastal-cypress.jpg',
         eyebrow: 'Welcome',
-        title: 'Stand out.\nBe the orange tree.',
+        title: 'Stand out\nwhere it counts.',
         sub: 'Two minutes to a LinkedIn that finally works for you.',
-        focus: '50% 60%',
+        focus: '50% 50%',
     },
     connect: {
         img: 'lighthouse.jpg',
@@ -36,11 +35,18 @@ const STAGE: Record<StepId, Stage> = {
         focus: '60% 50%',
     },
     mirror: {
-        img: 'coastal-cypress.jpg',
+        img: 'valley-fog.jpg',
         eyebrow: 'First look',
         title: 'A starting point,\nshaped to you.',
         sub: 'Your niche, voice, and audience - ready for you to fine-tune.',
-        focus: '40% 50%',
+        focus: '50% 60%',
+    },
+    reinforce: {
+        img: 'tuscan-hills.jpg',
+        eyebrow: 'In good company',
+        title: "You're not\ndoing this alone.",
+        sub: 'Thousands in your space are growing the same way.',
+        focus: '50% 55%',
     },
     goal: {
         img: 'rolling-hills-wide.jpg',
@@ -114,11 +120,11 @@ const STAGE: Record<StepId, Stage> = {
     },
 }
 
-export function BrandStage({ step, dataDone, total }: { step: StepId; dataDone: number; total: number }) {
+export function BrandStage({ step }: { step: StepId }) {
     const s = STAGE[step] ?? STAGE.welcome
 
     return (
-        <div className='bg-petrol-900 relative w-[clamp(320px,40%,520px)] shrink-0 overflow-hidden max-md:h-[168px] max-md:w-full'>
+        <div className='bg-petrol-900 relative w-[clamp(340px,43%,540px)] shrink-0 overflow-hidden max-md:h-[168px] max-md:w-full'>
             {/* Crossfading illustration */}
             <AnimatePresence initial={false}>
                 <motion.div
@@ -153,25 +159,14 @@ export function BrandStage({ step, dataDone, total }: { step: StepId; dataDone: 
                 style={{ 'position': 'absolute', 'inset': 0, '--grain-opacity': 0.22 } as React.CSSProperties}
             />
 
-            {/* Top: logo + setup ticks */}
-            <div className='absolute inset-x-0 top-0 flex items-center justify-between p-[clamp(20px,3vw,32px)]'>
+            {/* Top: logo */}
+            <div className='absolute inset-x-0 top-0 flex items-center p-[clamp(20px,3vw,32px)]'>
                 <span className='inline-flex items-center gap-2.5'>
                     <Image src={LogoImage} alt='' width={28} height={28} className='rounded-lg' placeholder='blur' />
                     <span className='text-[15px] font-semibold tracking-tight text-[oklch(0.98_0.01_90)]'>
                         LinkedInPreview
                     </span>
                 </span>
-                <div className='flex gap-1.5 max-md:hidden'>
-                    {Array.from({ length: total }).map((_, i) => (
-                        <span
-                            key={i}
-                            className={cn(
-                                'h-[5px] rounded-full transition-all duration-300',
-                                i < dataDone ? 'bg-primary w-[22px]' : 'w-4 bg-[oklch(1_0_0_/_0.32)]',
-                            )}
-                        />
-                    ))}
-                </div>
             </div>
 
             {/* Bottom: editorial caption */}

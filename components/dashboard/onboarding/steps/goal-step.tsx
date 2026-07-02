@@ -7,7 +7,7 @@ import { STRATEGY_AUDIENCES, STRATEGY_GOALS, type StrategyAudience, type Strateg
 
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
-import { FieldLabel, Pill } from '../primitives'
+import { Pill, Question } from '../primitives'
 
 const MAX_AUDIENCE = 3
 
@@ -24,10 +24,10 @@ export function GoalStep() {
     }
 
     return (
-        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-[26px]'>
-            <motion.div variants={staggerItem} className='flex flex-col gap-3'>
-                <FieldLabel>What does winning look like for you?</FieldLabel>
-                <div className='flex flex-wrap justify-center gap-2.5'>
+        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-9'>
+            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
+                <Question>What does winning look like for you?</Question>
+                <div className='flex flex-wrap gap-2.5'>
                     {STRATEGY_GOALS.map((goal) => (
                         <Pill
                             key={goal.value}
@@ -40,11 +40,12 @@ export function GoalStep() {
                 </div>
             </motion.div>
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-3'>
-                <FieldLabel>
-                    Who are you writing for? <span className='text-muted-foreground font-normal'>(up to 3)</span>
-                </FieldLabel>
-                <div className='flex flex-wrap justify-center gap-2.5'>
+            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
+                <Question>
+                    Who are you writing for?{' '}
+                    <span className='text-muted-foreground text-sm font-normal'>(up to 3)</span>
+                </Question>
+                <div className='flex flex-wrap gap-2.5'>
                     {STRATEGY_AUDIENCES.map((audience) => {
                         const selected = answers.audience.includes(audience.value)
                         const disabled = !selected && answers.audience.length >= MAX_AUDIENCE

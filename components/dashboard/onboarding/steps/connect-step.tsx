@@ -70,7 +70,10 @@ export function ConnectStep() {
             return
         }
         setUrlError(false)
-        update({ profileUrl: trimmed })
+        // Clear any prior enrichment + manual choice so the Mirror re-fetches this
+        // URL from scratch (otherwise a stored low-confidence result short-circuits
+        // the re-read and the user is stuck on the last failure).
+        update({ profileUrl: trimmed, enrichConfidence: undefined, mirrorManual: false })
         track('onb_connect_method', { method: 'url' })
         goNext()
     }
@@ -81,32 +84,25 @@ export function ConnectStep() {
     }
 
     return (
-        <motion.div
-            variants={staggerContainer}
-            initial='hidden'
-            animate='visible'
-            className='flex flex-col items-center gap-5 text-center'>
+        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-5'>
             <motion.div
                 variants={fadeUp}
                 className='bg-primary/10 text-primary flex size-14 items-center justify-center rounded-2xl'>
                 <LinkedinIcon className='size-7' />
             </motion.div>
-            <motion.div variants={staggerItem} className='flex max-w-[400px] flex-col gap-1.5'>
+            <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
                 <H2 className='text-xl'>
                     Make your setup about <span className='italic'>you</span>.
                 </H2>
-                <Sub className='mx-auto max-w-[390px]'>
-                    Connect to import your name and photo, or paste your public profile URL and we&apos;ll read what we
-                    can - your headline and recent posts - to tailor everything.
-                </Sub>
+                <Sub>Import your name and photo, or paste your public profile to tailor everything.</Sub>
             </motion.div>
 
-            <motion.div variants={staggerItem} className='flex w-full max-w-[320px] flex-col gap-3'>
+            <motion.div variants={staggerItem} className='flex w-full flex-col gap-3'>
                 <Button onClick={connect} size='lg' className='h-11 w-full text-[15px]'>
                     <LinkedinIcon className='size-[17px]' />
                     Connect LinkedIn
                 </Button>
-                <p className='text-muted-foreground flex items-center justify-center gap-1.5 text-xs'>
+                <p className='text-muted-foreground flex items-center gap-1.5 text-xs'>
                     <ShieldCheckIcon className='size-3.5' />
                     Official LinkedIn login
                 </p>
@@ -119,27 +115,23 @@ export function ConnectStep() {
                     <span className='bg-border h-px flex-1' />
                 </div>
 
-                <div className='flex flex-col gap-2 text-left'>
-                    <p className='text-foreground text-[13px] font-medium'>Paste your profile URL</p>
+                <div className='flex flex-col gap-2'>
                     <Input
                         value={url}
                         onChange={(e) => {
                             setUrl(e.target.value)
                             if (urlError) setUrlError(false)
                         }}
-                        placeholder='linkedin.com/in/your-name'
+                        placeholder='Paste your profile URL'
+                        aria-label='Your LinkedIn profile URL'
                         aria-invalid={urlError}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') submitUrl()
                         }}
                     />
-                    {urlError ? (
+                    {urlError && (
                         <p className='text-destructive text-xs'>
-                            That doesn&apos;t look like a profile URL. It should look like linkedin.com/in/your-name.
-                        </p>
-                    ) : (
-                        <p className='text-muted-foreground text-xs'>
-                            If your profile is public, we&apos;ll read your headline, About, and recent posts.
+                            That doesn&apos;t look like a profile URL - try linkedin.com/in/your-name.
                         </p>
                     )}
                     <Button variant='secondary' onClick={submitUrl} disabled={!url.trim()} className='w-full'>

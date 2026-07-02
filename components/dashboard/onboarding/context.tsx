@@ -27,8 +27,6 @@ export type OnboardingContextValue = {
     finishOffer: (converted: boolean) => void
     /** Done screen handoff: close the modal and open the first post. */
     complete: () => void
-    /** Welcome "Skip setup": mark onboarded with defaults, drop to free dashboard. */
-    skipSetup: () => void
     connectLinkedin: () => void
     linkedinError?: string | null
     /** Whether the user converted (set when leaving the offer); drives the done screen. */

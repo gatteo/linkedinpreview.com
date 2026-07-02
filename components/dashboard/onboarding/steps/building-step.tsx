@@ -63,14 +63,12 @@ export function BuildingStep() {
     const { answers, update, goNext } = useOnboarding()
     const [done, setDone] = React.useState<Set<TaskId>>(new Set())
     const [active, setActive] = React.useState<TaskId | null>(null)
-    const ranRef = React.useRef(false)
+    // Both refs survive a StrictMode setup/cleanup/setup cycle: startedRef keeps
+    // the AI calls from firing twice, advancedRef keeps us advancing exactly once.
+    const startedRef = React.useRef(false)
+    const advancedRef = React.useRef(false)
 
     React.useEffect(() => {
-        if (ranRef.current) return
-        ranRef.current = true
-
-        let cancelled = false
-        let advanced = false
         const mark = (id: TaskId) =>
             setDone((prev) => {
                 const next = new Set(prev)
@@ -84,15 +82,21 @@ export function BuildingStep() {
               ? [answers.niche]
               : []
 
-        // Advance exactly once. A failsafe timeout guarantees we never trap the
-        // user on this footerless, non-dismissable step if the network hangs.
+        // Idempotent: whichever reaches here first (the run, its catch, or the
+        // failsafe) advances once. We deliberately don't gate the work on a
+        // per-mount "cancelled" flag - in StrictMode the cleanup would set it and
+        // the second setup would early-return on startedRef, stranding the user on
+        // this footerless step forever (the reported "stuck loading" bug).
         const advance = (positioning: string, formats: StrategyFormat[]) => {
-            if (advanced || cancelled) return
-            advanced = true
+            if (advancedRef.current) return
+            advancedRef.current = true
             update({ positioning, formats, topics: effectiveTopics })
             track('onb_building_done')
             goNext()
         }
+
+        // Re-armed on every mount so a StrictMode remount (which cleared the prior
+        // timer) always has a live failsafe.
         const failsafe = setTimeout(() => advance('', []), 15000)
 
         async function run() {
@@ -107,19 +111,16 @@ export function BuildingStep() {
 
             setActive('read')
             await wait(700)
-            if (cancelled) return
             mark('read')
 
             setActive('positioning')
             const positioningP = (canGenerate ? generatePositioning(body) : Promise.resolve('')).then((v) => {
-                if (!cancelled) {
-                    mark('positioning')
-                    setActive('formats')
-                }
+                mark('positioning')
+                setActive('formats')
                 return v
             })
             const formatsP = (canGenerate ? generateFormats(body) : Promise.resolve<StrategyFormat[]>([])).then((v) => {
-                if (!cancelled) mark('formats')
+                mark('formats')
                 return v
             })
 
@@ -127,33 +128,30 @@ export function BuildingStep() {
                 r[0],
                 r[1],
             ])
-            if (cancelled) return
 
             setActive('ideas')
             await wait(800)
-            if (cancelled) return
             mark('ideas')
 
             setActive('calendar')
             await wait(650)
-            if (cancelled) return
             mark('calendar')
 
             setActive('assemble')
             await wait(600)
-            if (cancelled) return
             mark('assemble')
             await wait(450)
-            if (cancelled) return
 
             advance(positioning as string, formats as StrategyFormat[])
         }
 
-        run().catch(() => advance('', []))
-        return () => {
-            cancelled = true
-            clearTimeout(failsafe)
+        // Start the work (and its AI calls) exactly once across StrictMode remounts.
+        if (!startedRef.current) {
+            startedRef.current = true
+            run().catch(() => advance('', []))
         }
+
+        return () => clearTimeout(failsafe)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

@@ -18,6 +18,7 @@ export type StepId =
     | 'welcome'
     | 'connect'
     | 'mirror'
+    | 'reinforce'
     | 'goal'
     | 'proof'
     | 'preview'
@@ -44,6 +45,9 @@ export type OnboardingAnswers = {
     linkedinConnected: boolean
 
     // --- Conversion-redesign additions (§5.1) ---
+    /** Raw Welcome option keys the user picked, kept so back-navigation restores
+     *  the selection (goals are lossy - many options map to one goal). */
+    welcomeSelections?: string[]
     /** Motivation seed from Welcome; the primary goal that re-skins offer/recap. */
     primaryGoal?: StrategyGoal
     /** Pasted profile URL when the user doesn't OAuth (enrichment context only). */
@@ -56,6 +60,9 @@ export type OnboardingAnswers = {
     opportunityLine?: string
     /** Confidence (0-1) the enrichment returned; gates the "guessed" Mirror UI. */
     enrichConfidence?: number
+    /** Sticky "I'll enter it by hand" choice on the Mirror after a URL fetch fails,
+     *  so a remount / Back-nav doesn't re-show the error over the finished form. */
+    mirrorManual?: boolean
     /** The first post text kept in state for the Voice/Recap screens. */
     firstPostText?: string
     /** Posting cadence commitment (maps to frequency + schedule). */

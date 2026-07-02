@@ -103,17 +103,22 @@ The flow is a state machine, same architectural pattern as the current `onboardi
 (direction-aware slide transitions, progress indicator, per-step skip). It runs in the existing
 non-dismissable modal on first dashboard visit.
 
-**Step IDs (new machine):**
-`welcome → connect → mirror → goal → proof → preview → voice → spotlight → cadence → building → recap → offer → (done | free-fallback)`
+**Step IDs (current machine):**
+`welcome → connect → mirror → reinforce → goal → proof → voice → preview → spotlight → cadence → building → recap → offer → done`
 
-A persistent slim **progress bar** runs across the top. Milestone/value screens (mirror, proof,
-preview, spotlight, building, recap, offer) do **not** advance the bar the way data steps do - they
-read as rewards, not work. Show "~2 minutes" once, on Welcome, and never show a discouraging
+Two ordering decisions worth calling out: a `reinforce` social-proof beat sits right after `mirror`
+(once role + niche are pinned), and `voice` runs **before** `preview` so the first generated post
+already reflects the tone the user just chose.
+
+A persistent slim **progress bar** runs across the top. Milestone/value screens (mirror, reinforce,
+proof, preview, spotlight, building, recap, offer) do **not** advance the bar the way data steps do -
+they read as rewards, not work. Show "~2 minutes" once, on Welcome, and never show a discouraging
 "Step 9 of 13."
 
-> **Skip behavior:** data steps carry a quiet "Skip for now." Value/preview steps carry "Continue."
-> Welcome carries one low-emphasis "Skip setup." Skipping any data step still routes through the
-> remaining value beats using whatever data we have (including role/goal inferred from LinkedIn).
+> **Skip behavior:** the remaining data steps (connect, voice) carry a quiet "Skip for now."
+> Value/preview steps carry "Continue." Welcome no longer has a "Skip setup" escape - the modal is
+> non-dismissable and the only exit is the offer's "Continue on the free plan." Skipping a data step
+> still routes through the remaining value beats using whatever data we have.
 
 ---
 
@@ -128,7 +133,7 @@ No text inputs. No "connect" yet.
 
 - Headline: **"Let's turn your LinkedIn into your #1 growth channel."**
 - Sub: "Two minutes. We'll set up your voice, your strategy, and your first week of posts - personalized to you."
-- Question: **"What are you here to do?"** (single select, this is the motivation seed → maps to a primary goal)
+- Question: **"What are you here to do?"** (multi-select - "pick all that apply" - this is the motivation seed → goals[], primaryGoal = first)
 
 **Options (map to existing `StrategyGoal`s):**
 
@@ -140,9 +145,9 @@ No text inputs. No "connect" yet.
 | "Find career opportunities"           | `career-opportunities`                     | audience `potential-employers` |
 | "Hire / employer branding"            | `employer-branding`                        | audience `talents`             |
 
-**Writes:** `answers.primaryGoal`, provisional `answers.audience[]`.
-**CTA:** selecting an option auto-advances (no separate Next button - momentum).
-**Skip:** "Skip setup" (low emphasis, bottom). Marks onboarding done with defaults → free dashboard.
+**Writes:** `answers.goals[]`, `answers.primaryGoal` (first selected), provisional `answers.audience[]` (union, capped at 3).
+**CTA:** multi-select, then a "Continue" button (enabled once ≥1 is chosen). An "Other / I'm not sure yet" option preserves any pre-seeded goals rather than overwriting them.
+**Skip:** none. The "Skip setup" escape was removed - the only exit is the offer's free-plan continue.
 
 ---
 
@@ -550,8 +555,8 @@ schedule, formats). **New:** persist the first-post draft so it survives into th
 ### 5.3 Analytics (PostHog - already wired)
 
 Fire one event per screen enter + key action, so the funnel is tunable:
-`onb_welcome_view`, `onb_motivation_select{goal}`, `onb_connect_view`, `onb_connect_method{oauth|url|manual}`,
-`onb_mirror_view`, `onb_mirror_edit{field}`, `onb_goal_confirm`, `onb_proof_view{role}`,
+`onb_welcome_view`, `onb_motivation_select{goal,goals,count}` (now multi-select: `goal` = first chosen, kept for funnel continuity), `onb_connect_view`, `onb_connect_method{oauth|url|manual}`,
+`onb_mirror_view`, `onb_mirror_edit{field}`, `onb_reinforce_view{role,niche}`, `onb_goal_confirm`, `onb_proof_view{role}`,
 `onb_preview_view`, `onb_preview_regenerate`, `onb_voice_set{tone}`, `onb_spotlight_view{feature}`,
 `onb_cadence_select{cadence}`, `onb_building_done`, `onb_recap_view`,
 `onb_offer_view`, `onb_offer_select{lifetime|monthly}`, `onb_offer_decline`, `onb_purchase_success{plan}`,
@@ -632,17 +637,17 @@ all Pro power features forever + metered AI).
 
 ## 8. Edge cases & failure handling
 
-| Case                                | Behavior                                                                                                                       |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| User skips LinkedIn + role          | Default to creator/generalist branch, personalize off Welcome goal. Mirror screen shows role selector inline.                  |
-| Enrichment AI fails/low confidence  | Skip the "guessed" mirror; show editable role/niche selectors with friendly copy. Never show an error.                         |
-| First-post AI fails                 | Render per-role `«template post»`. Wow moment must never break.                                                                |
-| OAuth round-trip / refresh mid-flow | Rehydrate from incremental `localStorage` (§5.1) - no lost progress, no re-spent AI.                                           |
-| Returning/existing user             | Existing backfill logic (feature 068 AC-2) still applies - never re-onboard someone who has strategy/role.                     |
-| Offer declined                      | Free dashboard, pre-filled, first draft open; contextual re-prompts later.                                                     |
-| Very fast/impatient user            | "Skip setup" on Welcome → defaults + free dashboard, no AI spend.                                                              |
-| AI cost abuse                       | Onboarding AI runs once per user; gate behind the one-time `onboardedAt` and a separate onboarding bucket.                     |
-| Mobile (375px)                      | Every screen must work at 375px (product success criterion). Single-column, large tap targets, no hover-dependent affordances. |
+| Case                                | Behavior                                                                                                                                                                                                                         |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| User skips LinkedIn + role          | Default to creator/generalist branch, personalize off Welcome goal. Mirror screen shows role selector inline.                                                                                                                    |
+| Enrichment AI fails/low confidence  | Skip the "guessed" mirror; show editable role/niche selectors with friendly copy. Never show an error.                                                                                                                           |
+| First-post AI fails                 | Render per-role `«template post»`. Wow moment must never break.                                                                                                                                                                  |
+| OAuth round-trip / refresh mid-flow | Rehydrate from incremental `localStorage` (§5.1) - no lost progress, no re-spent AI.                                                                                                                                             |
+| Returning/existing user             | Existing backfill logic (feature 068 AC-2) still applies - never re-onboard someone who has strategy/role.                                                                                                                       |
+| Offer declined                      | Free dashboard, pre-filled, first draft open; contextual re-prompts later.                                                                                                                                                       |
+| Very fast/impatient user            | No Welcome skip anymore. They can "Skip for now" on data steps but still traverse the value beats (which spend AI) before declining at the offer. Trade-off accepted to keep the funnel intact - revisit if drop-off/cost rises. |
+| AI cost abuse                       | Onboarding AI runs once per user; gate behind the one-time `onboardedAt` and a separate onboarding bucket.                                                                                                                       |
+| Mobile (375px)                      | Every screen must work at 375px (product success criterion). Single-column, large tap targets, no hover-dependent affordances.                                                                                                   |
 
 ---
 

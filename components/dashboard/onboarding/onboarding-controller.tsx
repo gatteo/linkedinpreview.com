@@ -84,6 +84,10 @@ export function OnboardingController() {
                     avatarUrl: saved.answers.profile.avatarUrl || branding.profile.avatarUrl,
                 },
                 linkedinConnected: connected || saved.answers.linkedinConnected,
+                // A successful OAuth supersedes a half-finished URL attempt: drop the
+                // pasted URL + its stale enrichment so the Mirror re-reads the
+                // connected identity instead of replaying the URL-fetch failure.
+                ...(connected ? { profileUrl: undefined, enrichConfidence: undefined } : {}),
             })
             if (connected) {
                 setStartStepId('mirror')
@@ -210,12 +214,6 @@ export function OnboardingController() {
         router.push(id ? Routes.DashboardEditor(id) : Routes.Dashboard)
     }, [router])
 
-    const handleSkipSetup = React.useCallback(() => {
-        updateBranding({ meta: { onboardedAt: new Date().toISOString() } })
-        clearOnboarding()
-        setOpen(false)
-    }, [updateBranding])
-
     const handleConnectLinkedin = React.useCallback((answers: OnboardingAnswers) => {
         persistOnboarding(answers, 'connect')
         window.location.href = '/api/linkedin/auth'
@@ -232,7 +230,6 @@ export function OnboardingController() {
             onPersist={handlePersist}
             onFinish={handleFinish}
             onComplete={handleComplete}
-            onSkipSetup={handleSkipSetup}
             onConnectLinkedin={handleConnectLinkedin}
         />
     )

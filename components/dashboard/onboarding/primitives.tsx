@@ -40,6 +40,20 @@ export function FieldLabel({ children, className }: { children: React.ReactNode;
     return <p className={cn('text-foreground text-sm font-medium', className)}>{children}</p>
 }
 
+// A step prompt - larger than FieldLabel so a question reads as a question, not a
+// form label. Shared so every data step (goal, voice, ...) asks in one voice.
+export function Question({ children, className }: { children: React.ReactNode; className?: string }) {
+    return (
+        <h3
+            className={cn(
+                'font-heading text-foreground text-[19px] leading-snug font-semibold tracking-tight text-balance',
+                className,
+            )}>
+            {children}
+        </h3>
+    )
+}
+
 // Round selectable chip (goals / audience / tone / role).
 export function Pill({
     selected,

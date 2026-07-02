@@ -2,29 +2,27 @@
 
 import * as React from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { PencilIcon } from 'lucide-react'
+import { PencilIcon, TriangleAlertIcon } from 'lucide-react'
 
 import { TONE_OPTIONS, type Tone } from '@/config/ai'
-import { getRoleContent, resolveRole, toneFromSummary, type Role } from '@/config/onboarding-personalization'
+import {
+    getRoleContent,
+    NICHE_OPTIONS,
+    resolveRole,
+    ROLE_LABELS,
+    toneFromSummary,
+    type Role,
+} from '@/config/onboarding-personalization'
 import { EASE_OUT, fadeUp, staggerContainer, staggerItem } from '@/lib/motion'
 import { STRATEGY_AUDIENCES, STRATEGY_GOALS, type StrategyAudience, type StrategyGoal } from '@/lib/strategy'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import { enrichProfile, track } from '../ai'
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
 import { FieldLabel, H2, Pill, Spinner, Sub } from '../primitives'
-
-const ROLE_LABELS: Record<Role, string> = {
-    'founder': 'Founder',
-    'freelancer': 'Freelancer',
-    'team-lead': 'Team lead',
-    'employee': 'Employee',
-    'creator': 'Creator',
-    'consultant': 'Consultant',
-    'agency': 'Agency owner',
-}
 
 const ROLES = Object.keys(ROLE_LABELS) as Role[]
 
@@ -45,7 +43,7 @@ const goalLabel = (value: StrategyGoal | undefined): string =>
     STRATEGY_GOALS.find((g) => g.value === value)?.label ?? ''
 
 export function MirrorStep() {
-    const { answers, update, goNext } = useOnboarding()
+    const { answers, update, goNext, goBack } = useOnboarding()
     // We only have something real to read when a profile URL was pasted (we fetch
     // it) or LinkedIn is connected (name + photo). With neither, this is the
     // manual path - skip the "reading" theater entirely (see Bug A).
@@ -55,30 +53,36 @@ export function MirrorStep() {
         answers.enrichConfidence !== undefined || !hasSignal ? 'ready' : 'reading',
     )
     const [editing, setEditing] = React.useState<Field>(null)
-    const ranRef = React.useRef(false)
+    // Sticky in answers (not local state) so a remount / Back-nav after the user
+    // already chose to enter details by hand doesn't re-show the error over their
+    // finished form - the same remount-persistence trap the welcome step hit.
+    const manualOverride = answers.mirrorManual ?? false
+    // Both refs survive a StrictMode setup/cleanup/setup cycle: startedRef keeps
+    // the enrich call from firing twice, settledRef keeps us committing once.
+    const startedRef = React.useRef(false)
+    const settledRef = React.useRef(false)
 
     React.useEffect(() => {
-        if (ranRef.current || answers.enrichConfidence !== undefined) return
-        ranRef.current = true
-        track('onb_mirror_view')
+        // Already enriched (e.g. a refresh-resume): nothing to do.
+        if (answers.enrichConfidence !== undefined) return
 
         // Manual path: nothing to read. Mark low confidence so the render shows
         // the manual form, with no fake animation and no wasted AI call.
         if (!hasSignal) {
-            update({ enrichConfidence: 0 })
+            if (!settledRef.current) {
+                settledRef.current = true
+                update({ enrichConfidence: 0 })
+            }
             return
         }
 
-        let cancelled = false
-        let settled = false
-        let failsafe: ReturnType<typeof setTimeout>
-        const minTheater = new Promise((r) => setTimeout(r, 2000))
-
         // Commit the enrichment exactly once - whether it resolves, returns null,
-        // or the failsafe fires - so we never trap the user on this loading screen.
+        // or the failsafe fires. Unlike a per-mount "cancelled" flag, settledRef +
+        // a per-mount failsafe survive a StrictMode remount, so the user is never
+        // stranded on the reading screen (mirror's version of the building hang).
         const finish = (result: Awaited<ReturnType<typeof enrichProfile>>) => {
-            if (cancelled || settled) return
-            settled = true
+            if (settledRef.current) return
+            settledRef.current = true
             clearTimeout(failsafe)
             const role = resolveRole(result?.role)
             const primaryAudience = result?.primaryAudience
@@ -109,22 +113,26 @@ export function MirrorStep() {
 
         // Failsafe: sits just past the client enrich timeout (22s) so a real
         // result is always preferred; only a call that never settles hits this.
-        failsafe = setTimeout(() => finish(null), 24000)
+        // Re-armed every mount so a StrictMode remount can't leave us without one.
+        const failsafe = setTimeout(() => finish(null), 24000)
 
-        Promise.all([
-            enrichProfile({
-                name: answers.profile.name || undefined,
-                headline: answers.profile.headline || undefined,
-                profileUrl: answers.profileUrl || undefined,
-                welcomeGoal: answers.primaryGoal,
-            }),
-            minTheater,
-        ]).then(([result]) => finish(result))
-
-        return () => {
-            cancelled = true
-            clearTimeout(failsafe)
+        // Fire the enrich + minimum-theater wait exactly once across remounts.
+        if (!startedRef.current) {
+            startedRef.current = true
+            track('onb_mirror_view')
+            const minTheater = new Promise((r) => setTimeout(r, 2000))
+            Promise.all([
+                enrichProfile({
+                    name: answers.profile.name || undefined,
+                    headline: answers.profile.headline || undefined,
+                    profileUrl: answers.profileUrl || undefined,
+                    welcomeGoal: answers.primaryGoal,
+                }),
+                minTheater,
+            ]).then(([result]) => finish(result))
         }
+
+        return () => clearTimeout(failsafe)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -157,30 +165,84 @@ export function MirrorStep() {
     const setPrimaryAudience = (value: StrategyAudience) =>
         update({ audience: [value, ...answers.audience.filter((a) => a !== value)].slice(0, MAX_AUDIENCE) })
 
+    // A pasted profile URL that we couldn't read (LinkedIn blocks datacenter IPs
+    // when no scrape API is configured). Own the failure with an explicit error +
+    // a manual fallback, instead of silently dropping onto the "tell us" form.
+    if (hasUrl && lowConfidence && !manualOverride) {
+        return (
+            <div className='flex flex-col items-center gap-5 py-4 text-center'>
+                <div className='bg-destructive/10 text-destructive flex size-14 items-center justify-center rounded-2xl'>
+                    <TriangleAlertIcon className='size-7' />
+                </div>
+                <div className='flex flex-col gap-1.5'>
+                    <H2 className='text-xl'>We couldn&apos;t read that profile</H2>
+                    <Sub>
+                        LinkedIn blocked the request, so we couldn&apos;t pull your details automatically. You can add
+                        them yourself in a few taps.
+                    </Sub>
+                </div>
+                <div className='flex w-full max-w-[320px] flex-col gap-2.5'>
+                    <Button
+                        onClick={() => {
+                            track('onb_mirror_fetch_failed', { action: 'manual' })
+                            update({ mirrorManual: true })
+                        }}
+                        className='w-full'>
+                        Continue manually
+                    </Button>
+                    <Button variant='ghost' onClick={goBack} className='text-muted-foreground w-full'>
+                        Try a different URL
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
     // ── Manual path: nothing enriched - collect what the welcome step didn't. ──
     if (lowConfidence) {
         const needGoal = !goal
         const needAudience = answers.audience.length === 0
+        const name = answers.profile.name ?? ''
+        const niche = answers.niche ?? ''
         const toggleAudience = (value: StrategyAudience) => {
             const has = answers.audience.includes(value)
             const next = has ? answers.audience.filter((a) => a !== value) : [...answers.audience, value]
             update({ audience: next.slice(0, MAX_AUDIENCE) })
         }
+        // Voice + "anything we should avoid" live on the dedicated Voice step, so
+        // this form stays focused on identity. Everything shown here is required.
+        const canContinue =
+            !!name.trim() &&
+            !!answers.role &&
+            !!niche.trim() &&
+            (!needGoal || !!goal) &&
+            (!needAudience || answers.audience.length > 0)
+
         return (
             <motion.div
                 variants={staggerContainer}
                 initial='hidden'
                 animate='visible'
                 className='flex flex-col gap-[22px]'>
-                <motion.div variants={staggerItem} className='text-center'>
+                <motion.div variants={staggerItem}>
                     <H2 className='text-xl'>Tell us about you</H2>
                     <Sub className='mt-1'>So everything we build sounds right for you.</Sub>
+                </motion.div>
+                <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
+                    <FieldLabel>How should we call you?</FieldLabel>
+                    <Input
+                        value={name}
+                        onChange={(e) => update({ profile: { ...answers.profile, name: e.target.value } })}
+                        placeholder='e.g. Alex Rivera'
+                        autoComplete='name'
+                        aria-label='How should we call you?'
+                    />
                 </motion.div>
                 <motion.div variants={staggerItem} className='flex flex-col gap-2'>
                     <FieldLabel>You are a...</FieldLabel>
                     <div className='flex flex-wrap gap-2'>
                         {ROLES.map((r) => (
-                            <Pill key={r} selected={role === r} onClick={() => update({ role: r })}>
+                            <Pill key={r} selected={answers.role === r} onClick={() => update({ role: r })}>
                                 {ROLE_LABELS[r]}
                             </Pill>
                         ))}
@@ -188,11 +250,18 @@ export function MirrorStep() {
                 </motion.div>
                 <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
                     <FieldLabel>Your niche</FieldLabel>
-                    <Input
-                        value={answers.niche ?? ''}
-                        onChange={(e) => update({ niche: e.target.value })}
-                        placeholder='e.g. B2B SaaS growth'
-                    />
+                    <Select value={niche || undefined} onValueChange={(v) => update({ niche: v })}>
+                        <SelectTrigger className='w-full' aria-label='Your niche'>
+                            <SelectValue placeholder='Choose your niche' />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {NICHE_OPTIONS.map((n) => (
+                                <SelectItem key={n} value={n}>
+                                    {n}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </motion.div>
                 {needGoal && (
                     <motion.div variants={staggerItem} className='flex flex-col gap-2'>
@@ -234,28 +303,8 @@ export function MirrorStep() {
                         </div>
                     </motion.div>
                 )}
-                <motion.div variants={staggerItem} className='flex flex-col gap-2'>
-                    <FieldLabel>Your voice</FieldLabel>
-                    <div className='flex flex-wrap gap-2'>
-                        {TONE_OPTIONS.map((o) => (
-                            <Pill key={o.value} selected={tone === o.value} onClick={() => update({ tone: o.value })}>
-                                {o.label}
-                            </Pill>
-                        ))}
-                    </div>
-                </motion.div>
-                <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
-                    <FieldLabel>
-                        Anything we should avoid? <span className='text-muted-foreground font-normal'>(optional)</span>
-                    </FieldLabel>
-                    <Input
-                        value={answers.writingNotes ?? ''}
-                        onChange={(e) => update({ writingNotes: e.target.value })}
-                        placeholder='e.g. no buzzwords, no emojis, never salesy'
-                    />
-                </motion.div>
                 <motion.div variants={staggerItem}>
-                    <Button onClick={goNext} className='w-full'>
+                    <Button onClick={goNext} disabled={!canContinue} className='w-full'>
                         Continue
                     </Button>
                 </motion.div>
@@ -360,18 +409,7 @@ export function MirrorStep() {
                 )}
             </AnimatePresence>
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-1.5'>
-                <FieldLabel>
-                    Anything we should avoid? <span className='text-muted-foreground font-normal'>(optional)</span>
-                </FieldLabel>
-                <Input
-                    value={answers.writingNotes ?? ''}
-                    onChange={(e) => update({ writingNotes: e.target.value })}
-                    placeholder='e.g. no buzzwords, no emojis, never salesy'
-                />
-            </motion.div>
-
-            <p className='text-muted-foreground flex items-center justify-center gap-1.5 text-xs'>
+            <p className='text-muted-foreground flex items-center gap-1.5 text-xs'>
                 <PencilIcon className='size-3' />
                 Tap anything to adjust
             </p>

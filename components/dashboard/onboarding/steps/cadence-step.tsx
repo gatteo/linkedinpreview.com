@@ -26,7 +26,7 @@ export function CadenceStep() {
 
     return (
         <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-5'>
-            <motion.div variants={staggerItem} className='text-center'>
+            <motion.div variants={staggerItem}>
                 <H2 className='text-xl'>How often do you want to show up?</H2>
             </motion.div>
 
@@ -65,7 +65,7 @@ export function CadenceStep() {
                 })}
             </motion.div>
 
-            <motion.p variants={staggerItem} className='text-muted-foreground text-center text-sm'>
+            <motion.p variants={staggerItem} className='text-muted-foreground text-sm'>
                 Great - that&apos;s about{' '}
                 <span className='text-foreground font-semibold'>{postsPerMonth(current.frequency)} posts a month</span>.
                 We&apos;ll plan them into your calendar.
