@@ -301,4 +301,13 @@ project-root/
 The Wave 4 LinkedIn vars are all optional: when blank the publishing/scheduling features stay inert
 and the UI presents them as "not configured" (mirrors the GTM/Tally pattern). The full setup steps
 are in [STATUS.md](STATUS.md) "Wave 4 setup required before it works".
+
+**Dev-only missing-env DX**: production keeps degrading gracefully (no toasts, no leaking of which
+keys are set). In development only, using a feature whose keys are missing surfaces a toast naming the
+exact vars to add to `.env`. Which vars a feature needs is derived from one place per feature -
+`missingLinkedInEnv()` / `missingLinkedInAnalyticsEnv()` (`config/linkedin.ts`) and `missingStripeEnv()`
+(`lib/stripe.ts`), which also back the `isXConfigured()` booleans. Server routes attach a dev-only
+`missing: string[]` to their not-configured responses (or `&missingEnv=` on OAuth redirects) via
+`lib/dev/missing-env.ts`; the client reads it and toasts via `lib/dev/report-missing-env.ts`. On dev
+boot, `instrumentation.ts` -> `lib/dev/env-audit.ts` logs every disabled integration once.
 | NEXT_PUBLIC_TALLY_FORM_ID | Tally.so form ID | No (client) | wMqOab |

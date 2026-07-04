@@ -2,9 +2,10 @@ import { randomBytes } from 'node:crypto'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-import { isLinkedInConfigured } from '@/config/linkedin'
+import { isLinkedInConfigured, missingLinkedInEnv } from '@/config/linkedin'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { devMissingEnvParam } from '@/lib/dev/missing-env'
 import { buildAuthorizeUrl } from '@/lib/linkedin/oauth'
 import { createClient } from '@/lib/supabase/server'
 
@@ -13,7 +14,9 @@ export const OAUTH_STATE_COOKIE = 'li_oauth_state'
 /** Start the LinkedIn OAuth consent flow. */
 export async function GET() {
     if (!isLinkedInConfigured()) {
-        return NextResponse.redirect(`${site.url}${Routes.DashboardSettings}?linkedin=unavailable`)
+        return NextResponse.redirect(
+            `${site.url}${Routes.DashboardSettings}?linkedin=unavailable${devMissingEnvParam(missingLinkedInEnv())}`,
+        )
     }
 
     // Require an existing (anonymous) session so the callback can attach the

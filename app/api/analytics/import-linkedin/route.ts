@@ -1,6 +1,12 @@
 import { AI_ERROR_CODES } from '@/config/ai'
-import { isLinkedInAnalyticsConfigured, LINKEDIN_ANALYTICS_SYNC_BATCH, LINKEDIN_ERROR_CODES } from '@/config/linkedin'
+import {
+    isLinkedInAnalyticsConfigured,
+    LINKEDIN_ANALYTICS_SYNC_BATCH,
+    LINKEDIN_ERROR_CODES,
+    missingLinkedInAnalyticsEnv,
+} from '@/config/linkedin'
 import { hasAnyMetric } from '@/lib/analytics/metrics'
+import { devMissingEnv } from '@/lib/dev/missing-env'
 import { fetchMemberPostAnalytics } from '@/lib/linkedin/analytics'
 import { getAnalyticsConnectionRow, hasValidAnalyticsConnection } from '@/lib/linkedin/analytics-connections'
 import { getConnectionRow, isExpired } from '@/lib/linkedin/connections'
@@ -50,7 +56,11 @@ export async function GET() {
 export async function POST() {
     if (!isLinkedInAnalyticsConfigured()) {
         return Response.json(
-            { error: 'LinkedIn analytics is not configured', code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED },
+            {
+                error: 'LinkedIn analytics is not configured',
+                code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED,
+                ...devMissingEnv(missingLinkedInAnalyticsEnv()),
+            },
             { status: 400 },
         )
     }

@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { BEST_TIME_SUMMARY, suggestNextSlots } from '@/config/best-time'
 import { LINKEDIN_ERROR_CODES } from '@/config/linkedin'
 import { ApiRoutes, Routes } from '@/config/routes'
+import { reportMissingEnv } from '@/lib/dev/report-missing-env'
 import { type DraftStatus } from '@/lib/drafts'
 import { useLinkedInStatus } from '@/hooks/use-linkedin-status'
 import {
@@ -87,6 +88,7 @@ export function PublishControls({
             })
             const data = await res.json()
             if (!res.ok) {
+                if (reportMissingEnv('LinkedIn publishing', data.missing)) return
                 if (data.code === LINKEDIN_ERROR_CODES.TOKEN_EXPIRED) {
                     toast.error('LinkedIn connection expired. Reconnect in Settings.')
                     await refresh()

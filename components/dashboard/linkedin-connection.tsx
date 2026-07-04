@@ -6,6 +6,7 @@ import { CheckCircle2Icon, Linkedin, Loader2, TriangleAlertIcon } from 'lucide-r
 import { toast } from 'sonner'
 
 import { ApiRoutes, Routes } from '@/config/routes'
+import { reportMissingEnvFromQuery } from '@/lib/dev/report-missing-env'
 import { useDrafts } from '@/hooks/use-drafts'
 import { useLinkedInStatus } from '@/hooks/use-linkedin-status'
 import { Button } from '@/components/ui/button'
@@ -58,6 +59,8 @@ export function LinkedInConnection() {
             // A LinkedIn login matched an existing account and the current session
             // has drafts - ask whether to carry them over before switching.
             setMergeOpen(true)
+        } else if (result === 'unavailable' && reportMissingEnvFromQuery('LinkedIn publishing', params)) {
+            // Dev toast named the missing vars; skip the generic message.
         } else {
             const entry = result ? STATUS_MESSAGES[result] : undefined
             if (entry) toast[entry.type](entry.message)

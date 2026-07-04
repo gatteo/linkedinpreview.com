@@ -1,6 +1,7 @@
 import type Stripe from 'stripe'
 
-import { getStripe, isStripeConfigured, priceIdFor } from '@/lib/stripe'
+import { devMissingEnv } from '@/lib/dev/missing-env'
+import { getStripe, isStripeConfigured, missingStripeEnv, priceIdFor } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
 import { bodySchema } from './route.schema'
@@ -35,7 +36,14 @@ export async function POST(request: Request) {
 
     const priceId = priceIdFor(plan)
     if (!isStripeConfigured() || !priceId) {
-        return Response.json({ error: 'Billing is not configured yet', code: BILLING_NOT_CONFIGURED }, { status: 503 })
+        return Response.json(
+            {
+                error: 'Billing is not configured yet',
+                code: BILLING_NOT_CONFIGURED,
+                ...devMissingEnv(missingStripeEnv()),
+            },
+            { status: 503 },
+        )
     }
 
     try {

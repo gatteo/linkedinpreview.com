@@ -2,21 +2,24 @@ import { randomBytes } from 'node:crypto'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-import { isLinkedInAnalyticsConfigured } from '@/config/linkedin'
+import { isLinkedInAnalyticsConfigured, missingLinkedInAnalyticsEnv } from '@/config/linkedin'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { devMissingEnvParam } from '@/lib/dev/missing-env'
 import { buildAnalyticsAuthorizeUrl } from '@/lib/linkedin/oauth'
 import { createClient } from '@/lib/supabase/server'
 
 export const ANALYTICS_OAUTH_STATE_COOKIE = 'li_analytics_oauth_state'
 
-function analyticsRedirect(status: string) {
-    return NextResponse.redirect(`${site.url}${Routes.DashboardAnalytics}?analytics=${status}`)
+function analyticsRedirect(status: string, extra = '') {
+    return NextResponse.redirect(`${site.url}${Routes.DashboardAnalytics}?analytics=${status}${extra}`)
 }
 
 /** Start the App B (analytics) OAuth consent flow. */
 export async function GET() {
-    if (!isLinkedInAnalyticsConfigured()) return analyticsRedirect('unavailable')
+    if (!isLinkedInAnalyticsConfigured()) {
+        return analyticsRedirect('unavailable', devMissingEnvParam(missingLinkedInAnalyticsEnv()))
+    }
 
     // Require an existing session so the callback attaches the token to a user.
     const supabase = await createClient()

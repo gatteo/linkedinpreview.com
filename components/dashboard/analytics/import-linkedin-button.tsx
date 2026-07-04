@@ -5,6 +5,7 @@ import { LinkedinIcon, Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
+import { reportMissingEnv, reportMissingEnvFromQuery } from '@/lib/dev/report-missing-env'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
@@ -54,8 +55,10 @@ export function ImportLinkedInButton({ variant = 'default', size = 'sm', classNa
         if (!status) return
         if (status === 'connected') toast.success('LinkedIn analytics connected. You can now import your posts.')
         else if (status === 'denied') toast.error('Analytics connection was cancelled')
-        else if (status === 'unavailable') toast.error('LinkedIn analytics is not configured')
-        else if (status !== 'connected') toast.error('Could not connect LinkedIn analytics')
+        else if (status === 'unavailable') {
+            if (!reportMissingEnvFromQuery('LinkedIn analytics', params))
+                toast.error('LinkedIn analytics is not configured')
+        } else if (status !== 'connected') toast.error('Could not connect LinkedIn analytics')
         params.delete('analytics')
         const qs = params.toString()
         window.history.replaceState({}, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
@@ -75,6 +78,7 @@ export function ImportLinkedInButton({ variant = 'default', size = 'sm', classNa
                 error?: string
             }
             if (!res.ok || !data.success) {
+                if (reportMissingEnv('LinkedIn analytics', (data as { missing?: unknown }).missing)) return
                 toast.error(data.error ?? 'Failed to import from LinkedIn')
                 return
             }

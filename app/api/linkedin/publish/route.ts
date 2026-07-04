@@ -1,4 +1,10 @@
-import { isLinkedInConfigured, LINKEDIN_ERROR_CODES, LINKEDIN_MAX_POST_CHARS } from '@/config/linkedin'
+import {
+    isLinkedInConfigured,
+    LINKEDIN_ERROR_CODES,
+    LINKEDIN_MAX_POST_CHARS,
+    missingLinkedInEnv,
+} from '@/config/linkedin'
+import { devMissingEnv } from '@/lib/dev/missing-env'
 import { getConnectionRow, isExpired } from '@/lib/linkedin/connections'
 import { decryptToken } from '@/lib/linkedin/crypto'
 import { personUrn } from '@/lib/linkedin/oauth'
@@ -14,7 +20,11 @@ export const maxDuration = 60
 export async function POST(request: Request) {
     if (!isLinkedInConfigured()) {
         return Response.json(
-            { error: 'LinkedIn publishing is not configured', code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED },
+            {
+                error: 'LinkedIn publishing is not configured',
+                code: LINKEDIN_ERROR_CODES.NOT_CONFIGURED,
+                ...devMissingEnv(missingLinkedInEnv()),
+            },
             { status: 503 },
         )
     }

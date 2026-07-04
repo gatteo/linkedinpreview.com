@@ -1,11 +1,12 @@
-import { isLinkedInConfigured } from '@/config/linkedin'
+import { isLinkedInConfigured, missingLinkedInEnv } from '@/config/linkedin'
+import { devMissingEnv } from '@/lib/dev/missing-env'
 import { getConnectionStatus } from '@/lib/linkedin/connections'
 import { createClient } from '@/lib/supabase/server'
 
 /** Report whether the integration is configured and the user's connection state. */
 export async function GET() {
     if (!isLinkedInConfigured()) {
-        return Response.json({ configured: false, connection: null })
+        return Response.json({ configured: false, connection: null, ...devMissingEnv(missingLinkedInEnv()) })
     }
 
     const supabase = await createClient()

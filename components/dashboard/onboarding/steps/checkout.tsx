@@ -7,6 +7,7 @@ import { Loader2Icon } from 'lucide-react'
 
 import { env } from '@/env.mjs'
 import type { CheckoutPlan } from '@/config/pricing'
+import { reportMissingEnv } from '@/lib/dev/report-missing-env'
 
 // Load Stripe.js once. Null when the publishable key is not configured yet, so
 // the offer screen falls back gracefully to the free plan.
@@ -31,6 +32,7 @@ export function OnboardingCheckout({ plan, onComplete, onError }: OnboardingChec
 
     React.useEffect(() => {
         if (!stripePromise) {
+            reportMissingEnv('Stripe checkout', ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'])
             onErrorRef.current()
             return
         }
@@ -41,7 +43,11 @@ export function OnboardingCheckout({ plan, onComplete, onError }: OnboardingChec
             body: JSON.stringify({ plan }),
         })
             .then(async (res) => {
-                if (!res.ok) throw new Error('checkout-unavailable')
+                if (!res.ok) {
+                    const data = (await res.json().catch(() => ({}))) as { missing?: unknown }
+                    reportMissingEnv('Stripe checkout', data.missing)
+                    throw new Error('checkout-unavailable')
+                }
                 const data = (await res.json()) as { clientSecret?: string }
                 if (!data.clientSecret) throw new Error('no-client-secret')
                 if (!cancelled) setClientSecret(data.clientSecret)

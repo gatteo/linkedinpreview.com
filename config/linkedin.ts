@@ -57,11 +57,21 @@ export function linkedInScopes(): string[] {
 /** Read scope for member post analytics (Community Management API, App B). */
 export const LINKEDIN_ANALYTICS_SCOPES = ['r_member_postAnalytics'] as const
 
+/** The env vars the analytics app (App B) needs. Single source of truth. */
+export const LINKEDIN_ANALYTICS_ENV_VARS = [
+    'LINKEDIN_ANALYTICS_CLIENT_ID',
+    'LINKEDIN_ANALYTICS_CLIENT_SECRET',
+    'LINKEDIN_TOKEN_ENC_KEY',
+] as const
+
+/** Which analytics (App B) env vars are unset. Empty when fully configured. */
+export function missingLinkedInAnalyticsEnv(): string[] {
+    return LINKEDIN_ANALYTICS_ENV_VARS.filter((name) => !env[name])
+}
+
 /** Whether the analytics app (App B) is configured on the server. */
 export function isLinkedInAnalyticsConfigured(): boolean {
-    return Boolean(
-        env.LINKEDIN_ANALYTICS_CLIENT_ID && env.LINKEDIN_ANALYTICS_CLIENT_SECRET && env.LINKEDIN_TOKEN_ENC_KEY,
-    )
+    return missingLinkedInAnalyticsEnv().length === 0
 }
 
 /** The exact redirect URI registered on the analytics app (App B). */
@@ -98,12 +108,20 @@ export const LINKEDIN_ERROR_CODES = {
     RATE_LIMITED: 'LINKEDIN_RATE_LIMITED',
 } as const
 
+/** The env vars the publishing/login app (App A) needs. Single source of truth. */
+export const LINKEDIN_ENV_VARS = ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET', 'LINKEDIN_TOKEN_ENC_KEY'] as const
+
+/** Which publishing (App A) env vars are unset. Empty when fully configured. */
+export function missingLinkedInEnv(): string[] {
+    return LINKEDIN_ENV_VARS.filter((name) => !env[name])
+}
+
 /**
  * Whether the LinkedIn integration is configured on the server. When false, the
  * UI presents the feature as unavailable rather than offering a broken connect flow.
  */
 export function isLinkedInConfigured(): boolean {
-    return Boolean(env.LINKEDIN_CLIENT_ID && env.LINKEDIN_CLIENT_SECRET && env.LINKEDIN_TOKEN_ENC_KEY)
+    return missingLinkedInEnv().length === 0
 }
 
 /** The exact redirect URI registered on the LinkedIn app. */
