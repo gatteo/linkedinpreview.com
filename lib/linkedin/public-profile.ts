@@ -194,7 +194,9 @@ async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Prom
     const onAbort = () => controller.abort()
     signal.addEventListener('abort', onAbort)
     try {
-        const endpoint = `https://api.scrapingdog.com/linkedin?api_key=${encodeURIComponent(apiKey)}&type=profile&id=${encodeURIComponent(slug)}&private=false`
+        // NB: the profile parameter is `linkId` (validated live) - `id` returns
+        // a 404 "Not a valid Linkedin Id".
+        const endpoint = `https://api.scrapingdog.com/linkedin?api_key=${encodeURIComponent(apiKey)}&type=profile&linkId=${encodeURIComponent(slug)}&private=false`
         const res = await fetch(endpoint, { signal: controller.signal })
         if (!res.ok) return null
         const body = (await res.json()) as ScrapingdogProfile | ScrapingdogProfile[]
