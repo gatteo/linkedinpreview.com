@@ -91,6 +91,15 @@ export function OfferStep() {
                 </Sub>
             </motion.div>
 
+            {answers.insights && answers.insights.kind !== 'benchmark' && (
+                <motion.p
+                    variants={staggerItem}
+                    style={{ background: 'color-mix(in oklch, var(--primary) 6%, transparent)' }}
+                    className='border-primary/20 text-foreground mx-auto max-w-[460px] rounded-xl border px-[15px] py-[11px] text-center text-sm leading-snug'>
+                    {answers.insights.headline}
+                </motion.p>
+            )}
+
             {error && (
                 <motion.p
                     variants={staggerItem}

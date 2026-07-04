@@ -26,6 +26,43 @@ export function ConnectStep() {
     const [url, setUrl] = React.useState(answers.profileUrl ?? '')
     const [urlError, setUrlError] = React.useState(false)
 
+    const submitUrl = () => {
+        const trimmed = url.trim()
+        if (!trimmed) return
+        if (!isLikelyProfileUrl(trimmed)) {
+            setUrlError(true)
+            return
+        }
+        setUrlError(false)
+        // Clear any prior enrichment + manual choice so the Mirror re-fetches this
+        // URL from scratch (otherwise a stored low-confidence result short-circuits
+        // the re-read and the user is stuck on the last failure). The stale rich
+        // pipeline state goes too - the new URL triggers a fresh scrape. A
+        // DIFFERENT URL also drops the previous profile's identity + inferences
+        // (else the two profiles mix); an OAuth identity stays.
+        const changedUrl = trimmed !== answers.profileUrl
+        update({
+            profileUrl: trimmed,
+            enrichConfidence: undefined,
+            mirrorManual: false,
+            richStatus: undefined,
+            richSummary: undefined,
+            insights: undefined,
+            insightsStatus: undefined,
+            firstPostGap: undefined,
+            ...(changedUrl && !answers.linkedinConnected
+                ? {
+                      profile: { name: '', headline: '', avatarUrl: '' },
+                      niche: undefined,
+                      toneSummary: undefined,
+                      opportunityLine: undefined,
+                  }
+                : {}),
+        })
+        track('onb_connect_method', { method: 'url' })
+        goNext()
+    }
+
     if (answers.linkedinConnected) {
         return (
             <div className='flex flex-col items-center gap-[18px] py-4 text-center'>
@@ -58,24 +95,38 @@ export function ConnectStep() {
                 <Button onClick={goNext} size='lg' className='h-11 px-6 text-[15px]'>
                     Continue
                 </Button>
+                {!answers.profileUrl && (
+                    <div className='flex w-full max-w-[340px] flex-col gap-2'>
+                        <p className='text-muted-foreground text-xs'>
+                            Optional: paste your public profile URL and we&apos;ll also analyze your recent posts.
+                        </p>
+                        <div className='flex gap-2'>
+                            <Input
+                                value={url}
+                                onChange={(e) => {
+                                    setUrl(e.target.value)
+                                    if (urlError) setUrlError(false)
+                                }}
+                                placeholder='linkedin.com/in/your-name'
+                                aria-label='Your LinkedIn profile URL'
+                                aria-invalid={urlError}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') submitUrl()
+                                }}
+                            />
+                            <Button variant='secondary' onClick={submitUrl} disabled={!url.trim()}>
+                                Analyze
+                            </Button>
+                        </div>
+                        {urlError && (
+                            <p className='text-destructive text-left text-xs'>
+                                That doesn&apos;t look like a profile URL - try linkedin.com/in/your-name.
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
         )
-    }
-
-    const submitUrl = () => {
-        const trimmed = url.trim()
-        if (!trimmed) return
-        if (!isLikelyProfileUrl(trimmed)) {
-            setUrlError(true)
-            return
-        }
-        setUrlError(false)
-        // Clear any prior enrichment + manual choice so the Mirror re-fetches this
-        // URL from scratch (otherwise a stored low-confidence result short-circuits
-        // the re-read and the user is stuck on the last failure).
-        update({ profileUrl: trimmed, enrichConfidence: undefined, mirrorManual: false })
-        track('onb_connect_method', { method: 'url' })
-        goNext()
     }
 
     const connect = () => {
@@ -94,7 +145,10 @@ export function ConnectStep() {
                 <H2 className='text-xl'>
                     Make your setup about <span className='italic'>you</span>.
                 </H2>
-                <Sub>Import your name and photo, or paste your public profile to tailor everything.</Sub>
+                <Sub>
+                    Paste your public profile and we&apos;ll analyze your topics, your rhythm, and what&apos;s missing -
+                    it runs in the background while you answer a few questions.
+                </Sub>
             </motion.div>
 
             <motion.div variants={staggerItem} className='flex w-full flex-col gap-3'>

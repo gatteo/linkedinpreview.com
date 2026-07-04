@@ -10,6 +10,11 @@ export const bodySchema = z.object({
     tone: z.string().max(50).optional(),
     name: z.string().max(200).optional(),
     brandingContext: z.string().max(5000).optional(),
+    // The missing content category from the insights (e.g. 'educational') - the
+    // first post is written to fill it. Category names only; free text rejected.
+    gapCategory: z
+        .enum(['personal-story', 'educational', 'opinion', 'promotional', 'engagement-social', 'other'])
+        .optional(),
 })
 
 export const firstPostSchema = z.object({

@@ -27,6 +27,18 @@ export const env = createEnv({
         // KEY as a Bearer token. See lib/linkedin/public-profile.ts.
         LINKEDIN_SCRAPE_API_URL: z.string().optional(),
         LINKEDIN_SCRAPE_API_KEY: z.string().optional(),
+        // Bright Data LinkedIn People Profile scraper (managed, structured JSON;
+        // ASYNC - 42-60s trigger to data). The RICH onboarding enrichment tier:
+        // posts, followers, about. Triggered by the enrich route, polled by the
+        // status route (lib/linkedin/rich-scrape.ts). Dataset id defaults to the
+        // LinkedIn People Profile dataset.
+        BRIGHTDATA_API_KEY: z.string().optional(),
+        BRIGHTDATA_LINKEDIN_DATASET_ID: z.string().optional(),
+        // Scrapingdog LinkedIn profile API - the FAST onboarding enrichment tier
+        // (synchronous, ~3-8s, structured JSON). When unset, the fast tier falls
+        // back to a direct JSON-LD fetch (works from residential IPs / local dev,
+        // usually blocked from Vercel). See lib/linkedin/public-profile.ts.
+        SCRAPINGDOG_API_KEY: z.string().optional(),
         // Wave 5 analytics: the SEPARATE LinkedIn app (App B) for the Community
         // Management API. LinkedIn requires that API to be the only product on an
         // app, so member post analytics cannot share App A (Sign In + Share). All
@@ -69,6 +81,9 @@ export const env = createEnv({
         CRON_SECRET: process.env.CRON_SECRET,
         LINKEDIN_SCRAPE_API_URL: process.env.LINKEDIN_SCRAPE_API_URL,
         LINKEDIN_SCRAPE_API_KEY: process.env.LINKEDIN_SCRAPE_API_KEY,
+        BRIGHTDATA_API_KEY: process.env.BRIGHTDATA_API_KEY,
+        BRIGHTDATA_LINKEDIN_DATASET_ID: process.env.BRIGHTDATA_LINKEDIN_DATASET_ID,
+        SCRAPINGDOG_API_KEY: process.env.SCRAPINGDOG_API_KEY,
         LINKEDIN_ANALYTICS_CLIENT_ID: process.env.LINKEDIN_ANALYTICS_CLIENT_ID,
         LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,
         LINKEDIN_ANALYTICS_REDIRECT_URI: process.env.LINKEDIN_ANALYTICS_REDIRECT_URI,

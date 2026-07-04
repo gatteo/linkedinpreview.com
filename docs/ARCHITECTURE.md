@@ -249,7 +249,7 @@ project-root/
 ├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, etc.)
 ├── lib/
 │   ├── supabase/            # Server/client/admin Supabase instances + CRUD, migration
-│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, public-profile fetch (onboarding enrichment)
+│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, public-profile fetch (fast onboarding tier) + rich-scrape (Bright Data async tier)
 │   └── mdx/plugins/         # Remark and rehype plugins for MDX processing
 ├── types/                   # Shared TypeScript type definitions
 ├── styles/                  # globals.css - Tailwind v4 theme via @theme + @plugin
@@ -292,6 +292,9 @@ project-root/
 | LINKEDIN_TOKEN_ENC_KEY         | AES-256-GCM key for token encryption (64-char hex; `openssl rand -hex 32`)                                                                                                                                     | No (server, Wave 4)       | a1b2c3...                         |
 | LINKEDIN_SCRAPE_API_URL        | Scrape/residential-proxy API returning a target URL's raw HTML, used to fetch public profiles for onboarding enrichment from datacenter IPs. Unset = direct-request fallback. Called as `${URL}?url=<target>`. | No (server)               | https://scrape.example/get        |
 | LINKEDIN_SCRAPE_API_KEY        | Optional Bearer token for `LINKEDIN_SCRAPE_API_URL`                                                                                                                                                            | No (server)               | (api key)                         |
+| SCRAPINGDOG_API_KEY            | Scrapingdog LinkedIn profile API - the FAST onboarding enrichment tier (synchronous ~3-8s, feeds the Mirror screen). Unset = JSON-LD direct fetch fallback (works locally, usually blocked on Vercel).         | No (server)               | (api key)                         |
+| BRIGHTDATA_API_KEY             | Bright Data "LinkedIn People Profile" dataset - the RICH onboarding tier (async 42-60s: posts, followers; powers the pre-offer insight cards). Triggered by the enrich route, polled via `enrich/status`.      | No (server)               | (api key)                         |
+| BRIGHTDATA_LINKEDIN_DATASET_ID | Override for the Bright Data dataset id (defaults to the LinkedIn People Profile dataset)                                                                                                                      | No (server)               | gd_l1viktl72bvl7bjuj0             |
 | CRON_SECRET                    | Bearer token the Vercel Cron publisher sends                                                                                                                                                                   | No (server, Wave 4)       | (random secret)                   |
 | SUPABASE_SERVICE_ROLE_KEY      | Service-role key, used only by the cron publisher (bypasses RLS)                                                                                                                                               | No (server, Wave 4)       | eyJ...                            |
 

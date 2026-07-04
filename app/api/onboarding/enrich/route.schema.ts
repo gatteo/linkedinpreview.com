@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const bodySchema = z.object({
     name: z.string().max(200).optional(),
     headline: z.string().max(500).optional(),
-    vanityUrl: z.string().max(300).optional(),
     profileUrl: z.string().max(300).optional(),
     welcomeGoal: z
         .enum(['revenue-growth', 'company-awareness', 'career-opportunities', 'employer-branding', 'media-pr'])

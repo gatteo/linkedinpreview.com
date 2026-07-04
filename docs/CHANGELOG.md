@@ -4,6 +4,42 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-04 — Onboarding v2: two-tier profile enrichment, insight cards, server-side session capture
+
+- **Two-tier LinkedIn enrichment.** FAST tier (live Mirror screen, ~3-8s): Scrapingdog LinkedIn profile
+  API (`SCRAPINGDOG_API_KEY`, new) with the JSON-LD direct fetch as fallback (`lib/linkedin/public-profile.ts`;
+  the always-timing-out synchronous Bright Data `/scrape` attempt was removed). RICH tier (async 42-60s):
+  Bright Data People Profile dataset via explicit trigger + poll (`lib/linkedin/rich-scrape.ts`) - the
+  enrich route triggers it when a URL is submitted, `GET /api/onboarding/enrich/status` polls/downloads,
+  and a single modal-level hook (`use-rich-pipeline.ts`) drives polling + insights so step remounts
+  can't reset it. Scrape state (`richStatus`/`richSummary`/`insights`) lives in answers → localStorage,
+  so reloads and the OAuth round-trip resume the pipeline.
+- **Flow reordered so the scrape hides behind the questions:** new machine
+  `welcome → connect → mirror → goal → voice → cadence → reinforce → building → insights → preview → recap → offer → done`.
+  `proof` + `spotlight` steps removed (spotlight became a gap-prescribed feature row on the recap);
+  `STEP_ORDER` moved to `types.ts` with `StepId` derived from it; legacy saved resume steps map to
+  survivors. `building` holds up to 12s extra while the scrape lands and names real work
+  ("Reading your last N posts").
+- **NEW insights step** (`steps/insights-step.tsx`): three sequential pre-offer cards - topic mix
+  (server-counted from LLM labels), the missing content category, and the cadence gap (observed
+  posts/week from real post dates vs the chosen plan). `POST /api/onboarding/insights` does ONE
+  generateObject call with a label-only schema; the server counts, verifies topic evidence by post
+  index, and substring-verifies the voice excerpt. Degrades: posts → profile → static benchmark kind
+  (no LLM), and the step renders a config-based benchmark variant if nothing arrives (20s failsafe).
+- **Honesty pass:** fabricated `socialProofCount` deleted; `reinforce` now shows role-keyed benchmark
+  patterns (`ROLE_BENCHMARKS`) + the user's real follower count when scraped. Every number on screen
+  is a deterministic count or benchmark-framed config copy.
+- **Personalization everywhere:** cadence step shows the observed posting rhythm; voice step explains
+  its preselection; preview writes the first post to fill the diagnosed gap (`gapCategory`) using
+  2-3 real scraped posts as style references (server-read, `styled` flag drives "written in your
+  voice" copy); recap gains an analysis echo row + gap-matched feature row; offer echoes the
+  strongest insight headline.
+- **Server-side capture for analysis:** new `public.onboarding_sessions` table (migration `020`,
+  applied to the live DB) - answers (debounced from the controller), fast/rich profiles, posts,
+  enrichment, insights, completed/converted. RLS-scoped; no service-role usage. New `onbInsights`
+  rate-limit action (3/day).
+- type-check + lint clean; reviewed via a 4-lens adversarial workflow (findings fixed in-place).
+
 ## 2026-07-02 — Onboarding: progress/width polish, answer persistence, LinkedIn-URL error handling
 
 - **Progress bar** is now a thin full-bleed strip flush at the top of the content panel (reads as its

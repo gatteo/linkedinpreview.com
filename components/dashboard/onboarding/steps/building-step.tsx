@@ -59,6 +59,10 @@ async function generateFormats(body: object): Promise<StrategyFormat[]> {
     }
 }
 
+// Extra hold while the rich scrape is still landing, so the insight cards right
+// after almost never show a loader.
+const RICH_WAIT_MS = 12000
+
 export function BuildingStep() {
     const { answers, update, goNext } = useOnboarding()
     const [done, setDone] = React.useState<Set<TaskId>>(new Set())
@@ -67,6 +71,12 @@ export function BuildingStep() {
     // the AI calls from firing twice, advancedRef keeps us advancing exactly once.
     const startedRef = React.useRef(false)
     const advancedRef = React.useRef(false)
+    // Live answers for the long-running effect (the rich scrape and insights can
+    // land mid-run; topics should pick them up at commit time).
+    const answersRef = React.useRef(answers)
+    React.useEffect(() => {
+        answersRef.current = answers
+    })
 
     React.useEffect(() => {
         const mark = (id: TaskId) =>
@@ -76,11 +86,14 @@ export function BuildingStep() {
                 return next
             })
 
-        const effectiveTopics = answers.topics.filter(Boolean).length
-            ? answers.topics.filter(Boolean)
-            : answers.niche
-              ? [answers.niche]
-              : []
+        // Chosen topics, else the topics we actually read in their posts, else niche.
+        const topicsNow = () => {
+            const current = answersRef.current
+            const chosen = current.topics.filter(Boolean)
+            if (chosen.length) return chosen
+            if (current.insights?.currentTopics.length) return current.insights.currentTopics.slice(0, 3)
+            return current.niche ? [current.niche] : []
+        }
 
         // Idempotent: whichever reaches here first (the run, its catch, or the
         // failsafe) advances once. We deliberately don't gate the work on a
@@ -90,16 +103,18 @@ export function BuildingStep() {
         const advance = (positioning: string, formats: StrategyFormat[]) => {
             if (advancedRef.current) return
             advancedRef.current = true
-            update({ positioning, formats, topics: effectiveTopics })
+            update({ positioning, formats, topics: topicsNow() })
             track('onb_building_done')
             goNext()
         }
 
         // Re-armed on every mount so a StrictMode remount (which cleared the prior
-        // timer) always has a live failsafe.
-        const failsafe = setTimeout(() => advance('', []), 15000)
+        // timer) always has a live failsafe. Wider when we may hold for the scrape.
+        const failsafeMs = answers.richStatus === 'pending' ? 15000 + RICH_WAIT_MS : 15000
+        const failsafe = setTimeout(() => advance('', []), failsafeMs)
 
         async function run() {
+            const effectiveTopics = topicsNow()
             const canGenerate =
                 !!answers.role && answers.goals.length > 0 && answers.audience.length > 0 && effectiveTopics.length > 0
             const body = {
@@ -138,6 +153,11 @@ export function BuildingStep() {
             mark('calendar')
 
             setActive('assemble')
+            // Hold (bounded) while the rich scrape is still landing.
+            const richWaitStart = Date.now()
+            while (answersRef.current.richStatus === 'pending' && Date.now() - richWaitStart < RICH_WAIT_MS) {
+                await wait(600)
+            }
             await wait(600)
             mark('assemble')
             await wait(450)
@@ -184,6 +204,13 @@ export function BuildingStep() {
                 {TASKS.map((task) => {
                     const isDone = done.has(task.id)
                     const isActive = active === task.id && !isDone
+                    const postsCount = answers.richSummary?.postsCount ?? 0
+                    const label =
+                        task.id === 'read' && postsCount > 1
+                            ? `Reading your last ${postsCount} posts`
+                            : task.id === 'read' && postsCount === 1
+                              ? 'Reading your latest post'
+                              : task.label
                     return (
                         <li
                             key={task.id}
@@ -211,7 +238,7 @@ export function BuildingStep() {
                                     )}
                                 </AnimatePresence>
                             </span>
-                            {task.label}
+                            {label}
                         </li>
                     )
                 })}

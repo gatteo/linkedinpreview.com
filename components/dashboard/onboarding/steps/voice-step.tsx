@@ -24,6 +24,12 @@ export function VoiceStep() {
         <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-9'>
             <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
                 <Question>Pick the voice that sounds most like you.</Question>
+                {answers.toneSummary && (
+                    <p className='text-muted-foreground -mt-1 text-[13px]'>
+                        From your profile, you sound <span className='text-foreground'>{answers.toneSummary}</span> - we
+                        preselected the closest match.
+                    </p>
+                )}
                 <div className='flex flex-wrap gap-2.5'>
                     {TONE_OPTIONS.map((option) => (
                         <Pill key={option.value} selected={tone === option.value} onClick={() => choose(option.value)}>

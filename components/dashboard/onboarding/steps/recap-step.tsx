@@ -2,26 +2,69 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { CalendarDaysIcon, FileTextIcon, MicIcon, TargetIcon, type LucideIcon } from 'lucide-react'
+import {
+    BarChart3Icon,
+    CalendarDaysIcon,
+    FileTextIcon,
+    LayoutGridIcon,
+    LightbulbIcon,
+    MicIcon,
+    PieChartIcon,
+    TargetIcon,
+    type LucideIcon,
+} from 'lucide-react'
 
 import { TONE_OPTIONS } from '@/config/ai'
-import { cadenceOption, goalRestated, postsPerMonth, toneFromSummary } from '@/config/onboarding-personalization'
+import {
+    cadenceOption,
+    goalRestated,
+    INSIGHT_CATEGORY_LABELS,
+    postsPerMonth,
+    SPOTLIGHT_CONTENT,
+    toneFromSummary,
+    type RoleContent,
+    type SpotlightFeature,
+} from '@/config/onboarding-personalization'
 import { fadeUp, staggerContainer, staggerItem } from '@/lib/motion'
+import type { OnboardingAnswers } from '@/components/dashboard/onboarding/types'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
 import { firstName, H2, Sub } from '../primitives'
 
+const FEATURE_ICONS: Record<SpotlightFeature, LucideIcon> = {
+    'analytics': BarChart3Icon,
+    'calendar': CalendarDaysIcon,
+    'carousels': LayoutGridIcon,
+    'weekly-ideas': LightbulbIcon,
+}
+
+// The one feature to spotlight, prescribed by the user's actual gap when the
+// analysis saw their posts, else the role default.
+function featureForGap(answers: OnboardingAnswers, roleContent: RoleContent): SpotlightFeature {
+    const insights = answers.insights
+    if (!insights || insights.kind === 'benchmark') return roleContent.spotlight
+    if (insights.missing.some((m) => m.category === 'educational')) return 'carousels'
+    if (insights.observed.postsPerWeek === null) return 'calendar'
+    if ((insights.observed.followers ?? 0) >= 2000) return 'analytics'
+    return roleContent.spotlight
+}
+
 export function RecapStep() {
-    const { answers } = useOnboarding()
+    const { answers, roleContent } = useOnboarding()
     const fn = firstName(answers.profile.name)
     const tone = answers.tone ?? toneFromSummary(answers.toneSummary)
     const toneLabel = TONE_OPTIONS.find((t) => t.value === tone)?.label ?? 'Professional'
     const cadence = cadenceOption(answers.cadence)
     const snippet = (answers.firstPostText ?? '').replace(/\*\*/g, '').split('\n').filter(Boolean)[0] ?? ''
+    const insights = answers.insights
+    const feature = featureForGap(answers, roleContent)
+    const featureContent = SPOTLIGHT_CONTENT[feature]
+    const FeatureIcon = FEATURE_ICONS[feature]
 
     React.useEffect(() => {
-        track('onb_recap_view')
+        track('onb_recap_view', { feature })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -35,6 +78,12 @@ export function RecapStep() {
             </motion.div>
 
             <motion.div variants={staggerItem} className='flex flex-col gap-2.5'>
+                {insights && insights.kind === 'posts' && insights.dominant && (
+                    <RecapRow icon={PieChartIcon} label={`From your last ${insights.observed.postsAnalyzed} posts`}>
+                        Mostly {INSIGHT_CATEGORY_LABELS[insights.dominant].toLowerCase()} ·{' '}
+                        {insights.missing.length === 1 ? '1 gap to close' : `${insights.missing.length} gaps to close`}
+                    </RecapRow>
+                )}
                 {answers.positioning && (
                     <RecapRow icon={TargetIcon} label='Your positioning'>
                         {answers.positioning}
@@ -50,6 +99,9 @@ export function RecapStep() {
                 )}
                 <RecapRow icon={CalendarDaysIcon} label='Your calendar'>
                     {cadence.label} · {postsPerMonth(cadence.frequency)} posts a month planned
+                </RecapRow>
+                <RecapRow icon={FeatureIcon} label={`In your toolkit: ${featureContent.eyebrow}`}>
+                    {featureContent.headline}
                 </RecapRow>
             </motion.div>
         </motion.div>

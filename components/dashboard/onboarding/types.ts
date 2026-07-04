@@ -8,27 +8,47 @@
 // OAuth round-trip rehydrates without losing progress or re-spending AI calls.
 // ---------------------------------------------------------------------------
 
+import type { InsightCategory, OnboardingInsights, RichScrapeStatus, RichSummary } from '@/types/onboarding'
 import type { Tone } from '@/config/ai'
 import type { Cadence } from '@/config/onboarding-personalization'
 import type { BrandingData, BrandingRole, BrandingWritingStyle } from '@/lib/branding'
 import type { ScheduleSlot, StrategyAudience, StrategyData, StrategyFormat, StrategyGoal } from '@/lib/strategy'
 
-// The new step machine (§2). 'done' is the terminal celebration/handoff screen.
-export type StepId =
-    | 'welcome'
-    | 'connect'
-    | 'mirror'
-    | 'reinforce'
-    | 'goal'
-    | 'proof'
-    | 'preview'
-    | 'voice'
-    | 'spotlight'
-    | 'cadence'
-    | 'building'
-    | 'recap'
-    | 'offer'
-    | 'done'
+// The step machine, single source of truth (StepId derives from it). Questions
+// (goal/voice/cadence) sit right after the mirror so the 42-60s rich scrape
+// completes while the user answers; reinforce + building absorb the tail;
+// insights is the payoff right before the prescription (preview) and the offer.
+// 'done' is the terminal celebration/handoff screen.
+export const STEP_ORDER = [
+    'welcome',
+    'connect',
+    'mirror',
+    'goal',
+    'voice',
+    'cadence',
+    'reinforce',
+    'building',
+    'insights',
+    'preview',
+    'recap',
+    'offer',
+    'done',
+] as const
+
+export type StepId = (typeof STEP_ORDER)[number]
+
+// Pre-v2 blobs come from the old step order: proof/spotlight no longer exist,
+// and reinforce/preview MOVED past the question steps - resuming an old blob at
+// either would skip goal/voice/cadence entirely, so they map to the nearest
+// question step instead.
+const V1_RESUME: Record<string, StepId> = {
+    proof: 'goal',
+    spotlight: 'cadence',
+    reinforce: 'goal',
+    preview: 'cadence',
+}
+
+const STATE_VERSION = 2
 
 export type OnboardingAnswers = {
     profile: { name: string; headline: string; avatarUrl: string }
@@ -65,12 +85,27 @@ export type OnboardingAnswers = {
     mirrorManual?: boolean
     /** The first post text kept in state for the Voice/Recap screens. */
     firstPostText?: string
+    /** Whether the first post was written against real scraped posts as style references. */
+    firstPostStyled?: boolean
+    /** The gap category the CURRENT first post was written to fill (set at generation
+     *  time, so the preview header never claims a gap an older post was not written for). */
+    firstPostGap?: InsightCategory
     /** Posting cadence commitment (maps to frequency + schedule). */
     cadence?: Cadence
     /** Confirmed tone for generation. */
     tone?: Tone
     /** Optional "anything we should avoid?" note (maps to dos/donts). */
     writingNotes?: string
+
+    // --- Rich enrichment pipeline (two-tier fetch) --------------------------
+    /** Rich (Bright Data) scrape lifecycle; persisted so a reload resumes polling. */
+    richStatus?: RichScrapeStatus
+    /** Slim rich summary (post count, followers, observed cadence) once the scrape lands. */
+    richSummary?: RichSummary
+    /** Insight payload from /api/onboarding/insights (the pre-offer analysis cards). */
+    insights?: OnboardingInsights
+    /** Only terminal states persist; in-flight generation lives in the pipeline hook. */
+    insightsStatus?: 'ready' | 'failed'
 }
 
 /** Seed the wizard from whatever the user already has, so partial setups prefill. */
@@ -99,11 +134,16 @@ export type OnboardingResumeState = {
     answers: OnboardingAnswers
     /** Step id to resume at on the next mount. */
     resumeAt: StepId
+    /** Blob shape/step-order version. */
+    v?: number
 }
 
 export function persistOnboarding(answers: OnboardingAnswers, resumeAt: StepId) {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers, resumeAt } satisfies OnboardingResumeState))
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({ v: STATE_VERSION, answers, resumeAt } satisfies OnboardingResumeState),
+        )
     } catch {}
 }
 
@@ -115,6 +155,13 @@ export function readOnboarding(): OnboardingResumeState | null {
         // Guard against stale/corrupt blobs from an older shape so the gate that
         // reads `answers.profile` can never throw and silently drop the user.
         if (!parsed?.answers?.profile || typeof parsed.resumeAt !== 'string') return null
+        if (parsed.v !== STATE_VERSION) {
+            parsed.resumeAt =
+                V1_RESUME[parsed.resumeAt] ??
+                ((STEP_ORDER as readonly string[]).includes(parsed.resumeAt) ? parsed.resumeAt : 'welcome')
+        } else if (!(STEP_ORDER as readonly string[]).includes(parsed.resumeAt)) {
+            parsed.resumeAt = 'welcome'
+        }
         return parsed
     } catch {
         return null

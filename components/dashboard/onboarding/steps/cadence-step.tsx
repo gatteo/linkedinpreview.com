@@ -9,11 +9,36 @@ import { cn } from '@/lib/utils'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
-import { H2, OptionRow } from '../primitives'
+import { H2, OptionRow, timeAgoLabel } from '../primitives'
+
+const DORMANT_AFTER_DAYS = 45
+
+// Purely additive: an honest observed-rhythm line above the options once the
+// rich scrape landed. The default NEVER anchors to a low observed cadence - the
+// line creates the gap, the recommended option offers the resolution.
+function observedLine(answers: ReturnType<typeof useOnboarding>['answers']): string | null {
+    const summary = answers.richSummary
+    if (!summary) return null
+    const observed = summary.observed
+    const dormant =
+        observed?.newestPostAt &&
+        Date.now() - new Date(observed.newestPostAt).getTime() > DORMANT_AFTER_DAYS * 86_400_000
+    if (observed?.postsPerWeek != null && !dormant) {
+        return `From your profile: you've been averaging about ${observed.postsPerWeek} posts a week lately.`
+    }
+    if (dormant && observed?.newestPostAt) {
+        return `From your profile: your most recent post was ${timeAgoLabel(observed.newestPostAt)}.`
+    }
+    if (summary.postsCount > 0) {
+        return `From your profile: we found ${summary.postsCount} recent ${summary.postsCount === 1 ? 'post' : 'posts'}.`
+    }
+    return "From your profile: we couldn't find recent posts - showing up at all is your biggest lever."
+}
 
 export function CadenceStep() {
     const { answers, update } = useOnboarding()
     const selected: Cadence = answers.cadence ?? 'recommended-3x'
+    const observed = observedLine(answers)
 
     const choose = (value: Cadence) => {
         const option = CADENCE_OPTIONS.find((c) => c.value === value)
@@ -29,6 +54,16 @@ export function CadenceStep() {
             <motion.div variants={staggerItem}>
                 <H2 className='text-xl'>How often do you want to show up?</H2>
             </motion.div>
+
+            {observed && (
+                <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{ background: 'color-mix(in oklch, var(--primary) 6%, transparent)' }}
+                    className='border-primary/20 text-foreground rounded-xl border px-[15px] py-[11px] text-sm leading-snug'>
+                    {observed}
+                </motion.p>
+            )}
 
             <motion.div variants={staggerItem} className='flex flex-col gap-2.5'>
                 {CADENCE_OPTIONS.map((option) => {

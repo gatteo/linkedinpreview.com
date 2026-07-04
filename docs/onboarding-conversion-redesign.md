@@ -5,6 +5,30 @@
 > anon-user_id entitlement limitation). The matrix copy, stats, testimonials, and offer urgency values
 > ship as flagged placeholders (§9) and must be replaced before public launch.
 >
+> **V2 update (2026-07-04) - two-tier enrichment + insight cards.** The screen order in §2 is
+> superseded. The flow is now
+> `welcome → connect → mirror → goal → voice → cadence → reinforce → building → insights → preview → recap → offer → done`:
+> the question steps moved right after the mirror so a background Bright Data scrape of the user's
+> real posts (42-60s, triggered when the URL is submitted) completes while they answer; `proof` and
+> `spotlight` were removed (spotlight's job moved into the recap as a gap-prescribed feature row, and
+> the fabricated `socialProofCount` on `reinforce` was replaced with honest role benchmarks + the
+> user's real follower count). A NEW `insights` step shows three cards computed from their actual
+> posts (topic mix → missing category → cadence gap), `preview` now writes the first post to fill
+> that gap using their real posts as style references, and everything (answers, fetched profiles,
+> insights) persists server-side in `public.onboarding_sessions` for later analysis. Two-tier fetch:
+> fast = Scrapingdog (`SCRAPINGDOG_API_KEY`) with JSON-LD fallback, feeding the live Mirror; rich =
+> Bright Data dataset (`BRIGHTDATA_API_KEY`), trigger + client-side polling via
+> `/api/onboarding/enrich/status`, insights via `/api/onboarding/insights` (LLM labels, server
+> counts - no LLM-generated numbers). Every user-facing digit is a deterministic count or a
+> benchmark-framed industry line.
+>
+> Known limitations (accepted for v2, revisit before scale): (1) the `onboarding_sessions`
+> "server-owned" columns (rich_posts/insights/...) are technically writable by the user's own
+> RLS-scoped client - a user can only pollute their own row, but a DB trigger or service-role split
+> would make the no-fabricated-metrics guarantee structural; (2) scrape spend is capped per user
+> (`onbEnrich` 5/day, fail-closed on limiter errors) but there is no global cross-user daily budget -
+> anonymous accounts are free to mint, so add a global cap RPC before any traffic spike.
+>
 > **Original status:** Draft spec for review. Hand-off target: AI designer (visual + interaction) and AI
 > coding agent (implementation). Last edited: 2026-06-27.
 >

@@ -9,6 +9,7 @@
 
 import posthog from 'posthog-js'
 
+import type { InsightCategory, OnboardingInsights, RichScrapeStatus, RichStatusResponse } from '@/types/onboarding'
 import type { Role } from '@/config/onboarding-personalization'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
@@ -22,12 +23,13 @@ export type EnrichResult = {
     confidence: number
     /** Real identity read from the public profile, when the fetch succeeded. */
     profile?: { name: string; headline: string; avatarUrl: string }
+    /** Rich (Bright Data) scrape state: 'pending' means the pipeline hook should poll. */
+    rich?: RichScrapeStatus
 }
 
 export type EnrichInput = {
     name?: string
     headline?: string
-    vanityUrl?: string
     profileUrl?: string
     welcomeGoal?: StrategyGoal
 }
@@ -43,20 +45,59 @@ async function fetchWithTimeout(input: RequestInfo, init: RequestInit, ms: numbe
     }
 }
 
+// In-flight dedupe: the Mirror remounts on back-then-forward navigation while an
+// enrich is still running; the remount must await the SAME request, not fire a
+// second LLM call + a second paid scrape trigger. Module scope survives remounts.
+let inflightEnrich: { key: string; promise: Promise<EnrichResult | null> } | null = null
+
 export async function enrichProfile(input: EnrichInput): Promise<EnrichResult | null> {
+    const key = JSON.stringify(input)
+    if (inflightEnrich?.key === key) return inflightEnrich.promise
+    const promise = (async () => {
+        try {
+            const res = await fetchWithTimeout(
+                '/api/onboarding/enrich',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(input),
+                },
+                // Generous: the fast profile fetch (up to ~12s) plus the LLM call.
+                // Kept under the server maxDuration and the Mirror failsafe.
+                28000,
+            )
+            if (!res.ok) return null
+            return (await res.json()) as EnrichResult
+        } catch {
+            return null
+        }
+    })()
+    inflightEnrich = { key, promise }
+    promise.finally(() => {
+        if (inflightEnrich?.key === key) inflightEnrich = null
+    })
+    return promise
+}
+
+/** Poll the rich (Bright Data) scrape; null on transport trouble = try again later. */
+export async function fetchRichStatus(): Promise<RichStatusResponse | null> {
     try {
-        const res = await fetchWithTimeout(
-            '/api/onboarding/enrich',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(input),
-            },
-            // Generous: a real profile fetch (up to ~10s) plus the LLM call.
-            22000,
-        )
+        const res = await fetchWithTimeout('/api/onboarding/enrich/status', {}, 15000)
         if (!res.ok) return null
-        return (await res.json()) as EnrichResult
+        return (await res.json()) as RichStatusResponse
+    } catch {
+        return null
+    }
+}
+
+/** Generate (or echo, server-side idempotent) the pre-offer insight payload. */
+export async function fetchInsights(): Promise<OnboardingInsights | null> {
+    try {
+        // Slightly past the route's maxDuration (40s) so the server always gets
+        // to answer or die first - the client never abandons a live response.
+        const res = await fetchWithTimeout('/api/onboarding/insights', { method: 'POST' }, 42000)
+        if (!res.ok) return null
+        return (await res.json()) as OnboardingInsights
     } catch {
         return null
     }
@@ -69,9 +110,17 @@ export type FirstPostInput = {
     audience?: string[]
     tone?: string
     name?: string
+    /** The missing content category from the insights - the post fills the gap. */
+    gapCategory?: InsightCategory
 }
 
-export async function generateFirstPost(input: FirstPostInput): Promise<string | null> {
+export type FirstPostResult = {
+    text: string
+    /** Whether real scraped posts were used as style references server-side. */
+    styled: boolean
+}
+
+export async function generateFirstPost(input: FirstPostInput): Promise<FirstPostResult | null> {
     try {
         const res = await fetchWithTimeout(
             '/api/onboarding/first-post',
@@ -83,8 +132,8 @@ export async function generateFirstPost(input: FirstPostInput): Promise<string |
             25000,
         )
         if (!res.ok) return null
-        const data = (await res.json()) as { text?: string }
-        return typeof data.text === 'string' ? data.text : null
+        const data = (await res.json()) as { text?: string; styled?: boolean }
+        return typeof data.text === 'string' ? { text: data.text, styled: data.styled === true } : null
     } catch {
         return null
     }

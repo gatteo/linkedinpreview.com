@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { GaugeIcon, Loader2Icon, RefreshCwIcon, ScissorsIcon, WandSparklesIcon } from 'lucide-react'
 
-import { fallbackPost } from '@/config/onboarding-personalization'
+import { fallbackPost, INSIGHT_CATEGORY_LABELS } from '@/config/onboarding-personalization'
 import { computeContentStats } from '@/lib/content-scoring'
 import { fadeUp, staggerContainer, staggerItem } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -31,20 +31,42 @@ export function PreviewStep() {
     const textRef = React.useRef('')
     textRef.current = answers.firstPostText ?? ''
 
+    // The prescription: write the post to fill the gap the insight cards just
+    // named (only when the analysis actually saw their posts).
+    const gapCategory =
+        answers.insights?.kind === 'posts' && answers.insights.missing[0]?.category !== 'other'
+            ? answers.insights?.missing[0]?.category
+            : undefined
+
     const runGenerate = React.useCallback(async () => {
         setGenerating(true)
-        const text = await generateFirstPost({
+        const result = await generateFirstPost({
             role: answers.role || role,
             niche: answers.niche,
             primaryGoal: answers.primaryGoal,
             audience: answers.audience,
             tone: answers.tone,
             name: answers.profile.name || undefined,
+            gapCategory,
         })
-        update({ firstPostText: text ?? (textRef.current || fallbackPost(answers.role, answers.niche)) })
+        update({
+            firstPostText: result?.text ?? (textRef.current || fallbackPost(answers.role, answers.niche)),
+            firstPostStyled: result?.styled ?? false,
+            // Record which gap THIS post was written for, so the header claim
+            // always matches the post on screen (not a stale one).
+            firstPostGap: result ? gapCategory : undefined,
+        })
         setGenerating(false)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [answers.role, answers.niche, answers.primaryGoal, answers.audience, answers.tone, answers.profile.name])
+    }, [
+        answers.role,
+        answers.niche,
+        answers.primaryGoal,
+        answers.audience,
+        answers.tone,
+        answers.profile.name,
+        gapCategory,
+    ])
 
     React.useEffect(() => {
         if (startedRef.current) return
@@ -85,8 +107,16 @@ export function PreviewStep() {
     return (
         <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-4'>
             <motion.div variants={staggerItem} className='flex flex-col gap-1 text-center'>
-                <H2 className='text-xl'>Here&apos;s a first post, built around your goal.</H2>
-                <Sub>Built in seconds. Imagine never staring at a blank editor again.</Sub>
+                <H2 className='text-xl'>
+                    {answers.firstPostGap
+                        ? `You're light on ${INSIGHT_CATEGORY_LABELS[answers.firstPostGap].toLowerCase()} posts, so we wrote your first one.`
+                        : "Here's a first post, built around your goal."}
+                </H2>
+                <Sub>
+                    {answers.firstPostStyled
+                        ? 'Written in your voice, matched to your real posts.'
+                        : 'Built in seconds. Imagine never staring at a blank editor again.'}
+                </Sub>
             </motion.div>
 
             <motion.div

@@ -61,6 +61,12 @@ export function MirrorStep() {
     // the enrich call from firing twice, settledRef keeps us committing once.
     const startedRef = React.useRef(false)
     const settledRef = React.useRef(false)
+    // The enrich call runs for seconds while the pipeline hook may patch answers;
+    // finish() must commit against the LIVE answers, not the mount-time closure.
+    const answersRef = React.useRef(answers)
+    React.useEffect(() => {
+        answersRef.current = answers
+    })
 
     React.useEffect(() => {
         // Already enriched (e.g. a refresh-resume): nothing to do.
@@ -84,37 +90,49 @@ export function MirrorStep() {
             if (settledRef.current) return
             settledRef.current = true
             clearTimeout(failsafe)
+            const live = answersRef.current
             const role = resolveRole(result?.role)
             const primaryAudience = result?.primaryAudience
             const nextAudience =
-                primaryAudience && !answers.audience.includes(primaryAudience)
-                    ? [primaryAudience, ...answers.audience].slice(0, MAX_AUDIENCE)
-                    : answers.audience
+                primaryAudience && !live.audience.includes(primaryAudience)
+                    ? [primaryAudience, ...live.audience].slice(0, MAX_AUDIENCE)
+                    : live.audience
             const fetchedProfile = result?.profile
             update({
                 role,
-                niche: result?.niche || answers.niche || '',
+                niche: result?.niche || live.niche || '',
                 audience: nextAudience,
-                toneSummary: result?.toneSummary || answers.toneSummary || '',
-                tone: answers.tone ?? toneFromSummary(result?.toneSummary),
+                toneSummary: result?.toneSummary || live.toneSummary || '',
+                tone: live.tone ?? toneFromSummary(result?.toneSummary),
                 opportunityLine: result?.opportunityLine || getRoleContent(role).mirrorOpportunity,
                 enrichConfidence: result?.confidence ?? 0,
-                // Fill empty identity fields from the real fetched profile.
-                profile: fetchedProfile
+                // Hand the rich-scrape state to the pipeline hook ('pending'
+                // starts the background polling that feeds the insight cards).
+                // Never downgrade a scrape the pipeline already settled.
+                ...(result?.rich &&
+                result.rich !== 'idle' &&
+                (live.richStatus === undefined || live.richStatus === 'pending')
+                    ? { richStatus: result.rich }
+                    : {}),
+                // Fill empty identity fields from the real fetched profile; omit
+                // the key entirely otherwise so a concurrent pipeline write survives.
+                ...(fetchedProfile
                     ? {
-                          name: answers.profile.name || fetchedProfile.name,
-                          headline: answers.profile.headline || fetchedProfile.headline,
-                          avatarUrl: answers.profile.avatarUrl || fetchedProfile.avatarUrl,
+                          profile: {
+                              name: live.profile.name || fetchedProfile.name,
+                              headline: live.profile.headline || fetchedProfile.headline,
+                              avatarUrl: live.profile.avatarUrl || fetchedProfile.avatarUrl,
+                          },
                       }
-                    : answers.profile,
+                    : {}),
             })
             setPhase('ready')
         }
 
-        // Failsafe: sits just past the client enrich timeout (22s) so a real
+        // Failsafe: sits just past the client enrich timeout (28s) so a real
         // result is always preferred; only a call that never settles hits this.
         // Re-armed every mount so a StrictMode remount can't leave us without one.
-        const failsafe = setTimeout(() => finish(null), 24000)
+        const failsafe = setTimeout(() => finish(null), 30000)
 
         // Fire the enrich + minimum-theater wait exactly once across remounts.
         if (!startedRef.current) {
@@ -168,7 +186,9 @@ export function MirrorStep() {
     // A pasted profile URL that we couldn't read (LinkedIn blocks datacenter IPs
     // when no scrape API is configured). Own the failure with an explicit error +
     // a manual fallback, instead of silently dropping onto the "tell us" form.
-    if (hasUrl && lowConfidence && !manualOverride) {
+    // A connected (OAuth) user skips the card: their identity is already real, so
+    // they fall through to the form with it prefilled.
+    if (hasUrl && lowConfidence && !manualOverride && !answers.linkedinConnected) {
         return (
             <div className='flex flex-col items-center gap-5 py-4 text-center'>
                 <div className='bg-destructive/10 text-destructive flex size-14 items-center justify-center rounded-2xl'>

@@ -24,10 +24,25 @@ async function getPlan(supabase: SupabaseClient): Promise<Plan> {
     }
 }
 
-export async function checkRateLimit(supabase: SupabaseClient, action: AiAction): Promise<RateLimitResult> {
+type RateLimitOptions = {
+    /**
+     * Fail CLOSED when the limiter itself errors. Use for actions that spend
+     * real per-call money on third parties (paid scrapes) where availability
+     * must not trump the budget; LLM-only actions keep the fail-open default.
+     */
+    failClosed?: boolean
+}
+
+export async function checkRateLimit(
+    supabase: SupabaseClient,
+    action: AiAction,
+    options?: RateLimitOptions,
+): Promise<RateLimitResult> {
     if (process.env.NODE_ENV === 'development') {
         return { allowed: true, remaining: 999, resetAt: null }
     }
+
+    const onError = (): RateLimitResult => ({ allowed: !options?.failClosed, remaining: 0, resetAt: null })
 
     try {
         const plan = await getPlan(supabase)
@@ -40,8 +55,7 @@ export async function checkRateLimit(supabase: SupabaseClient, action: AiAction)
 
         if (error) {
             console.error('Rate limit check failed:', error.message)
-            // Fail open - allow the request if DB is unreachable
-            return { allowed: true, remaining: 0, resetAt: null }
+            return onError()
         }
 
         return {
@@ -51,7 +65,6 @@ export async function checkRateLimit(supabase: SupabaseClient, action: AiAction)
         }
     } catch (err) {
         console.error('Rate limit check error:', err)
-        // Fail open
-        return { allowed: true, remaining: 0, resetAt: null }
+        return onError()
     }
 }

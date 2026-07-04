@@ -181,3 +181,13 @@ export function initials(name?: string): string {
 export function firstName(name?: string): string {
     return (name ?? '').trim().split(' ')[0] ?? ''
 }
+
+/** Coarse "N weeks/months ago" for post-recency lines. */
+export function timeAgoLabel(iso: string): string {
+    const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+    if (days < 60) {
+        const weeks = Math.max(1, Math.round(days / 7))
+        return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`
+    }
+    return `${Math.round(days / 30)} months ago`
+}

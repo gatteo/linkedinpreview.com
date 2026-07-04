@@ -16,6 +16,7 @@ export const AI_RATE_LIMITS = {
     carouselGenerate: 3,
     onbEnrich: 5,
     onbFirstPost: 15,
+    onbInsights: 3,
 } as const
 
 export type AiAction = keyof typeof AI_RATE_LIMITS
@@ -35,6 +36,7 @@ export const PRO_AI_RATE_LIMITS: Record<AiAction, number> = {
     carouselGenerate: 50,
     onbEnrich: 5,
     onbFirstPost: 15,
+    onbInsights: 3,
 }
 
 /** Per-action daily limits for the given plan. */

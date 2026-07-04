@@ -17,40 +17,25 @@ import { CadenceStep } from './steps/cadence-step'
 import { ConnectStep } from './steps/connect-step'
 import { DoneStep } from './steps/done-step'
 import { GoalStep } from './steps/goal-step'
+import { InsightsStep } from './steps/insights-step'
 import { MirrorStep } from './steps/mirror-step'
 import { OfferStep } from './steps/offer-step'
 import { PreviewStep } from './steps/preview-step'
-import { ProofStep } from './steps/proof-step'
 import { RecapStep } from './steps/recap-step'
 import { ReinforceStep } from './steps/reinforce-step'
-import { SpotlightStep } from './steps/spotlight-step'
 import { VoiceStep } from './steps/voice-step'
 import { WelcomeStep } from './steps/welcome-step'
-import type { OnboardingAnswers, StepId } from './types'
+import { STEP_ORDER, type OnboardingAnswers, type StepId } from './types'
+import { useRichPipeline } from './use-rich-pipeline'
 
 // ---------------------------------------------------------------------------
-// Step machine (docs/onboarding-conversion-redesign.md §2)
+// Step machine (docs/onboarding-conversion-redesign.md §2; order lives in
+// types.ts so StepId derives from it)
 // ---------------------------------------------------------------------------
-
-const STEP_ORDER: StepId[] = [
-    'welcome',
-    'connect',
-    'mirror',
-    'reinforce',
-    'goal',
-    'proof',
-    'voice',
-    'preview',
-    'spotlight',
-    'cadence',
-    'building',
-    'recap',
-    'offer',
-    'done',
-]
 
 // Only COLLECT (data) steps fill the progress bar; value/milestone steps read as
-// rewards, not work, so they don't advance it.
+// rewards, not work, so they don't advance it - the bar is full walking into
+// the insight cards, framing them as the payout.
 const DATA_STEPS: StepId[] = ['welcome', 'connect', 'goal', 'voice', 'cadence']
 
 type FooterConfig = { back: boolean; skip: 'data' | null; primary: string | null }
@@ -63,14 +48,14 @@ const FOOTER: Record<StepId, FooterConfig> = {
     // confirmed while the "reading" spinner is still running or before the
     // manual form is complete.
     mirror: { back: true, skip: null, primary: null },
-    reinforce: { back: true, skip: null, primary: 'Continue' },
     goal: { back: true, skip: null, primary: 'Continue' },
-    proof: { back: true, skip: null, primary: 'Continue' },
-    preview: { back: true, skip: null, primary: 'Continue' },
     voice: { back: true, skip: 'data', primary: 'Continue' },
-    spotlight: { back: true, skip: null, primary: 'Continue' },
     cadence: { back: true, skip: 'data', primary: 'Continue' },
+    reinforce: { back: true, skip: null, primary: 'Continue' },
     building: { back: false, skip: null, primary: null },
+    // Insights owns its footer: the three cards advance with their own buttons.
+    insights: { back: false, skip: null, primary: null },
+    preview: { back: true, skip: null, primary: 'Continue' },
     recap: { back: false, skip: null, primary: 'See my offer' },
     offer: { back: false, skip: null, primary: null },
     done: { back: false, skip: null, primary: null },
@@ -114,6 +99,10 @@ export function OnboardingModal({
         (patch: Partial<OnboardingAnswers>) => setAnswers((prev) => ({ ...prev, ...patch })),
         [],
     )
+
+    // Background rich-scrape polling + insights generation. Lives here (not in a
+    // step) because steps remount on every navigation.
+    useRichPipeline(answers, update)
 
     const goNext = React.useCallback(() => {
         setDirection(1)
@@ -318,22 +307,20 @@ function StepBody({ step }: { step: StepId }) {
             return <ConnectStep />
         case 'mirror':
             return <MirrorStep />
-        case 'reinforce':
-            return <ReinforceStep />
         case 'goal':
             return <GoalStep />
-        case 'proof':
-            return <ProofStep />
-        case 'preview':
-            return <PreviewStep />
         case 'voice':
             return <VoiceStep />
-        case 'spotlight':
-            return <SpotlightStep />
         case 'cadence':
             return <CadenceStep />
+        case 'reinforce':
+            return <ReinforceStep />
         case 'building':
             return <BuildingStep />
+        case 'insights':
+            return <InsightsStep />
+        case 'preview':
+            return <PreviewStep />
         case 'recap':
             return <RecapStep />
         case 'offer':

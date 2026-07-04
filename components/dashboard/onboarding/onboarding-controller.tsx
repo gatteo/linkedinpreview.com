@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 import { Routes } from '@/config/routes'
 import { createDraft as createDraftApi } from '@/lib/supabase/drafts'
+import { upsertOnboardingSession } from '@/lib/supabase/onboarding-session'
 import { useBranding } from '@/hooks/use-branding'
 import { useStrategy } from '@/hooks/use-strategy'
 import { useAuth } from '@/components/dashboard/auth-provider'
@@ -84,10 +85,13 @@ export function OnboardingController() {
                     avatarUrl: saved.answers.profile.avatarUrl || branding.profile.avatarUrl,
                 },
                 linkedinConnected: connected || saved.answers.linkedinConnected,
-                // A successful OAuth supersedes a half-finished URL attempt: drop the
-                // pasted URL + its stale enrichment so the Mirror re-reads the
-                // connected identity instead of replaying the URL-fetch failure.
-                ...(connected ? { profileUrl: undefined, enrichConfidence: undefined } : {}),
+                // A successful OAuth supersedes a half-finished URL fetch on the
+                // Mirror: drop the stale enrichment so it re-reads with the
+                // connected identity. The URL itself stays - the rich scrape it
+                // triggered keeps running and the pipeline hook resumes polling.
+                // mirrorManual stays too: a user who already chose "continue
+                // manually" must not be thrown back onto the failure card.
+                ...(connected ? { enrichConfidence: undefined } : {}),
             })
             if (connected) {
                 setStartStepId('mirror')
@@ -139,18 +143,41 @@ export function OnboardingController() {
         })
     }, [])
 
-    const handlePersist = React.useCallback((answers: OnboardingAnswers, step: StepId) => {
-        persistOnboarding(answers, step)
-    }, [])
+    // Server-side mirror of the answers (public.onboarding_sessions) so user
+    // types can be analyzed later. Debounced + fire-and-forget: localStorage is
+    // the user's safety net, this only carries analytics fidelity. The insights
+    // payload is stripped - the server already owns it in its own column.
+    const sessionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+    const saveSession = React.useCallback(
+        (answers: OnboardingAnswers, patch: { resume_at?: string; completed_at?: string; converted?: boolean }) => {
+            if (!userId) return
+            const { insights: _insights, ...slim } = answers
+            upsertOnboardingSession(supabase, userId, { answers: slim, ...patch }).catch(() => {})
+        },
+        [supabase, userId],
+    )
+
+    const handlePersist = React.useCallback(
+        (answers: OnboardingAnswers, step: StepId) => {
+            persistOnboarding(answers, step)
+            if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
+            sessionTimerRef.current = setTimeout(() => saveSession(answers, { resume_at: step }), 1500)
+        },
+        [saveSession],
+    )
 
     // Write-once at the offer (convert or decline). Persists branding + strategy,
     // stashes the first post as a draft so it survives into the dashboard, and
     // gates the modal closed via meta.onboardedAt.
     const handleFinish = React.useCallback(
-        (answers: OnboardingAnswers, _converted: boolean) => {
+        (answers: OnboardingAnswers, converted: boolean) => {
             if (finishedRef.current) return
             finishedRef.current = true
             const now = new Date().toISOString()
+
+            // Final analytics write - a pending debounce must not overwrite it.
+            if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
+            saveSession(answers, { resume_at: 'done', completed_at: now, converted })
 
             const topics = answers.topics.filter(Boolean)
             const effectiveTopics = topics.length ? topics : answers.niche ? [answers.niche] : []
@@ -192,7 +219,7 @@ export function OnboardingController() {
 
             clearOnboarding()
         },
-        [branding, updateBranding, updateStrategy, supabase, userId],
+        [branding, updateBranding, updateStrategy, supabase, userId, saveSession],
     )
 
     const handleComplete = React.useCallback(async () => {

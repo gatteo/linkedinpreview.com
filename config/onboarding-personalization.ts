@@ -2,17 +2,17 @@
 // Onboarding personalization engine (role-driven matrix)
 //
 // The heart of the conversion redesign (docs/onboarding-conversion-redesign.md
-// §3). Every "tailored" moment - Mirror opportunity line, Proof stat +
-// testimonial, Spotlight feature, Recap, Offer - reads from one typed config
-// keyed on the user's role and cross-cut by primary goal. PMs/designers tune copy
-// here without touching flow logic.
+// §3 + the V2 update). Every "tailored" moment - Mirror opportunity line,
+// Reinforce benchmarks, insight-card fallbacks, Recap feature row, Offer - reads
+// from one typed config keyed on the user's role and cross-cut by primary goal.
+// PMs/designers tune copy here without touching flow logic.
 //
-// Social proof (the Proof screen) is sourced from TESTIMONIALS below - it is
-// EMPTY by default and must be filled with real, consented, attributable quotes.
-// Until a role has one, the Proof screen shows an honest, non-fabricated value
-// message. Never put invented names, quotes, or metrics here.
+// Honesty rule for everything in this file: benchmark/pattern lines are always
+// framed as industry patterns, never as the user's own metrics, and never
+// fabricated counts of "people like you".
 // ---------------------------------------------------------------------------
 
+import type { InsightCategory } from '@/types/onboarding'
 import type { Tone } from '@/config/ai'
 import type { BrandingRole } from '@/lib/branding'
 import type { ScheduleSlot, StrategyAudience, StrategyGoal } from '@/lib/strategy'
@@ -61,26 +61,90 @@ export const NICHE_OPTIONS: string[] = [
     'Content creation',
 ]
 
-// A deterministic "you're in good company" count for the reinforce screen.
-// Fake-but-stable: the same role + niche always yields the same number, so it
-// never looks like it shifts on a re-render. Never presented as a live metric.
-export function socialProofCount(role: Role, niche: string): number {
-    const seed = `${role}:${niche.trim().toLowerCase()}`
-    let h = 0
-    for (let i = 0; i < seed.length; i++) {
-        h = (h * 31 + seed.charCodeAt(i)) >>> 0
-    }
-    return 1400 + (h % 8200)
+// --- Insight benchmarks (reinforce screen + insight cards) ------------------
+// Honest industry-pattern lines, always framed as benchmarks - never presented
+// as the user's own metrics and never fabricated counts of "people like you".
+
+export const INSIGHT_CATEGORY_LABELS: Record<InsightCategory, string> = {
+    'personal-story': 'Personal stories',
+    'educational': 'Educational',
+    'opinion': 'Opinions & takes',
+    'promotional': 'Promotional',
+    'engagement-social': 'Engagement & social',
+    'other': 'Other',
 }
+
+/** What strong presences in each role visibly have in common (reinforce screen). */
+export const ROLE_BENCHMARKS: Record<Role, string[]> = {
+    'founder': [
+        'They post decisions and reasoning, not announcements.',
+        'They show up 3+ times a week, even in busy quarters.',
+        'They mix personal lessons with educational posts buyers can use.',
+    ],
+    'freelancer': [
+        'They publish the answers they already give on every client call.',
+        'They post consistently, so prospects arrive pre-sold.',
+        'They balance proof of work with useful how-to content.',
+    ],
+    'consultant': [
+        'They publish their frameworks instead of guarding them.',
+        'They keep a steady weekly rhythm their audience can rely on.',
+        'They pair strong opinions with educational depth.',
+    ],
+    'agency': [
+        'They run content on a schedule, not on inspiration.',
+        'They show client thinking, not just client logos.',
+        'They mix promotional wins with educational breakdowns.',
+    ],
+    'team-lead': [
+        'They share the tradeoffs behind team decisions.',
+        'They post regularly enough that candidates find a living feed.',
+        'They mix leadership lessons with behind-the-scenes stories.',
+    ],
+    'employee': [
+        'They make one skill visibly theirs with small, specific posts.',
+        'They show up weekly, not just when job hunting.',
+        'They share real work stories recruiters can act on.',
+    ],
+    'creator': [
+        'They optimize for saves and shares, not likes.',
+        'They keep a cadence their audience can set a clock by.',
+        'They rotate formats: stories, how-tos, and clear takes.',
+    ],
+}
+
+/**
+ * The content category most associated with each goal, with a benchmark-framed
+ * why. Drives the no-posts gap insight and the first-post prescription.
+ */
+export const GOAL_GAP: Record<StrategyGoal, { category: InsightCategory; why: string }> = {
+    'revenue-growth': {
+        category: 'educational',
+        why: 'Educational posts are what strangers save and share - they bring in buyers who arrive already convinced you know your craft.',
+    },
+    'company-awareness': {
+        category: 'opinion',
+        why: 'Clear opinions travel beyond your own network - they are the posts people quote, debate, and remember your name from.',
+    },
+    'career-opportunities': {
+        category: 'personal-story',
+        why: 'Personal stories about your work make your skills legible to hiring managers - people hire people, not keyword lists.',
+    },
+    'employer-branding': {
+        category: 'personal-story',
+        why: 'Behind-the-scenes stories about how your team works are what candidates actually read before applying.',
+    },
+    'media-pr': {
+        category: 'opinion',
+        why: 'Journalists and event organizers look for a clear point of view - opinion posts are your public audition.',
+    },
+}
+
+/** Static cadence benchmark for the insight cards (industry framing, no user metrics). */
+export const CADENCE_BENCHMARK_LINE =
+    'Across LinkedIn, people who post 3+ times a week consistently reach far more people over a quarter than sporadic posters. Consistency, not virality, is the compounding lever.'
 
 export type SpotlightFeature = 'analytics' | 'calendar' | 'carousels' | 'weekly-ideas'
-
-export type Testimonial = {
-    quote: string
-    name: string
-    title: string
-    metric?: string
-}
 
 export type RoleContent = {
     /** Mirror screen: the role's "biggest opportunity" line. */
@@ -138,15 +202,6 @@ export const ROLE_CONTENT: Record<Role, RoleContent> = {
     },
 }
 
-// --- Real social proof (Proof screen) --------------------------------------
-// FILL THIS with real, consented, attributable testimonials, keyed by role.
-// Until a role has one, the Proof screen shows an honest, non-fabricated value
-// message (see proof-step.tsx). NEVER add invented names, quotes, or metrics -
-// they would render as real customer proof right before the paid offer.
-// Example shape:
-//   founder: { quote: 'Real quote.', name: 'Real Name', title: 'Founder, Acme', metric: 'Optional real result' },
-export const TESTIMONIALS: Partial<Record<Role, Testimonial>> = {}
-
 /** Role fallback when unknown (skipped LinkedIn + skipped role): creator/generalist (§3.1). */
 export const DEFAULT_ROLE: Role = 'creator'
 
@@ -171,7 +226,9 @@ export const GOAL_RESTATED: Record<StrategyGoal, string> = {
 }
 
 export function goalRestated(goal: StrategyGoal | undefined | null): string {
-    return goal ? GOAL_RESTATED[goal] : 'grow on LinkedIn'
+    // The goal can arrive from client-written storage - unknown values fall back
+    // instead of rendering "undefined" in copy.
+    return (goal && GOAL_RESTATED[goal]) || 'grow on LinkedIn'
 }
 
 // --- Welcome motivation taps (§ Screen 1) ----------------------------------

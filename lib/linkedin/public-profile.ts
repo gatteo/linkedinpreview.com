@@ -5,26 +5,27 @@ import { normalizeProfileUrl } from './profile-url'
 export { isLikelyProfileUrl, normalizeProfileUrl } from './profile-url'
 
 // ---------------------------------------------------------------------------
-// Public LinkedIn profile fetch + parse.
+// FAST public LinkedIn profile fetch + parse (the live onboarding tier).
 //
-// LinkedIn renders an SEO version of every public profile that embeds a
-// JSON-LD `@graph` (a `Person` node with name/jobTitle/description plus recent
-// `Article`/`DiscussionForumPosting` nodes) and Open Graph meta tags. We fetch
-// that page server-side and parse those, which gives a REAL signal - the
-// member's headline, about, and recent post titles (how they actually write) -
-// that the OAuth/userinfo identity (name + photo only) cannot.
+// Two providers, tried in order, both synchronous within seconds:
+//   1. Scrapingdog's dedicated LinkedIn profile API (structured JSON, ~3-8s) -
+//      the production-reliable path; set SCRAPINGDOG_API_KEY to enable.
+//   2. LinkedIn's own SEO page: JSON-LD `@graph` (Person + Article nodes) and
+//      Open Graph tags. Works from residential IPs (local dev); LinkedIn
+//      near-universally blocks datacenter IPs (Vercel), so in production this
+//      usually returns a challenge page. LINKEDIN_SCRAPE_API_URL can route it
+//      through a raw-HTML proxy instead.
 //
-// Reality check (why this is best-effort, not guaranteed):
-//   - LinkedIn serves this page to some unauthenticated requests but
-//     near-universally blocks datacenter IPs (AWS/GCP/Vercel) by ASN. From a
-//     residential IP (local dev) it usually works; from serverless it often
-//     returns a challenge/auth-wall. We therefore degrade gracefully to
-//     `{ found: false }` and the caller falls back to manual setup.
-//   - For reliable production fetching, set LINKEDIN_SCRAPE_API_URL (+ KEY) to
-//     route through a residential-proxy / scraping API that returns raw HTML.
-//   - Scraping public profiles is a LinkedIn ToS gray area; this only reads
-//     public, member-published data and never authenticates as the member.
+// The RICH tier (Bright Data dataset: full posts + followers, async 42-60s)
+// lives in lib/linkedin/rich-scrape.ts - it can never serve a live screen, so
+// it is triggered/polled separately and must not be called from here.
+//
+// Everything degrades to `{ found: false }` - callers fall back to manual setup.
+// Scraping public profiles is a LinkedIn ToS gray area; this only reads public,
+// member-published data and never authenticates as the member.
 // ---------------------------------------------------------------------------
+
+export type FastProfileSource = 'scrapingdog' | 'jsonld' | 'none'
 
 export type PublicProfile = {
     /** Whether we extracted any usable signal from the page. */
@@ -39,6 +40,8 @@ export type PublicProfile = {
     avatarUrl: string
     /** The canonical profile URL we resolved and fetched. */
     url: string
+    /** Which provider produced the data. */
+    source: FastProfileSource
 }
 
 const EMPTY: PublicProfile = {
@@ -49,9 +52,11 @@ const EMPTY: PublicProfile = {
     recentPosts: [],
     avatarUrl: '',
     url: '',
+    source: 'none',
 }
 
-const FETCH_TIMEOUT_MS = 10_000
+const FETCH_TIMEOUT_MS = 12_000
+const SCRAPINGDOG_TIMEOUT_MS = 9_000
 const MAX_HTML_BYTES = 5_000_000
 const MAX_POSTS = 8
 
@@ -149,13 +154,84 @@ export function parsePublicProfileHtml(html: string, url: string): PublicProfile
     const avatarUrl = (ogImage || personImage || '').trim()
 
     const found = Boolean(name || headline || about || recentPosts.length)
-    return { found, name, headline, about, recentPosts, avatarUrl, url }
+    return { found, name, headline, about, recentPosts, avatarUrl, url, source: 'jsonld' }
+}
+
+// --- Scrapingdog path (preferred when configured) ---------------------------
+//
+// Dedicated LinkedIn profile endpoint: synchronous structured JSON keyed by the
+// profile's vanity slug. Field names vary slightly across their plans/versions,
+// so the mapping is deliberately defensive. Never throws - returns null so we
+// fall through to the JSON-LD path.
+
+type ScrapingdogArticle = { title?: string; link?: string }
+type ScrapingdogActivity = { title?: string; activity?: string; link?: string }
+
+type ScrapingdogProfile = {
+    fullName?: string
+    full_name?: string
+    first_name?: string
+    last_name?: string
+    headline?: string
+    about?: string
+    summary?: string
+    profile_photo?: string
+    profile_photo_url?: string
+    articles?: ScrapingdogArticle[]
+    activities?: ScrapingdogActivity[]
+}
+
+async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Promise<PublicProfile | null> {
+    const apiKey = env.SCRAPINGDOG_API_KEY
+    if (!apiKey) return null
+    const slug = targetUrl.split('/in/')[1]?.replace(/\/+$/, '')
+    if (!slug) return null
+
+    // Own timeout on top of the caller's overall budget so a slow Scrapingdog
+    // response still leaves time for the JSON-LD fallback.
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), SCRAPINGDOG_TIMEOUT_MS)
+    const onAbort = () => controller.abort()
+    signal.addEventListener('abort', onAbort)
+    try {
+        const endpoint = `https://api.scrapingdog.com/linkedin?api_key=${encodeURIComponent(apiKey)}&type=profile&id=${encodeURIComponent(slug)}&private=false`
+        const res = await fetch(endpoint, { signal: controller.signal })
+        if (!res.ok) return null
+        const body = (await res.json()) as ScrapingdogProfile | ScrapingdogProfile[]
+        const record = Array.isArray(body) ? body[0] : body
+        if (!record || typeof record !== 'object') return null
+
+        const name = (
+            record.fullName ||
+            record.full_name ||
+            [record.first_name, record.last_name].filter(Boolean).join(' ')
+        ).trim()
+        const headline = (record.headline ?? '').trim()
+        const about = (record.about || record.summary || '').trim()
+        const avatarUrl = (record.profile_photo || record.profile_photo_url || '').trim()
+        const recentPosts = Array.from(
+            new Set(
+                [...(record.articles ?? []), ...(record.activities ?? [])]
+                    .map((a) => (a.title ?? '').trim())
+                    .filter(Boolean),
+            ),
+        ).slice(0, MAX_POSTS)
+
+        const found = Boolean(name || headline || about || recentPosts.length)
+        if (!found) return null
+        return { found, name, headline, about, recentPosts, avatarUrl, url: targetUrl, source: 'scrapingdog' }
+    } catch {
+        return null
+    } finally {
+        clearTimeout(timer)
+        signal.removeEventListener('abort', onAbort)
+    }
 }
 
 /**
  * Get the profile page HTML. Routes through a configured scraping API when set
- * (the production-reliable path), otherwise fetches directly (works from
- * residential IPs / local dev, often blocked from datacenter IPs).
+ * (a raw-HTML proxy), otherwise fetches directly (works from residential IPs /
+ * local dev, often blocked from datacenter IPs).
  */
 async function getProfileHtml(targetUrl: string, signal: AbortSignal): Promise<string | null> {
     const scrapeApi = env.LINKEDIN_SCRAPE_API_URL
@@ -181,9 +257,9 @@ async function getProfileHtml(targetUrl: string, signal: AbortSignal): Promise<s
 }
 
 /**
- * Fetch and parse a public LinkedIn profile. Never throws - returns
- * `{ found: false }` on a bad URL, a block/auth-wall, a timeout, or a parse miss
- * so the caller can fall back to manual setup.
+ * Fetch and parse a public LinkedIn profile via the fast tier. Never throws -
+ * returns `{ found: false }` on a bad URL, a block/auth-wall, a timeout, or a
+ * parse miss so the caller can fall back to manual setup.
  */
 export async function fetchPublicProfile(
     input: string | undefined | null,
@@ -199,6 +275,9 @@ export async function fetchPublicProfile(
     const onExternalAbort = () => controller.abort()
     externalSignal?.addEventListener('abort', onExternalAbort)
     try {
+        const viaScrapingdog = await fetchViaScrapingdog(url, controller.signal)
+        if (viaScrapingdog?.found) return viaScrapingdog
+
         const html = await getProfileHtml(url, controller.signal)
         if (!html) return { ...EMPTY, url }
         const profile = parsePublicProfileHtml(html, url)
