@@ -179,21 +179,36 @@ export function OnboardingController() {
             if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
             saveSession(answers, { resume_at: 'done', completed_at: now, converted })
 
+            // Everything the pipeline learned lands in branding so the Branding
+            // page arrives populated: chosen topics, else the topics we actually
+            // read in their posts, else the niche.
             const topics = answers.topics.filter(Boolean)
-            const effectiveTopics = topics.length ? topics : answers.niche ? [answers.niche] : []
+            const effectiveTopics = topics.length
+                ? topics
+                : answers.insights?.currentTopics.length
+                  ? answers.insights.currentTopics.slice(0, 3)
+                  : answers.niche
+                    ? [answers.niche]
+                    : []
             const goals = answers.goals.length ? answers.goals : answers.primaryGoal ? [answers.primaryGoal] : []
             const donts = answers.writingNotes?.trim()
                 ? [...branding.dosDonts.donts, answers.writingNotes.trim()]
                 : branding.dosDonts.donts
             const toneNote = answers.tone ? `Preferred tone: ${answers.tone}.` : ''
-            const notes = [branding.knowledgeBase.notes, toneNote].filter(Boolean).join('\n')
+            const aboutNote = answers.aboutSummary?.trim()
+                ? `About (from their LinkedIn profile): ${answers.aboutSummary.trim()}`
+                : ''
+            const notes = [branding.knowledgeBase.notes, aboutNote, toneNote].filter(Boolean).join('\n')
 
             updateBranding({
                 profile: answers.profile,
                 role: answers.role,
                 expertise: { topics: effectiveTopics },
                 positioning: { statement: answers.positioning },
-                writingStyle: answers.writingStyle,
+                // Style defaults measured from their real posts (deterministic
+                // counts, see inferStyleHints); onboarding never asks for these,
+                // so the hints only ever replace untouched defaults.
+                writingStyle: { ...answers.writingStyle, ...(answers.richSummary?.styleHints ?? {}) },
                 knowledgeBase: { notes },
                 dosDonts: { dos: branding.dosDonts.dos, donts },
                 meta: { onboardedAt: now },

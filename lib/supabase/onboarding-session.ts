@@ -6,6 +6,7 @@ import type {
     RichPost,
     RichProfileSummary,
     RichScrapeStatus,
+    StyleHints,
 } from '@/types/onboarding'
 
 // ---------------------------------------------------------------------------
@@ -23,10 +24,13 @@ export type OnboardingSessionRow = {
     profile_url: string | null
     fast_source: FastSource | null
     fast_profile: { name?: string; headline?: string; about?: string; avatarUrl?: string } | null
+    /** Complete raw provider payloads, verbatim (migration 021) - the analysis archive. */
+    fast_raw: Record<string, unknown> | null
+    rich_raw: Record<string, unknown> | null
     rich_snapshot_id: string | null
     rich_status: RichScrapeStatus
     rich_triggered_at: string | null
-    rich_profile: (RichProfileSummary & { observed: ObservedCadence | null }) | null
+    rich_profile: (RichProfileSummary & { observed: ObservedCadence | null; styleHints?: StyleHints | null }) | null
     rich_posts: RichPost[] | null
     enrichment: Record<string, unknown> | null
     insights: OnboardingInsights | null

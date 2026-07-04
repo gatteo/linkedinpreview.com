@@ -46,11 +46,22 @@ export type ObservedCadence = {
 
 export type RichScrapeStatus = 'idle' | 'pending' | 'ready' | 'empty' | 'failed' | 'unavailable'
 
+/**
+ * Writing-style defaults inferred deterministically from the user's real posts
+ * (regex counting, never the LLM). Prefills branding.writingStyle so the
+ * Branding page arrives populated with how they actually write.
+ */
+export type StyleHints = {
+    sentenceLength: 'short' | 'standard' | 'long'
+    emojiFrequency: 'none' | 'moderate' | 'a-lot'
+}
+
 /** Slim rich summary the client keeps in answers/localStorage (never the full posts). */
 export type RichSummary = {
     postsCount: number
     followers: number | null
     observed: ObservedCadence | null
+    styleHints?: StyleHints | null
 }
 
 /** Response shape of GET /api/onboarding/enrich/status. */
@@ -60,6 +71,7 @@ export type RichStatusResponse = {
         profile?: RichProfileSummary
         postsCount?: number
         observed?: ObservedCadence | null
+        styleHints?: StyleHints | null
     }
     insightsReady: boolean
 }

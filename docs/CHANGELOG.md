@@ -37,7 +37,13 @@
 - **Server-side capture for analysis:** new `public.onboarding_sessions` table (migration `020`,
   applied to the live DB) - answers (debounced from the controller), fast/rich profiles, posts,
   enrichment, insights, completed/converted. RLS-scoped; no service-role usage. New `onbInsights`
-  rate-limit action (3/day).
+  rate-limit action (3/day). Migration `021` (also applied) adds `fast_raw`/`rich_raw` columns
+  holding the COMPLETE provider payloads verbatim (Scrapingdog record incl. experience/education/
+  articles; full Bright Data snapshot record) so nothing from the paid API calls is lost.
+- **Branding arrives populated:** at finish, the scraped About lands in `knowledgeBase.notes`,
+  `writingStyle.sentenceLength`/`emojiFrequency` are inferred deterministically from their real
+  posts (`inferStyleHints` in `lib/linkedin/rich-scrape.ts`), and `expertise.topics` falls back to
+  `insights.currentTopics` - on top of the existing profile/role/positioning/tone-note writes.
 - type-check + lint clean; reviewed via a 4-lens adversarial workflow (findings fixed in-place).
 
 ## 2026-07-02 — Onboarding: progress/width polish, answer persistence, LinkedIn-URL error handling

@@ -42,6 +42,8 @@ export type PublicProfile = {
     url: string
     /** Which provider produced the data. */
     source: FastProfileSource
+    /** The complete provider record (Scrapingdog only), persisted for analysis. */
+    raw?: Record<string, unknown>
 }
 
 const EMPTY: PublicProfile = {
@@ -221,7 +223,17 @@ async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Prom
 
         const found = Boolean(name || headline || about || recentPosts.length)
         if (!found) return null
-        return { found, name, headline, about, recentPosts, avatarUrl, url: targetUrl, source: 'scrapingdog' }
+        return {
+            found,
+            name,
+            headline,
+            about,
+            recentPosts,
+            avatarUrl,
+            url: targetUrl,
+            source: 'scrapingdog',
+            raw: record as Record<string, unknown>,
+        }
     } catch {
         return null
     } finally {

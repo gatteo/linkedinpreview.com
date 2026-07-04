@@ -22,7 +22,7 @@ export type EnrichResult = {
     opportunityLine: string
     confidence: number
     /** Real identity read from the public profile, when the fetch succeeded. */
-    profile?: { name: string; headline: string; avatarUrl: string }
+    profile?: { name: string; headline: string; avatarUrl: string; about?: string }
     /** Rich (Bright Data) scrape state: 'pending' means the pipeline hook should poll. */
     rich?: RichScrapeStatus
 }

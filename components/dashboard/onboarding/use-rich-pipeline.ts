@@ -57,15 +57,17 @@ export function useRichPipeline(answers: OnboardingAnswers, update: (patch: Part
                           postsCount: rich.postsCount ?? 0,
                           followers: rich.profile?.followers ?? null,
                           observed: rich.observed ?? null,
+                          styleHints: rich.styleHints ?? null,
                       },
                   }
                 : {}),
-            // Fill identity gaps the fast tier missed (e.g. the avatar).
+            // Fill identity gaps the fast tier missed (e.g. the avatar / About).
             profile: {
                 name: current.profile.name || rich.profile?.name || '',
                 headline: current.profile.headline || rich.profile?.headline || '',
                 avatarUrl: current.profile.avatarUrl || rich.profile?.avatarUrl || '',
             },
+            ...(rich.profile?.about && !current.aboutSummary ? { aboutSummary: rich.profile.about } : {}),
         })
     }
 

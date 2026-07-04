@@ -123,6 +123,7 @@ export function MirrorStep() {
                               headline: live.profile.headline || fetchedProfile.headline,
                               avatarUrl: live.profile.avatarUrl || fetchedProfile.avatarUrl,
                           },
+                          ...(fetchedProfile.about && !live.aboutSummary ? { aboutSummary: fetchedProfile.about } : {}),
                       }
                     : {}),
             })

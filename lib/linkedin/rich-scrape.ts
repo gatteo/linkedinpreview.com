@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs'
-import type { ObservedCadence, RichPost, RichProfileSummary } from '@/types/onboarding'
+import type { ObservedCadence, RichPost, RichProfileSummary, StyleHints } from '@/types/onboarding'
 
 // ---------------------------------------------------------------------------
 // Rich LinkedIn profile scrape via Bright Data's "LinkedIn People Profile"
@@ -81,7 +81,14 @@ export async function triggerRichScrape(targetUrl: string): Promise<string | nul
 export type RichScrapeResult =
     | { status: 'pending' }
     | { status: 'failed' }
-    | { status: 'ready'; profile: RichProfileSummary; posts: RichPost[]; observed: ObservedCadence | null }
+    | {
+          status: 'ready'
+          profile: RichProfileSummary
+          posts: RichPost[]
+          observed: ObservedCadence | null
+          /** The complete provider record, persisted verbatim for later analysis. */
+          record: Record<string, unknown>
+      }
 
 /** Check a snapshot's progress; when ready, download and normalize it. */
 export async function checkRichScrape(snapshotId: string): Promise<RichScrapeResult> {
@@ -121,6 +128,7 @@ export async function checkRichScrape(snapshotId: string): Promise<RichScrapeRes
             },
             posts,
             observed: computeObservedCadence(posts),
+            record: record as Record<string, unknown>,
         }
     } catch {
         // Transient network trouble: let the next poll retry rather than failing the scrape.
@@ -156,6 +164,32 @@ function normalizePosts(record: BrightDataRecord): RichPost[] {
         .slice(0, MAX_ACTIVITY)
 
     return [...authored, ...activity]
+}
+
+/**
+ * Deterministic writing-style defaults from the user's real authored posts
+ * (regex counting over the text previews, never the LLM). Post previews are
+ * truncated, so only the two signals that survive truncation are inferred:
+ * sentence length and emoji frequency. Null when there is too little signal.
+ */
+export function inferStyleHints(posts: RichPost[]): StyleHints | null {
+    const texts = posts.filter((p) => p.origin === 'post').map((p) => p.text)
+    if (texts.length < 3) return null
+
+    const emojiRe = /\p{Extended_Pictographic}/gu
+    const emojisPerPost = texts.reduce((n, t) => n + (t.match(emojiRe)?.length ?? 0), 0) / texts.length
+    const emojiFrequency: StyleHints['emojiFrequency'] =
+        emojisPerPost < 0.34 ? 'none' : emojisPerPost <= 3 ? 'moderate' : 'a-lot'
+
+    const sentences = texts
+        .flatMap((t) => t.split(/[.!?\n]+/))
+        .map((s) => s.trim().split(/\s+/).filter(Boolean).length)
+        .filter((words) => words >= 2)
+    if (sentences.length < 5) return { sentenceLength: 'standard', emojiFrequency }
+    const avgWords = sentences.reduce((a, b) => a + b, 0) / sentences.length
+    const sentenceLength: StyleHints['sentenceLength'] = avgWords < 9 ? 'short' : avgWords <= 16 ? 'standard' : 'long'
+
+    return { sentenceLength, emojiFrequency }
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { RichStatusResponse } from '@/types/onboarding'
 import { AI_ERROR_CODES } from '@/config/ai'
-import { checkRichScrape } from '@/lib/linkedin/rich-scrape'
+import { checkRichScrape, inferStyleHints } from '@/lib/linkedin/rich-scrape'
 import { fetchOnboardingSession, upsertOnboardingSession } from '@/lib/supabase/onboarding-session'
 import { createClient } from '@/lib/supabase/server'
 
@@ -35,12 +35,14 @@ export async function GET() {
         if (result.status === 'ready') {
             const authored = result.posts.filter((p) => p.origin === 'post')
             status = authored.length > 0 ? 'ready' : 'empty'
-            profile = { ...result.profile, observed: result.observed }
+            profile = { ...result.profile, observed: result.observed, styleHints: inferStyleHints(result.posts) }
             posts = result.posts
             await upsertOnboardingSession(supabase, user.id, {
                 rich_status: status,
                 rich_profile: profile,
                 rich_posts: posts,
+                // The complete provider record, verbatim - the analysis archive.
+                rich_raw: result.record,
             }).catch(() => {})
         } else if (result.status === 'failed') {
             status = 'failed'
@@ -70,6 +72,7 @@ export async function GET() {
                       },
                       postsCount: authoredCount,
                       observed: profile.observed,
+                      styleHints: profile.styleHints ?? null,
                   }
                 : {}),
         },

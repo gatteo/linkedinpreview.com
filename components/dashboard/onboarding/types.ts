@@ -97,6 +97,9 @@ export type OnboardingAnswers = {
     /** Optional "anything we should avoid?" note (maps to dos/donts). */
     writingNotes?: string
 
+    /** The scraped "About" summary; lands in branding.knowledgeBase at finish. */
+    aboutSummary?: string
+
     // --- Rich enrichment pipeline (two-tier fetch) --------------------------
     /** Rich (Bright Data) scrape lifecycle; persisted so a reload resumes polling. */
     richStatus?: RichScrapeStatus
