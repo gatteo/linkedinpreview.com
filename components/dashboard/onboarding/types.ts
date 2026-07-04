@@ -83,6 +83,10 @@ export type OnboardingAnswers = {
     /** Sticky "I'll enter it by hand" choice on the Mirror after a URL fetch fails,
      *  so a remount / Back-nav doesn't re-show the error over the finished form. */
     mirrorManual?: boolean
+    /** Whether the fast profile FETCH succeeded (identity came back), regardless of
+     *  the inference LLM. Gates the "LinkedIn blocked the request" error card: an
+     *  LLM-only failure must fall to the manual form, not blame LinkedIn. */
+    mirrorFetchOk?: boolean
     /** The first post text kept in state for the Voice/Recap screens. */
     firstPostText?: string
     /** Whether the first post was written against real scraped posts as style references. */

@@ -45,6 +45,7 @@ export function ConnectStep() {
             profileUrl: trimmed,
             enrichConfidence: undefined,
             mirrorManual: false,
+            mirrorFetchOk: undefined,
             richStatus: undefined,
             richSummary: undefined,
             insights: undefined,

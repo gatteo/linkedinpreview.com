@@ -106,6 +106,7 @@ export function MirrorStep() {
                 tone: live.tone ?? toneFromSummary(result?.toneSummary),
                 opportunityLine: result?.opportunityLine || getRoleContent(role).mirrorOpportunity,
                 enrichConfidence: result?.confidence ?? 0,
+                mirrorFetchOk: !!result?.profile,
                 // Hand the rich-scrape state to the pipeline hook ('pending'
                 // starts the background polling that feeds the insight cards).
                 // Never downgrade a scrape the pipeline already settled.
@@ -187,9 +188,10 @@ export function MirrorStep() {
     // A pasted profile URL that we couldn't read (LinkedIn blocks datacenter IPs
     // when no scrape API is configured). Own the failure with an explicit error +
     // a manual fallback, instead of silently dropping onto the "tell us" form.
-    // A connected (OAuth) user skips the card: their identity is already real, so
-    // they fall through to the form with it prefilled.
-    if (hasUrl && lowConfidence && !manualOverride && !answers.linkedinConnected) {
+    // Skipped when the FETCH actually succeeded (identity came back, only the
+    // inference failed - the form shows prefilled) and for connected (OAuth)
+    // users, whose identity is already real.
+    if (hasUrl && lowConfidence && !manualOverride && !answers.linkedinConnected && !answers.mirrorFetchOk) {
         return (
             <div className='flex flex-col items-center gap-5 py-4 text-center'>
                 <div className='bg-destructive/10 text-destructive flex size-14 items-center justify-center rounded-2xl'>
