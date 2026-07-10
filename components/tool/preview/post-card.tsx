@@ -13,10 +13,18 @@ interface PostCardProps {
     media: Media | null
     author?: PreviewAuthor
     promptBranding?: boolean
+    clampContent?: boolean
     className?: string
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ content, media, author, promptBranding, className }) => {
+export const PostCard: React.FC<PostCardProps> = ({
+    content,
+    media,
+    author,
+    promptBranding,
+    clampContent = true,
+    className,
+}) => {
     return (
         <div
             className={cn(
@@ -25,7 +33,7 @@ export const PostCard: React.FC<PostCardProps> = ({ content, media, author, prom
             )}>
             <div className='pt-3 pr-4 pb-1 pl-4'>
                 <UserInfo author={author} promptBranding={promptBranding} />
-                <ContentSection content={content} />
+                <ContentSection content={content} clamp={clampContent} />
             </div>
             {media && (
                 <div className='relative w-full'>

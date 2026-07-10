@@ -1,4 +1,4 @@
 export const SOCIAL_PROOF = {
-    rating: '4.9',
+    rating: '4.8',
     count: '3,342',
 } as const

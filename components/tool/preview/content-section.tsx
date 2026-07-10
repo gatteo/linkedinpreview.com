@@ -7,6 +7,8 @@ import { processNodes, toPlainText } from '../utils'
 
 interface ContentSectionProps {
     content: string
+    /** When false, render the full post without the 3-line clamp / "...more" toggle. */
+    clamp?: boolean
 }
 
 export function renderWithHashtags(text: string): React.ReactNode {
@@ -23,7 +25,7 @@ export function renderWithHashtags(text: string): React.ReactNode {
     )
 }
 
-export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
+export const ContentSection: React.FC<ContentSectionProps> = ({ content, clamp = true }) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [showMoreButton, setShowMoreButton] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
@@ -67,11 +69,11 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content }) => {
                 ref={contentRef}
                 className={cn(
                     'relative text-sm leading-5 whitespace-pre-line text-neutral-900',
-                    !isExpanded && 'line-clamp-3 overflow-hidden',
+                    clamp && !isExpanded && 'line-clamp-3 overflow-hidden',
                 )}>
                 {renderWithHashtags(processedContent)}
             </div>
-            {showMoreButton && (
+            {clamp && showMoreButton && (
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className={cn(

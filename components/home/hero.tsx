@@ -8,37 +8,10 @@ import { ExternalLinks } from '@/config/urls'
 import { Icons } from '../icon'
 import { TrackClick } from '../tracking/track-click'
 import { AnimateIn } from '../ui/animate-in'
-import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Button } from '../ui/button'
+import { HeroPostPreview } from './hero-post-preview'
 import { IllustrationTile } from './illustration-tile'
 import { StarRating } from './star-rating'
-
-const AVATARS = ['JD', 'MK', 'AS', 'RP']
-
-const HERO_POST =
-    "Most posts die in the first line.\n\nThe hook is everything - if it doesn't earn the click on “...see more”, the rest never gets read. 👇"
-
-function HeroPostPreview() {
-    return (
-        <div className='w-full max-w-[340px] rounded-xl bg-white shadow-[var(--shadow-post)]'>
-            <div className='flex items-center gap-2.5 p-3'>
-                <span className='bg-secondary text-secondary-foreground flex size-10 items-center justify-center rounded-full text-sm font-semibold'>
-                    JA
-                </span>
-                <div className='min-w-0'>
-                    <p className='text-[13px] leading-tight font-semibold text-neutral-900'>Jordan Avery</p>
-                    <p className='text-[11px] text-neutral-500'>Founder - Building in public</p>
-                    <p className='text-[11px] text-neutral-500'>Now</p>
-                </div>
-            </div>
-            <p className='px-3 pb-2 text-[13px] leading-[1.5] whitespace-pre-wrap text-neutral-800'>{HERO_POST}</p>
-            <div className='mt-1 flex items-center justify-between border-t border-neutral-100 px-3 py-2 text-[11px] text-neutral-500'>
-                <span>312 reactions</span>
-                <span>48 comments</span>
-            </div>
-        </div>
-    )
-}
 
 export function Hero() {
     return (
@@ -108,20 +81,11 @@ export function Hero() {
                     </AnimateIn>
 
                     <AnimateIn delay={0.24}>
-                        <div className='inline-flex items-center gap-3'>
-                            <div className='flex items-center'>
-                                {AVATARS.map((fallback) => (
-                                    <Avatar key={fallback} className='-ml-3 size-8 border-2 border-white first:ml-0'>
-                                        <AvatarFallback className='text-[10px] font-medium'>{fallback}</AvatarFallback>
-                                    </Avatar>
-                                ))}
-                            </div>
-                            <div>
-                                <StarRating />
-                                <div className='text-muted-foreground mt-0.5 text-[12.5px]'>
-                                    <b className='text-foreground'>{SOCIAL_PROOF.rating}</b> from {SOCIAL_PROOF.count}{' '}
-                                    reviews
-                                </div>
+                        <div className='inline-flex items-center gap-2.5'>
+                            <StarRating />
+                            <div className='text-muted-foreground text-[13px]'>
+                                <b className='text-foreground'>{SOCIAL_PROOF.rating}</b> from {SOCIAL_PROOF.count}{' '}
+                                reviews
                             </div>
                         </div>
                     </AnimateIn>

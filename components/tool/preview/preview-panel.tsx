@@ -48,7 +48,7 @@ function PreviewPanelContent({
                     <button
                         type='button'
                         onClick={onOpenFeedPreview}
-                        className='bg-info/10 text-info hover:bg-info/20 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors'>
+                        className='border-border bg-secondary text-secondary-foreground hover:bg-muted shadow-subtle flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors'>
                         <ExternalLink className='size-3' />
                         Open realistic feed preview
                     </button>

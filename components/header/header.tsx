@@ -39,7 +39,7 @@ export function Header() {
                     className={cn(
                         'max-w-content pointer-events-auto flex h-[var(--header-height)] w-full items-center justify-between border border-transparent px-7 transition-all duration-300 ease-[var(--ease-out)]',
                         scrolled
-                            ? 'border-border rounded-2xl bg-[color:color-mix(in_oklch,var(--paper)_82%,transparent)] shadow-[var(--card-shadow)] backdrop-blur-[10px]'
+                            ? 'border-border/35 rounded-2xl bg-[color:color-mix(in_oklch,var(--paper)_62%,transparent)] shadow-[var(--card-shadow)] backdrop-blur-[18px] backdrop-saturate-150'
                             : 'bg-transparent',
                     )}>
                     <Link href='/' aria-label='Homepage' className='flex items-center gap-2.5'>

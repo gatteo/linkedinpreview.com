@@ -280,7 +280,7 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
 
             {/* Dashboard prompt - shown when user has written content */}
             {variant === 'default' && hasTextContent(content) && (
-                <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-3.5'>
+                <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-2'>
                     <span className='text-muted-foreground text-[13.5px] leading-snug'>
                         <b className='text-foreground font-semibold'>Happy with this draft?</b> Save it, schedule it,
                         and write your next ten posts in the full editor.

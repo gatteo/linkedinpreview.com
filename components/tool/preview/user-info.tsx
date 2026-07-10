@@ -43,6 +43,11 @@ export const UserInfo: React.FC<UserInfoProps> = ({ author, promptBranding = fal
                     <Image
                         alt=''
                         loading='lazy'
+                        // Avatars are data URIs or per-user signed LinkedIn CDN URLs
+                        // (media.licdn.com). Serve them as-is instead of proxying
+                        // user-controlled external hosts through next/image, which
+                        // would require allowlisting every possible avatar host.
+                        unoptimized
                         width={140}
                         height={140}
                         className={cn(
