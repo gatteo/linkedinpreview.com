@@ -9,7 +9,13 @@
 
 import posthog from 'posthog-js'
 
-import type { InsightCategory, OnboardingInsights, RichScrapeStatus, RichStatusResponse } from '@/types/onboarding'
+import type {
+    FastIdentity,
+    InsightCategory,
+    OnboardingInsights,
+    RichScrapeStatus,
+    RichStatusResponse,
+} from '@/types/onboarding'
 import type { Role } from '@/config/onboarding-personalization'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
@@ -22,7 +28,7 @@ export type EnrichResult = {
     opportunityLine: string
     confidence: number
     /** Real identity read from the public profile, when the fetch succeeded. */
-    profile?: { name: string; headline: string; avatarUrl: string; about?: string }
+    profile?: { name: string; headline: string; avatarUrl: string; about?: string; identity?: FastIdentity }
     /** Rich (Bright Data) scrape state: 'pending' means the pipeline hook should poll. */
     rich?: RichScrapeStatus
 }
@@ -90,12 +96,22 @@ export async function fetchRichStatus(): Promise<RichStatusResponse | null> {
     }
 }
 
-/** Generate (or echo, server-side idempotent) the pre-offer insight payload. */
-export async function fetchInsights(): Promise<OnboardingInsights | null> {
+export type InsightsHints = { primaryGoal?: StrategyGoal; niche?: string; role?: Role }
+
+/**
+ * Generate (or echo, server-side idempotent) the pre-audit insight payload.
+ * The hints carry the just-collected goal/role/niche so the analysis is framed
+ * around them even before the debounced session write lands.
+ */
+export async function fetchInsights(hints: InsightsHints = {}): Promise<OnboardingInsights | null> {
     try {
         // Slightly past the route's maxDuration (40s) so the server always gets
         // to answer or die first - the client never abandons a live response.
-        const res = await fetchWithTimeout('/api/onboarding/insights', { method: 'POST' }, 42000)
+        const res = await fetchWithTimeout(
+            '/api/onboarding/insights',
+            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hints) },
+            42000,
+        )
         if (!res.ok) return null
         return (await res.json()) as OnboardingInsights
     } catch {
@@ -110,6 +126,8 @@ export type FirstPostInput = {
     audience?: string[]
     tone?: string
     name?: string
+    /** Extra author context (e.g. the recap's free-text correction). */
+    brandingContext?: string
     /** The missing content category from the insights - the post fills the gap. */
     gapCategory?: InsightCategory
 }
@@ -137,6 +155,24 @@ export async function generateFirstPost(input: FirstPostInput): Promise<FirstPos
     } catch {
         return null
     }
+}
+
+/**
+ * The paywall's pillar-tagged post previews: one first-post generation per
+ * category, in parallel. Failures drop silently - the paywall renders whatever
+ * arrived (an empty array hides the section rather than showing mock posts).
+ */
+export async function generatePostIdeas(
+    input: Omit<FirstPostInput, 'gapCategory'>,
+    categories: InsightCategory[],
+): Promise<{ category: InsightCategory; text: string }[]> {
+    const results = await Promise.all(
+        categories.map(async (category) => {
+            const result = await generateFirstPost({ ...input, gapCategory: category })
+            return result ? { category, text: result.text } : null
+        }),
+    )
+    return results.filter((r): r is { category: InsightCategory; text: string } => r !== null)
 }
 
 /** Quick refinement of the previewed post via the existing generate pipeline. */

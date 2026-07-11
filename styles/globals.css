@@ -113,6 +113,78 @@
     --animate-fade-in: fade-in 0.5s ease both;
     --animate-slide-in-right: slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 
+    /* Onboarding funnel (design import: onboarding/flow) */
+    --animate-ob-pulse: ob-pulse 1.8s infinite;
+    --animate-ob-pop: ob-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-ob-bargrow: ob-bargrow 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-ob-gsweep: ob-gsweep 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-ob-gdot: ob-gdot 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-ob-shine: ob-shine 5.5s ease-in-out 0.8s infinite;
+    --animate-ob-blink: ob-blink 1.05s steps(1) infinite;
+
+    @keyframes ob-pulse {
+        0% {
+            box-shadow: 0 0 0 0 color-mix(in oklch, var(--info) 40%, transparent);
+        }
+        70% {
+            box-shadow: 0 0 0 7px transparent;
+        }
+        100% {
+            box-shadow: 0 0 0 0 transparent;
+        }
+    }
+    @keyframes ob-pop {
+        0% {
+            transform: scale(0.6);
+            opacity: 0;
+        }
+        60% {
+            transform: scale(1.08);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    @keyframes ob-bargrow {
+        from {
+            transform: scaleY(0);
+        }
+        to {
+            transform: scaleY(1);
+        }
+    }
+    @keyframes ob-gsweep {
+        from {
+            clip-path: inset(0 100% 0 0);
+        }
+        to {
+            clip-path: inset(0 0 0 0);
+        }
+    }
+    @keyframes ob-gdot {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    @keyframes ob-shine {
+        0% {
+            left: -45%;
+        }
+        55%,
+        100% {
+            left: 130%;
+        }
+    }
+    @keyframes ob-blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
     @keyframes accordion-down {
         from {
             height: 0;

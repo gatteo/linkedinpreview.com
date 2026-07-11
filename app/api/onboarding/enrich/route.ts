@@ -153,9 +153,17 @@ export async function POST(request: Request) {
             : 'No profile signals were provided. Pick the safest role for a general creator and set a low confidence.'
 
     // Identity fields we pass back so the client can prefill the post preview;
-    // the About summary feeds the branding Knowledge Base at finish.
+    // the About summary feeds the branding Knowledge Base at finish. `identity`
+    // carries the extended card fields (location, languages, experience, awards)
+    // when the Scrapingdog tier produced them.
     const profileOut = fetched?.found
-        ? { name: fetched.name, headline: fetched.headline, avatarUrl: fetched.avatarUrl, about: fetched.about }
+        ? {
+              name: fetched.name,
+              headline: fetched.headline,
+              avatarUrl: fetched.avatarUrl,
+              about: fetched.about,
+              identity: fetched.identity,
+          }
         : undefined
 
     // Persist the fast tier + the inference (the rich trigger was written above).

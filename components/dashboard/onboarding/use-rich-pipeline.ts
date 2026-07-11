@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 
+import { resolveRole } from '@/config/onboarding-personalization'
+
 import { fetchInsights, fetchRichStatus, track } from './ai'
 import type { OnboardingAnswers } from './types'
 
@@ -132,22 +134,30 @@ export function useRichPipeline(answers: OnboardingAnswers, update: (patch: Part
             })
     }, [needsBackfill])
 
-    // Fire the insights generation once the scrape settles. 'failed'/'unavailable'
-    // still fire: the server degrades to profile- or benchmark-kind by itself.
-    // The route is idempotent (echoes a stored payload), so a StrictMode double
-    // mount can't double-render different results. A result that arrives after
-    // the user re-submitted a different URL is dropped.
+    // Fire the insights generation once the scrape settles AND the goal/persona
+    // answers exist (they frame the analysis; firing earlier would bake in a
+    // generic goal). 'failed'/'unavailable' still fire: the server degrades to
+    // profile- or benchmark-kind by itself. The route is idempotent (echoes a
+    // stored payload), so a StrictMode double mount can't double-render
+    // different results. A result that arrives after the user re-submitted a
+    // different URL is dropped.
     const terminal =
         answers.richStatus === 'ready' ||
         answers.richStatus === 'empty' ||
         answers.richStatus === 'failed' ||
         answers.richStatus === 'unavailable'
+    const framed = !!(answers.primaryGoal ?? answers.goals[0]) && !!answers.role
     React.useEffect(() => {
-        if (!terminal || insightsInFlightRef.current) return
+        if (!terminal || !framed || insightsInFlightRef.current) return
         if (answersRef.current.insights || answersRef.current.insightsStatus === 'failed') return
         insightsInFlightRef.current = true
         const firedFor = answersRef.current.profileUrl
-        fetchInsights()
+        const current = answersRef.current
+        fetchInsights({
+            primaryGoal: current.primaryGoal ?? current.goals[0],
+            niche: current.niche || undefined,
+            role: current.role ? resolveRole(current.role) : undefined,
+        })
             .then((payload) => {
                 if (answersRef.current.profileUrl !== firedFor) return
                 if (payload) {
@@ -161,5 +171,5 @@ export function useRichPipeline(answers: OnboardingAnswers, update: (patch: Part
             .finally(() => {
                 insightsInFlightRef.current = false
             })
-    }, [terminal])
+    }, [terminal, framed])
 }

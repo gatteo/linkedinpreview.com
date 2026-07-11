@@ -1,0 +1,673 @@
+'use client'
+
+import * as React from 'react'
+import { motion } from 'framer-motion'
+import { ArrowLeftIcon, ArrowUpRightIcon, CheckIcon, ClockIcon, ShieldIcon, StarIcon } from 'lucide-react'
+
+import {
+    growthCards,
+    languageCodePair,
+    OB_FEATURES,
+    OB_FEATURES_MORE,
+    OB_IDEA_PILLARS,
+    OB_PROOF,
+    OB_PW_TESTIMONIALS,
+    OB_TICKET,
+    obGoal,
+    obVoice,
+    type ObFeature,
+} from '@/config/onboarding-flow'
+import { rolePlural } from '@/config/onboarding-personalization'
+import {
+    FOUNDING_WINDOW_END,
+    isFoundingWindowOpen,
+    MONEY_BACK_DAYS,
+    PRICING,
+    type CheckoutPlan,
+} from '@/config/pricing'
+import { SOCIAL_PROOF } from '@/config/social-proof'
+import { cn } from '@/lib/utils'
+import { usePlan } from '@/hooks/use-plan'
+import { PostCard } from '@/components/tool/preview/post-card'
+import { ScreenSizeProvider } from '@/components/tool/preview/preview-size-context'
+
+import { postTextToDoc, track } from '../ai'
+import { GrowthCard, smoothPath } from '../charts'
+import { useOnboarding } from '../context'
+import { iconFor } from '../icons'
+import { CTA, Eyebrow, firstName, GhostLink, H1, ReviewCard, Stars } from '../primitives'
+import { OnboardingCheckout } from './checkout'
+
+// ---------------------------------------------------------------------------
+// 15 · Paywall - one long, scrollable offer: the ready checklist, modeled
+// growth numbers, the pillar posts we actually generated, the feature bento,
+// social proof, and the pricing block (real PRICING + embedded Stripe
+// checkout). A quiet decline path keeps the free plan honest.
+// ---------------------------------------------------------------------------
+
+export function PaywallStep() {
+    const { answers, finishOffer, role } = useOnboarding()
+    const { refresh } = usePlan()
+    const fn = firstName(answers.profile.name)
+    const goal = obGoal(answers.goalId)
+    const voice = obVoice(answers.voiceId)
+    const frequency = Math.max(1, answers.frequency)
+    const wedge = answers.topics[0] || answers.insights?.currentTopics[0] || ''
+    const langPair = languageCodePair(answers.identity)
+
+    const [selected, setSelected] = React.useState<CheckoutPlan>('lifetime')
+    const [checkout, setCheckout] = React.useState(false)
+    const [checkoutError, setCheckoutError] = React.useState(false)
+
+    React.useEffect(() => {
+        track('onb_paywall_view', { ideas: answers.postIdeas?.length ?? 0 })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const startCheckout = () => {
+        track('onb_offer_select', { plan: selected })
+        setCheckoutError(false)
+        setCheckout(true)
+    }
+
+    const onPurchased = () => {
+        track('onb_purchase_success', { plan: selected })
+        refresh()
+        finishOffer(true)
+    }
+
+    const decline = () => {
+        track('onb_offer_decline')
+        finishOffer(false)
+    }
+
+    if (checkout && !checkoutError) {
+        return (
+            <div className='flex flex-col gap-4'>
+                <button
+                    type='button'
+                    onClick={() => setCheckout(false)}
+                    className='text-muted-foreground hover:text-foreground inline-flex cursor-pointer items-center gap-1 self-start text-sm'>
+                    <ArrowLeftIcon className='size-4' />
+                    Back to your plan
+                </button>
+                <OnboardingCheckout plan={selected} onComplete={onPurchased} onError={() => setCheckoutError(true)} />
+                <GhostLink onClick={decline} className='mx-auto text-xs'>
+                    Continue on the free plan
+                </GhostLink>
+            </div>
+        )
+    }
+
+    const checklist: React.ReactNode[] = [
+        <>
+            <b>90-day content calendar</b>, {frequency}×/week, around {wedge ? <b>{wedge}</b> : 'your strongest angle'}
+        </>,
+        <>
+            <b>Posts drafted in your {voice.title.toLowerCase()} voice</b>, never a blank page
+        </>,
+        ...(langPair
+            ? [
+                  <>
+                      <b>Auto {langPair} optimization</b> - write once, reach both your audiences
+                  </>,
+              ]
+            : []),
+        <>
+            <b>Live analytics + best-time-to-post</b>, tuned to your audience
+        </>,
+        <>
+            <b>One-click rewrites</b> on anything you draft
+        </>,
+    ]
+
+    return (
+        <div className='flex flex-col'>
+            {/* hero + ready checklist */}
+            <Eyebrow>Everything&rsquo;s ready</Eyebrow>
+            <H1>{fn ? `Your 90-day plan is built, ${fn}.` : 'Your 90-day plan is built.'}</H1>
+            <div className='mt-4 grid gap-3'>
+                {checklist.map((item, i) => (
+                    <div
+                        key={i}
+                        className='text-card-foreground flex items-start gap-[11px] text-sm leading-[1.4] [&_b]:font-semibold [&_b]:text-[var(--foreground)]'>
+                        <span className='text-primary mt-px flex shrink-0'>
+                            <CheckIcon className='size-[15px]' strokeWidth={2.5} />
+                        </span>
+                        <span>{item}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* growth numbers */}
+            <PwSection
+                title='Your numbers, 90 days from now'
+                sub={`Modeled on ${rolePlural(role).toLowerCase()}${answers.niche ? ` in ${answers.niche}` : ''} who post ${frequency}×/week with a system.`}>
+                <div className='grid grid-cols-2 gap-3 max-sm:grid-cols-1'>
+                    {growthCards(answers.richSummary, frequency, answers.goalId).map((card, i) => (
+                        <GrowthCard key={card.label} card={card} idx={i} />
+                    ))}
+                </div>
+            </PwSection>
+
+            {/* pillar posts - real generated drafts, or nothing */}
+            {!!answers.postIdeas?.length && (
+                <PwSection
+                    title='Posts, already written in your voice'
+                    sub='Your plan comes preloaded with ready-to-publish drafts across every content pillar.'>
+                    <div className='-mx-0.5 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-0.5 pb-3 [scrollbar-width:thin]'>
+                        {answers.postIdeas.map((idea) => {
+                            const pillar =
+                                OB_IDEA_PILLARS.find((p) => p.category === idea.category) ?? OB_IDEA_PILLARS[0]
+                            return (
+                                <div
+                                    key={idea.category}
+                                    className='border-border w-[300px] shrink-0 snap-start overflow-hidden rounded-[14px] border bg-white shadow-[var(--card-shadow)]'>
+                                    <div
+                                        className='flex items-center justify-between gap-2 px-3.5 py-2 text-white'
+                                        style={{ background: pillar.color }}>
+                                        <span className='font-mono text-[10px] font-bold tracking-[0.14em]'>
+                                            {pillar.tag}
+                                        </span>
+                                        <span className='text-[11px] font-semibold opacity-90'>{pillar.label}</span>
+                                    </div>
+                                    <ScreenSizeProvider initialSize='mobile'>
+                                        <PostCard
+                                            content={postTextToDoc(idea.text)}
+                                            media={null}
+                                            author={{
+                                                name: answers.profile.name,
+                                                headline: answers.profile.headline,
+                                                avatarUrl: answers.profile.avatarUrl,
+                                            }}
+                                            className='rounded-none border-none shadow-none'
+                                        />
+                                    </ScreenSizeProvider>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </PwSection>
+            )}
+
+            {/* features */}
+            <PwSection
+                title='All the tools you get'
+                sub='Everything you need to go from a blank page to a published post'>
+                <div className='grid grid-cols-2 gap-3 max-sm:grid-cols-1'>
+                    {OB_FEATURES.map((f) => (
+                        <FeatureHighlight key={f.title} feature={f} />
+                    ))}
+                </div>
+                <div className='mt-3 grid grid-cols-2 gap-[9px] max-sm:grid-cols-1'>
+                    {OB_FEATURES_MORE.map((f) => {
+                        const Icon = iconFor(f.icon)
+                        return (
+                            <div
+                                key={f.title}
+                                className='bg-secondary border-border flex items-start gap-2.5 rounded-[11px] border px-3 py-[11px]'>
+                                <span className='text-primary mt-px flex shrink-0'>
+                                    <Icon className='size-4' />
+                                </span>
+                                <div>
+                                    <b className='block text-[12.5px] font-semibold'>{f.title}</b>
+                                    <span className='text-muted-foreground block text-[11px] leading-[1.4]'>
+                                        {f.desc}
+                                    </span>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+                <p className='text-muted-foreground mt-3.5 text-center font-mono text-[11px] tracking-[0.06em] uppercase'>
+                    &hellip; and much more
+                </p>
+            </PwSection>
+
+            {/* awards */}
+            <PwSection center>
+                <div className='flex items-center justify-center gap-3.5'>
+                    <Wreath />
+                    <div>
+                        <div className='font-heading text-[34px] leading-none font-bold'>{OB_PROOF.professionals}</div>
+                        <div className='text-muted-foreground mt-1 text-xs leading-[1.35]'>
+                            professionals grew their
+                            <br />
+                            LinkedIn with us
+                        </div>
+                    </div>
+                    <Wreath flip />
+                </div>
+                <div className='bg-secondary border-border text-muted-foreground mt-3.5 inline-flex items-center gap-2.5 rounded-xl border px-4 py-[11px] text-xs'>
+                    <Stars size={14} />
+                    <div>
+                        <b className='text-foreground'>{SOCIAL_PROOF.rating}</b> out of 5, from {OB_PROOF.reviewsLine}
+                    </div>
+                </div>
+            </PwSection>
+
+            {/* testimonials */}
+            <div className='pt-5'>
+                <div
+                    className='max-h-[440px] columns-2 gap-2 overflow-hidden max-sm:columns-1'
+                    style={{
+                        maskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
+                    }}>
+                    {OB_PW_TESTIMONIALS.map((t, i) => (
+                        <ReviewCard key={i} t={t} compact />
+                    ))}
+                </div>
+            </div>
+
+            {/* pricing */}
+            <PwSection>
+                <Eyebrow className='text-center'>Claim your plan</Eyebrow>
+                <h2 className='font-heading mb-1 text-center text-lg font-semibold tracking-[-0.01em]'>
+                    {goal.priceLine}
+                </h2>
+                {checkoutError && (
+                    <p className='border-border bg-muted/40 text-muted-foreground mt-3 rounded-lg border px-3 py-2 text-center text-xs'>
+                        Checkout is not available right now. You can continue on the free plan and upgrade later.
+                    </p>
+                )}
+                <GoldenTicket selected={selected === 'lifetime'} onSelect={() => setSelected('lifetime')} />
+                <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
+                    or
+                </div>
+                <button
+                    type='button'
+                    onClick={() => setSelected('monthly')}
+                    className={cn(
+                        'flex w-full cursor-pointer items-center gap-3.5 rounded-[13px] border px-4 py-[15px] text-left transition-colors',
+                        selected === 'monthly'
+                            ? 'border-primary bg-[color-mix(in_oklch,var(--primary)_7%,var(--card))] shadow-[0_0_0_1px_var(--primary)]'
+                            : 'bg-secondary border-border hover:border-primary/50',
+                    )}>
+                    <span
+                        className={cn(
+                            'relative size-5 shrink-0 rounded-full border-2',
+                            selected === 'monthly'
+                                ? 'border-primary after:bg-primary after:absolute after:inset-[3px] after:rounded-full'
+                                : 'border-border-strong',
+                        )}
+                    />
+                    <span className='min-w-0'>
+                        <b className='font-heading text-[15px] font-semibold'>Monthly</b>
+                        <span className='text-muted-foreground mt-0.5 block text-xs'>
+                            Billed monthly. Cancel anytime.
+                        </span>
+                    </span>
+                    <span className='ml-auto shrink-0 text-right'>
+                        <span className='font-heading text-[19px] font-bold'>{PRICING.monthly.display}</span>
+                        <span className='text-muted-foreground ml-[3px] text-xs'>/mo</span>
+                    </span>
+                </button>
+
+                <CTA className='mt-4' onClick={startCheckout}>
+                    {selected === 'lifetime' ? 'Purchase Founder Pass' : 'Start monthly'}
+                </CTA>
+
+                <div className='text-muted-foreground mt-3.5 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
+                    <span className='inline-flex items-center gap-1.5'>
+                        <ShieldIcon className='text-success size-[15px]' />
+                        <b className='text-foreground font-semibold'>{MONEY_BACK_DAYS}-day money-back guarantee</b>
+                    </span>
+                    <span className='bg-border-strong size-1 rounded-full' />
+                    <span className='inline-flex items-center gap-1.5'>
+                        <StarIcon className='size-3.5 fill-[var(--orange-500)] text-[var(--orange-500)]' />
+                        <b className='text-foreground font-semibold'>{SOCIAL_PROOF.rating}</b> from {SOCIAL_PROOF.count}{' '}
+                        reviews
+                    </span>
+                </div>
+                <div className='mt-3 text-center'>
+                    <GhostLink onClick={decline} className='text-xs'>
+                        Continue on the free plan
+                    </GhostLink>
+                </div>
+            </PwSection>
+        </div>
+    )
+}
+
+// ── Section frame ───────────────────────────────────────────────────────────
+
+function PwSection({
+    title,
+    sub,
+    center,
+    children,
+}: {
+    title?: string
+    sub?: string
+    center?: boolean
+    children: React.ReactNode
+}) {
+    return (
+        <div className={cn('border-border mt-5 border-t py-5', center && 'text-center')}>
+            {title && <h2 className='font-heading mb-1 text-lg font-semibold tracking-[-0.01em]'>{title}</h2>}
+            {sub && <p className='text-muted-foreground mb-3.5 text-[12.5px] leading-normal'>{sub}</p>}
+            {children}
+        </div>
+    )
+}
+
+// ── Feature illustrations (code-built, Typefully-style) ─────────────────────
+
+function FeatureHighlight({ feature }: { feature: ObFeature }) {
+    const Art = feature.art ? FEAT_ART[feature.art] : null
+    return (
+        <div className='bg-card border-border rounded-[14px] border p-3 shadow-[var(--card-shadow)]'>
+            {Art && <Art />}
+            <div className='px-1 pt-3 pb-0.5'>
+                <b className='mb-[3px] block text-sm font-semibold tracking-[-0.01em]'>{feature.title}</b>
+                <span className='text-muted-foreground block text-xs leading-[1.45]'>{feature.desc}</span>
+            </div>
+        </div>
+    )
+}
+
+function ArtFrame({ children }: { children: React.ReactNode }) {
+    return (
+        <div
+            className='border-border relative h-[108px] overflow-hidden rounded-[10px] border p-3'
+            style={{
+                background:
+                    'linear-gradient(158deg, color-mix(in oklch, var(--petrol-500) 7%, var(--card)), var(--secondary))',
+            }}>
+            {children}
+        </div>
+    )
+}
+
+function ArtAI() {
+    return (
+        <ArtFrame>
+            <div className='border-border flex h-full flex-col gap-2 rounded-lg border bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.04)]'>
+                <span className='h-[7px] w-[72%] rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_16%,#fff)]' />
+                <span className='h-[7px] w-[92%] rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_16%,#fff)]' />
+                <span className='h-[7px] w-[84%] rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_16%,#fff)]' />
+                <span className='relative h-[7px] w-[48%] rounded-full bg-[color-mix(in_oklch,var(--orange-500)_24%,#fff)]'>
+                    <i className='animate-ob-blink absolute -top-[3px] -right-[5px] h-[13px] w-[2px] bg-[var(--orange-500)]' />
+                </span>
+            </div>
+            <span className='absolute right-3.5 bottom-[13px] inline-flex items-center gap-[5px] rounded-full bg-[var(--orange-500)] px-[9px] py-1 text-[10px] font-semibold text-white shadow-[0_3px_8px_color-mix(in_oklch,var(--orange-500)_40%,transparent)]'>
+                In your voice
+            </span>
+        </ArtFrame>
+    )
+}
+
+function ArtPreview() {
+    return (
+        <ArtFrame>
+            <div className='flex h-full flex-col gap-[7px] rounded-lg bg-white p-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.05),0_0_0_2px_color-mix(in_oklch,var(--orange-500)_20%,transparent)]'>
+                <div className='flex items-center gap-2'>
+                    <span className="relative size-[22px] shrink-0 rounded-full bg-[linear-gradient(135deg,var(--petrol-700),var(--petrol-500))] after:absolute after:-right-0.5 after:-bottom-0.5 after:size-[9px] after:rounded-full after:border-[1.5px] after:border-white after:bg-[var(--info)] after:content-['']" />
+                    <div className='flex flex-1 flex-col gap-1'>
+                        <i className='block h-[5px] w-[54%] rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_20%,#fff)]' />
+                        <i className='block h-[5px] w-[34%] rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_20%,#fff)]' />
+                    </div>
+                </div>
+                <div className='flex flex-col gap-[5px]'>
+                    <i className='bg-secondary block h-1.5 w-[94%] rounded-full' />
+                    <i className='bg-secondary block h-1.5 w-[82%] rounded-full' />
+                    <i className='bg-secondary block h-1.5 w-[58%] rounded-full' />
+                </div>
+                <div className='border-border mt-auto flex justify-between border-t pt-1.5'>
+                    {[0, 1, 2, 3].map((i) => (
+                        <b
+                            key={i}
+                            className='block h-1.5 w-4 rounded-full bg-[color-mix(in_oklch,var(--petrol-500)_16%,#fff)]'
+                        />
+                    ))}
+                </div>
+            </div>
+        </ArtFrame>
+    )
+}
+
+function ArtCalendar() {
+    const chips = [
+        { c: 1, r: 1, k: 'var(--petrol-500)' },
+        { c: 1, r: 3, k: 'var(--orange-500)' },
+        { c: 2, r: 2, k: 'var(--green)' },
+        { c: 3, r: 1, k: 'var(--orange-500)' },
+        { c: 3, r: 2, k: 'var(--petrol-500)' },
+        { c: 4, r: 3, k: 'var(--green)' },
+    ]
+    return (
+        <ArtFrame>
+            <div className='flex h-full flex-col gap-[7px]'>
+                <div className='text-muted-foreground grid grid-cols-4 gap-1.5 font-mono text-[8.5px] tracking-[0.06em] uppercase'>
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                </div>
+                <div className='grid flex-1 auto-rows-fr grid-cols-4 gap-1.5'>
+                    {chips.map((x, i) => (
+                        <span
+                            key={i}
+                            className='rounded-[5px] border border-l-[3px]'
+                            style={{
+                                gridColumn: x.c,
+                                gridRow: x.r,
+                                background: `color-mix(in oklch, ${x.k} 16%, #fff)`,
+                                borderColor: `color-mix(in oklch, ${x.k} 38%, transparent)`,
+                                borderLeftColor: x.k,
+                            }}
+                        />
+                    ))}
+                </div>
+            </div>
+        </ArtFrame>
+    )
+}
+
+function ArtAnalytics() {
+    const W = 168
+    const H = 62
+    const shape = [0.16, 0.24, 0.19, 0.36, 0.44, 0.4, 0.58, 0.74, 1]
+    const pts: [number, number][] = shape.map((v, i) => [(i / (shape.length - 1)) * W, H - 3 - v * (H - 10)])
+    const line = smoothPath(pts)
+    const area = `${line} L ${W} ${H} L 0 ${H} Z`
+    const end = pts[pts.length - 1]
+    return (
+        <ArtFrame>
+            <div className='flex h-full flex-col'>
+                <div className='flex items-baseline justify-between'>
+                    <span className='font-heading text-success inline-flex items-center gap-[3px] text-lg font-bold tracking-[-0.01em]'>
+                        <ArrowUpRightIcon className='size-[11px]' /> 184%
+                    </span>
+                    <span className='text-muted-foreground font-mono text-[9px] tracking-[0.05em] uppercase'>
+                        last 30 days
+                    </span>
+                </div>
+                <svg
+                    className='mt-1 block w-full flex-1 overflow-visible'
+                    viewBox={`0 0 ${W} ${H}`}
+                    preserveAspectRatio='none'>
+                    <defs>
+                        <linearGradient id='ob-fx-ag' x1='0' y1='0' x2='0' y2='1'>
+                            <stop offset='0%' stopColor='color-mix(in oklch, var(--green) 30%, transparent)' />
+                            <stop offset='100%' stopColor='transparent' />
+                        </linearGradient>
+                    </defs>
+                    <path d={area} fill='url(#ob-fx-ag)' />
+                    <path
+                        d={line}
+                        fill='none'
+                        stroke='var(--green)'
+                        strokeWidth='2'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        vectorEffect='non-scaling-stroke'
+                    />
+                    <circle cx={end[0]} cy={end[1]} r='3' fill='var(--green)' />
+                </svg>
+            </div>
+        </ArtFrame>
+    )
+}
+
+const FEAT_ART: Record<NonNullable<ObFeature['art']>, React.ComponentType> = {
+    ai: ArtAI,
+    preview: ArtPreview,
+    calendar: ArtCalendar,
+    analytics: ArtAnalytics,
+}
+
+// ── Awards wreath ───────────────────────────────────────────────────────────
+
+function Wreath({ flip }: { flip?: boolean }) {
+    const leaves = []
+    for (let i = 0; i < 6; i++) {
+        const t = i / 5
+        const x = 22 - t * 9
+        const y = 8 + t * 74
+        const rot = 40 - t * 22
+        leaves.push(
+            <ellipse
+                key={i}
+                cx={x}
+                cy={y}
+                rx='7'
+                ry='3'
+                transform={`rotate(${rot} ${x} ${y})`}
+                fill='var(--orange-500)'
+            />,
+        )
+    }
+    return (
+        <svg width='28' height='84' viewBox='0 0 44 90'>
+            {flip ? <g transform='scale(-1,1) translate(-44,0)'>{leaves}</g> : leaves}
+        </svg>
+    )
+}
+
+// ── Golden ticket (Lifetime Founder Pass) ───────────────────────────────────
+
+function Countdown() {
+    const [now, setNow] = React.useState(() => Date.now())
+    React.useEffect(() => {
+        const id = setInterval(() => setNow(Date.now()), 1000)
+        return () => clearInterval(id)
+    }, [])
+    const remaining = Math.max(0, new Date(FOUNDING_WINDOW_END).getTime() - now)
+    const s = Math.floor(remaining / 1000)
+    const days = Math.floor(s / 86400)
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const clock = `${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`
+    return (
+        <span className='rounded-[7px] bg-[oklch(0.32_0.07_55)] px-[9px] py-[3px] font-mono text-[15px] font-bold tracking-[0.02em] text-[oklch(0.95_0.06_90)] tabular-nums'>
+            {days > 0 ? `${days}d ${clock}` : clock}
+        </span>
+    )
+}
+
+// Module scope so a remount (back-and-forth to checkout) resumes the counter
+// instead of visibly resetting it.
+let spotsNow = OB_TICKET.spotsStart
+
+function Spots() {
+    const [n, setN] = React.useState(spotsNow)
+    const [bump, setBump] = React.useState(false)
+    React.useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>
+        const tick = () => {
+            timer = setTimeout(
+                () => {
+                    setN((v) => {
+                        if (v <= OB_TICKET.spotsFloor) return v
+                        setBump(true)
+                        setTimeout(() => setBump(false), 500)
+                        return v - 1
+                    })
+                    tick()
+                },
+                3200 + Math.random() * 4500,
+            )
+        }
+        tick()
+        return () => clearTimeout(timer)
+    }, [])
+    React.useEffect(() => {
+        spotsNow = n
+    }, [n])
+    return (
+        <motion.b animate={bump ? { y: [-4, 1, 0], opacity: [0.2, 1, 1] } : {}} className='inline-block font-extrabold'>
+            {n}
+        </motion.b>
+    )
+}
+
+function GoldenTicket({ selected, onSelect }: { selected: boolean; onSelect: () => void }) {
+    const founding = isFoundingWindowOpen()
+    return (
+        <button
+            type='button'
+            onClick={onSelect}
+            className={cn(
+                'relative mt-4 block w-full cursor-pointer overflow-hidden rounded-[18px] text-left text-[oklch(0.32_0.045_88)]',
+                'border border-[oklch(0.80_0.075_90)] shadow-[0_14px_34px_-12px_oklch(0.72_0.085_88/0.75),inset_0_1px_0_oklch(1_0_0/0.6)]',
+                selected && 'ring-primary ring-2 ring-offset-2 ring-offset-[var(--card)]',
+            )}
+            style={{
+                background:
+                    'linear-gradient(135deg, oklch(0.94 0.055 96), oklch(0.87 0.09 90) 46%, oklch(0.81 0.10 87))',
+            }}>
+            {/* punched holes */}
+            <span className='bg-card border-border absolute bottom-[45px] -left-[9px] z-[2] size-[18px] rounded-full border' />
+            <span className='bg-card border-border absolute -right-[9px] bottom-[45px] z-[2] size-[18px] rounded-full border' />
+            {/* shine sweep */}
+            <span
+                className='animate-ob-shine pointer-events-none absolute top-0 bottom-0 left-[-40%] z-[1] w-[40%]'
+                style={{ background: 'linear-gradient(105deg, transparent, oklch(1 0 0 / 0.5), transparent)' }}
+            />
+            <div className='relative z-[2] px-5 pt-[18px] pb-4'>
+                <div className='flex items-center justify-between'>
+                    <span className='inline-flex items-center gap-1.5 rounded-full bg-[oklch(0.34_0.045_82)] px-[11px] py-[5px] font-mono text-[10.5px] font-bold tracking-[0.08em] text-[oklch(0.94_0.075_92)] uppercase'>
+                        <StarIcon className='size-3 fill-current' strokeWidth={0} />
+                        {OB_TICKET.badge}
+                    </span>
+                    <span className='font-mono text-[13px] font-bold tracking-[0.02em] text-[oklch(0.36_0.05_82)]'>
+                        {OB_TICKET.passNumber}{' '}
+                        <i className='font-semibold not-italic opacity-55'>{OB_TICKET.passTotal}</i>
+                    </span>
+                </div>
+                <div className='mt-3.5 mb-1 flex items-baseline gap-2'>
+                    <span className='font-heading text-[40px] leading-none font-extrabold tracking-[-0.02em]'>
+                        {PRICING.lifetime.display}
+                    </span>
+                    <span className='text-[13px] font-semibold opacity-70'>once</span>
+                </div>
+                <p className='mb-3 max-w-[90%] text-[12.5px] leading-[1.45] opacity-80'>
+                    Pay once, keep it forever. Every future feature included - no renewals, ever.
+                </p>
+                <div className='flex items-center gap-2.5'>
+                    <span className='h-1.5 flex-1 overflow-hidden rounded-full bg-[oklch(0.34_0.045_82/0.22)]'>
+                        <i
+                            className='block h-full rounded-full bg-[oklch(0.40_0.055_80)]'
+                            style={{ width: OB_TICKET.spotsPct }}
+                        />
+                    </span>
+                    <span className='text-[11.5px] font-semibold whitespace-nowrap opacity-85'>
+                        <Spots /> spots left
+                    </span>
+                </div>
+            </div>
+            {founding && (
+                <div className='relative z-[2] flex items-center gap-2 border-t-2 border-dashed border-[oklch(1_0_0/0.55)] px-5 py-[13px]'>
+                    <ClockIcon className='size-3.5' />
+                    <span className='text-xs font-semibold opacity-80'>
+                        Founding price - increases to {OB_TICKET.nextPrice} in
+                    </span>
+                    <span className='ml-auto'>
+                        <Countdown />
+                    </span>
+                </div>
+            )}
+        </button>
+    )
+}

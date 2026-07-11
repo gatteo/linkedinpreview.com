@@ -1,67 +1,72 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 
-import { staggerContainer, staggerItem } from '@/lib/motion'
-import { STRATEGY_AUDIENCES, STRATEGY_GOALS, type StrategyAudience, type StrategyGoal } from '@/lib/strategy'
+import { OB_GOALS, type ObGoal } from '@/config/onboarding-flow'
 
+import { track } from '../ai'
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
-import { Pill, Question } from '../primitives'
+import { ChoiceCard, CTA, firstName, H1, Reaction } from '../primitives'
+
+// ---------------------------------------------------------------------------
+// 04 · Goal (rail 1/5) - the primary outcome. Drives copy across the recap,
+// reinforce, paywall pricing headline, and the projected goal metric.
+// ---------------------------------------------------------------------------
 
 const MAX_AUDIENCE = 3
 
 export function GoalStep() {
-    const { answers, update } = useOnboarding()
-    const primaryGoal = answers.primaryGoal ?? answers.goals[0]
+    const { answers, update, goNext } = useOnboarding()
+    const fn = firstName(answers.profile.name)
+    const selected = answers.goalId
 
-    const chooseGoal = (goal: StrategyGoal) => update({ primaryGoal: goal, goals: [goal] })
-
-    const toggleAudience = (value: StrategyAudience) => {
-        const has = answers.audience.includes(value)
-        const next = has ? answers.audience.filter((a) => a !== value) : [...answers.audience, value]
-        update({ audience: next.slice(0, MAX_AUDIENCE) })
+    const choose = (goal: ObGoal) => {
+        // The picked audience leads; earlier entries (from a partial setup) keep
+        // their spot behind it so nothing the user chose is silently dropped.
+        const audience = Array.from(new Set([...goal.audience, ...answers.audience])).slice(0, MAX_AUDIENCE)
+        update({ goalId: goal.id, primaryGoal: goal.goal, goals: [goal.goal], audience })
+        track('onb_goal_select', { goal: goal.id })
     }
 
-    return (
-        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-9'>
-            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
-                <Question>What does winning look like for you?</Question>
-                <div className='flex flex-wrap gap-2.5'>
-                    {STRATEGY_GOALS.map((goal) => (
-                        <Pill
-                            key={goal.value}
-                            icon={iconFor(goal.icon)}
-                            selected={primaryGoal === goal.value}
-                            onClick={() => chooseGoal(goal.value)}>
-                            {goal.label}
-                        </Pill>
-                    ))}
-                </div>
-            </motion.div>
+    const reaction = selected ? OB_GOALS.find((g) => g.id === selected) : null
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
-                <Question>
-                    Who are you writing for?{' '}
-                    <span className='text-muted-foreground text-sm font-normal'>(up to 3)</span>
-                </Question>
-                <div className='flex flex-wrap gap-2.5'>
-                    {STRATEGY_AUDIENCES.map((audience) => {
-                        const selected = answers.audience.includes(audience.value)
-                        const disabled = !selected && answers.audience.length >= MAX_AUDIENCE
-                        return (
-                            <Pill
-                                key={audience.value}
-                                icon={iconFor(audience.icon)}
-                                selected={selected}
-                                disabled={disabled}
-                                onClick={() => toggleAudience(audience.value)}>
-                                {audience.label}
-                            </Pill>
-                        )
-                    })}
-                </div>
-            </motion.div>
-        </motion.div>
+    return (
+        <div className='flex flex-col'>
+            <H1 className='mb-5'>
+                {fn ? `${fn}, what’s your #1 goal in the next 90 days?` : 'What’s your #1 goal in the next 90 days?'}
+            </H1>
+            <div className='mb-[18px] grid gap-2.5'>
+                {OB_GOALS.map((goal) => (
+                    <ChoiceCard
+                        key={goal.id}
+                        icon={iconFor(goal.icon)}
+                        title={goal.title}
+                        desc={goal.desc}
+                        selected={selected === goal.id}
+                        onClick={() => choose(goal)}
+                    />
+                ))}
+            </div>
+            <AnimatePresence initial={false}>
+                {reaction && (
+                    <Reaction
+                        key={reaction.id}
+                        reaction={{
+                            lead: reaction.reaction.lead,
+                            body: reaction.reaction.body.replace('{first}', fn || 'friend'),
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+            <CTA
+                onClick={() => {
+                    track('onb_goal_confirm')
+                    goNext()
+                }}
+                disabled={!selected}>
+                Continue
+            </CTA>
+        </div>
     )
 }

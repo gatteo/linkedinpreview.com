@@ -1,0 +1,8 @@
+allowBuilds:
+  '@vercel/speed-insights': true
+  contentlayer: true
+  core-js: true
+  esbuild: true
+  msw: true
+  protobufjs: true
+  sharp: true

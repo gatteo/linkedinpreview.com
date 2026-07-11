@@ -10,6 +10,25 @@
 // LLM only ever labels, never counts.
 // ---------------------------------------------------------------------------
 
+/**
+ * Extended public identity from the fast tier (Scrapingdog only - the JSON-LD
+ * fallback can't see these fields, so every one is optional and the UI hides
+ * missing rows). Shown on the Reassure profile card and threaded through the
+ * flow (languages drive the recap sentence and the bilingual paywall line).
+ */
+export type FastIdentity = {
+    location?: string
+    coverUrl?: string
+    publicId?: string
+    /** Provider label strings, shown verbatim (e.g. "3K", "500+"). */
+    followersLabel?: string
+    connectionsLabel?: string
+    languages?: { name: string; level: string }[]
+    experience?: { name: string; logoUrl: string }[]
+    education?: string
+    awards?: string[]
+}
+
 /** A post normalized from the rich (Bright Data) snapshot. */
 export type RichPost = {
     text: string
@@ -91,6 +110,16 @@ export type InsightCategory = (typeof INSIGHT_CATEGORIES)[number]
 
 export type InsightsKind = 'posts' | 'profile' | 'benchmark'
 
+/**
+ * Audit counts for the reveal report. The LLM labels each post (hook yes/no,
+ * ends-on-question yes/no); the server counts the labels - never the model.
+ * Present only on kind 'posts'.
+ */
+export type InsightsAudit = {
+    hooks: { withHook: number; total: number }
+    ctas: { endingWithQuestion: number; total: number }
+}
+
 export type OnboardingInsights = {
     kind: InsightsKind
     /** Deterministic server-computed numbers only; null means unknown and the UI suppresses the sentence. */
@@ -114,5 +143,7 @@ export type OnboardingInsights = {
     voice: { tone: string; excerpt: string | null }
     /** One-line strongest insight, echoed on the offer screen. */
     headline: string
+    /** Server-counted content-quality flags for the audit report (kind 'posts' only). */
+    audit?: InsightsAudit
     generatedAt: string
 }

@@ -94,7 +94,9 @@ export function OnboardingController() {
                 ...(connected ? { enrichConfidence: undefined } : {}),
             })
             if (connected) {
-                setStartStepId('mirror')
+                // Resume on the fetching loader: it re-runs the enrich with the
+                // connected identity and hands the rich scrape to the pipeline.
+                setStartStepId('fetching')
             } else {
                 setStartStepId('connect')
                 setLinkedinError(linkedinStatus)
@@ -198,7 +200,13 @@ export function OnboardingController() {
             const aboutNote = answers.aboutSummary?.trim()
                 ? `About (from their LinkedIn profile): ${answers.aboutSummary.trim()}`
                 : ''
-            const notes = [branding.knowledgeBase.notes, aboutNote, toneNote].filter(Boolean).join('\n')
+            const languageNote = answers.language?.trim() ? `Writes in: ${answers.language.trim()}.` : ''
+            const clarificationNote = answers.clarification?.trim()
+                ? `Their own correction to our read of them: ${answers.clarification.trim()}`
+                : ''
+            const notes = [branding.knowledgeBase.notes, aboutNote, toneNote, languageNote, clarificationNote]
+                .filter(Boolean)
+                .join('\n')
 
             updateBranding({
                 profile: answers.profile,

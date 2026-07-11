@@ -5,7 +5,16 @@ const categoryEnum = z.enum(['personal-story', 'educational', 'opinion', 'promot
 // The LLM only ever LABELS - every numeric field here is an index referencing a
 // post in the prompt, never a count or metric. The server does all counting.
 export const postsInsightsSchema = z.object({
-    postLabels: z.array(z.object({ index: z.number().int().min(0), category: categoryEnum })),
+    postLabels: z.array(
+        z.object({
+            index: z.number().int().min(0),
+            category: categoryEnum,
+            /** Whether the post's first line is a real scroll-stopping hook. */
+            opensWithHook: z.boolean(),
+            /** Whether the post ends on a question or an explicit call to action. */
+            endsWithQuestion: z.boolean(),
+        }),
+    ),
     currentTopics: z.array(z.object({ topic: z.string(), postIndex: z.number().int().min(0) })).max(5),
     adjacentTopics: z.array(z.object({ topic: z.string(), why: z.string() })).max(3),
     missing: z.array(z.object({ category: categoryEnum, why: z.string() })).max(2),

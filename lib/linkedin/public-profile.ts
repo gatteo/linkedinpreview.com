@@ -1,4 +1,5 @@
 import { env } from '@/env.mjs'
+import type { FastIdentity } from '@/types/onboarding'
 
 import { normalizeProfileUrl } from './profile-url'
 
@@ -44,6 +45,8 @@ export type PublicProfile = {
     source: FastProfileSource
     /** The complete provider record (Scrapingdog only), persisted for analysis. */
     raw?: Record<string, unknown>
+    /** Extended identity (Scrapingdog only) for the onboarding profile card. */
+    identity?: FastIdentity
 }
 
 const EMPTY: PublicProfile = {
@@ -174,13 +177,67 @@ type ScrapingdogProfile = {
     full_name?: string
     first_name?: string
     last_name?: string
+    public_identifier?: string
     headline?: string
     about?: string
     summary?: string
+    location?: string
+    followers?: string
+    connections?: string
     profile_photo?: string
     profile_photo_url?: string
+    background_cover_image_url?: string
     articles?: ScrapingdogArticle[]
     activities?: ScrapingdogActivity[]
+    experience?: { company_name?: string; company_image?: string }[]
+    education?: { college_name?: string }[]
+    languages?: { name?: string; level?: string }[]
+    awards?: { name?: string }[]
+}
+
+const MAX_EXPERIENCE = 3
+const MAX_AWARDS = 3
+
+/** Title-case a provider string that often arrives lowercased ("mia platform"). */
+function titleCase(s: string): string {
+    return s.replace(/\b\p{L}/gu, (c) => c.toUpperCase())
+}
+
+/**
+ * The extended identity for the onboarding profile card. Every field is
+ * optional - Scrapingdog omits or empties fields freely, and the card hides
+ * missing rows rather than showing blanks.
+ */
+function extractIdentity(record: ScrapingdogProfile): FastIdentity {
+    const identity: FastIdentity = {}
+    const location = (record.location ?? '').trim()
+    if (location) identity.location = location
+    const cover = (record.background_cover_image_url ?? '').trim()
+    if (cover) identity.coverUrl = cover
+    const publicId = (record.public_identifier ?? '').trim()
+    if (publicId) identity.publicId = publicId
+    // "3K followers" / "500+ connections" -> keep just the count label.
+    const followers = (record.followers ?? '').replace(/followers?/i, '').trim()
+    if (followers) identity.followersLabel = followers
+    const connections = (record.connections ?? '').replace(/connections?/i, '').trim()
+    if (connections) identity.connectionsLabel = connections
+    const languages = (record.languages ?? [])
+        .map((l) => ({ name: (l.name ?? '').trim(), level: (l.level ?? '').trim() }))
+        .filter((l) => l.name)
+    if (languages.length) identity.languages = languages
+    const experience = (record.experience ?? [])
+        .map((e) => ({ name: titleCase((e.company_name ?? '').trim()), logoUrl: (e.company_image ?? '').trim() }))
+        .filter((e) => e.name)
+        .slice(0, MAX_EXPERIENCE)
+    if (experience.length) identity.experience = experience
+    const education = (record.education ?? []).map((e) => titleCase((e.college_name ?? '').trim())).find((name) => name)
+    if (education) identity.education = education
+    const awards = (record.awards ?? [])
+        .map((a) => (a.name ?? '').trim())
+        .filter(Boolean)
+        .slice(0, MAX_AWARDS)
+    if (awards.length) identity.awards = awards
+    return identity
 }
 
 async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Promise<PublicProfile | null> {
@@ -233,6 +290,7 @@ async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Prom
             url: targetUrl,
             source: 'scrapingdog',
             raw: record as Record<string, unknown>,
+            identity: extractIdentity(record),
         }
     } catch {
         return null

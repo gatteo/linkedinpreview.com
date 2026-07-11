@@ -1,6 +1,9 @@
 # 068 — Onboarding
 
-> Status: SHIPPED · Area: Dashboard · Last verified: 2026-06-19
+> Status: SUPERSEDED by [231 — Onboarding audit funnel](231-onboarding-audit-funnel.md) · Area: Dashboard · Last verified: 2026-06-19
+>
+> The controller gate, localStorage resume, and finish() persistence described here survive; the
+> step machine, screens, and offer were replaced by the 17-step audit funnel (231).
 
 ## What
 

@@ -1,56 +1,62 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 
-import { TONE_OPTIONS, type Tone } from '@/config/ai'
+import { OB_VOICES, obVoiceFromTone, type ObVoice } from '@/config/onboarding-flow'
 import { toneFromSummary } from '@/config/onboarding-personalization'
-import { staggerContainer, staggerItem } from '@/lib/motion'
-import { Input } from '@/components/ui/input'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
-import { Pill, Question } from '../primitives'
+import { iconFor } from '../icons'
+import { ChoiceCard, CTA, firstName, H1, Reaction } from '../primitives'
+
+// ---------------------------------------------------------------------------
+// 08 · Voice (rail 3/5) - the writing voice. Pre-selected from the inferred
+// tone summary when the profile fetch produced one.
+// ---------------------------------------------------------------------------
 
 export function VoiceStep() {
-    const { answers, update } = useOnboarding()
-    const tone: Tone = answers.tone ?? toneFromSummary(answers.toneSummary)
+    const { answers, update, goNext } = useOnboarding()
+    const fn = firstName(answers.profile.name)
+    const inferred = obVoiceFromTone(answers.tone ?? toneFromSummary(answers.toneSummary))
+    const selected = answers.voiceId ?? inferred?.id
 
-    const choose = (value: Tone) => {
-        update({ tone: value })
-        track('onb_voice_set', { tone: value })
+    const choose = (voice: ObVoice) => {
+        update({ voiceId: voice.id, tone: voice.tone })
+        track('onb_voice_set', { voice: voice.id, tone: voice.tone })
     }
 
-    return (
-        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col gap-9'>
-            <motion.div variants={staggerItem} className='flex flex-col gap-3.5'>
-                <Question>Pick the voice that sounds most like you.</Question>
-                {answers.toneSummary && (
-                    <p className='text-muted-foreground -mt-1 text-[13px]'>
-                        From your profile, you sound <span className='text-foreground'>{answers.toneSummary}</span> - we
-                        preselected the closest match.
-                    </p>
-                )}
-                <div className='flex flex-wrap gap-2.5'>
-                    {TONE_OPTIONS.map((option) => (
-                        <Pill key={option.value} selected={tone === option.value} onClick={() => choose(option.value)}>
-                            {option.label}
-                        </Pill>
-                    ))}
-                </div>
-            </motion.div>
+    const reaction = selected ? OB_VOICES.find((v) => v.id === selected) : null
 
-            <motion.div variants={staggerItem} className='flex flex-col gap-2.5'>
-                <Question>
-                    Anything we should avoid?{' '}
-                    <span className='text-muted-foreground text-sm font-normal'>(optional)</span>
-                </Question>
-                <Input
-                    value={answers.writingNotes ?? ''}
-                    onChange={(e) => update({ writingNotes: e.target.value })}
-                    placeholder='e.g. no buzzwords, no emojis, never salesy'
-                />
-                <p className='text-muted-foreground text-xs'>We&apos;ll apply this to every post we write for you.</p>
-            </motion.div>
-        </motion.div>
+    return (
+        <div className='flex flex-col'>
+            <H1 className='mb-5'>
+                {fn ? `${fn}, which voice sounds most like you?` : 'Which voice sounds most like you?'}
+            </H1>
+            <div className='mb-[18px] grid gap-2.5'>
+                {OB_VOICES.map((voice) => (
+                    <ChoiceCard
+                        key={voice.id}
+                        icon={iconFor(voice.icon)}
+                        title={voice.title}
+                        desc={voice.desc}
+                        selected={selected === voice.id}
+                        onClick={() => choose(voice)}
+                    />
+                ))}
+            </div>
+            <AnimatePresence initial={false}>
+                {reaction && <Reaction key={reaction.id} reaction={reaction.reaction} />}
+            </AnimatePresence>
+            <CTA
+                onClick={() => {
+                    // A kept pre-selection still counts as a choice.
+                    if (!answers.voiceId && reaction) choose(reaction)
+                    goNext()
+                }}
+                disabled={!selected}>
+                Continue
+            </CTA>
+        </div>
     )
 }

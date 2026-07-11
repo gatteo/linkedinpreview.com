@@ -8,47 +8,62 @@
 // OAuth round-trip rehydrates without losing progress or re-spending AI calls.
 // ---------------------------------------------------------------------------
 
-import type { InsightCategory, OnboardingInsights, RichScrapeStatus, RichSummary } from '@/types/onboarding'
+import type {
+    FastIdentity,
+    InsightCategory,
+    OnboardingInsights,
+    RichScrapeStatus,
+    RichSummary,
+} from '@/types/onboarding'
 import type { Tone } from '@/config/ai'
+import { obGoalFromStrategy, type Commitment, type ObGoalId, type ObVoiceId } from '@/config/onboarding-flow'
 import type { Cadence } from '@/config/onboarding-personalization'
 import type { BrandingData, BrandingRole, BrandingWritingStyle } from '@/lib/branding'
 import type { ScheduleSlot, StrategyAudience, StrategyData, StrategyFormat, StrategyGoal } from '@/lib/strategy'
 
-// The step machine, single source of truth (StepId derives from it). Questions
-// (goal/voice/cadence) sit right after the mirror so the 42-60s rich scrape
-// completes while the user answers; reinforce + building absorb the tail;
-// insights is the payoff right before the prescription (preview) and the offer.
-// 'done' is the terminal celebration/handoff screen.
+// The step machine, single source of truth (StepId derives from it). The audit
+// funnel (design import: onboarding/flow) masks the 42-60s rich scrape behind
+// the question steps (goal..schedule); building absorbs the tail; reveal is the
+// audit payoff right before the plan build and the paywall. 'confirm' is the
+// terminal celebration/handoff screen.
 export const STEP_ORDER = [
     'welcome',
     'connect',
-    'mirror',
+    'fetching',
+    'reassure',
     'goal',
+    'persona',
+    'recap',
+    'proof',
     'voice',
-    'cadence',
+    'topics',
+    'schedule',
     'reinforce',
     'building',
-    'insights',
-    'preview',
-    'recap',
-    'offer',
-    'done',
+    'reveal',
+    'buildplan',
+    'paywall',
+    'confirm',
 ] as const
 
 export type StepId = (typeof STEP_ORDER)[number]
 
-// Pre-v2 blobs come from the old step order: proof/spotlight no longer exist,
-// and reinforce/preview MOVED past the question steps - resuming an old blob at
-// either would skip goal/voice/cadence entirely, so they map to the nearest
-// question step instead.
-const V1_RESUME: Record<string, StepId> = {
-    proof: 'goal',
-    spotlight: 'cadence',
-    reinforce: 'goal',
-    preview: 'cadence',
+// Pre-v3 blobs come from older step orders. Steps that vanished map to the
+// nearest safe step in the new order; question steps that moved map so nothing
+// gets skipped (a stale resume must never jump past uncollected answers).
+const LEGACY_RESUME: Record<string, StepId> = {
+    // v2 machine
+    mirror: 'fetching',
+    cadence: 'schedule',
+    insights: 'reveal',
+    preview: 'reveal',
+    offer: 'paywall',
+    done: 'confirm',
+    // v1 machine
+    spotlight: 'schedule',
 }
 
-const STATE_VERSION = 2
+const STATE_VERSION = 3
 
 export type OnboardingAnswers = {
     profile: { name: string; headline: string; avatarUrl: string }
@@ -87,6 +102,24 @@ export type OnboardingAnswers = {
      *  the inference LLM. Gates the "LinkedIn blocked the request" error card: an
      *  LLM-only failure must fall to the manual form, not blame LinkedIn. */
     mirrorFetchOk?: boolean
+    // --- Audit-funnel additions (design import: onboarding/flow) -----------
+    /** Extended public identity (Scrapingdog tier) for the Reassure card. */
+    identity?: FastIdentity
+    /** The goal-deck option picked on screen 04 (maps to primaryGoal/goals/audience). */
+    goalId?: ObGoalId
+    /** The voice-deck option picked on screen 08 (maps to tone). */
+    voiceId?: ObVoiceId
+    /** Languages label for the recap sentence ("English & Italian"); editable. */
+    language?: string
+    /** Free-text correction from the recap's "Something's off?" box; feeds AI prompts. */
+    clarification?: string
+    /** Commitment answer from the buildplan popup (analytics only). */
+    startCommitment?: Commitment
+    /** Pillar-tagged posts generated for the paywall preview strip. */
+    postIdeas?: { category: InsightCategory; text: string }[]
+    /** Only terminal states persist; in-flight generation lives in the buildplan step. */
+    postIdeasStatus?: 'ready' | 'failed'
+
     /** The first post text kept in state for the Voice/Recap screens. */
     firstPostText?: string
     /** Whether the first post was written against real scraped posts as style references. */
@@ -130,6 +163,7 @@ export function initialAnswers(branding: BrandingData, strategy: StrategyData): 
         formats: strategy.formats,
         linkedinConnected: false,
         primaryGoal: strategy.goals[0],
+        goalId: obGoalFromStrategy(strategy.goals[0])?.id,
     }
 }
 
@@ -164,7 +198,7 @@ export function readOnboarding(): OnboardingResumeState | null {
         if (!parsed?.answers?.profile || typeof parsed.resumeAt !== 'string') return null
         if (parsed.v !== STATE_VERSION) {
             parsed.resumeAt =
-                V1_RESUME[parsed.resumeAt] ??
+                LEGACY_RESUME[parsed.resumeAt] ??
                 ((STEP_ORDER as readonly string[]).includes(parsed.resumeAt) ? parsed.resumeAt : 'welcome')
         } else if (!(STEP_ORDER as readonly string[]).includes(parsed.resumeAt)) {
             parsed.resumeAt = 'welcome'

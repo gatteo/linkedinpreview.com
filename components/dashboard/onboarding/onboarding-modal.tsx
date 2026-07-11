@@ -2,70 +2,47 @@
 
 import * as React from 'react'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 
+import { OB_STEP_META, sectionFor } from '@/config/onboarding-flow'
 import { EASE_OUT, slideStep } from '@/lib/motion'
-import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 
 import { track } from './ai'
-import { BrandStage } from './brand-stage'
 import { Confetti } from './confetti'
 import { OnboardingProvider } from './context'
+import { firstName, PersonAvatar } from './primitives'
+import { HeroStage, Stage } from './stage'
 import { BuildingStep } from './steps/building-step'
-import { CadenceStep } from './steps/cadence-step'
+import { BuildplanStep } from './steps/buildplan-step'
+import { ConfirmStep } from './steps/confirm-step'
 import { ConnectStep } from './steps/connect-step'
-import { DoneStep } from './steps/done-step'
+import { FetchingStep } from './steps/fetching-step'
 import { GoalStep } from './steps/goal-step'
-import { InsightsStep } from './steps/insights-step'
-import { MirrorStep } from './steps/mirror-step'
-import { OfferStep } from './steps/offer-step'
-import { PreviewStep } from './steps/preview-step'
+import { PaywallStep } from './steps/paywall-step'
+import { PersonaStep } from './steps/persona-step'
+import { ProofStep } from './steps/proof-step'
+import { ReassureStep } from './steps/reassure-step'
 import { RecapStep } from './steps/recap-step'
 import { ReinforceStep } from './steps/reinforce-step'
+import { RevealStep } from './steps/reveal-step'
+import { ScheduleStep } from './steps/schedule-step'
+import { TopicsStep } from './steps/topics-step'
 import { VoiceStep } from './steps/voice-step'
 import { WelcomeStep } from './steps/welcome-step'
 import { STEP_ORDER, type OnboardingAnswers, type StepId } from './types'
 import { useRichPipeline } from './use-rich-pipeline'
 
 // ---------------------------------------------------------------------------
-// Step machine (docs/onboarding-conversion-redesign.md §2; order lives in
-// types.ts so StepId derives from it)
+// The audit-funnel modal (design import: onboarding/flow). Three layouts:
+//   hero   - full-bleed illustration card (welcome)
+//   split  - content pane + immersive stage on the right
+//   report - wide centered column, no stage (reveal · paywall)
+// Steps own their CTAs; there is no shared footer. The analysis rail masks the
+// background rich scrape across the question steps.
 // ---------------------------------------------------------------------------
-
-// Only COLLECT (data) steps fill the progress bar; value/milestone steps read as
-// rewards, not work, so they don't advance it - the bar is full walking into
-// the insight cards, framing them as the payout.
-const DATA_STEPS: StepId[] = ['welcome', 'connect', 'goal', 'voice', 'cadence']
-
-type FooterConfig = { back: boolean; skip: 'data' | null; primary: string | null }
-
-// Steps with all-falsy config own their footer entirely (body renders actions).
-const FOOTER: Record<StepId, FooterConfig> = {
-    welcome: { back: false, skip: null, primary: null },
-    connect: { back: true, skip: 'data', primary: null },
-    // Mirror owns its own forward button (rendered in the body) so it can't be
-    // confirmed while the "reading" spinner is still running or before the
-    // manual form is complete.
-    mirror: { back: true, skip: null, primary: null },
-    goal: { back: true, skip: null, primary: 'Continue' },
-    voice: { back: true, skip: 'data', primary: 'Continue' },
-    cadence: { back: true, skip: 'data', primary: 'Continue' },
-    reinforce: { back: true, skip: null, primary: 'Continue' },
-    building: { back: false, skip: null, primary: null },
-    // Insights owns its footer: the three cards advance with their own buttons.
-    insights: { back: false, skip: null, primary: null },
-    preview: { back: true, skip: null, primary: 'Continue' },
-    recap: { back: false, skip: null, primary: 'See my offer' },
-    offer: { back: false, skip: null, primary: null },
-    done: { back: false, skip: null, primary: null },
-}
 
 const indexOf = (id: StepId) => Math.max(0, STEP_ORDER.indexOf(id))
-
-// ---------------------------------------------------------------------------
-// Modal
-// ---------------------------------------------------------------------------
 
 type OnboardingModalProps = {
     open: boolean
@@ -121,7 +98,6 @@ export function OnboardingModal({
 
     const skip = React.useCallback(() => {
         track('onb_skip', { step })
-        if (step === 'connect') track('onb_connect_method', { method: 'manual' })
         goNext()
     }, [step, goNext])
 
@@ -129,7 +105,7 @@ export function OnboardingModal({
         (didConvert: boolean) => {
             setConverted(didConvert)
             onFinish(answers, didConvert)
-            goTo('done')
+            goTo('confirm')
         },
         [answers, onFinish, goTo],
     )
@@ -138,9 +114,9 @@ export function OnboardingModal({
 
     // Incremental persistence: stash answers + current step after each change so a
     // refresh or the LinkedIn OAuth round-trip rehydrates without losing progress
-    // or re-spending AI calls. The terminal 'done' step is already persisted/cleared.
+    // or re-spending AI calls. The terminal 'confirm' step is already persisted/cleared.
     React.useEffect(() => {
-        if (step !== 'done') onPersist(answers, step)
+        if (step !== 'confirm') onPersist(answers, step)
     }, [answers, step, onPersist])
 
     // One funnel event per screen enter so drop-off is tunable in PostHog.
@@ -177,20 +153,14 @@ export function OnboardingModal({
         ],
     )
 
-    const footer = FOOTER[step]
-    const showBack = footer.back && index > 0
-    const showFooter = footer.back || !!footer.skip || !!footer.primary
-
-    const handlePrimary = () => {
-        if (step === 'goal') track('onb_goal_confirm')
-        goNext()
-    }
-
-    // Don't let the user skip past the "aha" before the first post has rendered.
-    const primaryDisabled = step === 'preview' && !answers.firstPostText
-
-    const dataDone = DATA_STEPS.filter((s) => STEP_ORDER.indexOf(s) < index).length
-    const progress = (dataDone / DATA_STEPS.length) * 100
+    const meta = OB_STEP_META[step] ?? { layout: 'split' as const }
+    // The user chip appears once a real identity exists (post-fetch or OAuth).
+    const connected = index > indexOf('fetching') && !!answers.profile.name
+    // The rail is a latency MASK, not decoration: it only shows while a real
+    // background analysis exists to mask (scrape running or landed). With no
+    // scrape (skipped/unavailable), claiming "analyzing" would be a lie.
+    const railActive =
+        answers.richStatus === 'pending' || answers.richStatus === 'ready' || answers.richStatus === 'empty'
 
     return (
         <Dialog open={open}>
@@ -199,99 +169,142 @@ export function OnboardingModal({
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onInteractOutside={(e) => e.preventDefault()}
-                className='flex h-[min(790px,90vh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] p-0 shadow-[0_40px_90px_-24px_oklch(0.12_0.03_222_/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222_/_0.5)] sm:max-w-[min(1160px,92vw)]'>
+                className='flex h-[min(790px,90vh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
-                    {step === 'done' && converted && <Confetti />}
+                    {step === 'confirm' && converted && <Confetti />}
 
-                    <DialogTitle className='sr-only'>Set up your LinkedIn growth system</DialogTitle>
+                    <DialogTitle className='sr-only'>Your personalized LinkedIn audit</DialogTitle>
                     <DialogDescription className='sr-only'>
-                        A short, personalized setup for your LinkedIn content.
+                        Connect your profile, answer a few questions, and get a personalized LinkedIn strategy.
                     </DialogDescription>
 
-                    {/* Image lives on the right on desktop; on mobile flex-col-reverse
-                        floats it back up to the top. */}
-                    <div className='flex h-full overflow-hidden max-md:flex-col-reverse'>
-                        {/* Content column */}
-                        <div
-                            className='grain bg-background relative flex min-w-0 flex-1 flex-col'
-                            style={{ '--grain-opacity': 0.05 } as React.CSSProperties}>
-                            {/* Progress: a thin full-bleed bar reading as the panel's top border. */}
-                            <div className='bg-muted h-1 w-full shrink-0 overflow-hidden'>
-                                <motion.div
-                                    className='bg-primary h-full'
-                                    animate={{ width: `${progress}%` }}
-                                    transition={{ duration: 0.45, ease: EASE_OUT }}
-                                />
+                    <OnboardingProvider value={ctxValue}>
+                        {meta.layout === 'hero' ? (
+                            <div className='relative h-full overflow-hidden'>
+                                {meta.stage && <HeroStage stage={meta.stage} />}
+                                <div
+                                    className='absolute inset-x-0 bottom-0 max-w-[640px] p-[clamp(24px,5vw,58px)]'
+                                    style={
+                                        {
+                                            '--foreground': 'oklch(0.98 0.01 90)',
+                                            '--muted-foreground': 'oklch(0.92 0.02 200 / 0.82)',
+                                        } as React.CSSProperties
+                                    }>
+                                    <StepAnim step={step} direction={direction}>
+                                        <StepBody step={step} />
+                                    </StepAnim>
+                                </div>
                             </div>
-
-                            {/* Body - vertically centered when short */}
-                            <div className='flex flex-1 flex-col overflow-y-auto'>
-                                <div className='m-auto w-full max-w-[520px] px-[clamp(20px,4vw,56px)] py-[clamp(24px,3vw,40px)]'>
-                                    <OnboardingProvider value={ctxValue}>
-                                        <AnimatePresence mode='wait' custom={direction} initial={false}>
-                                            <motion.div
-                                                key={step}
-                                                custom={direction}
-                                                variants={slideStep}
-                                                initial='enter'
-                                                animate='center'
-                                                exit='exit'>
+                        ) : (
+                            <div className='flex h-full overflow-hidden'>
+                                <div
+                                    className='grain bg-card relative flex min-w-0 flex-1 flex-col'
+                                    style={{ '--grain-opacity': 0.06 } as React.CSSProperties}>
+                                    {railActive && <Rail pct={meta.railPct} rail={meta.rail} />}
+                                    <TopRow step={step} answers={answers} connected={connected} />
+                                    <div className='flex flex-1 flex-col overflow-y-auto'>
+                                        <div
+                                            className={cn(
+                                                'w-full',
+                                                meta.layout === 'report'
+                                                    ? 'mx-auto max-w-[720px] px-[clamp(20px,4vw,40px)] pt-[30px] pb-11'
+                                                    : 'm-auto max-w-[540px] px-[clamp(20px,4vw,44px)] py-[30px]',
+                                            )}>
+                                            <StepAnim step={step} direction={direction}>
                                                 <StepBody step={step} />
-                                            </motion.div>
-                                        </AnimatePresence>
-                                    </OnboardingProvider>
+                                            </StepAnim>
+                                        </div>
+                                    </div>
                                 </div>
+                                {meta.layout === 'split' && meta.stage && <Stage stage={meta.stage} />}
                             </div>
-
-                            {/* Footer */}
-                            {showFooter && (
-                                <div className='border-border flex shrink-0 items-center justify-between gap-2 border-t px-[clamp(20px,4vw,56px)] py-3.5'>
-                                    <div>
-                                        {showBack && (
-                                            <Button
-                                                variant='ghost'
-                                                size='sm'
-                                                className='text-muted-foreground'
-                                                onClick={goBack}>
-                                                <ArrowLeftIcon className='size-4' />
-                                                Back
-                                            </Button>
-                                        )}
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                        {footer.skip && (
-                                            <Button
-                                                variant='ghost'
-                                                size='sm'
-                                                className='text-muted-foreground'
-                                                onClick={skip}>
-                                                {step === 'connect' ? "I'll set it up manually" : 'Skip for now'}
-                                            </Button>
-                                        )}
-                                        {footer.primary &&
-                                            (footer.primary === 'See my offer' ? (
-                                                <span className='gradient-border'>
-                                                    <Button onClick={handlePrimary} disabled={primaryDisabled}>
-                                                        {footer.primary}
-                                                        <ArrowRightIcon className='size-4' />
-                                                    </Button>
-                                                </span>
-                                            ) : (
-                                                <Button onClick={handlePrimary} disabled={primaryDisabled}>
-                                                    {footer.primary}
-                                                    <ArrowRightIcon className='size-4' />
-                                                </Button>
-                                            ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <BrandStage step={step} />
-                    </div>
+                        )}
+                    </OnboardingProvider>
                 </MotionConfig>
             </DialogContent>
         </Dialog>
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Chrome pieces
+// ---------------------------------------------------------------------------
+
+// The analysis rail - the latency mask for the background rich scrape. Visible
+// only on the five question steps ("Analyzing") and the audit loader
+// ("Finalizing"); its progress is staged per step, not real, by design.
+function Rail({ pct, rail }: { pct?: number; rail?: string }) {
+    if (!pct) return null
+    return (
+        <div
+            className='border-border flex h-12 shrink-0 items-center gap-3 border-b px-[22px]'
+            style={{ background: 'color-mix(in oklch, var(--info-soft) 40%, transparent)' }}>
+            <span className='bg-info animate-ob-pulse size-2 shrink-0 rounded-full' />
+            <span className='text-muted-foreground text-[12.5px] whitespace-nowrap'>
+                {rail === 'audit' ? (
+                    <>
+                        <b className='text-info font-semibold'>Finalizing</b> your strategy…
+                    </>
+                ) : (
+                    <>
+                        <b className='text-info font-semibold'>Analyzing</b> your posts…
+                    </>
+                )}
+            </span>
+            <span
+                className='h-1 flex-1 overflow-hidden rounded-full'
+                style={{ background: 'color-mix(in oklch, var(--info) 15%, transparent)' }}>
+                <motion.span
+                    className='block h-full rounded-full'
+                    style={{
+                        background:
+                            'linear-gradient(90deg, color-mix(in oklch, var(--info) 70%, var(--petrol-500)), var(--info))',
+                    }}
+                    initial={false}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.6, ease: EASE_OUT }}
+                />
+            </span>
+            <span className='text-muted-foreground w-8 shrink-0 text-right font-mono text-xs'>{pct}%</span>
+            {rail !== 'audit' && <span className='text-muted-foreground shrink-0 font-mono text-[11px]'>{rail}</span>}
+        </div>
+    )
+}
+
+function TopRow({ step, answers, connected }: { step: StepId; answers: OnboardingAnswers; connected: boolean }) {
+    const section = sectionFor(step)
+    const meta = OB_STEP_META[step]
+    const wide = meta?.layout === 'report'
+    return (
+        <div className='shrink-0 pt-[22px]'>
+            <div
+                className={cn(
+                    'mx-auto flex min-h-[22px] w-full items-center justify-between gap-3',
+                    wide ? 'max-w-[720px] px-[clamp(20px,4vw,40px)]' : 'max-w-[540px] px-[clamp(20px,4vw,44px)]',
+                )}>
+                <span className='text-muted-foreground font-mono text-[11px] font-medium tracking-[0.1em] uppercase'>
+                    {section ? `Step ${section.index} / ${section.count} - ${section.name}` : ''}
+                </span>
+                {connected ? (
+                    <span className='text-muted-foreground flex items-center gap-2 text-[13px]'>
+                        <PersonAvatar name={answers.profile.name} src={answers.profile.avatarUrl} size={22} />
+                        <b className='text-foreground font-semibold'>{firstName(answers.profile.name)}</b>
+                    </span>
+                ) : (
+                    <span />
+                )}
+            </div>
+        </div>
+    )
+}
+
+function StepAnim({ step, direction, children }: { step: StepId; direction: number; children: React.ReactNode }) {
+    return (
+        <AnimatePresence mode='wait' custom={direction} initial={false}>
+            <motion.div key={step} custom={direction} variants={slideStep} initial='enter' animate='center' exit='exit'>
+                {children}
+            </motion.div>
+        </AnimatePresence>
     )
 }
 
@@ -305,27 +318,35 @@ function StepBody({ step }: { step: StepId }) {
             return <WelcomeStep />
         case 'connect':
             return <ConnectStep />
-        case 'mirror':
-            return <MirrorStep />
+        case 'fetching':
+            return <FetchingStep />
+        case 'reassure':
+            return <ReassureStep />
         case 'goal':
             return <GoalStep />
+        case 'persona':
+            return <PersonaStep />
+        case 'recap':
+            return <RecapStep />
+        case 'proof':
+            return <ProofStep />
         case 'voice':
             return <VoiceStep />
-        case 'cadence':
-            return <CadenceStep />
+        case 'topics':
+            return <TopicsStep />
+        case 'schedule':
+            return <ScheduleStep />
         case 'reinforce':
             return <ReinforceStep />
         case 'building':
             return <BuildingStep />
-        case 'insights':
-            return <InsightsStep />
-        case 'preview':
-            return <PreviewStep />
-        case 'recap':
-            return <RecapStep />
-        case 'offer':
-            return <OfferStep />
-        case 'done':
-            return <DoneStep />
+        case 'reveal':
+            return <RevealStep />
+        case 'buildplan':
+            return <BuildplanStep />
+        case 'paywall':
+            return <PaywallStep />
+        case 'confirm':
+            return <ConfirmStep />
     }
 }
