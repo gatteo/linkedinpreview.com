@@ -76,6 +76,7 @@
         "pdf-lib": "^1.17.1",
         "pdf-parse": "^2.4.5",
         "posthog-js": "^1.351.3",
+        "posthog-node": "^5.40.0",
         "radix-ui": "^1.4.3",
         "react": "19.2.4",
         "react-dom": "19.2.4",

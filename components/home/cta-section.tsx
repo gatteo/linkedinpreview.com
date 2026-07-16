@@ -42,7 +42,7 @@ export function CtaSection() {
                                 <span className='gradient-border'>
                                     <Button asChild size='lg' className='h-[50px] px-6.5 text-base'>
                                         <Link href={Routes.Tool}>
-                                            Start writing - it&apos;s free
+                                            Start writing
                                             <ArrowRight className='size-4' />
                                         </Link>
                                     </Button>

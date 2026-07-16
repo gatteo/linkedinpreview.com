@@ -6,6 +6,11 @@ export const env = createEnv({
         NODE_ENV: z.enum(['development', 'production']),
         LLM_API_KEY: z.string().min(1),
         LLM_MODEL: z.string().optional(),
+        // Optional override for the low-volume, quality-critical onboarding
+        // analysis calls (profile inference, post insights). Defaults to
+        // DEFAULT_ANALYSIS_MODEL in config/ai.ts; high-volume editor calls
+        // stay on LLM_MODEL.
+        LLM_ANALYSIS_MODEL: z.string().optional(),
         // LinkedIn integration (Wave 4). All optional: when blank the publishing
         // and scheduling features stay inert (mirrors the GTM/Tally pattern).
         LINKEDIN_CLIENT_ID: z.string().optional(),
@@ -74,6 +79,7 @@ export const env = createEnv({
         NODE_ENV: process.env.NODE_ENV,
         LLM_API_KEY: process.env.LLM_API_KEY,
         LLM_MODEL: process.env.LLM_MODEL,
+        LLM_ANALYSIS_MODEL: process.env.LLM_ANALYSIS_MODEL,
         LINKEDIN_CLIENT_ID: process.env.LINKEDIN_CLIENT_ID,
         LINKEDIN_CLIENT_SECRET: process.env.LINKEDIN_CLIENT_SECRET,
         LINKEDIN_REDIRECT_URI: process.env.LINKEDIN_REDIRECT_URI,

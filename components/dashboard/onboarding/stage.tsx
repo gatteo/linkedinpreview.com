@@ -29,7 +29,7 @@ export function Stage({ stage }: { stage: StageArt }) {
                         src={`/images/illustrations/${stage.img}`}
                         alt=''
                         fill
-                        sizes='520px'
+                        sizes='1200px'
                         className='object-cover'
                         style={{ objectPosition: stage.focus }}
                         priority

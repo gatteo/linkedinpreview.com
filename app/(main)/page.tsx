@@ -13,6 +13,7 @@ import { Features } from '@/components/home/features'
 import { Hero } from '@/components/home/hero'
 import { HowToUse } from '@/components/home/how-to-use'
 import { OpenSource } from '@/components/home/opensource'
+import { PlanCta } from '@/components/home/plan-cta'
 import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
 
@@ -106,6 +107,7 @@ export default function Page() {
             <Hero />
             <Tool />
             <HowToUse />
+            <PlanCta />
             <DashboardShowcase />
             <OpenSource />
             <Reason />

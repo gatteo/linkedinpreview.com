@@ -10,7 +10,7 @@ import { useOnboarding } from '../context'
 import { LoaderBlock } from '../primitives'
 
 // ---------------------------------------------------------------------------
-// 12 · Building (rail: audit, 100%) - masks the real work behind an
+// 12 · Building - masks the real work behind an
 // audit-themed checklist: the positioning + formats AI calls fire here, and the
 // step holds (bounded) while the rich scrape and the insights payload land so
 // the reveal right after almost never shows a loader.

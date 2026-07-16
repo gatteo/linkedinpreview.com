@@ -182,6 +182,9 @@ importers:
       posthog-js:
         specifier: ^1.351.3
         version: 1.351.3
+      posthog-node:
+        specifier: ^5.40.0
+        version: 5.40.0(rxjs@7.8.1)
       radix-ui:
         specifier: ^1.4.3
         version: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1678,8 +1681,14 @@ packages:
   '@posthog/core@1.23.1':
     resolution: {integrity: sha512-GViD5mOv/mcbZcyzz3z9CS0R79JzxVaqEz4sP5Dsea178M/j3ZWe6gaHDZB9yuyGfcmIMQ/8K14yv+7QrK4sQQ==}
 
+  '@posthog/core@1.40.1':
+    resolution: {integrity: sha512-jXuMtZCwA7AMpYlo1wjm6GlC58YBlz/ZxpDIsF9hroUfqYoPPDmQbsQb4iiZAS43+o/kwloxdKJIlE0IiwQ5HQ==}
+
   '@posthog/types@1.351.3':
     resolution: {integrity: sha512-Fuckp/fdL0Ku/kVYljbUdJli8vF07e5+tBsf4GzYBQjfZCGhlT0l37XqVQ05Uk7l/pUDONZD+OOXNBgBzW32gA==}
+
+  '@posthog/types@1.393.0':
+    resolution: {integrity: sha512-vzWeEJZ7ERQhFRoQYaP5jzN1JvIu46UJyHXsuv+dTGW2r3sMgREOhNxXLZjmFHwZ8/FOHQoyqqQmXTCXZSfMSg==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -6009,6 +6018,15 @@ packages:
   posthog-js@1.351.3:
     resolution: {integrity: sha512-c2sQOhbo0Ed2Cgq+gTMFiArneu2/+HTf6sJdHw60oj2BIXTHjQfGY7H2XzA7ZZHsDNVVVcpsqpxrUhyzGsfDhQ==}
 
+  posthog-node@5.40.0:
+    resolution: {integrity: sha512-DrLfHuauO0W6qruF80iqr5JdmLysef74XzOB4eh36oRLRhxCySLraTqsi2Pj161LZnp9/JNdRDxwT8ei8VK2YA==}
+    engines: {node: ^20.20.0 || >=22.22.0}
+    peerDependencies:
+      rxjs: ^7.0.0
+    peerDependenciesMeta:
+      rxjs:
+        optional: true
+
   powershell-utils@0.1.0:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
@@ -8511,7 +8529,13 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
+  '@posthog/core@1.40.1':
+    dependencies:
+      '@posthog/types': 1.393.0
+
   '@posthog/types@1.351.3': {}
+
+  '@posthog/types@1.393.0': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -13542,6 +13566,12 @@ snapshots:
       preact: 10.28.4
       query-selector-shadow-dom: 1.0.1
       web-vitals: 5.1.0
+
+  posthog-node@5.40.0(rxjs@7.8.1):
+    dependencies:
+      '@posthog/core': 1.40.1
+    optionalDependencies:
+      rxjs: 7.8.1
 
   powershell-utils@0.1.0: {}
 

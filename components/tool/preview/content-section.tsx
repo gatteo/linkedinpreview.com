@@ -9,6 +9,9 @@ interface ContentSectionProps {
     content: string
     /** When false, render the full post without the 3-line clamp / "...more" toggle. */
     clamp?: boolean
+    /** When false, the "...more" affordance is a static label (a sneak peek) that
+     *  can't be clicked to expand. Defaults to the interactive editor behavior. */
+    interactiveMore?: boolean
 }
 
 export function renderWithHashtags(text: string): React.ReactNode {
@@ -25,7 +28,7 @@ export function renderWithHashtags(text: string): React.ReactNode {
     )
 }
 
-export const ContentSection: React.FC<ContentSectionProps> = ({ content, clamp = true }) => {
+export const ContentSection: React.FC<ContentSectionProps> = ({ content, clamp = true, interactiveMore = true }) => {
     const [isExpanded, setIsExpanded] = useState(false)
     const [showMoreButton, setShowMoreButton] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
@@ -73,16 +76,22 @@ export const ContentSection: React.FC<ContentSectionProps> = ({ content, clamp =
                 )}>
                 {renderWithHashtags(processedContent)}
             </div>
-            {clamp && showMoreButton && (
-                <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className={cn(
-                        'text-sm font-normal text-neutral-500 hover:text-neutral-700 hover:underline',
-                        isExpanded ? 'mt-2' : 'absolute right-0 bottom-0 bg-white pl-1',
-                    )}>
-                    {isExpanded ? '...less' : '...more'}
-                </button>
-            )}
+            {clamp &&
+                showMoreButton &&
+                (interactiveMore ? (
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className={cn(
+                            'text-sm font-normal text-neutral-500 hover:text-neutral-700 hover:underline',
+                            isExpanded ? 'mt-2' : 'absolute right-0 bottom-0 bg-white pl-1',
+                        )}>
+                        {isExpanded ? '...less' : '...more'}
+                    </button>
+                ) : (
+                    <span className='absolute right-0 bottom-0 bg-white pl-1 text-sm font-normal text-neutral-500 select-none'>
+                        ...more
+                    </span>
+                ))}
         </div>
     )
 }

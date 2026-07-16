@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { AnimatePresence } from 'framer-motion'
 
 import { OB_ROLE_ICONS, personaReaction } from '@/config/onboarding-flow'
@@ -12,8 +13,9 @@ import { iconFor } from '../icons'
 import { Chip, CTA, FieldLabel, H1, Reaction } from '../primitives'
 
 // ---------------------------------------------------------------------------
-// 05 · Persona (rail 2/5) - role + niche. Confirms rather than asks cold: both
-// fields arrive pre-filled from the profile inference when the fetch worked.
+// 05 · Persona (rail 2/5) - role + niche. The profile inference is surfaced as
+// a "Suggested" hint, not a pre-selection: the user confirms with a tap, so the
+// reaction insight only appears once they actually engage.
 // ---------------------------------------------------------------------------
 
 const ROLES = Object.keys(ROLE_LABELS) as Role[]
@@ -25,8 +27,16 @@ export function PersonaStep() {
     // The inferred niche can be any phrase ("B2B SaaS growth"); surface it as a
     // pickable option so the pre-fill is visible instead of silently dropped.
     const options = niche && !NICHE_OPTIONS.includes(niche) ? [niche, ...NICHE_OPTIONS] : NICHE_OPTIONS
+    // Until the user picks, the inferred values stay a suggestion: nothing reads
+    // as already-chosen and the reaction holds back.
+    const [touched, setTouched] = React.useState(false)
 
-    const canContinue = !!role && !!niche.trim()
+    // Snapshot the inference at mount (the pre-touch values ARE the inference)
+    // so the "Suggested" tags survive a later, different selection without
+    // relabeling it as suggested.
+    const [inferred] = React.useState(() => ({ role: answers.role, niche: answers.niche ?? '' }))
+
+    const canContinue = touched && !!role && !!niche.trim()
 
     return (
         <div className='flex flex-col'>
@@ -36,8 +46,10 @@ export function PersonaStep() {
                     <Chip
                         key={r}
                         icon={iconFor(OB_ROLE_ICONS[r])}
-                        selected={role === r}
+                        selected={touched && role === r}
+                        badge={!!inferred.role && inferred.role === r ? 'Suggested' : undefined}
                         onClick={() => {
+                            setTouched(true)
                             update({ role: r })
                             track('onb_persona_role', { role: r })
                         }}>
@@ -47,17 +59,27 @@ export function PersonaStep() {
             </div>
             <FieldLabel>Your niche</FieldLabel>
             <Select
-                value={niche || undefined}
+                value={touched ? niche || undefined : undefined}
                 onValueChange={(v) => {
+                    setTouched(true)
                     update({ niche: v })
                     track('onb_persona_niche', { niche: v })
                 }}>
                 <SelectTrigger className='w-full data-[size=default]:h-11' aria-label='Your niche'>
-                    <SelectValue placeholder='Choose your niche' />
+                    <SelectValue placeholder={niche ? `Suggested: ${niche}` : 'Choose your niche'} />
                 </SelectTrigger>
                 <SelectContent>
                     {options.map((n) => (
-                        <SelectItem key={n} value={n}>
+                        <SelectItem
+                            key={n}
+                            value={n}
+                            trailing={
+                                !!inferred.niche && n === inferred.niche ? (
+                                    <span className='border-primary/30 ml-auto inline-flex items-center rounded-full border bg-[color-mix(in_oklch,var(--primary)_12%,transparent)] px-2 py-[1px] text-[10.5px] font-semibold text-[var(--orange-400)]'>
+                                        Suggested
+                                    </span>
+                                ) : undefined
+                            }>
                             {n}
                         </SelectItem>
                     ))}

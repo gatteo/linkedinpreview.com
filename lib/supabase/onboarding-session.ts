@@ -24,10 +24,13 @@ export type OnboardingSessionRow = {
     profile_url: string | null
     fast_source: FastSource | null
     fast_profile: { name?: string; headline?: string; about?: string; avatarUrl?: string } | null
-    /** Complete raw provider payloads, verbatim (migration 021) - the analysis archive. */
+    /** Complete raw provider payloads, verbatim (migrations 021/022) - the analysis archive. */
     fast_raw: Record<string, unknown> | null
     rich_raw: Record<string, unknown> | null
+    posts_raw: Record<string, unknown>[] | null
     rich_snapshot_id: string | null
+    /** Bright Data posts-dataset snapshot (full text + engagement), triggered alongside the profile one. */
+    posts_snapshot_id: string | null
     rich_status: RichScrapeStatus
     rich_triggered_at: string | null
     rich_profile: (RichProfileSummary & { observed: ObservedCadence | null; styleHints?: StyleHints | null }) | null

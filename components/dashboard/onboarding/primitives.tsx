@@ -137,12 +137,14 @@ export function ChoiceCard({
     title,
     desc,
     selected,
+    badge,
     onClick,
 }: {
     icon: LucideIcon
     title: string
     desc: string
     selected?: boolean
+    badge?: string
     onClick: () => void
 }) {
     return (
@@ -167,7 +169,14 @@ export function ChoiceCard({
                 <Icon className='size-5' />
             </span>
             <span className='flex min-w-0 flex-col gap-0.5'>
-                <b className='text-[14.5px] font-semibold'>{title}</b>
+                <span className='flex flex-wrap items-center gap-x-2 gap-y-1'>
+                    <b className='text-[14.5px] font-semibold'>{title}</b>
+                    {badge && (
+                        <span className='border-primary/30 inline-flex items-center rounded-full border bg-[color-mix(in_oklch,var(--primary)_12%,transparent)] px-2 py-[1px] text-[10.5px] font-semibold text-[var(--orange-400)]'>
+                            {badge}
+                        </span>
+                    )}
+                </span>
                 <span className='text-muted-foreground text-[12.5px] leading-[1.4]'>{desc}</span>
             </span>
             <span className='text-primary ml-auto flex shrink-0'>
@@ -184,6 +193,7 @@ export function Chip({
     selected,
     add,
     icon: Icon,
+    badge,
     onClick,
     disabled,
 }: {
@@ -191,6 +201,7 @@ export function Chip({
     selected?: boolean
     add?: boolean
     icon?: LucideIcon
+    badge?: string
     onClick?: () => void
     disabled?: boolean
 }) {
@@ -213,6 +224,11 @@ export function Chip({
             {add && <span className='text-primary font-bold'>+</span>}
             {Icon && <Icon className='size-3.5' />}
             {children}
+            {badge && (
+                <span className='border-primary/30 -mr-1 ml-1 inline-flex items-center rounded-full border bg-[color-mix(in_oklch,var(--primary)_12%,transparent)] px-1.5 py-[1px] text-[10px] font-semibold text-[var(--orange-400)]'>
+                    {badge}
+                </span>
+            )}
         </button>
     )
 }

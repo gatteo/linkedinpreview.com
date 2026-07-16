@@ -62,6 +62,13 @@
 - Review-wall assets (team-supplied avatars + analytics screenshots): `public/images/reviews/`.
 - Onboarding keyframes (`ob-pulse`, `ob-pop`, `ob-bargrow`, `ob-gsweep`, `ob-shine`, `ob-blink`):
   `styles/globals.css` `@theme`.
+- Observability (2026-07-12): every `onb_*` event carries `funnel_version` (`config/analytics.ts`);
+  step timing via `onb_step_completed`; server-truth events from the enrich/status/insights/
+  first-post routes and the Stripe webhook (`lib/analytics/server.ts`, posthog-node in `after()`);
+  PostHog persons identified with the Supabase user id (`AuthProvider`); service-role-only
+  aggregate views (migration 023). Event dictionary: `docs/analytics/onboarding-funnel.md`;
+  monitoring loop + skills: `docs/analytics/monitoring.md`. Copy experiments run through
+  `config/onboarding-experiments.ts` + `hooks/use-ob-experiment.ts` (welcome hero wired).
 
 ## Dependencies
 
@@ -77,5 +84,14 @@
 - The full rich path (Scrapingdog identity card, Bright Data audit, real posts) needs the provider
   keys; the local click-through verified every degraded path (JSON-LD identity, benchmark audit,
   fallback post, checkout-unavailable fallback). Verify the rich path on preview with keys set.
+- 2026-07-11 pipeline upgrade: the analysis corpus now comes from Bright Data's "LinkedIn posts"
+  dataset (discover-by-profile-URL: full text, dates, reactions/comments), triggered in parallel
+  with the people-profile snapshot (migration 022 adds `posts_snapshot_id`/`posts_raw`). The
+  insights route computes measured engagement (avg reactions overall and per labeled category,
+  server-side math only) surfaced in the reveal Traction section; posting language is
+  stopword-detected from the corpus and drives the first-post language + branding prefill; the
+  analysis LLM calls use `LLM_ANALYSIS_MODEL` (default gpt-5-mini). Profile-dataset activity items
+  remain the corpus fallback, and a stored profile/benchmark insights payload upgrades to a posts
+  analysis when the scrape lands late.
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).

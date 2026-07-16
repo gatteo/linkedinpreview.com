@@ -22,7 +22,7 @@ function initials(name: string): string {
     return (parts[0][0] + (parts[parts.length - 1][0] ?? '')).toUpperCase()
 }
 
-export function SidebarProfile() {
+export function SidebarProfile({ variant = 'account' }: { variant?: 'cta' | 'account' }) {
     const { status, isLoading } = useLinkedInStatus()
 
     // Avoid a flash/layout shift before the status resolves, and stay quiet
@@ -30,6 +30,10 @@ export function SidebarProfile() {
     if (isLoading || !status?.configured) return null
 
     const connection = status.connection
+    // The 'cta' slot (above the settings cluster) shows the connect card only
+    // when disconnected; the 'account' slot (footer) shows the connected profile
+    // row only when connected. Each slot renders in exactly one state.
+    if (variant === 'cta') return connection ? null : <ConnectCta />
     return connection ? (
         <ConnectedProfile
             name={connection.name ?? 'LinkedIn account'}
@@ -37,9 +41,7 @@ export function SidebarProfile() {
             expired={connection.expired}
             expiresSoon={connection.expiresSoon}
         />
-    ) : (
-        <ConnectCta />
-    )
+    ) : null
 }
 
 function ConnectedProfile({

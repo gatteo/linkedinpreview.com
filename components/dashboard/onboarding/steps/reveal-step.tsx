@@ -1,18 +1,22 @@
 'use client'
 
 import * as React from 'react'
+import { motion } from 'framer-motion'
 import { AnchorIcon, MessageSquareIcon, RulerIcon, type LucideIcon } from 'lucide-react'
 
 import type { OnboardingInsights } from '@/types/onboarding'
 import { AUDIT_FIXES, AUDIT_IDEAL_MIX, auditMix, auditPercentile, topicStrengths } from '@/config/onboarding-flow'
 import { GOAL_GAP, goalRestated, INSIGHT_CATEGORY_LABELS } from '@/config/onboarding-personalization'
+import { EASE_OUT } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 import { track } from '../ai'
 import { Radar } from '../charts'
 import { useOnboarding } from '../context'
-import { CTA, firstName, H1, PersonAvatar, RingSpinner, Sub, timeAgoLabel } from '../primitives'
+import { firstName, H1, PersonAvatar, RingSpinner, Sub, timeAgoLabel } from '../primitives'
+import { ScrollProgressButton } from '../scroll-progress-button'
 import type { OnboardingAnswers } from '../types'
+import { useScrollGate } from '../use-scroll-gate'
 
 // ---------------------------------------------------------------------------
 // 13 · Reveal - the audit report: four numbered sections, each pairing a
@@ -45,7 +49,6 @@ function localBenchmark(answers: OnboardingAnswers): OnboardingInsights {
 
 export function RevealStep() {
     const { answers, goNext } = useOnboarding()
-    const fn = firstName(answers.profile.name)
     const [timedOut, setTimedOut] = React.useState(false)
     // Once the report is on screen its content is frozen for this mount: a
     // payload that lands late must not swap sections mid-read.
@@ -90,12 +93,47 @@ export function RevealStep() {
         )
     }
 
+    return (
+        <AuditReport
+            answers={answers}
+            insights={insights}
+            onContinue={() => {
+                track('onb_reveal_continue')
+                goNext()
+            }}
+        />
+    )
+}
+
+// ── Report body: scroll-revealed sections + a scroll-gated CTA ───────────────
+
+function AuditReport({
+    answers,
+    insights,
+    onContinue,
+}: {
+    answers: OnboardingAnswers
+    insights: OnboardingInsights
+    onContinue: () => void
+}) {
+    const fn = firstName(answers.profile.name)
     const isPosts = insights.kind === 'posts'
     const posts = insights.observed.postsAnalyzed
     const percentile = auditPercentile(answers.richSummary)
 
+    const anchorRef = React.useRef<HTMLDivElement>(null)
+    const rectRef = React.useRef<SVGRectElement>(null)
+    // Progress is applied straight to the border rect (no React state) so it
+    // tracks the scroll frame-for-frame without re-rendering the whole report.
+    const { atEnd } = useScrollGate(anchorRef, {
+        endThreshold: 48,
+        onProgress: (p) => {
+            if (rectRef.current) rectRef.current.style.strokeDashoffset = String(1 - p)
+        },
+    })
+
     return (
-        <div className='flex flex-col'>
+        <div ref={anchorRef} className='flex flex-col'>
             <div className='mb-3 text-center'>
                 <div className='mb-3 flex justify-center'>
                     <PersonAvatar name={answers.profile.name} src={answers.profile.avatarUrl} size={54} ring />
@@ -113,21 +151,49 @@ export function RevealStep() {
             </div>
 
             <div className='pt-1'>
-                <StrategySection insights={insights} />
-                <TractionSection answers={answers} insights={insights} />
-                <ContentSection answers={answers} insights={insights} />
-                <TopicsSection insights={insights} />
+                <Reveal>
+                    <StrategySection insights={insights} />
+                </Reveal>
+                <Reveal>
+                    <TractionSection answers={answers} insights={insights} />
+                </Reveal>
+                <Reveal>
+                    <ContentSection answers={answers} insights={insights} />
+                </Reveal>
+                <Reveal>
+                    <TopicsSection insights={insights} />
+                </Reveal>
             </div>
 
-            <CTA
-                className='mt-2'
-                onClick={() => {
-                    track('onb_reveal_continue')
-                    goNext()
-                }}>
-                Turn this into my plan
-            </CTA>
+            <div
+                className='sticky bottom-0 z-10 -mx-[clamp(20px,4vw,40px)] mt-2 flex flex-col items-center gap-2 px-[clamp(20px,4vw,40px)] pt-10 pb-1'
+                style={{ background: 'linear-gradient(to bottom, transparent, var(--card) 42%)' }}>
+                <ScrollProgressButton rectRef={rectRef} atEnd={atEnd} onClick={onContinue}>
+                    Create my plan
+                </ScrollProgressButton>
+                <span
+                    className={cn(
+                        'text-muted-foreground text-[11.5px] transition-opacity duration-300',
+                        atEnd ? 'opacity-0' : 'opacity-100',
+                    )}>
+                    Scroll through your audit to continue
+                </span>
+            </div>
         </div>
+    )
+}
+
+// ── Scroll-reveal wrapper: each section fades and rises as it enters view ────
+
+function Reveal({ children }: { children: React.ReactNode }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, ease: EASE_OUT }}>
+            {children}
+        </motion.div>
     )
 }
 
@@ -162,7 +228,7 @@ function Section({
                 <span className='bg-primary text-primary-foreground mt-px shrink-0 rounded-md px-[7px] py-[3px] font-mono text-[9.5px] font-bold tracking-[0.04em] uppercase'>
                     The fix
                 </span>
-                <p className='m-0 text-[12.5px] leading-normal text-[var(--orange-700)]'>{fix}</p>
+                <p className='text-accent-foreground m-0 text-[12.5px] leading-normal'>{fix}</p>
             </div>
         </div>
     )
@@ -194,12 +260,24 @@ function isDormant(iso: string): boolean {
     return Date.now() - new Date(iso).getTime() > DORMANT_AFTER_DAYS * 86_400_000
 }
 
+// Reads-as-a-plural-noun labels for the engagement contrast sentence
+// (INSIGHT_CATEGORY_LABELS glued before "posts" produces "stories posts").
+const CATEGORY_PLURAL: Record<string, string> = {
+    'personal-story': 'personal stories',
+    'educational': 'educational posts',
+    'opinion': 'opinion posts',
+    'promotional': 'promotional posts',
+    'engagement-social': 'social posts',
+    'other': 'uncategorized posts',
+}
+
 function TractionSection({ answers, insights }: { answers: OnboardingAnswers; insights: OnboardingInsights }) {
     const observed = insights.observed
     const followers = observed.followers ?? answers.richSummary?.followers ?? null
     const perWeek = observed.postsPerWeek
     const last30 = observed.postsLast30d
     const newest = observed.newestPostAt
+    const avgReactions = observed.avgReactions ?? null
 
     type Metric = { value: string; label: string; note: string; good: boolean }
     const metrics: Metric[] = []
@@ -209,6 +287,14 @@ function TractionSection({ answers, insights }: { answers: OnboardingAnswers; in
             label: 'Followers',
             note: followers >= 2000 ? 'a real audience' : 'room to grow',
             good: followers >= 2000,
+        })
+    }
+    if (avgReactions !== null) {
+        metrics.push({
+            value: `${avgReactions}`,
+            label: 'Avg reactions / post',
+            note: avgReactions >= 20 ? 'people respond to you' : 'room to grow',
+            good: avgReactions >= 20,
         })
     }
     if (perWeek !== null) {
@@ -224,14 +310,6 @@ function TractionSection({ answers, insights }: { answers: OnboardingAnswers; in
             good: perWeek >= 3,
         })
     }
-    if (last30 !== null) {
-        metrics.push({
-            value: `${last30}`,
-            label: 'Posts, last 30 days',
-            note: last30 >= 12 ? 'strong month' : last30 >= 6 ? 'decent month' : 'thin month',
-            good: last30 >= 12,
-        })
-    }
     if (newest) {
         metrics.push({
             value: timeAgoLabel(newest),
@@ -240,9 +318,27 @@ function TractionSection({ answers, insights }: { answers: OnboardingAnswers; in
             good: !isDormant(newest),
         })
     }
+    if (last30 !== null) {
+        metrics.push({
+            value: `${last30}`,
+            label: 'Posts, last 30 days',
+            note: last30 >= 12 ? 'strong month' : last30 >= 6 ? 'decent month' : 'thin month',
+            good: last30 >= 12,
+        })
+    }
 
     const healthy = perWeek !== null && perWeek >= 3
     const dormant = newest ? isDormant(newest) : false
+
+    // Measured engagement contrast: both numbers are provider-scraped averages
+    // over >= 2 posts each, so the ratio is a real observation, not a story.
+    const byCategory = insights.engagement?.byCategory ?? []
+    const top = byCategory[0]
+    const bottom = byCategory[byCategory.length - 1]
+    const engagementLine =
+        top && bottom && top !== bottom && bottom.avgReactions > 0 && top.avgReactions >= bottom.avgReactions * 1.5
+            ? ` Your ${CATEGORY_PLURAL[top.category]} pull ${(top.avgReactions / bottom.avgReactions).toFixed(1)}x the reactions of your ${CATEGORY_PLURAL[bottom.category]} - lean into what your audience already rewards.`
+            : ''
 
     return (
         <Section
@@ -257,9 +353,10 @@ function TractionSection({ answers, insights }: { answers: OnboardingAnswers; in
             }
             copy={
                 metrics.length
-                    ? healthy
-                        ? 'You already show up more than most. The gap is not effort, it is aim: pointing that consistency at content with a job.'
-                        : 'Your posts hold up when you show up. The problem is you barely do, so your reach never gets to compound.'
+                    ? (healthy
+                          ? 'You already show up more than most. The gap is not effort, it is aim: pointing that consistency at content with a job.'
+                          : 'Your posts hold up when you show up. The problem is you barely do, so your reach never gets to compound.') +
+                      engagementLine
                     : 'We could not measure your posting rhythm this time, so hold these as the benchmarks to beat: 3 to 4 posts a week, every week.'
             }
             visual={
@@ -294,8 +391,11 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
     const audit = insights.audit
     const styleHints = answers.richSummary?.styleHints
 
-    type Flag = { icon: LucideIcon; k: string; line: string; good: boolean }
+    type Flag = { icon: LucideIcon; k: string; line: string; good: boolean; score: number }
     const flags: Flag[] = []
+    // Scores are deterministic from MEASURED data (counted ratios, corpus-derived
+    // length category) - never LLM-authored - so a rating is always defensible.
+    const ratioScore = (num: number, total: number) => Math.max(1, Math.round((num / Math.max(1, total)) * 10))
     if (audit) {
         const { withHook, total } = audit.hooks
         const goodHooks = withHook / Math.max(1, total) >= 0.5
@@ -306,6 +406,7 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
                 ? `${withHook} of ${total} posts open with a real hook. Keep that up - it is rarer than you think.`
                 : `Only ${withHook} of ${total} posts opened with a real hook. The rest buried the point.`,
             good: goodHooks,
+            score: ratioScore(withHook, total),
         })
     }
     if (styleHints) {
@@ -320,6 +421,7 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
                       ? 'You already write in short, punchy lines - exactly what the feed rewards.'
                       : 'Your sentence length is solid. Tightening the openers will sharpen it further.',
             good,
+            score: styleHints.sentenceLength === 'long' ? 4 : styleHints.sentenceLength === 'short' ? 9 : 7,
         })
     }
     if (audit) {
@@ -334,6 +436,7 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
                   ? `Zero of ${total} posts ended on a question. Comments stall without one.`
                   : `Only ${endingWithQuestion} of ${total} posts ended on a question. Comments stall without one.`,
             good: goodCtas,
+            score: ratioScore(endingWithQuestion, total),
         })
     }
 
@@ -377,6 +480,14 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
                                 <b className='block text-[12.5px] font-semibold'>{f.k}</b>
                                 <span className='text-muted-foreground text-xs leading-[1.45]'>{f.line}</span>
                             </div>
+                            <span
+                                className={cn(
+                                    'ml-auto shrink-0 self-center font-mono text-[12px] font-semibold whitespace-nowrap',
+                                    f.good ? 'text-success' : 'text-[var(--orange-600)]',
+                                )}>
+                                {f.score}
+                                <span className='opacity-55'>/10</span>
+                            </span>
                         </div>
                     ))}
                 </div>

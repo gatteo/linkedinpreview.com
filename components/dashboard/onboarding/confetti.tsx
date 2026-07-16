@@ -8,32 +8,35 @@
 import * as React from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
-const PIECES = Array.from({ length: 26 }, (_, i) => {
-    // Deterministic pseudo-random so SSR/CSR match and we avoid Math.random.
-    const a = (i * 9301 + 49297) % 233280
-    const r = a / 233280
-    const angle = (i / 26) * Math.PI * 2 + r
-    const distance = 120 + r * 160
-    return {
-        id: i,
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance - 40,
-        rotate: r * 540 - 270,
-        delay: r * 0.12,
-        shape: i % 3,
-        accent: i % 2 === 0,
-        size: 7 + Math.round(r * 6),
-    }
-})
+function buildPieces(count: number) {
+    return Array.from({ length: count }, (_, i) => {
+        // Deterministic pseudo-random so SSR/CSR match and we avoid Math.random.
+        const a = (i * 9301 + 49297) % 233280
+        const r = a / 233280
+        const angle = (i / count) * Math.PI * 2 + r
+        const distance = 120 + r * 160
+        return {
+            id: i,
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance - 40,
+            rotate: r * 540 - 270,
+            delay: r * 0.12,
+            shape: i % 3,
+            accent: i % 2 === 0,
+            size: 7 + Math.round(r * 6),
+        }
+    })
+}
 
-export function Confetti() {
+export function Confetti({ count = 26 }: { count?: number }) {
     const reduce = useReducedMotion()
+    const pieces = React.useMemo(() => buildPieces(count), [count])
     if (reduce) return null
 
     return (
         <div className='pointer-events-none absolute inset-0 z-50 overflow-hidden' aria-hidden='true'>
             <div className='absolute top-1/2 left-1/2'>
-                {PIECES.map((p) => (
+                {pieces.map((p) => (
                     <motion.span
                         key={p.id}
                         initial={{ x: 0, y: 0, opacity: 1, scale: 0.4, rotate: 0 }}

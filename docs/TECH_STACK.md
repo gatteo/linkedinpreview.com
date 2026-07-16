@@ -26,7 +26,8 @@ Next.js 16.1 App Router monolith deployed on Vercel with Supabase backend for pe
 | contentlayer                          | MDX blog pipeline            | Type-safe content processing for blog/changelog/compare |
 | @tanstack/react-table                 | Data tables                  | Headless table for posts list with sorting/filtering    |
 | next-themes                           | Theme switching              | Dark mode for dashboard, light-only for public pages    |
-| posthog-js                            | Analytics                    | Event tracking, reverse-proxied through /ingest         |
+| posthog-js                            | Analytics (client)           | Event tracking, reverse-proxied through /ingest         |
+| posthog-node                          | Analytics (server)           | Server events from onboarding routes + Stripe webhook   |
 | @t3-oss/env-nextjs                    | Environment validation       | Type-safe env vars with Zod schemas                     |
 | sonner                                | Toast notifications          | Lightweight, accessible toast system                    |
 | clsx + tailwind-merge                 | Class utilities              | Conditional Tailwind classes via cn()                   |

@@ -66,7 +66,7 @@ export function HeroCTA() {
                 <TrackClick
                     event='cta_button_clicked'
                     properties={{ button_name: 'learn_more', source: 'hero', variant: variantKey }}>
-                    <Button variant='outline' asChild size='lg' className='border-border rounded-lg bg-white'>
+                    <Button variant='outline' asChild size='lg' className='border-border bg-card rounded-lg'>
                         <Link href={Routes.HowItWorks}>{copy.secondary}</Link>
                     </Button>
                 </TrackClick>

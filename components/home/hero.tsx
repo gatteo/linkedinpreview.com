@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, Github } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, Github } from 'lucide-react'
 
 import { Routes } from '@/config/routes'
 import { SOCIAL_PROOF } from '@/config/social-proof'
@@ -23,7 +23,7 @@ export function Hero() {
                         <TrackClick event='github_link_clicked' properties={{ source: 'hero' }}>
                             <Link
                                 href={ExternalLinks.GitHub}
-                                className='border-border shadow-subtle text-petrol-700 mb-6 inline-flex items-center gap-2 rounded-full border bg-white py-[5px] pr-[5px] pl-3.5 text-[13px]'>
+                                className='border-border shadow-subtle text-petrol-700 dark:text-petrol-100 bg-card mb-6 inline-flex items-center gap-2 rounded-full border py-[5px] pr-[5px] pl-3.5 text-[13px]'>
                                 <span className='bg-primary inline-flex size-[7px] rounded-full' />
                                 Forever free and open source
                                 <span className='border-border bg-secondary inline-flex items-center gap-1.5 rounded-full border px-2.5 py-[3px] font-mono text-[11px] font-medium'>
@@ -59,8 +59,8 @@ export function Hero() {
                             <span className='gradient-border'>
                                 <Button asChild size='lg' className='h-12 px-[22px] text-[15px]'>
                                     <Link href={Routes.Tool}>
-                                        Start writing - it&apos;s free
-                                        <ArrowRight className='size-4' />
+                                        Start writing, scroll down
+                                        <ArrowDown className='size-4' />
                                     </Link>
                                 </Button>
                             </span>

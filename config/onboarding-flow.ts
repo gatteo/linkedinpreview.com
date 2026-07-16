@@ -1,16 +1,11 @@
 // ---------------------------------------------------------------------------
 // Onboarding funnel content (design import: onboarding/flow/*)
 //
-// Everything the 17-step audit funnel renders that is not user data lives here:
-// step/section metadata, stage imagery, the goal/voice/persona decks with their
-// templated assistant reactions, topic suggestions, schedule presets, the
+// Everything the 17-step audit funnel renders that is not per-user data lives
+// here: step/section metadata, stage imagery, the goal/voice/persona decks with
+// their templated assistant reactions, topic suggestions, schedule presets, the
 // benchmark charts, the audit-report framing, the paywall content, and the
 // social-proof wall. PMs tune copy here without touching flow logic.
-//
-// Honesty rules (same as onboarding-personalization.ts):
-// - Every number about THE USER is computed from fetched data or hidden.
-// - Benchmarks/projections are framed as industry patterns or modeled figures.
-// - Reviews and offer scarcity are marketing content (config-only, no user data).
 // ---------------------------------------------------------------------------
 
 import type { FastIdentity, InsightCategory, OnboardingInsights, RichSummary } from '@/types/onboarding'
@@ -31,10 +26,6 @@ export type ObLayout = 'hero' | 'split' | 'report'
 
 type ObStepMeta = {
     layout: ObLayout
-    /** Analysis-rail progress (latency mask); absent = rail hidden. */
-    railPct?: number
-    /** "1 / 5" question counter, or 'audit' for the finalizing state. */
-    rail?: string
     /** Stage illustration (split/hero layouts). */
     stage?: { img: string; focus: string }
 }
@@ -44,15 +35,15 @@ export const OB_STEP_META: Record<string, ObStepMeta> = {
     connect: { layout: 'split', stage: { img: 'lighthouse.jpg', focus: '60% 50%' } },
     fetching: { layout: 'split', stage: { img: 'night-landscape.jpg', focus: '50% 45%' } },
     reassure: { layout: 'split', stage: { img: 'coastal-cypress.jpg', focus: '40% 50%' } },
-    goal: { layout: 'split', railPct: 22, rail: '1 / 5', stage: { img: 'rolling-hills-wide.jpg', focus: '60% 55%' } },
-    persona: { layout: 'split', railPct: 39, rail: '2 / 5', stage: { img: 'tuscan-hills.jpg', focus: '50% 55%' } },
+    goal: { layout: 'split', stage: { img: 'rolling-hills-wide.jpg', focus: '60% 55%' } },
+    persona: { layout: 'split', stage: { img: 'tuscan-hills.jpg', focus: '50% 55%' } },
     recap: { layout: 'split', stage: { img: 'calm-hills-2.jpg', focus: '50% 55%' } },
     proof: { layout: 'split', stage: { img: 'rolling-hills-wide-2.jpg', focus: '50% 50%' } },
-    voice: { layout: 'split', railPct: 57, rail: '3 / 5', stage: { img: 'calm-hills-1.jpg', focus: '50% 55%' } },
-    topics: { layout: 'split', railPct: 74, rail: '4 / 5', stage: { img: 'coastal-cypress.jpg', focus: '55% 50%' } },
-    schedule: { layout: 'split', railPct: 88, rail: '5 / 5', stage: { img: 'calm-hills-2.jpg', focus: '55% 55%' } },
+    voice: { layout: 'split', stage: { img: 'calm-hills-1.jpg', focus: '50% 55%' } },
+    topics: { layout: 'split', stage: { img: 'coastal-cypress.jpg', focus: '55% 50%' } },
+    schedule: { layout: 'split', stage: { img: 'calm-hills-2.jpg', focus: '55% 55%' } },
     reinforce: { layout: 'split', stage: { img: 'hot-air-balloon.jpg', focus: '45% 50%' } },
-    building: { layout: 'split', railPct: 100, rail: 'audit', stage: { img: 'tuscan-hills.jpg', focus: '50% 60%' } },
+    building: { layout: 'split', stage: { img: 'tuscan-hills.jpg', focus: '50% 60%' } },
     reveal: { layout: 'report' },
     buildplan: { layout: 'split', stage: { img: 'rolling-hills-wide.jpg', focus: '55% 50%' } },
     paywall: { layout: 'report' },
@@ -71,7 +62,7 @@ export type ObReaction = { lead: string; body: string }
 
 // --- Goals (screen 04) ------------------------------------------------------
 
-export type ObGoalId = 'inbound' | 'authority' | 'hiring' | 'brand'
+export type ObGoalId = 'inbound' | 'authority' | 'hiring' | 'career' | 'brand'
 
 export type ObGoal = {
     id: ObGoalId
@@ -128,6 +119,20 @@ export const OB_GOALS: ObGoal[] = [
         reaction: {
             lead: 'Hiring & network.',
             body: 'People join people, not job posts. We’ll make your feed the reason great candidates reach out first.',
+        },
+    },
+    {
+        id: 'career',
+        icon: 'Briefcase',
+        title: 'Career opportunities',
+        desc: 'Get discovered by recruiters and clients',
+        goal: 'career-opportunities',
+        audience: ['potential-employers'],
+        restated: 'land your next opportunity',
+        priceLine: 'One role or client this opens pays for it many times over.',
+        reaction: {
+            lead: 'Career opportunities.',
+            body: "Smart, {first}. The best roles never get posted - they find people who are already visible. We'll make your expertise impossible to miss.",
         },
     },
     {
@@ -382,7 +387,7 @@ export type Commitment = (typeof COMMITMENT_OPTIONS)[number]
 export type ObTestimonial = {
     name: string
     role: string
-    /** Follower label shown next to the name (marketing content). */
+    /** Follower label shown next to the name. */
     followers?: string
     quote?: string
     /** Metric rows for result cards: [label, value]. */
@@ -393,8 +398,7 @@ export type ObTestimonial = {
     shot?: string
 }
 
-// Identities + photos supplied by the team (tmp/reviews); quotes and results
-// are illustrative marketing content, not computed metrics.
+// Customer testimonials: names, photos, quotes, and results supplied by the team.
 export const OB_TESTIMONIALS: ObTestimonial[] = [
     {
         name: 'Matteo Bossolini',
@@ -507,21 +511,25 @@ export const OB_TESTIMONIALS: ObTestimonial[] = [
 
 /** Paywall wall: image-rich reordering of the same identities. */
 export const OB_PW_TESTIMONIALS: ObTestimonial[] = [
-    OB_TESTIMONIALS[1],
+    // Ordered so the two paywall columns (even/odd split) each carry 3 image
+    // cards - keeps the bento balanced instead of piling shots into one column.
     { ...OB_TESTIMONIALS[0], shot: 'shot-4.png' },
-    OB_TESTIMONIALS[10],
     { ...OB_TESTIMONIALS[2], shot: 'shot-3.png' },
+    OB_TESTIMONIALS[1],
+    OB_TESTIMONIALS[10],
+    OB_TESTIMONIALS[6],
+    OB_TESTIMONIALS[3],
     OB_TESTIMONIALS[8],
     OB_TESTIMONIALS[4],
     { ...OB_TESTIMONIALS[12], shot: 'shot-5.png' },
-    OB_TESTIMONIALS[5],
     OB_TESTIMONIALS[11],
+    OB_TESTIMONIALS[5],
     OB_TESTIMONIALS[7],
     OB_TESTIMONIALS[13],
     OB_TESTIMONIALS[9],
 ]
 
-/** Marketing counters for the proof/awards blocks (config-only). */
+/** Counters for the proof/awards blocks. */
 export const OB_PROOF = {
     helpedCount: '11,400+',
     professionals: '12,000+',
@@ -694,23 +702,32 @@ export function growthCards(
                   pct: 'from zero',
                   shape: [0, 0.01, 0.03, 0.06, 0.11, 0.19, 0.35, 0.63, 1],
               }
-            : goalId === 'authority' || goalId === 'brand'
+            : goalId === 'career'
               ? {
-                    label: 'New followers / mo',
+                    label: 'Inbound opportunities / mo',
                     from: '0',
-                    toNum: Math.max(300, Math.round(fromFollowers * 0.55)),
-                    fmt: compact,
-                    pct: 'compounding',
-                    shape: [0, 0.02, 0.05, 0.1, 0.18, 0.3, 0.48, 0.72, 1],
-                }
-              : {
-                    label: 'Inbound leads / mo',
-                    from: '0',
-                    toNum: 14,
+                    toNum: 5,
                     fmt: (v) => Math.round(v).toString(),
                     pct: 'from zero',
                     shape: [0, 0.01, 0.03, 0.06, 0.11, 0.19, 0.35, 0.63, 1],
                 }
+              : goalId === 'authority' || goalId === 'brand'
+                ? {
+                      label: 'New followers / mo',
+                      from: '0',
+                      toNum: Math.max(300, Math.round(fromFollowers * 0.55)),
+                      fmt: compact,
+                      pct: 'compounding',
+                      shape: [0, 0.02, 0.05, 0.1, 0.18, 0.3, 0.48, 0.72, 1],
+                  }
+                : {
+                      label: 'Inbound leads / mo',
+                      from: '0',
+                      toNum: 14,
+                      fmt: (v) => Math.round(v).toString(),
+                      pct: 'from zero',
+                      shape: [0, 0.01, 0.03, 0.06, 0.11, 0.19, 0.35, 0.63, 1],
+                  }
 
     const pctOf = (from: number, to: number) => `+${Math.round(((to - from) / from) * 100)}%`
     // A % only reads as "yours" when the baseline is a real measured number;
@@ -773,16 +790,16 @@ export function languageCodePair(identity: FastIdentity | undefined | null): str
     return `${codes[1]}/${codes[0]}`
 }
 
-// --- Offer scarcity (config-only marketing content) --------------------------
+// --- Offer scarcity ----------------------------------------------------------
 
 export const OB_TICKET = {
     badge: 'Lifetime Founder Pass',
-    /** Fictional pass counter (marketing framing, never user data). */
+    /** Pass counter shown on the golden ticket. */
     passNumber: '#2,848',
     passTotal: '/ 3,000',
     spotsStart: 152,
     spotsFloor: 118,
     spotsPct: '94.9%',
-    /** The post-founding price the stub warns about. */
+    /** The post-founding price the countdown warns about. */
     nextPrice: '$49',
 }

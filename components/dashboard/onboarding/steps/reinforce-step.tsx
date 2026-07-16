@@ -65,7 +65,7 @@ export function ReinforceStep() {
                                 style={{ '--h': `${bar.height}%` } as React.CSSProperties}>
                                 <span
                                     className={cn(
-                                        'absolute right-0 left-0 mb-[5px] -translate-y-full text-center text-xs',
+                                        'absolute right-0 left-0 mb-[5px] text-center text-xs',
                                         isSel ? 'text-foreground font-bold' : 'text-muted-foreground font-semibold',
                                     )}
                                     style={{ bottom: 'var(--h)' }}>

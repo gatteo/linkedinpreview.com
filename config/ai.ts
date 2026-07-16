@@ -47,6 +47,14 @@ export function aiLimitsForPlan(plan: Plan): Record<AiAction, number> {
 /** Default model id when LLM_MODEL is unset. Shared by all AI routes. */
 export const DEFAULT_LLM_MODEL = 'gpt-4o-mini'
 
+/**
+ * Default model for the onboarding analysis calls (profile inference, post
+ * insights) when LLM_ANALYSIS_MODEL is unset. One-shot, quality-critical
+ * labeling where a stronger model visibly outperforms; the volume is a few
+ * calls per onboarding, so the cost delta is cents.
+ */
+export const DEFAULT_ANALYSIS_MODEL = 'gpt-5-mini'
+
 export const AI_ERROR_CODES = {
     RATE_LIMITED: 'RATE_LIMITED',
     AUTH_REQUIRED: 'AUTH_REQUIRED',

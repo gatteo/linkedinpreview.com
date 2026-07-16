@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { DEFAULT_BILLING, isPaidPlan, type Plan } from '@/lib/billing'
+import { DEFAULT_BILLING, isPaidPlan, type BillingData, type Plan } from '@/lib/billing'
 import { fetchBilling } from '@/lib/supabase/billing'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
@@ -18,6 +18,8 @@ type PlanContextValue = {
     plan: Plan
     isPaid: boolean
     isLoading: boolean
+    /** The full billing row (renewal date, Stripe ids) for the settings surface. */
+    billing: BillingData
     refresh: () => void
 }
 
@@ -25,6 +27,7 @@ const PlanContext = React.createContext<PlanContextValue>({
     plan: DEFAULT_BILLING.plan,
     isPaid: false,
     isLoading: false,
+    billing: DEFAULT_BILLING,
     refresh: () => {},
 })
 
@@ -34,7 +37,7 @@ export function usePlan(): PlanContextValue {
 
 export function PlanProvider({ children }: { children: React.ReactNode }) {
     const { isReady, userId, supabase } = useAuth()
-    const [plan, setPlan] = React.useState<Plan>(DEFAULT_BILLING.plan)
+    const [billing, setBilling] = React.useState<BillingData>(DEFAULT_BILLING)
     const [isLoading, setIsLoading] = React.useState(true)
     const [nonce, setNonce] = React.useState(0)
 
@@ -46,7 +49,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
         fetchBilling(supabase)
             .then((data) => {
                 if (!cancelled) {
-                    setPlan(data.plan)
+                    setBilling(data)
                     setIsLoading(false)
                 }
             })
@@ -69,8 +72,8 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const value = React.useMemo<PlanContextValue>(
-        () => ({ plan, isPaid: isPaidPlan(plan), isLoading, refresh }),
-        [plan, isLoading, refresh],
+        () => ({ plan: billing.plan, isPaid: isPaidPlan(billing.plan), isLoading, billing, refresh }),
+        [billing, isLoading, refresh],
     )
 
     return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>

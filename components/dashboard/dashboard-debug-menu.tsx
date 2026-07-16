@@ -22,6 +22,7 @@ import { useStrategy } from '@/hooks/use-strategy'
 import { Separator } from '@/components/ui/separator'
 import { useAuth } from '@/components/dashboard/auth-provider'
 import { emitOnboardingDebug } from '@/components/dashboard/onboarding/debug-events'
+import { STEP_ORDER, type StepId } from '@/components/dashboard/onboarding/types'
 
 // ---------------------------------------------------------------------------
 // Dashboard debug menu (dev only)
@@ -174,6 +175,24 @@ export function DashboardDebugMenu() {
                         <Item icon={CheckCircle2Icon} onClick={markComplete} disabled={busy}>
                             Mark complete
                         </Item>
+                        <div className='px-2 py-1.5'>
+                            <select
+                                value=''
+                                aria-label='Jump to onboarding step'
+                                onChange={(e) => {
+                                    if (!e.target.value) return
+                                    emitOnboardingDebug({ jump: e.target.value as StepId })
+                                    setOpen(false)
+                                }}
+                                className='border-border bg-background text-foreground w-full cursor-pointer rounded-md border px-2 py-1.5 text-[13px]'>
+                                <option value=''>Jump to step…</option>
+                                {STEP_ORDER.map((s, i) => (
+                                    <option key={s} value={s}>
+                                        {String(i + 1).padStart(2, '0')} · {s}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </Section>
 
                     <Separator />

@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { ArrowLeftIcon, CheckIcon } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { AI_METERED_NOTE, COMPETITOR_PRICE_RANGE, MONEY_BACK_DAYS, PRICING, type CheckoutPlan } from '@/config/pricing'
 import { usePlan } from '@/hooks/use-plan'
@@ -23,11 +22,13 @@ export function UpgradeDialog({ open, onOpenChange, reason }: UpgradeDialogProps
     const { isPaid, refresh } = usePlan()
     const [selected, setSelected] = React.useState<CheckoutPlan | null>(null)
     const [error, setError] = React.useState(false)
+    const [succeeded, setSucceeded] = React.useState(false)
 
     React.useEffect(() => {
         if (open) {
             setSelected(null)
             setError(false)
+            setSucceeded(false)
             track('upgrade_prompt_view', { reason })
         }
     }, [open, reason])
@@ -41,8 +42,29 @@ export function UpgradeDialog({ open, onOpenChange, reason }: UpgradeDialogProps
     const onComplete = () => {
         track('upgrade_success', { plan: selected, reason })
         refresh()
-        toast.success("You're on Pro - enjoy the higher limits.")
-        onOpenChange(false)
+        setSucceeded(true)
+    }
+
+    if (succeeded) {
+        return (
+            <Dialog open={open} onOpenChange={onOpenChange}>
+                <DialogContent className='sm:max-w-lg'>
+                    <div className='flex flex-col items-center gap-3 py-4 text-center'>
+                        <div className='bg-success-soft border-success text-success grid size-14 place-items-center rounded-full border'>
+                            <CheckIcon className='size-7' strokeWidth={2.5} />
+                        </div>
+                        <DialogTitle>{selected === 'lifetime' ? 'Founder Pass unlocked' : "You're on Pro"}</DialogTitle>
+                        <DialogDescription className='max-w-[38ch]'>
+                            Payment confirmed - your higher limits and power features are active now.
+                            {selected === 'lifetime' ? ' No renewals, ever.' : ' Manage it anytime in Settings.'}
+                        </DialogDescription>
+                        <Button className='mt-2 w-full sm:w-auto' onClick={() => onOpenChange(false)}>
+                            Start creating
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        )
     }
 
     return (

@@ -9,6 +9,8 @@ import { env } from '@/env.mjs'
 import type { CheckoutPlan } from '@/config/pricing'
 import { reportMissingEnv } from '@/lib/dev/report-missing-env'
 
+import { track } from '../ai'
+
 // Load Stripe.js once. Null when the publishable key is not configured yet, so
 // the offer screen falls back gracefully to the free plan.
 const stripePromise = env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) : null
@@ -30,9 +32,17 @@ export function OnboardingCheckout({ plan, onComplete, onError }: OnboardingChec
         onErrorRef.current = onError
     })
 
+    // The gap between onb_offer_select and onb_purchase_success is where payment
+    // friction hides - instrument the checkout's own lifecycle.
+    const settledRef = React.useRef(false)
+    const openedRef = React.useRef(false)
+
     React.useEffect(() => {
+        openedRef.current = false
         if (!stripePromise) {
             reportMissingEnv('Stripe checkout', ['NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'])
+            track('onb_checkout_failed', { plan, reason: 'unconfigured' })
+            settledRef.current = true
             onErrorRef.current()
             return
         }
@@ -50,13 +60,29 @@ export function OnboardingCheckout({ plan, onComplete, onError }: OnboardingChec
                 }
                 const data = (await res.json()) as { clientSecret?: string }
                 if (!data.clientSecret) throw new Error('no-client-secret')
-                if (!cancelled) setClientSecret(data.clientSecret)
+                if (!cancelled) {
+                    openedRef.current = true
+                    track('onb_checkout_opened', { plan })
+                    setClientSecret(data.clientSecret)
+                }
             })
             .catch(() => {
-                if (!cancelled) onErrorRef.current()
+                if (!cancelled) {
+                    track('onb_checkout_failed', { plan, reason: 'create-failed' })
+                    settledRef.current = true
+                    onErrorRef.current()
+                }
             })
         return () => {
             cancelled = true
+        }
+    }, [plan])
+
+    // Unmounting an opened checkout without completing = the user backed out of
+    // the payment form (plan switch, decline, or navigation).
+    React.useEffect(() => {
+        return () => {
+            if (openedRef.current && !settledRef.current) track('onb_checkout_abandoned', { plan })
         }
     }, [plan])
 
@@ -72,7 +98,13 @@ export function OnboardingCheckout({ plan, onComplete, onError }: OnboardingChec
         <div className='overflow-hidden rounded-xl'>
             <EmbeddedCheckoutProvider
                 stripe={stripePromise}
-                options={{ clientSecret, onComplete: () => onCompleteRef.current() }}>
+                options={{
+                    clientSecret,
+                    onComplete: () => {
+                        settledRef.current = true
+                        onCompleteRef.current()
+                    },
+                }}>
                 <EmbeddedCheckout />
             </EmbeddedCheckoutProvider>
         </div>

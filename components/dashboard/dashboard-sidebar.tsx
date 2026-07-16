@@ -41,6 +41,7 @@ import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-
 import { GettingStartedChecklist } from '@/components/dashboard/getting-started-checklist'
 import { SidebarProfile } from '@/components/dashboard/sidebar-profile'
 import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 
 export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
@@ -61,11 +62,12 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                         <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:p-1.5!'>
                             <Link href='/'>
                                 <Image
-                                    src='/images/logo-rounded-rectangle.png'
+                                    src='/images/logo.svg'
                                     alt='LinkedInPreview'
                                     width={20}
                                     height={20}
-                                    className='size-5 rounded'
+                                    className='size-5'
+                                    unoptimized
                                 />
                                 <span className='text-base font-semibold'>LinkedInPreview</span>
                             </Link>
@@ -204,54 +206,64 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     </SidebarGroupContent>
                 </SidebarGroup>
 
-                {/* Getting started */}
-                <div className='mt-auto px-2 pb-2'>
-                    <GettingStartedChecklist />
-                </div>
+                {/* Bottom cluster: pinned to the bottom of the sidebar */}
+                <div className='mt-auto'>
+                    {/* Publish to LinkedIn CTA (shown only when disconnected) */}
+                    <SidebarProfile variant='cta' />
 
-                {/* Bottom nav */}
-                <SidebarGroup>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {!isPaid && (
+                    {/* Getting started */}
+                    <div className='px-2 pb-2'>
+                        <GettingStartedChecklist />
+                    </div>
+
+                    {/* Bottom nav */}
+                    <SidebarGroup>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {!isPaid && (
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton
+                                            tooltip='Upgrade'
+                                            onClick={() => openUpgrade('sidebar')}
+                                            className='text-primary hover:text-primary'>
+                                            <SparklesIcon />
+                                            <span>Upgrade</span>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                )}
                                 <SidebarMenuItem>
                                     <SidebarMenuButton
-                                        tooltip='Upgrade'
-                                        onClick={() => openUpgrade('sidebar')}
-                                        className='text-primary hover:text-primary'>
-                                        <SparklesIcon />
-                                        <span>Upgrade</span>
+                                        asChild
+                                        isActive={isActive('/dashboard/settings')}
+                                        tooltip='Settings'>
+                                        <Link href='/dashboard/settings'>
+                                            <SettingsIcon />
+                                            <span>Settings</span>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                            )}
-                            <SidebarMenuItem>
-                                <SidebarMenuButton
-                                    asChild
-                                    isActive={isActive('/dashboard/settings')}
-                                    tooltip='Settings'>
-                                    <Link href='/dashboard/settings'>
-                                        <SettingsIcon />
-                                        <span>Settings</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton
-                                    tooltip='Help & Feedback'
-                                    data-tally-open={feedbackConfig.formId}
-                                    data-tally-emoji-text='👋'
-                                    data-tally-emoji-animation='wave'>
-                                    <CircleHelpIcon />
-                                    <span>Help & Feedback</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        tooltip='Help & Feedback'
+                                        data-tally-open={feedbackConfig.formId}
+                                        data-tally-emoji-text='👋'
+                                        data-tally-emoji-animation='wave'>
+                                        <CircleHelpIcon />
+                                        <span>Help & Feedback</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                </div>
             </SidebarContent>
 
             <SidebarFooter>
-                <SidebarProfile />
+                <div className='flex items-center justify-between px-2 pt-1 group-data-[collapsible=icon]:hidden'>
+                    <span className='text-sidebar-foreground/70 text-xs font-medium'>Theme</span>
+                    <ThemeSwitcher />
+                </div>
+                <SidebarProfile variant='account' />
             </SidebarFooter>
             <SidebarRail />
 

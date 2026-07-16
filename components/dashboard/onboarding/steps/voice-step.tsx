@@ -11,15 +11,16 @@ import { iconFor } from '../icons'
 import { ChoiceCard, CTA, firstName, H1, Reaction } from '../primitives'
 
 // ---------------------------------------------------------------------------
-// 08 · Voice (rail 3/5) - the writing voice. Pre-selected from the inferred
-// tone summary when the profile fetch produced one.
+// 08 · Voice (rail 3/5) - the writing voice. The inferred tone is surfaced as a
+// "Suggested for you" hint, not a pre-selection: the user still makes the pick,
+// so the reaction insight only appears once they actually choose.
 // ---------------------------------------------------------------------------
 
 export function VoiceStep() {
     const { answers, update, goNext } = useOnboarding()
     const fn = firstName(answers.profile.name)
     const inferred = obVoiceFromTone(answers.tone ?? toneFromSummary(answers.toneSummary))
-    const selected = answers.voiceId ?? inferred?.id
+    const selected = answers.voiceId
 
     const choose = (voice: ObVoice) => {
         update({ voiceId: voice.id, tone: voice.tone })
@@ -41,6 +42,7 @@ export function VoiceStep() {
                         title={voice.title}
                         desc={voice.desc}
                         selected={selected === voice.id}
+                        badge={inferred?.id === voice.id ? 'Suggested for you' : undefined}
                         onClick={() => choose(voice)}
                     />
                 ))}
@@ -48,13 +50,7 @@ export function VoiceStep() {
             <AnimatePresence initial={false}>
                 {reaction && <Reaction key={reaction.id} reaction={reaction.reaction} />}
             </AnimatePresence>
-            <CTA
-                onClick={() => {
-                    // A kept pre-selection still counts as a choice.
-                    if (!answers.voiceId && reaction) choose(reaction)
-                    goNext()
-                }}
-                disabled={!selected}>
+            <CTA onClick={goNext} disabled={!selected}>
                 Continue
             </CTA>
         </div>

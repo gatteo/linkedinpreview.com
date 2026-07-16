@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { createClient } from '@/lib/supabase/client'
@@ -30,6 +31,13 @@ export function useAuth() {
 // Provider
 // ---------------------------------------------------------------------------
 
+// Stitch the PostHog person to the Supabase user id, so browser events, server
+// route events (captureServer), and the onboarding_sessions/billing rows all
+// join on one id. Anonymous auth means this is still pseudonymous.
+function identifyAnalytics(userId: string) {
+    posthog?.identify(userId)
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [supabase] = React.useState(() => createClient())
     const [isReady, setIsReady] = React.useState(false)
@@ -48,6 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (session) {
                 setUserId(session.user.id)
+                identifyAnalytics(session.user.id)
                 setIsReady(true)
                 await migrateLocalStorage(supabase, session.user.id)
                 return
@@ -64,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (data.session) {
                 setUserId(data.session.user.id)
+                identifyAnalytics(data.session.user.id)
                 await migrateLocalStorage(supabase, data.session.user.id)
             }
             setIsReady(true)

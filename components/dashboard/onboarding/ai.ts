@@ -16,6 +16,7 @@ import type {
     RichScrapeStatus,
     RichStatusResponse,
 } from '@/types/onboarding'
+import { OB_FUNNEL_VERSION } from '@/config/analytics'
 import type { Role } from '@/config/onboarding-personalization'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
@@ -201,5 +202,5 @@ export function postTextToDoc(text: string) {
 
 /** PostHog is uninitialized in dev; optional chaining keeps these no-ops there. */
 export function track(event: string, props?: Record<string, unknown>) {
-    posthog?.capture(event, props)
+    posthog?.capture(event, { funnel_version: OB_FUNNEL_VERSION, ...props })
 }

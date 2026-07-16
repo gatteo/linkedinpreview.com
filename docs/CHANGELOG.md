@@ -4,6 +4,69 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-17 — Launch prep: landing plan CTAs, env sync, open-source hygiene
+
+- **Landing pushes the onboarding funnel**: new `PlanCta` home section ("Grow 10× on LinkedIn in
+  90 days" → Create my LinkedIn plan), navbar primary CTA swapped to "Create my plan", footer
+  Product link, and the tool's post-nudge toast + bottom bar reframed around the free audit/plan
+  (drafts still carry over via `?import=`). All tracked as `cta_button_clicked` with
+  `button_name: 'create_plan'` and per-surface `source`.
+- **All runtime env vars pushed to Vercel production** (service-role key, scraper keys, LinkedIn
+  OAuth, cron secret joined the Stripe set); branch previews carry test-mode Stripe.
+- **Open-source hygiene**: `.claude/` + `.agents/` + the local funnel routine script are fully
+  gitignored (internal ops stay off the public repo); docs sanitized; tracked tree verified free
+  of secrets and `.env` confirmed never committed.
+
+## 2026-07-16 — Stripe billing wired for launch
+
+- **Pricing set to $11.99/mo + $39.99 lifetime** (`config/pricing.ts`), matching the live Stripe
+  prices; test-mode twins created for local/preview. Live webhook endpoint
+  (`/api/billing/webhook`: checkout completed + subscription updated/deleted) and Customer Portal
+  configurations (test + live) created via API; all five `STRIPE_*` env vars set on Vercel
+  (production = live, branch previews = test).
+- **Plan & billing settings card**: shows the current plan (free/pro/lifetime) with renewal date;
+  "Manage subscription" opens the Stripe Customer Portal via the new `POST /api/billing/portal`
+  (cancel, payment method, invoices). `PlanProvider` now exposes the full billing row.
+- **Upgrade dialog success panel** replaces the toast-and-close after purchase; the onboarding
+  confirm step remains the funnel's success screen.
+- Verified end to end in test mode: paywall → embedded checkout → signed
+  `checkout.session.completed` → webhook 200 → `billing` row → UI flips paid; settings → portal.
+
+## 2026-07-16 — New logo rollout + app-wide theming
+
+- **Logo replaced everywhere.** New warm-gradient mark: master vector at `public/images/logo.svg`
+  (served directly in the header, footer, and dashboard sidebar via `next/image` `unoptimized` for
+  crisp rendering at any zoom); regenerated rasters for `logo-rounded-rectangle.png`,
+  `logo-with-text.png` (new single-line Bricolage lockup), the full favicon set (ico/16/32/180/192/384,
+  mstile, black safari-pinned-tab silhouette), and the `og.png` badge. Blur placeholders removed from
+  icon-sized logos (the placeholder bled through transparent corners as a halo).
+- **Theming unified.** `ThemeProvider` moved from the dashboard layout to the root layout
+  (system default, class attribute): light and dark now work across the entire site and navigating
+  dashboard <-> landing no longer flips the theme. `/embed` forces light for third-party hosts.
+  Dark-mode fixes on public pages: scrolled header glass now mixes `--background` (was light-only
+  `--paper`), hero GitHub pill and hero-cta outline button use `bg-card` instead of `bg-white`.
+
+## 2026-07-12 — Onboarding funnel observability + autonomous monitoring loop
+
+- **Identity stitching + event hardening.** `AuthProvider` now calls `posthog.identify(userId)`,
+  so PostHog persons join 1:1 with `onboarding_sessions`/`billing`. Every `onb_*` event carries
+  `funnel_version` (v3, `config/analytics.ts`); new client events: `onb_step_completed`
+  (per-step `duration_ms`), `onb_flow_complete`, `onb_checkout_opened/failed/abandoned`.
+- **Server-truth events** (`lib/analytics/server.ts`, posthog-node inside `after()`): the
+  enrich/status/insights/first-post routes report provider tier, scrape settlement, insights
+  degrade reason, and latency; the Stripe webhook emits `purchase_completed` (conversion truth)
+  and `subscription_canceled`. `onb_rate_limited` fires on any onboarding 429.
+- **Agent-facing SQL views** (migration 023, service-role only): `onboarding_funnel_daily`
+  (daily rollup) and `onboarding_drop_detail` (per-session, PII-free).
+- **Autonomous monitoring loop**: four project skills (`.claude/skills/funnel-{data,health,audit,experiment}`),
+  launchd routines (daily health check 08:17, weekly audit Mon 08:47 via `scripts/funnel-routine.sh`),
+  email alerts on threshold breach, hypotheses filed as `funnel`-labeled GitHub issues. Docs:
+  `docs/analytics/onboarding-funnel.md` (event dictionary) + `docs/analytics/monitoring.md` (the loop).
+- **Experiment surface**: `config/onboarding-experiments.ts` + `hooks/use-ob-experiment.ts`
+  (PostHog flag-gated copy variants, control-fallback; welcome hero wired as the plumbing check);
+  experiment history in `docs/experiments/log.md`. Honesty invariants and pricing are excluded
+  from the experiment surface by rule.
+
 ## 2026-07-04 — Onboarding v2: two-tier profile enrichment, insight cards, server-side session capture
 
 - **Two-tier LinkedIn enrichment.** FAST tier (live Mirror screen, ~3-8s): Scrapingdog LinkedIn profile

@@ -5,6 +5,7 @@ import { ClockIcon, SparklesIcon, StarIcon } from 'lucide-react'
 
 import { SOCIAL_PROOF } from '@/config/social-proof'
 import { staggerContainer, staggerItem } from '@/lib/motion'
+import { useObExperiment } from '@/hooks/use-ob-experiment'
 import { Button } from '@/components/ui/button'
 
 import { track } from '../ai'
@@ -17,6 +18,7 @@ import { useOnboarding } from '../context'
 
 export function WelcomeStep() {
     const { goNext } = useOnboarding()
+    const hero = useObExperiment('onb-welcome-hero')
 
     const start = () => {
         track('onb_welcome_start')
@@ -28,13 +30,14 @@ export function WelcomeStep() {
             <motion.h1
                 variants={staggerItem}
                 className='font-heading mb-4 text-[clamp(34px,5vw,56px)] leading-[1.02] font-bold tracking-[-0.035em] text-[oklch(0.98_0.01_90)] [text-shadow:0_1px_24px_oklch(0.14_0.03_222_/_0.5)]'>
-                Grow <span className='text-[var(--orange-300)]'>10×</span> on LinkedIn in 90 days.
+                {hero.headlinePre}
+                <span className='text-[var(--orange-300)]'>{hero.headlineHighlight}</span>
+                {hero.headlinePost}
             </motion.h1>
             <motion.p
                 variants={staggerItem}
                 className='mb-6 max-w-[40ch] text-[17px] leading-[1.55] text-[oklch(0.92_0.02_200/0.85)]'>
-                I&rsquo;ll audit your LinkedIn, learn your goals, and build a personalized strategy, all in under 2
-                minutes.
+                {hero.sub}
             </motion.p>
             <motion.div variants={staggerItem}>
                 <Button

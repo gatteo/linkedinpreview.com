@@ -27,8 +27,12 @@ export function ScheduleStep() {
     const slots = answers.schedule.length ? answers.schedule : [DEFAULT_SLOT]
     const totalDays = slots.reduce((n, s) => n + s.days.length, 0)
     const frequency = Math.max(1, totalDays || answers.frequency)
+    // The insight only surfaces once the user actually tunes the rhythm, so it
+    // never pops over the untouched default calendar.
+    const [touched, setTouched] = React.useState(false)
 
     const commit = (nextSlots: ScheduleSlot[]) => {
+        setTouched(true)
         const days = nextSlots.reduce((n, s) => n + s.days.length, 0)
         update({ schedule: nextSlots, frequency: Math.max(1, days) })
     }
@@ -71,7 +75,7 @@ export function ScheduleStep() {
             <H1>{fn ? `${fn}, set your posting rhythm.` : 'Set your posting rhythm.'}</H1>
             <Sub className='mb-4'>Choose how often you want to post</Sub>
 
-            <div className='mb-2.5 flex items-center justify-between'>
+            <div className='mb-2.5 flex items-center gap-2.5'>
                 <FieldLabel className='m-0'>Posts per week</FieldLabel>
                 <button
                     type='button'
@@ -156,7 +160,9 @@ export function ScheduleStep() {
             </div>
 
             <AnimatePresence initial={false}>
-                <Reaction key={`${frequency}-${allDays.join()}`} reaction={scheduleReaction(frequency, allDays)} />
+                {touched && (
+                    <Reaction key={`${frequency}-${allDays.join()}`} reaction={scheduleReaction(frequency, allDays)} />
+                )}
             </AnimatePresence>
 
             <CTA onClick={goNext} disabled={totalDays === 0}>

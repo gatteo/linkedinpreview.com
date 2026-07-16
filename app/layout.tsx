@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { ThemeProvider } from 'next-themes'
 
 import { site, siteBaseMetadata } from '@/config/site'
 import { cn } from '@/lib/utils'
@@ -67,7 +68,9 @@ export default function RootLayout({
             className={cn(sans.variable, bricolage.variable, mono.variable, cal.variable)}
             suppressHydrationWarning>
             <body>
-                <TooltipProvider>{children}</TooltipProvider>
+                <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+                    <TooltipProvider>{children}</TooltipProvider>
+                </ThemeProvider>
                 <Suspense fallback={null}>
                     <PostHogPageView />
                 </Suspense>

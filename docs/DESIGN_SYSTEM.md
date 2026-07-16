@@ -20,10 +20,10 @@ LinkedIn blue is demoted to a functional `--info` tint and kept authentic only i
 
 ### Themes
 
-- `:root` = **light** (airy `--paper` background) - marketing site, the editor/preview tool, auth.
-- `.dark` = **dark** (petrol-950 surface) - the dashboard.
+- `:root` = **light** (airy `--paper` background).
+- `.dark` = **dark** (petrol-950 surface).
 
-Both themes share the same semantic variable names, so every component adopts the active theme automatically; add a `.dark` ancestor to switch a subtree. `ThemeProvider` (next-themes) is scoped to the dashboard layout only - the homepage and public pages are light-only, but individual bands (the open-source section, the dashboard mockup) opt into `.dark` locally.
+Both themes share the same semantic variable names, so every component adopts the active theme automatically; add a `.dark` ancestor to switch a subtree. `ThemeProvider` (next-themes) lives in the **root layout** (`attribute='class'`, system default), so the whole app - marketing site, tool, blog, dashboard - follows one theme and navigation never flips it. The dashboard settings page hosts the user-facing toggle. `/embed` nests a `forcedTheme='light'` provider so third-party embeds stay light. Individual bands (the open-source section, the dashboard mockup) still opt into `.dark` locally. Avoid raw light-only utilities (`bg-white`) in public-page chrome - use `bg-card`/semantic tokens; deliberate light-on-dark art overlays (`bg-white/10` glass on illustration cards) are fine.
 
 > **`@theme inline` (important):** `globals.css` uses `@theme inline` so color utilities reference `--background`/`--foreground`/etc. **directly**. With plain `@theme`, `--color-*` resolves once at `:root` and a nested `.dark` band would not re-theme. Keep it `inline`.
 

@@ -5,6 +5,8 @@ import { Loader2, MonitorIcon, MoonIcon, SunIcon, Trash2Icon } from 'lucide-reac
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 
+import { PRICING } from '@/config/pricing'
+import { usePlan } from '@/hooks/use-plan'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -20,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/components/dashboard/auth-provider'
 import { LinkedInConnection } from '@/components/dashboard/linkedin-connection'
+import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: SunIcon },
@@ -58,6 +61,9 @@ export function SettingsForm() {
 
     return (
         <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
+            {/* Plan & billing */}
+            <BillingCard />
+
             {/* Appearance */}
             <Card>
                 <CardHeader>
@@ -123,5 +129,92 @@ export function SettingsForm() {
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Plan & billing card
+//
+// Shows the current plan and hands subscription management (cancel, payment
+// method, invoices) to the Stripe Customer Portal - the portal button only
+// renders when the billing row actually carries a Stripe customer.
+// ---------------------------------------------------------------------------
+
+function BillingCard() {
+    const { plan, billing, isLoading } = usePlan()
+    const { openUpgrade } = useUpgradePrompt()
+    const [opening, setOpening] = React.useState(false)
+
+    const openPortal = React.useCallback(async () => {
+        setOpening(true)
+        try {
+            const res = await fetch('/api/billing/portal', { method: 'POST' })
+            const data = (await res.json()) as { url?: string; error?: string }
+            if (!res.ok || !data.url) throw new Error(data.error ?? 'Portal unavailable')
+            window.location.href = data.url
+        } catch (err) {
+            console.error('[settings] portal open failed', err)
+            toast.error('Could not open the billing portal. Please try again.')
+            setOpening(false)
+        }
+    }, [])
+
+    const renewsAt = billing.planRenewsAt
+        ? new Date(billing.planRenewsAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+          })
+        : null
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Plan &amp; billing</CardTitle>
+                <CardDescription>Your current plan and payment details.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className='flex flex-wrap items-center justify-between gap-3'>
+                    <div>
+                        <p className='text-sm font-semibold'>
+                            {isLoading
+                                ? 'Loading…'
+                                : plan === 'lifetime'
+                                  ? 'Lifetime - Founder Pass'
+                                  : plan === 'pro'
+                                    ? `Pro - ${PRICING.monthly.display}/mo`
+                                    : 'Free plan'}
+                        </p>
+                        <p className='text-muted-foreground mt-0.5 text-xs'>
+                            {isLoading
+                                ? ''
+                                : plan === 'lifetime'
+                                  ? 'Paid once, yours forever - no renewals.'
+                                  : plan === 'pro'
+                                    ? renewsAt
+                                        ? `Renews on ${renewsAt}. Cancel anytime.`
+                                        : 'Billed monthly. Cancel anytime.'
+                                    : 'The core editor and previews, free forever.'}
+                        </p>
+                    </div>
+                    {isLoading ? null : plan === 'free' ? (
+                        <Button size='sm' onClick={() => openUpgrade('settings')}>
+                            Upgrade
+                        </Button>
+                    ) : billing.stripeCustomerId ? (
+                        <Button size='sm' variant='outline' onClick={openPortal} disabled={opening}>
+                            {opening && <Loader2 className='mr-2 size-4 animate-spin' />}
+                            {plan === 'pro' ? 'Manage subscription' : 'Invoices & billing history'}
+                        </Button>
+                    ) : null}
+                </div>
+                {plan === 'pro' && billing.stripeCustomerId && (
+                    <p className='text-muted-foreground mt-3 text-xs'>
+                        Manage subscription opens the secure Stripe portal where you can cancel, change the payment
+                        method, or download invoices.
+                    </p>
+                )}
+            </CardContent>
+        </Card>
     )
 }

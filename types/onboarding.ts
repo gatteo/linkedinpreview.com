@@ -29,13 +29,16 @@ export type FastIdentity = {
     awards?: string[]
 }
 
-/** A post normalized from the rich (Bright Data) snapshot. */
+/** A post normalized from the rich (Bright Data) snapshots. */
 export type RichPost = {
     text: string
     /** ISO date when the source record had one (authored posts usually do). */
     date?: string
     /** 'post' = authored by the member; 'activity' = liked/reshared (not their writing). */
     origin: 'post' | 'activity'
+    /** Provider-measured engagement (posts dataset only; the LLM never sees or computes these). */
+    reactions?: number
+    comments?: number
 }
 
 /** Trimmed rich-profile identity persisted server-side and echoed to the client. */
@@ -73,6 +76,8 @@ export type RichScrapeStatus = 'idle' | 'pending' | 'ready' | 'empty' | 'failed'
 export type StyleHints = {
     sentenceLength: 'short' | 'standard' | 'long'
     emojiFrequency: 'none' | 'moderate' | 'a-lot'
+    /** ISO 639-1 code of the language the member actually posts in (stopword-scored, never the LLM). */
+    language?: string | null
 }
 
 /** Slim rich summary the client keeps in answers/localStorage (never the full posts). */
@@ -129,6 +134,9 @@ export type OnboardingInsights = {
         postsPerWeek: number | null
         newestPostAt: string | null
         followers: number | null
+        /** Mean provider-measured reactions/comments per analyzed post; null when engagement wasn't scraped. */
+        avgReactions?: number | null
+        avgComments?: number | null
     }
     /** Category mix of the analyzed posts; counts aggregated server-side from LLM labels. */
     mix: { category: InsightCategory; count: number; sharePct: number }[]
@@ -145,5 +153,11 @@ export type OnboardingInsights = {
     headline: string
     /** Server-counted content-quality flags for the audit report (kind 'posts' only). */
     audit?: InsightsAudit
+    /**
+     * Provider-measured reactions grouped by the LLM's category labels - the
+     * numbers come from the scrape, the grouping from labels, the math from the
+     * server. Only categories with at least 2 posts, so one outlier can't lie.
+     */
+    engagement?: { byCategory: { category: InsightCategory; count: number; avgReactions: number }[] }
     generatedAt: string
 }

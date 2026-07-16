@@ -23,9 +23,10 @@ import type { OnboardingAnswers } from './types'
 // ---------------------------------------------------------------------------
 
 const POLL_MS = 5_000
-// The scrape lands in 42-60s; past 2.5 minutes we stop and degrade (the server
-// keeps its own stale backstop, so a reload won't revive a dead snapshot).
-const MAX_POLL_MS = 150_000
+// The scrape typically lands in 42-60s but real profiles have been observed
+// taking several minutes; poll to the server's own 6-minute stale backstop
+// before degrading (a reload won't revive a dead snapshot past that).
+const MAX_POLL_MS = 360_000
 // Consecutive 'idle' responses while we believe a scrape is pending mean the
 // server has no session row (e.g. migration missing) - it can never resolve.
 const MAX_IDLE_STREAK = 3
@@ -51,8 +52,12 @@ export function useRichPipeline(answers: OnboardingAnswers, update: (patch: Part
     const applyTerminal = (rich: NonNullable<Awaited<ReturnType<typeof fetchRichStatus>>>['rich']) => {
         const current = answersRef.current
         const measured = rich.status === 'ready' || rich.status === 'empty'
+        // A scrape that lands after a degraded (profile/benchmark) analysis was
+        // generated re-opens the insights guard: the route upgrades in place.
+        const upgrades = rich.status === 'ready' && current.insights && current.insights.kind !== 'posts'
         updateRef.current({
             richStatus: rich.status,
+            ...(upgrades ? { insights: undefined, insightsStatus: undefined } : {}),
             ...(measured
                 ? {
                       richSummary: {

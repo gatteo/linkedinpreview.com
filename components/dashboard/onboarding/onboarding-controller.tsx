@@ -27,6 +27,17 @@ import {
 // settings page and must not be hijacked by the onboarding resume gate.
 const ONBOARDING_LINKEDIN_STATUSES = ['connected', 'denied', 'error', 'session', 'unavailable']
 
+// Detected posting language (ISO code from the scraped corpus) -> the branding
+// writing-style language option. Unknown codes drop rather than guess.
+const BRANDING_LANGUAGE_BY_CODE: Record<string, string> = {
+    en: 'english',
+    de: 'german',
+    fr: 'french',
+    es: 'spanish',
+    it: 'italian',
+    pt: 'portuguese',
+}
+
 // ---------------------------------------------------------------------------
 // OnboardingController - gates the conversion flow and bridges it to persistence.
 //
@@ -43,6 +54,7 @@ export function OnboardingController() {
     const router = useRouter()
 
     const [open, setOpen] = React.useState(false)
+    const [mountSeq, setMountSeq] = React.useState(0)
     const [startStepId, setStartStepId] = React.useState<StepId>('welcome')
     const [linkedinError, setLinkedinError] = React.useState<string | null>(null)
     const [resumeAnswers, setResumeAnswers] = React.useState<OnboardingAnswers | null>(null)
@@ -141,6 +153,18 @@ export function OnboardingController() {
                 setOpen(true)
             } else if (command === 'close') {
                 setOpen(false)
+            } else if (typeof command === 'object' && 'jump' in command) {
+                // Jump straight to a step with whatever answers are persisted -
+                // steps render their degraded variants when data is missing, which
+                // is usually exactly what's being debugged. Key bump remounts the
+                // modal so a jump also works while it is already open.
+                setResumeAnswers(readOnboarding()?.answers ?? null)
+                setStartStepId(command.jump)
+                setLinkedinError(null)
+                decidedRef.current = true
+                finishedRef.current = false
+                setMountSeq((s) => s + 1)
+                setOpen(true)
             }
         })
     }, [])
@@ -208,15 +232,24 @@ export function OnboardingController() {
                 .filter(Boolean)
                 .join('\n')
 
+            // Style defaults measured from their real posts (deterministic
+            // counts, see inferStyleHints); onboarding never asks for these, so
+            // the hints only ever replace untouched defaults. The detected
+            // posting language maps to the branding language options separately
+            // (ISO code -> option value) and is dropped when unknown.
+            const { language: detectedLanguage, ...styleDefaults } = answers.richSummary?.styleHints ?? {}
+            const brandingLanguage = detectedLanguage ? BRANDING_LANGUAGE_BY_CODE[detectedLanguage] : undefined
+
             updateBranding({
                 profile: answers.profile,
                 role: answers.role,
                 expertise: { topics: effectiveTopics },
                 positioning: { statement: answers.positioning },
-                // Style defaults measured from their real posts (deterministic
-                // counts, see inferStyleHints); onboarding never asks for these,
-                // so the hints only ever replace untouched defaults.
-                writingStyle: { ...answers.writingStyle, ...(answers.richSummary?.styleHints ?? {}) },
+                writingStyle: {
+                    ...answers.writingStyle,
+                    ...styleDefaults,
+                    ...(brandingLanguage ? { language: brandingLanguage } : {}),
+                },
                 knowledgeBase: { notes },
                 dosDonts: { dos: branding.dosDonts.dos, donts },
                 meta: { onboardedAt: now },
@@ -273,6 +306,7 @@ export function OnboardingController() {
 
     return (
         <OnboardingModal
+            key={mountSeq}
             open={open}
             initialAnswers={resumeAnswers ?? initialAnswers(branding, strategy)}
             startStepId={startStepId}

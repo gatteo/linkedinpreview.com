@@ -35,7 +35,9 @@ import { postTextToDoc, track } from '../ai'
 import { GrowthCard, smoothPath } from '../charts'
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
-import { CTA, Eyebrow, firstName, GhostLink, H1, ReviewCard, Stars } from '../primitives'
+import { Eyebrow, firstName, GhostLink, H1, PersonAvatar, ReviewCard, Stars } from '../primitives'
+import { ScrollProgressButton } from '../scroll-progress-button'
+import { useScrollGate } from '../use-scroll-gate'
 import { OnboardingCheckout } from './checkout'
 
 // ---------------------------------------------------------------------------
@@ -44,6 +46,18 @@ import { OnboardingCheckout } from './checkout'
 // social proof, and the pricing block (real PRICING + embedded Stripe
 // checkout). A quiet decline path keeps the free plan honest.
 // ---------------------------------------------------------------------------
+
+// Decorative social proof for the pillar-post mockups: seeded per card so each
+// shows different (stable) counts instead of the preview's fixed defaults.
+function seededSocialCounts(seed: string) {
+    let h = 0
+    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0
+    const next = (n: number) => {
+        h = (h * 1103515245 + 12345) | 0
+        return Math.abs(h) % n
+    }
+    return { others: 140 + next(720), comments: 12 + next(54), reposts: 3 + next(19) }
+}
 
 export function PaywallStep() {
     const { answers, finishOffer, role } = useOnboarding()
@@ -58,6 +72,17 @@ export function PaywallStep() {
     const [selected, setSelected] = React.useState<CheckoutPlan>('lifetime')
     const [checkout, setCheckout] = React.useState(false)
     const [checkoutError, setCheckoutError] = React.useState(false)
+
+    // Gate the purchase button on scrolling the whole offer, mirroring the audit
+    // page. Progress is fed to the button's border imperatively (no re-render).
+    const rootRef = React.useRef<HTMLDivElement>(null)
+    const rectRef = React.useRef<SVGRectElement>(null)
+    const { atEnd } = useScrollGate(rootRef, {
+        endThreshold: 48,
+        onProgress: (p) => {
+            if (rectRef.current) rectRef.current.style.strokeDashoffset = String(1 - p)
+        },
+    })
 
     React.useEffect(() => {
         track('onb_paywall_view', { ideas: answers.postIdeas?.length ?? 0 })
@@ -122,7 +147,7 @@ export function PaywallStep() {
     ]
 
     return (
-        <div className='flex flex-col'>
+        <div ref={rootRef} className='flex flex-col'>
             {/* hero + ready checklist */}
             <Eyebrow>Everything&rsquo;s ready</Eyebrow>
             <H1>{fn ? `Your 90-day plan is built, ${fn}.` : 'Your 90-day plan is built.'}</H1>
@@ -154,11 +179,12 @@ export function PaywallStep() {
             {!!answers.postIdeas?.length && (
                 <PwSection
                     title='Posts, already written in your voice'
-                    sub='Your plan comes preloaded with ready-to-publish drafts across every content pillar.'>
+                    sub='Your plan comes preloaded with draft ideas in your voice across every content pillar.'>
                     <div className='-mx-0.5 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-0.5 pb-3 [scrollbar-width:thin]'>
                         {answers.postIdeas.map((idea) => {
                             const pillar =
                                 OB_IDEA_PILLARS.find((p) => p.category === idea.category) ?? OB_IDEA_PILLARS[0]
+                            const social = seededSocialCounts(idea.category + (answers.profile.name || ''))
                             return (
                                 <div
                                     key={idea.category}
@@ -180,6 +206,8 @@ export function PaywallStep() {
                                                 headline: answers.profile.headline,
                                                 avatarUrl: answers.profile.avatarUrl,
                                             }}
+                                            interactiveMore={false}
+                                            social={social}
                                             className='rounded-none border-none shadow-none'
                                         />
                                     </ScreenSizeProvider>
@@ -187,6 +215,10 @@ export function PaywallStep() {
                             )
                         })}
                     </div>
+                    <p className='text-muted-foreground mt-1 text-xs leading-relaxed'>
+                        These drafts are idea starters generated from your profile, not finished posts - you will shape
+                        and polish them in the editor before anything goes live.
+                    </p>
                 </PwSection>
             )}
 
@@ -246,16 +278,21 @@ export function PaywallStep() {
                 </div>
             </PwSection>
 
-            {/* testimonials */}
+            {/* testimonials - two explicit columns that each fill and clip, so the
+                bento never leaves a half-empty column the way CSS multi-column did */}
             <div className='pt-5'>
                 <div
-                    className='max-h-[440px] columns-2 gap-2 overflow-hidden max-sm:columns-1'
+                    className='grid max-h-[440px] grid-cols-2 gap-2 overflow-hidden max-sm:grid-cols-1'
                     style={{
                         maskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
                         WebkitMaskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
                     }}>
-                    {OB_PW_TESTIMONIALS.map((t, i) => (
-                        <ReviewCard key={i} t={t} compact />
+                    {[0, 1].map((col) => (
+                        <div key={col} className='flex flex-col'>
+                            {OB_PW_TESTIMONIALS.filter((_, i) => i % 2 === col).map((t, i) => (
+                                <ReviewCard key={i} t={t} compact />
+                            ))}
+                        </div>
                     ))}
                 </div>
             </div>
@@ -271,7 +308,12 @@ export function PaywallStep() {
                         Checkout is not available right now. You can continue on the free plan and upgrade later.
                     </p>
                 )}
-                <GoldenTicket selected={selected === 'lifetime'} onSelect={() => setSelected('lifetime')} />
+                <GoldenTicket
+                    selected={selected === 'lifetime'}
+                    onSelect={() => setSelected('lifetime')}
+                    name={answers.profile.name}
+                    avatarUrl={answers.profile.avatarUrl}
+                />
                 <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
                     or
                 </div>
@@ -304,11 +346,7 @@ export function PaywallStep() {
                     </span>
                 </button>
 
-                <CTA className='mt-4' onClick={startCheckout}>
-                    {selected === 'lifetime' ? 'Purchase Founder Pass' : 'Start monthly'}
-                </CTA>
-
-                <div className='text-muted-foreground mt-3.5 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
+                <div className='text-muted-foreground mt-4 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
                     <span className='inline-flex items-center gap-1.5'>
                         <ShieldIcon className='text-success size-[15px]' />
                         <b className='text-foreground font-semibold'>{MONEY_BACK_DAYS}-day money-back guarantee</b>
@@ -326,6 +364,23 @@ export function PaywallStep() {
                     </GhostLink>
                 </div>
             </PwSection>
+
+            {/* Purchase CTA: gated on scrolling the full offer, border traces depth.
+                Full-bleeds past the wrapper padding so the fade spans the whole column */}
+            <div
+                className='sticky bottom-0 z-10 -mx-[clamp(20px,4vw,40px)] mt-2 flex flex-col items-center gap-2 px-[clamp(20px,4vw,40px)] pt-10 pb-1'
+                style={{ background: 'linear-gradient(to bottom, transparent, var(--card) 42%)' }}>
+                <ScrollProgressButton rectRef={rectRef} atEnd={atEnd} onClick={startCheckout}>
+                    {atEnd ? (selected === 'lifetime' ? 'Purchase Founder Pass' : 'Start monthly') : 'Activate my plan'}
+                </ScrollProgressButton>
+                <span
+                    className={cn(
+                        'text-muted-foreground text-[11.5px] transition-opacity duration-300',
+                        atEnd ? 'opacity-0' : 'opacity-100',
+                    )}>
+                    Scroll through your plan to activate
+                </span>
+            </div>
         </div>
     )
 }
@@ -520,29 +575,23 @@ const FEAT_ART: Record<NonNullable<ObFeature['art']>, React.ComponentType> = {
 
 // ── Awards wreath ───────────────────────────────────────────────────────────
 
+// Laurel branch (the "trophy plant"), one half of a wreath framing the number.
+// The art is a split laurel SVG masked so it renders in the brand orange.
 function Wreath({ flip }: { flip?: boolean }) {
-    const leaves = []
-    for (let i = 0; i < 6; i++) {
-        const t = i / 5
-        const x = 22 - t * 9
-        const y = 8 + t * 74
-        const rot = 40 - t * 22
-        leaves.push(
-            <ellipse
-                key={i}
-                cx={x}
-                cy={y}
-                rx='7'
-                ry='3'
-                transform={`rotate(${rot} ${x} ${y})`}
-                fill='var(--orange-500)'
-            />,
-        )
-    }
+    const src = flip ? '/images/laurel-right.svg' : '/images/laurel-left.svg'
+    const mask = `url(${src}) center / contain no-repeat`
     return (
-        <svg width='28' height='84' viewBox='0 0 44 90'>
-            {flip ? <g transform='scale(-1,1) translate(-44,0)'>{leaves}</g> : leaves}
-        </svg>
+        <span
+            aria-hidden
+            className='block shrink-0'
+            style={{
+                width: flip ? 52 : 58,
+                height: 84,
+                background: 'var(--orange-500)',
+                mask,
+                WebkitMask: mask,
+            }}
+        />
     )
 }
 
@@ -602,7 +651,17 @@ function Spots() {
     )
 }
 
-function GoldenTicket({ selected, onSelect }: { selected: boolean; onSelect: () => void }) {
+function GoldenTicket({
+    selected,
+    onSelect,
+    name,
+    avatarUrl,
+}: {
+    selected: boolean
+    onSelect: () => void
+    name: string
+    avatarUrl: string
+}) {
     const founding = isFoundingWindowOpen()
     return (
         <button
@@ -617,24 +676,37 @@ function GoldenTicket({ selected, onSelect }: { selected: boolean; onSelect: () 
                 background:
                     'linear-gradient(135deg, oklch(0.94 0.055 96), oklch(0.87 0.09 90) 46%, oklch(0.81 0.10 87))',
             }}>
-            {/* punched holes */}
-            <span className='bg-card border-border absolute bottom-[45px] -left-[9px] z-[2] size-[18px] rounded-full border' />
-            <span className='bg-card border-border absolute -right-[9px] bottom-[45px] z-[2] size-[18px] rounded-full border' />
             {/* shine sweep */}
             <span
                 className='animate-ob-shine pointer-events-none absolute top-0 bottom-0 left-[-40%] z-[1] w-[40%]'
                 style={{ background: 'linear-gradient(105deg, transparent, oklch(1 0 0 / 0.5), transparent)' }}
             />
             <div className='relative z-[2] px-5 pt-[18px] pb-4'>
-                <div className='flex items-center justify-between'>
+                <div className='flex items-center justify-between gap-2'>
                     <span className='inline-flex items-center gap-1.5 rounded-full bg-[oklch(0.34_0.045_82)] px-[11px] py-[5px] font-mono text-[10.5px] font-bold tracking-[0.08em] text-[oklch(0.94_0.075_92)] uppercase'>
                         <StarIcon className='size-3 fill-current' strokeWidth={0} />
                         {OB_TICKET.badge}
                     </span>
-                    <span className='font-mono text-[13px] font-bold tracking-[0.02em] text-[oklch(0.36_0.05_82)]'>
-                        {OB_TICKET.passNumber}{' '}
-                        <i className='font-semibold not-italic opacity-55'>{OB_TICKET.passTotal}</i>
-                    </span>
+                    {name ? (
+                        <div className='flex items-center gap-2'>
+                            <div className='text-right leading-tight'>
+                                <div className='font-heading text-[12.5px] font-bold tracking-[-0.01em]'>
+                                    {firstName(name)}
+                                </div>
+                                <div className='font-mono text-[10px] font-bold tracking-[0.02em] opacity-50'>
+                                    {OB_TICKET.passNumber}
+                                </div>
+                            </div>
+                            <span className='inline-flex shrink-0 rounded-full shadow-[0_0_0_2px_oklch(0.34_0.045_82),0_0_0_3.5px_oklch(0.9_0.07_92)]'>
+                                <PersonAvatar name={name} src={avatarUrl} size={30} />
+                            </span>
+                        </div>
+                    ) : (
+                        <span className='font-mono text-[13px] font-bold tracking-[0.02em] text-[oklch(0.36_0.05_82)]'>
+                            {OB_TICKET.passNumber}{' '}
+                            <i className='font-semibold not-italic opacity-55'>{OB_TICKET.passTotal}</i>
+                        </span>
+                    )}
                 </div>
                 <div className='mt-3.5 mb-1 flex items-baseline gap-2'>
                     <span className='font-heading text-[40px] leading-none font-extrabold tracking-[-0.02em]'>
@@ -659,11 +731,15 @@ function GoldenTicket({ selected, onSelect }: { selected: boolean; onSelect: () 
             </div>
             {founding && (
                 <div className='relative z-[2] flex items-center gap-2 border-t-2 border-dashed border-[oklch(1_0_0/0.55)] px-5 py-[13px]'>
-                    <ClockIcon className='size-3.5' />
+                    {/* punched holes, centered on the dashed tear line */}
+                    <span className='bg-card border-border absolute -top-[9px] -left-[9px] size-[18px] rounded-full border' />
+                    <span className='bg-card border-border absolute -top-[9px] -right-[9px] size-[18px] rounded-full border' />
+                    <ClockIcon className='size-3.5 shrink-0' />
                     <span className='text-xs font-semibold opacity-80'>
-                        Founding price - increases to {OB_TICKET.nextPrice} in
+                        {firstName(name) ? `${firstName(name)}, founding` : 'Founding'} price will increase to{' '}
+                        {OB_TICKET.nextPrice} soon
                     </span>
-                    <span className='ml-auto'>
+                    <span className='ml-auto shrink-0'>
                         <Countdown />
                     </span>
                 </div>

@@ -19,11 +19,7 @@ import { CTA, firstName, GhostLink, H1 } from '../primitives'
 // ---------------------------------------------------------------------------
 
 function Tok({ children }: { children: React.ReactNode }) {
-    return (
-        <span className='bg-accent border-primary/30 inline-block rounded-[9px] border px-2.5 py-0.5 leading-normal font-semibold whitespace-nowrap text-[var(--orange-700)]'>
-            {children}
-        </span>
-    )
+    return <span className='font-semibold text-[var(--orange-400)]'>{children}</span>
 }
 
 export function RecapStep() {
@@ -46,11 +42,6 @@ export function RecapStep() {
                     <>
                         in <Tok>{answers.niche}</Tok>
                     </>
-                )}
-                {answers.language && (
-                    <>
-                        , writing in <Tok>{answers.language}</Tok>
-                    </>
                 )}{' '}
                 to <Tok>{goal.restated}</Tok>.
             </p>
@@ -70,7 +61,7 @@ export function RecapStep() {
                                 placeholder="e.g. I'm actually a fractional CMO, and I write mostly in German"
                                 autoFocus
                                 rows={3}
-                                className='border-input bg-card text-foreground placeholder:text-muted-foreground focus-visible:ring-ring/50 w-full resize-none rounded-xl border px-3.5 py-3 text-sm focus-visible:ring-3 focus-visible:outline-none'
+                                className='border-input bg-card text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/20 w-full resize-none rounded-xl border px-3.5 py-3 text-sm focus-visible:ring-[3px] focus-visible:outline-none'
                             />
                             <p className='text-muted-foreground text-xs'>
                                 We&rsquo;ll fold this into everything we build for you.

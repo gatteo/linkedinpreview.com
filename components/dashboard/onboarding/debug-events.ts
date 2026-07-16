@@ -7,7 +7,9 @@
 // decoupled without threading a context through the layout.
 // ---------------------------------------------------------------------------
 
-export type OnboardingDebugCommand = 'open' | 'close'
+import type { StepId } from './types'
+
+export type OnboardingDebugCommand = 'open' | 'close' | { jump: StepId }
 
 const EVENT = 'lp-onboarding-debug'
 

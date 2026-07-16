@@ -178,12 +178,12 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         }
 
         posthog.capture('dashboard_nudge_shown', { source: 'tool' })
-        toast('Nice post! Want to save it?', {
+        toast('Nice post! Want a plan behind it?', {
             description:
-                'Continue in the dashboard to save this draft, schedule it, and write more with AI - free, no sign-up.',
+                'Get a free audit of your LinkedIn and a personalized 90-day posting plan - this draft comes with you.',
             duration: 12000,
             action: {
-                label: 'Open dashboard',
+                label: 'Create my plan',
                 onClick: () => handleOpenDashboard('tool_nudge'),
             },
         })
@@ -196,7 +196,7 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     const inner = (
         <div
             className={cn(
-                'border-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-white',
+                'border-border bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border',
                 variant === 'embed' && 'h-full rounded-none border-0',
             )}>
             {/* Mobile tab bar */}
@@ -282,11 +282,11 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
             {variant === 'default' && hasTextContent(content) && (
                 <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-2'>
                     <span className='text-muted-foreground text-[13.5px] leading-snug'>
-                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Save it, schedule it,
-                        and write your next ten posts in the full editor.
+                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Get a free audit of your
+                        LinkedIn and a 90-day plan - this draft comes with you.
                     </span>
                     <Button variant='outline' size='sm' onClick={() => handleOpenDashboard('tool_footer')}>
-                        Continue in the full editor
+                        Create my LinkedIn plan
                         <ArrowUpRight className='size-3.5' />
                     </Button>
                 </div>

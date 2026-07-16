@@ -47,11 +47,14 @@ next-env.d.ts
 # development files & folders 
 references/
 
-# claude
-.claude
+# agent tooling (internal ops - skills, reports, settings all stay local)
+.claude/
+.agents/
+scripts/funnel-routine.sh
 .mcp.json
 CLAUDE.md
 
 # SEO audit working files (not committed)
 seo-audit/
 tmp/
+skills-lock.json

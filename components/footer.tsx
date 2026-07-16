@@ -3,10 +3,13 @@ import Link from 'next/link'
 import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
 import { getAllComparisons } from '@/lib/compare'
+import { cn } from '@/lib/utils'
 
 import { FeedbackLink } from './feedback/feedback-link'
 import { Icons } from './icon'
 import { Logo } from './logo'
+import { ThemeSwitcher } from './theme-switcher'
+import { TrackClick } from './tracking/track-click'
 
 const linkClass = 'text-muted-foreground hover:text-foreground text-[12.5px] transition-colors'
 
@@ -55,6 +58,17 @@ export function Footer() {
 
                     <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4 md:min-w-[460px] md:flex-none'>
                         <FooterCol title='Product'>
+                            <li>
+                                <TrackClick
+                                    event='cta_button_clicked'
+                                    properties={{ button_name: 'create_plan', source: 'footer' }}>
+                                    <Link
+                                        className={cn(linkClass, 'text-foreground font-medium')}
+                                        href={Routes.Dashboard}>
+                                        Create my LinkedIn plan
+                                    </Link>
+                                </TrackClick>
+                            </li>
                             <li>
                                 <Link className={linkClass} href={Routes.Tool}>
                                     Linkedin Preview Tool
@@ -150,9 +164,12 @@ export function Footer() {
                             Matteo Giardino
                         </Link>
                     </p>
-                    <p className='text-muted-foreground text-[13.5px]'>
-                        &copy; {new Date().getFullYear()} LinkedIn Post Preview
-                    </p>
+                    <div className='flex items-center gap-4'>
+                        <p className='text-muted-foreground text-[13.5px]'>
+                            &copy; {new Date().getFullYear()} LinkedIn Post Preview
+                        </p>
+                        <ThemeSwitcher />
+                    </div>
                 </div>
             </div>
         </footer>

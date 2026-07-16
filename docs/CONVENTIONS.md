@@ -142,7 +142,7 @@ Every API route handler follows the same structure:
 - Don't use barrel/index.ts files
 - Don't use `data-active:` shorthand in Tailwind v4 (use `data-[active=true]:`)
 - Don't use `data-checked:` for Radix Switch (use `data-[state=checked]:`)
-- Don't add `ThemeProvider` outside of dashboard layout (homepage is light-only)
+- Don't add extra `ThemeProvider`s - the root layout owns theming (sole exception: `/embed` forces light)
 - Don't import TipTap `EditorPanel` in server components (it is SSR: false)
 - Don't use `useEffect` for data fetching - use server components or hooks
 - Don't hardcode colors - use CSS custom properties via Tailwind

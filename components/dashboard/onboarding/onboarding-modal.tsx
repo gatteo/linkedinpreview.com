@@ -4,7 +4,7 @@ import * as React from 'react'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 
 import { OB_STEP_META, sectionFor } from '@/config/onboarding-flow'
-import { EASE_OUT, slideStep } from '@/lib/motion'
+import { slideStep } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 
@@ -38,8 +38,7 @@ import { useRichPipeline } from './use-rich-pipeline'
 //   hero   - full-bleed illustration card (welcome)
 //   split  - content pane + immersive stage on the right
 //   report - wide centered column, no stage (reveal · paywall)
-// Steps own their CTAs; there is no shared footer. The analysis rail masks the
-// background rich scrape across the question steps.
+// Steps own their CTAs; there is no shared footer.
 // ---------------------------------------------------------------------------
 
 const indexOf = (id: StepId) => Math.max(0, STEP_ORDER.indexOf(id))
@@ -112,6 +111,13 @@ export function OnboardingModal({
 
     const connectLinkedin = React.useCallback(() => onConnectLinkedin(answers), [answers, onConnectLinkedin])
 
+    // True end of the funnel: the user clicked through the confirm screen into
+    // the dashboard (converted or not) - the event the conversion rate hangs on.
+    const complete = React.useCallback(() => {
+        track('onb_flow_complete', { converted })
+        onComplete()
+    }, [converted, onComplete])
+
     // Incremental persistence: stash answers + current step after each change so a
     // refresh or the LinkedIn OAuth round-trip rehydrates without losing progress
     // or re-spending AI calls. The terminal 'confirm' step is already persisted/cleared.
@@ -119,8 +125,16 @@ export function OnboardingModal({
         if (step !== 'confirm') onPersist(answers, step)
     }, [answers, step, onPersist])
 
-    // One funnel event per screen enter so drop-off is tunable in PostHog.
+    // One funnel event per screen enter so drop-off is tunable in PostHog, plus
+    // a completion event for the step just left carrying how long it held the
+    // user - the "confused for minutes" vs "breezed through" diagnosis signal.
+    const stepEnteredRef = React.useRef<{ step: StepId; at: number } | null>(null)
     React.useEffect(() => {
+        const prev = stepEnteredRef.current
+        if (prev && prev.step !== step) {
+            track('onb_step_completed', { step: prev.step, to: step, duration_ms: Date.now() - prev.at })
+        }
+        stepEnteredRef.current = { step, at: Date.now() }
         track('onb_step_view', { step })
     }, [step])
 
@@ -133,34 +147,17 @@ export function OnboardingModal({
             skip,
             goTo,
             finishOffer,
-            complete: onComplete,
+            complete,
             connectLinkedin,
             linkedinError,
             converted,
         }),
-        [
-            answers,
-            update,
-            goNext,
-            goBack,
-            skip,
-            goTo,
-            finishOffer,
-            onComplete,
-            connectLinkedin,
-            linkedinError,
-            converted,
-        ],
+        [answers, update, goNext, goBack, skip, goTo, finishOffer, complete, connectLinkedin, linkedinError, converted],
     )
 
     const meta = OB_STEP_META[step] ?? { layout: 'split' as const }
     // The user chip appears once a real identity exists (post-fetch or OAuth).
     const connected = index > indexOf('fetching') && !!answers.profile.name
-    // The rail is a latency MASK, not decoration: it only shows while a real
-    // background analysis exists to mask (scrape running or landed). With no
-    // scrape (skipped/unavailable), claiming "analyzing" would be a lie.
-    const railActive =
-        answers.richStatus === 'pending' || answers.richStatus === 'ready' || answers.richStatus === 'empty'
 
     return (
         <Dialog open={open}>
@@ -172,6 +169,7 @@ export function OnboardingModal({
                 className='flex h-[min(790px,90vh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
                     {step === 'confirm' && converted && <Confetti />}
+                    {step === 'paywall' && <Confetti count={14} />}
 
                     <DialogTitle className='sr-only'>Your personalized LinkedIn audit</DialogTitle>
                     <DialogDescription className='sr-only'>
@@ -200,7 +198,6 @@ export function OnboardingModal({
                                 <div
                                     className='grain bg-card relative flex min-w-0 flex-1 flex-col'
                                     style={{ '--grain-opacity': 0.06 } as React.CSSProperties}>
-                                    {railActive && <Rail pct={meta.railPct} rail={meta.rail} />}
                                     <TopRow step={step} answers={answers} connected={connected} />
                                     <div className='flex flex-1 flex-col overflow-y-auto'>
                                         <div
@@ -230,53 +227,12 @@ export function OnboardingModal({
 // Chrome pieces
 // ---------------------------------------------------------------------------
 
-// The analysis rail - the latency mask for the background rich scrape. Visible
-// only on the five question steps ("Analyzing") and the audit loader
-// ("Finalizing"); its progress is staged per step, not real, by design.
-function Rail({ pct, rail }: { pct?: number; rail?: string }) {
-    if (!pct) return null
-    return (
-        <div
-            className='border-border flex h-12 shrink-0 items-center gap-3 border-b px-[22px]'
-            style={{ background: 'color-mix(in oklch, var(--info-soft) 40%, transparent)' }}>
-            <span className='bg-info animate-ob-pulse size-2 shrink-0 rounded-full' />
-            <span className='text-muted-foreground text-[12.5px] whitespace-nowrap'>
-                {rail === 'audit' ? (
-                    <>
-                        <b className='text-info font-semibold'>Finalizing</b> your strategy…
-                    </>
-                ) : (
-                    <>
-                        <b className='text-info font-semibold'>Analyzing</b> your posts…
-                    </>
-                )}
-            </span>
-            <span
-                className='h-1 flex-1 overflow-hidden rounded-full'
-                style={{ background: 'color-mix(in oklch, var(--info) 15%, transparent)' }}>
-                <motion.span
-                    className='block h-full rounded-full'
-                    style={{
-                        background:
-                            'linear-gradient(90deg, color-mix(in oklch, var(--info) 70%, var(--petrol-500)), var(--info))',
-                    }}
-                    initial={false}
-                    animate={{ width: `${pct}%` }}
-                    transition={{ duration: 0.6, ease: EASE_OUT }}
-                />
-            </span>
-            <span className='text-muted-foreground w-8 shrink-0 text-right font-mono text-xs'>{pct}%</span>
-            {rail !== 'audit' && <span className='text-muted-foreground shrink-0 font-mono text-[11px]'>{rail}</span>}
-        </div>
-    )
-}
-
 function TopRow({ step, answers, connected }: { step: StepId; answers: OnboardingAnswers; connected: boolean }) {
     const section = sectionFor(step)
     const meta = OB_STEP_META[step]
     const wide = meta?.layout === 'report'
     return (
-        <div className='shrink-0 pt-[22px]'>
+        <div className={cn('shrink-0 pt-[22px]', wide ? 'pb-4' : 'pb-1')}>
             <div
                 className={cn(
                     'mx-auto flex min-h-[22px] w-full items-center justify-between gap-3',

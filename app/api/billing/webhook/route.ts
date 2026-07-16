@@ -1,7 +1,9 @@
+import { after } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type Stripe from 'stripe'
 
 import { env } from '@/env.mjs'
+import { captureServer } from '@/lib/analytics/server'
 import { getStripe, isStripeConfigured } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { findUserIdByStripeCustomer, upsertBillingPlan } from '@/lib/supabase/billing'
@@ -96,6 +98,19 @@ export async function POST(request: Request) {
                         planRenewsAt: periodEndIso(sub),
                     })
                 }
+
+                // Server-truth conversion: fires even when the buyer never
+                // returns to the success screen (client-side onb_purchase_success
+                // is the optimistic sibling of this event).
+                if (s.mode === 'payment' || (s.mode === 'subscription' && s.subscription)) {
+                    after(() =>
+                        captureServer(userId, 'purchase_completed', {
+                            plan: s.mode === 'payment' ? 'lifetime' : 'monthly',
+                            amount_total: s.amount_total,
+                            currency: s.currency,
+                        }),
+                    )
+                }
                 break
             }
 
@@ -131,6 +146,7 @@ export async function POST(request: Request) {
                 const userId = await resolveUserId(admin, sub)
                 if (!userId) break
                 await downgradeToFree(admin, userId)
+                after(() => captureServer(userId, 'subscription_canceled', {}))
                 break
             }
 

@@ -18,6 +18,8 @@ The most powerful, free LinkedIn content creation and preview tool. No signup re
 | -   | [features/](./features/)                                             | Specs for **built** features. Fully-done specs live in [features/completed/](./features/completed/) (SHIPPED); specs with open gaps stay in `features/` (PARTIAL). `000-TEMPLATE.md` for format |
 | -   | [backlog/](./backlog/)                                               | Specs for **planned / not-yet-built** features (waves 3-6, SEO template libraries)                                                                                                              |
 | -   | [tickets/](./tickets/)                                               | Work in flight (`T-NNN`); folds into feature specs on completion                                                                                                                                |
+| -   | [analytics/](./analytics/)                                           | Onboarding funnel observability: [event dictionary](./analytics/onboarding-funnel.md) + [autonomous monitoring loop](./analytics/monitoring.md)                                                 |
+| -   | [experiments/](./experiments/)                                       | A/B experiment log ([log.md](./experiments/log.md)) - append-only record of every funnel experiment                                                                                             |
 
 ## How the docs fit together
 
