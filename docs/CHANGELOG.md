@@ -4,6 +4,19 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-17 — Hosted Stripe Checkout as the default purchase flow
+
+- **`CHECKOUT_UI` switch** in `config/pricing.ts` (`'hosted'` default, `'embedded'` to flip back):
+  one flip switches the API route and both purchase surfaces (onboarding paywall + upgrade dialog).
+- **Hosted mode**: `/api/billing/checkout` creates a `ui_mode: 'hosted_page'` session and returns
+  `{ url }`; the client redirects to checkout.stripe.com. Return lands on
+  `/dashboard?checkout=success|cancelled&plan&source` - the onboarding paywall resumes and calls
+  `finishOffer(true)`, the upgrade provider reopens its dialog in the success state; params are
+  stripped from the URL. `upgrade_success` from a hosted return carries `reason: 'hosted_return'`.
+- Checkout lifecycle events now carry `ui: hosted|embedded`; abandoned = cancel-URL return in
+  hosted mode (event dictionary updated). Verified in the browser: session create, hosted page
+  render, cancel return (URL cleaned), and success return (dialog opens confirmed state).
+
 ## 2026-07-17 — Legal pages, cookie consent, pricing copy fix
 
 - **`/privacy` and `/terms` pages** (app/(main)/, prose layout matching the design system), linked

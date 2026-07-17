@@ -12,8 +12,10 @@ building -> recap -> offer -> done`) that replaces the old setup-only wizard. Al
   REINFORCE/PREVIEW beats, mirrors the user's LinkedIn back via AI enrichment, writes a real first post
   in their voice, then ends on a soft offer. Never hard-blocks: every step has a quiet skip and the
   offer has a free fallback.
-- **Stripe billing**: embedded Checkout for two plans - **$7.99/mo** (subscription) and **$29.99
-  lifetime** (one-time). A webhook is the source of truth for the `plan`.
+- **Stripe billing**: Checkout for two plans - **$11.99/mo** (subscription) and **$39.99
+  lifetime** (one-time). A webhook is the source of truth for the `plan`. The Checkout UI is
+  switchable via `CHECKOUT_UI` in `config/pricing.ts`: `'hosted'` (full-page redirect to
+  checkout.stripe.com, current default) or `'embedded'` (Stripe embedded checkout in the modal).
 - **Plan-aware AI limits**: free keeps the existing daily caps; `pro`/`lifetime` get a high fair-use
   ceiling (AI stays metered, honest with the lifetime promise).
 - **Contextual paywall**: hitting the daily AI cap opens an upgrade dialog; a persistent "Upgrade"
@@ -44,14 +46,15 @@ Personalization matrix: `config/onboarding-personalization.ts`.
   `app/api/onboarding/{enrich,first-post}/route.ts`, plan-aware `lib/rate-limit.ts`.
 - Client: `components/dashboard/plan-provider.tsx` (shared plan state + `usePlan`),
   `components/dashboard/upgrade-{provider,dialog}.tsx`, the onboarding flow + `steps/checkout.tsx`
-  (Stripe Embedded Checkout). Wired in `app/dashboard/layout.tsx`.
+  (redirects to hosted checkout, or renders Stripe Embedded Checkout when `CHECKOUT_UI` is
+  `'embedded'`). Wired in `app/dashboard/layout.tsx`.
 
 ## Configuration (fill before billing works)
 
 Stripe is optional everywhere: when the keys are blank, checkout/webhook stay inert and the offer falls
 back to "Continue on the free plan", so the app runs without them.
 
-1. Create two products/prices in the Stripe dashboard: a **$7.99/mo recurring** price and a **$29.99
+1. Create two products/prices in the Stripe dashboard: a **$11.99/mo recurring** price and a **$39.99
    one-time** price.
 2. Set env (`env.mjs`, all optional until now):
     - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
@@ -62,9 +65,20 @@ back to "Continue on the free plan", so the app runs without them.
    `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 4. Apply migrations `018` and `019`.
 
-Note: the checkout session uses `ui_mode: 'embedded_page'` (the `stripe@22` value for Stripe.js
-embedded checkout) with `redirect_on_completion: 'never'`; completion is handled by the client
-`onComplete` callback and the plan is set authoritatively by the webhook.
+Note on Checkout UI modes (`CHECKOUT_UI` in `config/pricing.ts`, one flip switches the API route
+and both purchase surfaces):
+
+- `'hosted'` (default): the session uses `ui_mode: 'hosted_page'` with
+  `success_url`/`cancel_url` pointing at `/dashboard?checkout=success|cancelled&plan=...&source=
+onboarding|upgrade`. The initiating surface resumes from the query params on return - the
+  onboarding paywall calls `finishOffer(true)`, the upgrade provider reopens the dialog in its
+  success state (`upgrade_success` fires with `reason: 'hosted_return'` since the original
+  trigger reason does not survive the redirect). Params are stripped via `history.replaceState`.
+- `'embedded'`: the session uses `ui_mode: 'embedded_page'` (the `stripe@22` value for Stripe.js
+  embedded checkout) with `redirect_on_completion: 'never'`; completion is handled by the client
+  `onComplete` callback.
+
+Either way the plan is set authoritatively by the webhook.
 
 ## Must replace before public launch (placeholders)
 

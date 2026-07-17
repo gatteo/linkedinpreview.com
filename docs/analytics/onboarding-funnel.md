@@ -70,15 +70,15 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 
 ### Offer & checkout
 
-| Event                    | Properties                                    | Meaning                                                                          |
-| ------------------------ | --------------------------------------------- | -------------------------------------------------------------------------------- |
-| `onb_paywall_view`       | `ideas`                                       | paywall rendered (`ideas` = real generated posts shown)                          |
-| `onb_offer_select`       | `plan`                                        | plan card clicked (opens checkout)                                               |
-| `onb_checkout_opened`    | `plan`                                        | Stripe embedded checkout actually rendered                                       |
-| `onb_checkout_failed`    | `plan`, `reason: unconfigured\|create-failed` | checkout could not open (user saw the free-plan fallback)                        |
-| `onb_checkout_abandoned` | `plan`                                        | opened checkout unmounted without payment (back / plan switch / decline)         |
-| `onb_purchase_success`   | `plan`                                        | client observed Stripe `onComplete` (optimistic sibling of `purchase_completed`) |
-| `onb_offer_decline`      | -                                             | quiet "Continue on the free plan"                                                |
+| Event                    | Properties                                    | Meaning                                                                        |
+| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| `onb_paywall_view`       | `ideas`                                       | paywall rendered (`ideas` = real generated posts shown)                        |
+| `onb_offer_select`       | `plan`                                        | plan card clicked (opens checkout)                                             |
+| `onb_checkout_opened`    | `plan`, `ui: hosted\|embedded`                | checkout started - embedded rendered in-modal, or redirecting to hosted Stripe |
+| `onb_checkout_failed`    | `plan`, `reason: unconfigured\|create-failed` | checkout could not open (user saw the free-plan fallback)                      |
+| `onb_checkout_abandoned` | `plan`                                        | embedded: opened checkout unmounted without payment; hosted: cancel-URL return |
+| `onb_purchase_success`   | `plan`                                        | client observed the purchase (embedded `onComplete`, or hosted success return) |
+| `onb_offer_decline`      | -                                             | quiet "Continue on the free plan"                                              |
 
 ### Background pipeline (client-observed)
 

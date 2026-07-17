@@ -1,5 +1,6 @@
 import type Stripe from 'stripe'
 
+import { CHECKOUT_UI } from '@/config/pricing'
 import { devMissingEnv } from '@/lib/dev/missing-env'
 import { getStripe, isStripeConfigured, missingStripeEnv, priceIdFor } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     if (!parsed.success) {
         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
     }
-    const { plan } = parsed.data
+    const { plan, source } = parsed.data
 
     const supabase = await createClient()
     const {
@@ -48,15 +49,25 @@ export async function POST(request: Request) {
 
     try {
         const params: Stripe.Checkout.SessionCreateParams = {
-            // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
-            // 'embedded_page' (the old 'embedded' is gone). This is the mode that
-            // returns a client_secret for Stripe.js embedded checkout.
-            ui_mode: 'embedded_page',
-            redirect_on_completion: 'never',
             mode: plan === 'monthly' ? 'subscription' : 'payment',
             line_items: [{ price: priceId, quantity: 1 }],
             client_reference_id: user.id,
             metadata: { user_id: user.id, plan },
+        }
+
+        if (CHECKOUT_UI === 'hosted') {
+            // Full-page hosted checkout: Stripe redirects back to the dashboard
+            // where the initiating surface (source) resumes via the query params.
+            const origin = new URL(request.url).origin
+            params.ui_mode = 'hosted_page'
+            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&session_id={CHECKOUT_SESSION_ID}`
+            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}`
+        } else {
+            // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
+            // 'embedded_page' (the old 'embedded' is gone). This is the mode that
+            // returns a client_secret for Stripe.js embedded checkout.
+            params.ui_mode = 'embedded_page'
+            params.redirect_on_completion = 'never'
         }
 
         if (user.email) params.customer_email = user.email
@@ -69,6 +80,9 @@ export async function POST(request: Request) {
 
         const session = await getStripe().checkout.sessions.create(params)
 
+        if (CHECKOUT_UI === 'hosted') {
+            return Response.json({ url: session.url, sessionId: session.id })
+        }
         return Response.json({ clientSecret: session.client_secret, sessionId: session.id })
     } catch (err) {
         console.error('[billing/checkout] failed', err)

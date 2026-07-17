@@ -89,6 +89,29 @@ export function PaywallStep() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Hosted-checkout return: Stripe redirected back here with the outcome in
+    // the query params (the embedded flow uses onComplete instead).
+    React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        const status = params.get('checkout')
+        if (!status || params.get('source') !== 'onboarding') return
+        const plan: CheckoutPlan = params.get('plan') === 'monthly' ? 'monthly' : 'lifetime'
+        params.delete('checkout')
+        params.delete('plan')
+        params.delete('source')
+        params.delete('session_id')
+        const qs = params.toString()
+        window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''))
+        if (status === 'success') {
+            track('onb_purchase_success', { plan })
+            refresh()
+            finishOffer(true)
+        } else {
+            track('onb_checkout_abandoned', { plan })
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const startCheckout = () => {
         track('onb_offer_select', { plan: selected })
         setCheckoutError(false)
@@ -116,7 +139,12 @@ export function PaywallStep() {
                     <ArrowLeftIcon className='size-4' />
                     Back to your plan
                 </button>
-                <OnboardingCheckout plan={selected} onComplete={onPurchased} onError={() => setCheckoutError(true)} />
+                <OnboardingCheckout
+                    plan={selected}
+                    source='onboarding'
+                    onComplete={onPurchased}
+                    onError={() => setCheckoutError(true)}
+                />
                 <GhostLink onClick={decline} className='mx-auto text-xs'>
                     Continue on the free plan
                 </GhostLink>

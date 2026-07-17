@@ -10,6 +10,15 @@ import type { Plan } from '@/lib/billing'
 /** The two purchasable options on the offer screen. */
 export type CheckoutPlan = 'monthly' | 'lifetime'
 
+/**
+ * Which Stripe Checkout UI the purchase surfaces use.
+ * - 'hosted': full-page redirect to Stripe's hosted checkout, returns to
+ *   /dashboard?checkout=success|cancelled (webhook still flips the plan)
+ * - 'embedded': Stripe embedded checkout rendered inside the modal
+ * One flip here switches the API route and both purchase surfaces together.
+ */
+export const CHECKOUT_UI: 'hosted' | 'embedded' = 'hosted'
+
 export const PRICING = {
     monthly: {
         amount: 11.99,

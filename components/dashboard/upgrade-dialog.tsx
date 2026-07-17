@@ -16,9 +16,11 @@ type UpgradeDialogProps = {
     onOpenChange: (open: boolean) => void
     /** Where the prompt fired from, for analytics (e.g. 'ai_limit'). */
     reason?: string
+    /** Set when a hosted-checkout return already completed the purchase - the dialog opens straight in its success state. */
+    completedPlan?: CheckoutPlan | null
 }
 
-export function UpgradeDialog({ open, onOpenChange, reason }: UpgradeDialogProps) {
+export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: UpgradeDialogProps) {
     const { isPaid, refresh } = usePlan()
     const [selected, setSelected] = React.useState<CheckoutPlan | null>(null)
     const [error, setError] = React.useState(false)
@@ -26,12 +28,12 @@ export function UpgradeDialog({ open, onOpenChange, reason }: UpgradeDialogProps
 
     React.useEffect(() => {
         if (open) {
-            setSelected(null)
+            setSelected(completedPlan ?? null)
             setError(false)
-            setSucceeded(false)
-            track('upgrade_prompt_view', { reason })
+            setSucceeded(!!completedPlan)
+            if (!completedPlan) track('upgrade_prompt_view', { reason })
         }
-    }, [open, reason])
+    }, [open, reason, completedPlan])
 
     const choose = (plan: CheckoutPlan) => {
         track('upgrade_select', { plan, reason })
@@ -86,7 +88,12 @@ export function UpgradeDialog({ open, onOpenChange, reason }: UpgradeDialogProps
                             <ArrowLeftIcon className='size-4' />
                             Back to plans
                         </button>
-                        <OnboardingCheckout plan={selected} onComplete={onComplete} onError={() => setError(true)} />
+                        <OnboardingCheckout
+                            plan={selected}
+                            source='upgrade'
+                            onComplete={onComplete}
+                            onError={() => setError(true)}
+                        />
                     </div>
                 ) : (
                     <div className='flex flex-col gap-4'>
