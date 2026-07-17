@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useFeaturebase } from 'featurebase-js/react'
 import { Loader2, MonitorIcon, MoonIcon, SunIcon, Trash2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
@@ -33,6 +34,7 @@ const THEME_OPTIONS = [
 export function SettingsForm() {
     const { supabase } = useAuth()
     const { theme, setTheme } = useTheme()
+    const { shutdown: shutdownMessenger } = useFeaturebase()
     const [isResetting, setIsResetting] = React.useState(false)
 
     const handleReset = React.useCallback(async () => {
@@ -51,13 +53,14 @@ export function SettingsForm() {
             if (strategyError) throw strategyError
 
             toast.success('All data has been deleted')
+            shutdownMessenger()
             window.location.reload()
         } catch {
             toast.error('Failed to reset data')
         } finally {
             setIsResetting(false)
         }
-    }, [supabase])
+    }, [supabase, shutdownMessenger])
 
     return (
         <div className='max-w-2xl space-y-6 p-4 lg:p-6'>

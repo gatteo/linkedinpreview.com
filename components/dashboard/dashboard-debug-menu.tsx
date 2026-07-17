@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useFeaturebase } from 'featurebase-js/react'
 import {
     BugIcon,
     CheckCircle2Icon,
@@ -48,6 +49,7 @@ export function DashboardDebugMenu() {
     const { branding } = useBranding()
     const { strategy } = useStrategy()
     const { plan } = usePlan()
+    const { shutdown: shutdownMessenger } = useFeaturebase()
     const [open, setOpen] = React.useState(false)
     const [busy, setBusy] = React.useState(false)
 
@@ -128,6 +130,7 @@ export function DashboardDebugMenu() {
                 ])
             }
             clearLpLocalStorage()
+            shutdownMessenger()
             try {
                 await supabase.auth.signOut()
             } catch {}

@@ -10,7 +10,7 @@ import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { OnboardingController } from '@/components/dashboard/onboarding/onboarding-controller'
 import { PlanProvider } from '@/components/dashboard/plan-provider'
 import { UpgradeProvider } from '@/components/dashboard/upgrade-provider'
-import { FeaturebaseRoot } from '@/components/featurebase-root'
+import { FeaturebaseIdentity, FeaturebaseRoot } from '@/components/featurebase-root'
 import { TallyScript } from '@/components/feedback/tally-script'
 
 export const metadata: Metadata = {
@@ -28,6 +28,7 @@ export default function DashboardLayout({
         <>
             <FeaturebaseRoot>
                 <AuthProvider>
+                    <FeaturebaseIdentity />
                     <AuthGate>
                         <PlanProvider>
                             <UpgradeProvider>

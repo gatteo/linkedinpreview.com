@@ -65,6 +65,10 @@ export const env = createEnv({
         // Stripe Price IDs created in the Stripe dashboard for each plan.
         STRIPE_PRICE_MONTHLY: z.string().optional(),
         STRIPE_PRICE_LIFETIME: z.string().optional(),
+        // Featurebase messenger identity. Signs the per-user JWT that ties
+        // support conversations to the Supabase user id. Optional: when unset
+        // the messenger stays anonymous (mirrors the Stripe pattern).
+        FEATUREBASE_JWT_SECRET: z.string().optional(),
     },
     client: {
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: z.string().min(1),
@@ -98,6 +102,7 @@ export const env = createEnv({
         STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
         STRIPE_PRICE_MONTHLY: process.env.STRIPE_PRICE_MONTHLY,
         STRIPE_PRICE_LIFETIME: process.env.STRIPE_PRICE_LIFETIME,
+        FEATUREBASE_JWT_SECRET: process.env.FEATUREBASE_JWT_SECRET,
         NEXT_PUBLIC_GTM_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GTM_MEASUREMENT_ID,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_TALLY_FORM_ID: process.env.NEXT_PUBLIC_TALLY_FORM_ID,

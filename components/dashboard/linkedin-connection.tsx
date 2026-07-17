@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import { useFeaturebase } from 'featurebase-js/react'
 import { CheckCircle2Icon, Linkedin, Loader2, TriangleAlertIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -188,25 +189,32 @@ export function LinkedInConnection() {
  */
 function MergePromptDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
     const { drafts } = useDrafts()
+    const { shutdown: shutdownMessenger } = useFeaturebase()
     const [submitting, setSubmitting] = React.useState<'merge' | 'skip' | null>(null)
     const draftCount = drafts.length
 
-    const signIn = React.useCallback(async (merge: boolean) => {
-        setSubmitting(merge ? 'merge' : 'skip')
-        try {
-            const res = await fetch(ApiRoutes.LinkedInSwitch, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ merge }),
-            })
-            if (!res.ok) throw new Error()
-            // Full reload so AuthProvider picks up the new session cookies.
-            window.location.assign(`${Routes.DashboardSettings}?linkedin=welcome`)
-        } catch {
-            toast.error('Could not sign you in. Please try again.')
-            setSubmitting(null)
-        }
-    }, [])
+    const signIn = React.useCallback(
+        async (merge: boolean) => {
+            setSubmitting(merge ? 'merge' : 'skip')
+            try {
+                const res = await fetch(ApiRoutes.LinkedInSwitch, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ merge }),
+                })
+                if (!res.ok) throw new Error()
+                // The switch swapped the Supabase session server-side: clear the
+                // previous user's messenger state before the full reload re-boots
+                // it with the new user's JWT.
+                shutdownMessenger()
+                window.location.assign(`${Routes.DashboardSettings}?linkedin=welcome`)
+            } catch {
+                toast.error('Could not sign you in. Please try again.')
+                setSubmitting(null)
+            }
+        },
+        [shutdownMessenger],
+    )
 
     return (
         <Dialog open={open} onOpenChange={(next) => !submitting && onOpenChange(next)}>
@@ -216,7 +224,7 @@ function MergePromptDialog({ open, onOpenChange }: { open: boolean; onOpenChange
                     <DialogDescription>
                         This LinkedIn account already has an account here. Sign in to it
                         {draftCount > 0
-                            ? ` — and bring ${draftCount === 1 ? 'your current draft' : `your ${draftCount} current drafts`} along?`
+                            ? ` - and bring ${draftCount === 1 ? 'your current draft' : `your ${draftCount} current drafts`} along?`
                             : '?'}
                     </DialogDescription>
                 </DialogHeader>

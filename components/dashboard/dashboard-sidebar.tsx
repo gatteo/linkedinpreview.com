@@ -4,6 +4,7 @@ import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { useFeaturebase } from 'featurebase-js/react'
 import {
     BarChart3Icon,
     CalendarIcon,
@@ -18,7 +19,6 @@ import {
     TargetIcon,
 } from 'lucide-react'
 
-import { feedbackConfig } from '@/config/feedback'
 import { useDrafts } from '@/hooks/use-drafts'
 import { usePlan } from '@/hooks/use-plan'
 import { Button } from '@/components/ui/button'
@@ -50,6 +50,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
     const { recentDrafts } = useDrafts()
     const { isPaid } = usePlan()
     const { openUpgrade } = useUpgradePrompt()
+    const { show: showMessenger } = useFeaturebase()
     const [newPostOpen, setNewPostOpen] = React.useState(false)
 
     const isActive = (path: string) => pathname === path
@@ -243,11 +244,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton
-                                        tooltip='Help & Feedback'
-                                        data-tally-open={feedbackConfig.formId}
-                                        data-tally-emoji-text='👋'
-                                        data-tally-emoji-animation='wave'>
+                                    <SidebarMenuButton tooltip='Help & Feedback' onClick={showMessenger}>
                                         <CircleHelpIcon />
                                         <span>Help & Feedback</span>
                                     </SidebarMenuButton>

@@ -66,6 +66,7 @@
         "github-slugger": "^2.0.0",
         "gray-matter": "^4.0.3",
         "hast-util-select": "^6.0.3",
+        "jose": "^6.2.3",
         "linkedom": "^0.18.12",
         "lucide-react": "^0.474.0",
         "mammoth": "^1.11.0",

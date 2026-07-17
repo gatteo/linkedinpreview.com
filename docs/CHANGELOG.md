@@ -4,6 +4,23 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-17 — Featurebase messenger portal rollout (phases 2-4)
+
+- **Theme sync**: the messenger follows the dashboard's light/dark theme - boot theme from
+  next-themes `resolvedTheme`, runtime toggles via `setTheme` (applied once the messenger root
+  exists; the SDK drops calls made before boot and its `whenReady` lives in a different bundle
+  instance than the react entry).
+- **Sidebar "Help & Feedback" opens the messenger** (`useFeaturebase().show`) instead of the Tally
+  popup; all other Tally surfaces (public FAB, footer link, post-copy popup) unchanged.
+- **JWT identity**: new `GET /api/featurebase/jwt` signs an HS256 identity token (jose) for the
+  authenticated Supabase user (`userId` = Supabase user id, same person id as PostHog; `name` from
+  the branding profile with fallbacks, `email` when known). Inert 503 until
+  `FEATUREBASE_JWT_SECRET` is set (billing-style pattern). `FeaturebaseIdentity` fetches it once
+  auth is ready and upgrades the anonymous messenger session in place.
+- **Shutdown wiring**: `shutdown()` before reload at the three identity-ending points - settings
+  "Reset All Data", debug-menu "Clear everything", and the LinkedIn login-switch - so the next
+  user on the same browser cannot see the previous messenger state.
+
 ## 2026-07-17 — Launch prep: landing plan CTAs, env sync, open-source hygiene
 
 - **Landing pushes the onboarding funnel**: new `PlanCta` home section ("Grow 10× on LinkedIn in

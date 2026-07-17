@@ -32,6 +32,8 @@ Next.js 16.1 App Router monolith deployed on Vercel with Supabase backend for pe
 | sonner                                | Toast notifications          | Lightweight, accessible toast system                    |
 | clsx + tailwind-merge                 | Class utilities              | Conditional Tailwind classes via cn()                   |
 | pako (via CompressionStream)          | Draft URL compression        | Share drafts via compressed URL params                  |
+| featurebase-js                        | Support messenger            | React provider + hooks, portal-only mount               |
+| jose                                  | JWT signing                  | ESM-friendly HS256 for the Featurebase identity JWT     |
 
 ## Third-Party Services
 
@@ -42,6 +44,7 @@ Next.js 16.1 App Router monolith deployed on Vercel with Supabase backend for pe
 | OpenAI             | LLM for AI features  | Via @ai-sdk/openai, model configurable via LLM_MODEL env |
 | PostHog            | Product analytics    | Client SDK, reverse-proxied via /ingest rewrites         |
 | Tally.so           | Feedback forms       | Script injection, popup forms with hidden fields         |
+| Featurebase        | Support messenger    | featurebase-js/react, dashboard-only, JWT identity       |
 | Google Tag Manager | Marketing analytics  | GTM container loaded in root layout                      |
 
 ## Development Tools
