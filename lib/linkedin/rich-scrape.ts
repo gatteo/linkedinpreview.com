@@ -188,6 +188,13 @@ export type PostsScrapeResult =
           posts: RichPost[]
           /** The complete provider records, persisted verbatim for later analysis. */
           records: Record<string, unknown>[]
+          /**
+           * Every downloaded record was an error record (dead_page / "hidden or
+           * private"): the logged-out view is gated even though the member may
+           * post. Distinguishes a gated profile from a genuinely postless one so
+           * callers can reach for the Scrapingdog-activity fallback corpus.
+           */
+          gated?: boolean
       }
 
 /** Check a posts-discovery snapshot; when ready, download and normalize it. */
@@ -211,7 +218,11 @@ export async function checkPostsScrape(snapshotId: string): Promise<PostsScrapeR
         if (snapshotRes.status === 202) return { status: 'pending' }
         if (!snapshotRes.ok) return { status: 'failed' }
         const body = (await snapshotRes.json()) as BrightDataPostRecord | BrightDataPostRecord[]
-        const records = (Array.isArray(body) ? body : [body]).filter((r) => r && !r.error)
+        const rawRecords = Array.isArray(body) ? body : [body]
+        const rawCount = rawRecords.length
+        const records = rawRecords.filter((r) => r && !r.error)
+        // All records were errors (dead_page / private) with at least one present.
+        const gated = records.length === 0 && rawCount > 0
 
         const posts: RichPost[] = records
             .filter((r) => (r.post_type ?? 'post') === 'post')
@@ -226,7 +237,7 @@ export async function checkPostsScrape(snapshotId: string): Promise<PostsScrapeR
             .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
             .slice(0, MAX_POSTS)
 
-        return { status: 'ready', posts, records: records as Record<string, unknown>[] }
+        return { status: 'ready', posts, records: records as Record<string, unknown>[], gated }
     } catch {
         // Transient network trouble: let the next poll retry rather than failing the scrape.
         return { status: 'pending' }

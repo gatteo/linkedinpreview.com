@@ -28,6 +28,8 @@ export type OnboardingSessionRow = {
     fast_raw: Record<string, unknown> | null
     rich_raw: Record<string, unknown> | null
     posts_raw: Record<string, unknown>[] | null
+    /** Which source produced the persisted rich_posts corpus (migration 024). */
+    posts_source: string | null
     rich_snapshot_id: string | null
     /** Bright Data posts-dataset snapshot (full text + engagement), triggered alongside the profile one. */
     posts_snapshot_id: string | null

@@ -19,7 +19,7 @@ export const OB_SECTIONS = [
     { name: 'Connect', ids: ['welcome', 'connect', 'fetching', 'reassure'] },
     { name: 'Personalize your profile', ids: ['goal', 'persona', 'recap', 'proof'] },
     { name: 'Personalize your content', ids: ['voice', 'topics', 'schedule', 'reinforce'] },
-    { name: 'Audit & plan', ids: ['building', 'reveal', 'buildplan', 'paywall', 'confirm'] },
+    { name: 'Audit & plan', ids: ['building', 'reveal', 'email', 'buildplan', 'paywall', 'confirm'] },
 ] as const
 
 export type ObLayout = 'hero' | 'split' | 'report'
@@ -45,6 +45,7 @@ export const OB_STEP_META: Record<string, ObStepMeta> = {
     reinforce: { layout: 'split', stage: { img: 'hot-air-balloon.jpg', focus: '45% 50%' } },
     building: { layout: 'split', stage: { img: 'tuscan-hills.jpg', focus: '50% 60%' } },
     reveal: { layout: 'report' },
+    email: { layout: 'split', stage: { img: 'calm-hills-1.jpg', focus: '50% 55%' } },
     buildplan: { layout: 'split', stage: { img: 'rolling-hills-wide.jpg', focus: '55% 50%' } },
     paywall: { layout: 'report' },
     confirm: { layout: 'split', stage: { img: 'sailboat.jpg', focus: '55% 50%' } },

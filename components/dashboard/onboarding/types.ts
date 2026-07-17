@@ -41,6 +41,7 @@ export const STEP_ORDER = [
     'reinforce',
     'building',
     'reveal',
+    'email',
     'buildplan',
     'paywall',
     'confirm',
@@ -78,6 +79,10 @@ export type OnboardingAnswers = {
     positioning: string
     formats: StrategyFormat[]
     linkedinConnected: boolean
+    /** Email captured at the earned-value step; binds the anonymous user to a
+     *  permanent account without changing user.id. Kept in localStorage answers
+     *  for resume prefill only - stripped before the onboarding_sessions upsert (PII). */
+    email?: string
 
     // --- Conversion-redesign additions (§5.1) ---
     /** Raw Welcome option keys the user picked, kept so back-navigation restores

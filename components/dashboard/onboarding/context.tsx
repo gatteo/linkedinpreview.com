@@ -28,6 +28,12 @@ export type OnboardingContextValue = {
     /** Done screen handoff: close the modal and open the first post. */
     complete: () => void
     connectLinkedin: () => void
+    /** Bind the entered email to the anonymous Supabase user (converts it to
+     *  permanent without changing user.id). `taken` = the email already belongs
+     *  to another account, so the step surfaces a soft message and still advances. */
+    bindEmail: (email: string) => Promise<{ ok: boolean; taken?: boolean }>
+    /** The current auth user's email, if one is already set (resume prefill). */
+    userEmail?: string | null
     linkedinError?: string | null
     /** Whether the user converted (set when leaving the offer); drives the done screen. */
     converted: boolean

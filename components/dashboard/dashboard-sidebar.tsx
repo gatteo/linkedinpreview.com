@@ -37,6 +37,7 @@ import {
     SidebarRail,
     SidebarSeparator,
 } from '@/components/ui/sidebar'
+import { AccountMenu } from '@/components/dashboard/account-menu'
 import { CreationWizard } from '@/components/dashboard/creation-wizard/creation-wizard'
 import { GettingStartedChecklist } from '@/components/dashboard/getting-started-checklist'
 import { SidebarProfile } from '@/components/dashboard/sidebar-profile'
@@ -260,7 +261,7 @@ export function DashboardSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     <span className='text-sidebar-foreground/70 text-xs font-medium'>Theme</span>
                     <ThemeSwitcher />
                 </div>
-                <SidebarProfile variant='account' />
+                <AccountMenu />
             </SidebarFooter>
             <SidebarRail />
 

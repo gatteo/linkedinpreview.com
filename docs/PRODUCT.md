@@ -8,7 +8,7 @@
 
 ## Vision
 
-LinkedInPreview.com is the most powerful free LinkedIn content creation and preview tool. It helps anyone write, format, preview, and publish better LinkedIn posts - without a signup, paywall, or bloated workflow. The product is content-first: every feature either helps users create higher-quality posts or removes friction between an idea and a published post. The core editor stays free and login-free forever. Authentication is only introduced where it unlocks something impossible without it (e.g. LinkedIn API access for scheduling and publishing).
+LinkedInPreview.com is the most powerful free LinkedIn content creation and preview tool. It helps anyone write, format, preview, and publish better LinkedIn posts - without a signup, paywall, or bloated workflow. The product is content-first: every feature either helps users create higher-quality posts or removes friction between an idea and a published post. The core editor stays free and login-free forever. Sign-in stays optional: accounts are anonymous by default and a user can save one at any time by binding an email (or connecting LinkedIn) - which also unlocks cross-device access and, via LinkedIn, scheduling and publishing.
 
 **Our primary traffic source is organic search on Google.** Every new feature must be built with SEO in mind - proper metadata, stable URLs, fast load times, and structured data. We never break existing URLs or degrade Core Web Vitals.
 
@@ -222,7 +222,7 @@ fully verified. See [plans/carousel-creator.md](plans/carousel-creator.md).
 - CRM or contact management
 - Paid tier or premium-only features - everything stays free
 - Self-hosted or white-label version
-- Email/password authentication - anonymous auth only until LinkedIn OAuth (Wave 4)
+- Password-based authentication - accounts stay anonymous by default and convert via passwordless email (magic-link/OTP) or LinkedIn OAuth; no passwords are ever stored
 
 ## Success Criteria
 

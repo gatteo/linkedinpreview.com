@@ -5,19 +5,20 @@
 > Supersedes the flow described in [068 — Onboarding](068-onboarding.md) (the controller/gate/
 > persistence machinery from 068 is retained; the step machine, screens, and offer are replaced).
 > Design import: claude.ai/design project "Landing page redesign" · `onboarding/flow/*`.
-> Flow spec: the "audit funnel" (17 steps, Hook → Questions → Audit → Offer).
+> Flow spec: the "audit funnel" (18 steps, Hook → Questions → Audit → Offer).
 
 ## What
 
-- A new user's first dashboard visit opens a full-width, non-dismissable modal that runs a
-  17-step conversion funnel: a full-bleed hero ("Grow 10× on LinkedIn in 90 days") → connect
+- A new user's first dashboard visit opens a full-width, non-dismissable modal that runs an
+  18-step conversion funnel: a full-bleed hero ("Grow 10× on LinkedIn in 90 days") → connect
   LinkedIn or paste a profile URL → a fetching loader (fast profile fetch) → a "Nice to meet you"
   reassure card built from real profile data (photo, cover, location, languages, companies,
   awards, followers) → five question steps (goal, persona, voice, topics, schedule) masked by an
   "Analyzing your posts…" progress rail while the rich scrape runs in the background, interleaved
   with reinforcement beats (editable recap sentence, social-proof wall, consistency chart) → an
   audit-loader → a personalized audit report (pillar-mix radar, traction metrics, content-quality
-  flags, topic strengths - each paired with "The fix") → a plan loader with a commitment popup
+  flags, topic strengths - each paired with "The fix") → a skippable email capture that saves the
+  account (binds an email to the anonymous user) → a plan loader with a commitment popup
   that generates four pillar-tagged posts in the user's voice → a long-scroll paywall (ready
   checklist, modeled growth cards, the real generated posts, feature bento, review wall, golden
   Lifetime Founder Pass ticket + monthly plan, embedded Stripe checkout, quiet free-plan decline)
@@ -33,7 +34,7 @@
 
 ## Acceptance (binary, testable)
 
-- [x] 231-AC-1 The step machine is the 17-step order welcome→confirm; legacy v1/v2 resume blobs map to safe steps and never skip uncollected answers. _(verified: `components/dashboard/onboarding/types.ts:22-63`)_
+- [x] 231-AC-1 The step machine is the 18-step order welcome→confirm (email inserted after reveal, before buildplan); legacy v1/v2 resume blobs map to safe steps and never skip uncollected answers. _(verified: `components/dashboard/onboarding/types.ts:22-63`)_
 - [x] 231-AC-2 Three layouts render per step (hero / split with stage illustration / wide report) with the section stepper ("Step N / 4") and user chip once identity exists. _(verified: `components/dashboard/onboarding/onboarding-modal.tsx` Shell/TopRow; `config/onboarding-flow.ts` OB_STEP_META)_
 - [x] 231-AC-3 The analysis rail shows only on question steps AND only while a real scrape ran/landed (`richStatus` pending/ready/empty) - it never claims analysis that isn't happening. _(verified: `onboarding-modal.tsx` railActive)_
 - [x] 231-AC-4 The fetching step fires the enrich call once (StrictMode-safe), commits identity + extended card fields, hands the rich scrape to the pipeline hook, and owns the URL-failure fallback (retry / continue without data). _(verified: `steps/fetching-step.tsx`)_
@@ -54,7 +55,12 @@
   `config/onboarding-flow.ts`.
 - Modal shell (3 layouts, rail, stepper, stage): `components/dashboard/onboarding/onboarding-modal.tsx`,
   `stage.tsx`; primitives kit: `primitives.tsx`; charts (radar, growth sweep): `charts.tsx`.
-- Steps: `components/dashboard/onboarding/steps/{welcome,connect,fetching,reassure,goal,persona,recap,proof,voice,topics,schedule,reinforce,building,reveal,buildplan,paywall,confirm}-step.tsx` (+ `checkout.tsx`).
+- Steps: `components/dashboard/onboarding/steps/{welcome,connect,fetching,reassure,goal,persona,recap,proof,voice,topics,schedule,reinforce,building,reveal,email,buildplan,paywall,confirm}-step.tsx` (+ `checkout.tsx`).
+- Email step (after `reveal`, before `buildplan`): `steps/email-step.tsx` captures a skippable email and
+  binds it to the anonymous user via `bindEmail` → `supabase.auth.updateUser({ email })` (anon → permanent,
+  same `user.id`; `onboarding-controller.tsx`). The email is kept in the localStorage resume answers for
+  prefill only and stripped before the `onboarding_sessions` upsert (PII). Events: `onb_email_submit` /
+  `onb_email_skip`.
 - Extended fast identity (location/languages/experience/awards/cover/follower labels):
   `lib/linkedin/public-profile.ts` → `types/onboarding.ts` `FastIdentity` → enrich route → answers.
 - Audit labels (opensWithHook / endsWithQuestion per post, server-counted):
@@ -93,5 +99,14 @@
   analysis LLM calls use `LLM_ANALYSIS_MODEL` (default gpt-5-mini). Profile-dataset activity items
   remain the corpus fallback, and a stored profile/benchmark insights payload upgrades to a posts
   analysis when the scrape lands late.
+- 2026-07-17 gated-profile fallback: when Bright Data's posts dataset returns a `dead_page`/private
+  error for a member whose logged-out view is gated (`checkPostsScrape` sets `gated` in
+  `lib/linkedin/rich-scrape.ts`), the analysis corpus is mined from the member's own activities/articles
+  already present in the Scrapingdog profile record (`postsFromScrapingdogProfile` in
+  `lib/linkedin/scrapingdog-posts.ts`, wired into `enrich/status`'s `settleFromScrapingdog`; own-post
+  match by the `/posts/<slug>_` permalink, title previews only - no engagement counts or dates) instead
+  of degrading to a generic benchmark. `onboarding_sessions.posts_source` (migration 024) records which
+  source produced the corpus (`brightdata` / `scrapingdog` / `none`), so a rescued gated profile is
+  distinguishable from a genuinely postless one.
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).

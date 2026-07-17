@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Routes } from '@/config/routes'
+import { site } from '@/config/site'
 import { createDraft as createDraftApi } from '@/lib/supabase/drafts'
 import { upsertOnboardingSession } from '@/lib/supabase/onboarding-session'
 import { useBranding } from '@/hooks/use-branding'
@@ -177,7 +178,8 @@ export function OnboardingController() {
     const saveSession = React.useCallback(
         (answers: OnboardingAnswers, patch: { resume_at?: string; completed_at?: string; converted?: boolean }) => {
             if (!userId) return
-            const { insights: _insights, ...slim } = answers
+            // Strip PII (email) and the server-owned insights blob before the upsert.
+            const { insights: _insights, email: _email, ...slim } = answers
             upsertOnboardingSession(supabase, userId, { answers: slim, ...patch }).catch(() => {})
         },
         [supabase, userId],
@@ -302,6 +304,40 @@ export function OnboardingController() {
         window.location.href = '/api/linkedin/auth'
     }, [])
 
+    // The email step captures the user's email at the earned-value moment and
+    // binds it to the anonymous user (auth.updateUser keeps user.id, so drafts,
+    // billing, and onboarding_sessions stay owned by the same id). Skippable, so
+    // a bind failure never hard-blocks the funnel.
+    const handleBindEmail = React.useCallback(
+        async (email: string): Promise<{ ok: boolean; taken?: boolean }> => {
+            try {
+                const { error } = await supabase.auth.updateUser(
+                    { email },
+                    { emailRedirectTo: `${site.url}/auth/confirm` },
+                )
+                if (error) {
+                    const taken = error.status === 422 || /already|registered|exist/i.test(error.message ?? '')
+                    return { ok: false, taken }
+                }
+                return { ok: true }
+            } catch {
+                return { ok: false }
+            }
+        },
+        [supabase],
+    )
+
+    // Prefill the email field from the current auth user when one is already set
+    // (a returning user who bound in a prior session). Anonymous users have none.
+    const [userEmail, setUserEmail] = React.useState<string | null>(null)
+    React.useEffect(() => {
+        if (!isReady) return
+        supabase.auth
+            .getUser()
+            .then(({ data }) => setUserEmail(data.user?.email ?? null))
+            .catch(() => {})
+    }, [isReady, supabase])
+
     if (!open) return null
 
     return (
@@ -315,6 +351,8 @@ export function OnboardingController() {
             onFinish={handleFinish}
             onComplete={handleComplete}
             onConnectLinkedin={handleConnectLinkedin}
+            onBindEmail={handleBindEmail}
+            userEmail={userEmail}
         />
     )
 }

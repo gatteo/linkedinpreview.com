@@ -2,11 +2,13 @@
 
 import * as React from 'react'
 import { useFeaturebase } from 'featurebase-js/react'
-import { Loader2, MonitorIcon, MoonIcon, SunIcon, Trash2Icon } from 'lucide-react'
+import { Linkedin, Loader2, LogOutIcon, MonitorIcon, MoonIcon, SunIcon, Trash2Icon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { toast } from 'sonner'
 
 import { PRICING } from '@/config/pricing'
+import { ApiRoutes } from '@/config/routes'
+import { useLinkedInStatus } from '@/hooks/use-linkedin-status'
 import { usePlan } from '@/hooks/use-plan'
 import {
     AlertDialog,
@@ -21,6 +23,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AccountLoginForm } from '@/components/dashboard/account-login-form'
 import { useAuth } from '@/components/dashboard/auth-provider'
 import { LinkedInConnection } from '@/components/dashboard/linkedin-connection'
 import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
@@ -64,6 +67,9 @@ export function SettingsForm() {
 
     return (
         <div className='max-w-2xl space-y-6 p-4 lg:p-6'>
+            {/* Account */}
+            <AccountCard />
+
             {/* Plan & billing */}
             <BillingCard />
 
@@ -132,6 +138,113 @@ export function SettingsForm() {
                 </CardContent>
             </Card>
         </div>
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Account card
+//
+// Shows how the session is authenticated (guest / email / LinkedIn) and lets a
+// returning user restore their account via email OTP or LinkedIn. Logout is
+// gated: an identity-less guest has nothing to return to, so signing out would
+// just reset to a fresh guest and lose their work.
+// ---------------------------------------------------------------------------
+
+function AccountCard() {
+    const { supabase, email, pendingEmail, isAnonymous } = useAuth()
+    const { status } = useLinkedInStatus()
+    const { shutdown: shutdownMessenger } = useFeaturebase()
+    const [showLogin, setShowLogin] = React.useState(false)
+    const [loggingOut, setLoggingOut] = React.useState(false)
+
+    const connection = status?.connection ?? null
+    const hasDurableIdentity = Boolean(email) || Boolean(connection)
+    const isGuest = isAnonymous && !hasDurableIdentity
+
+    const handleLogout = React.useCallback(async () => {
+        setLoggingOut(true)
+        try {
+            shutdownMessenger()
+            await supabase.auth.signOut()
+        } finally {
+            window.location.reload()
+        }
+    }, [shutdownMessenger, supabase])
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Account</CardTitle>
+                <CardDescription>How you are signed in, and where your work is saved.</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+                <div>
+                    {email ? (
+                        <>
+                            <p className='text-sm font-medium'>Signed in with email</p>
+                            <p className='text-muted-foreground mt-0.5 text-sm'>{email}</p>
+                            {pendingEmail ? (
+                                <p className='text-muted-foreground mt-0.5 text-xs'>
+                                    Pending confirmation: {pendingEmail}
+                                </p>
+                            ) : null}
+                        </>
+                    ) : pendingEmail ? (
+                        <>
+                            <p className='text-sm font-medium'>Confirm your email</p>
+                            <p className='text-muted-foreground mt-0.5 text-sm'>
+                                We sent a confirmation link to {pendingEmail}. Click it to finish saving your account.
+                            </p>
+                        </>
+                    ) : connection ? (
+                        <>
+                            <p className='text-sm font-medium'>Signed in with LinkedIn</p>
+                            <p className='text-muted-foreground mt-0.5 text-sm'>
+                                {connection.name ?? 'LinkedIn account'}
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p className='text-sm font-medium'>Guest session</p>
+                            <p className='text-muted-foreground mt-0.5 text-sm'>
+                                Your work lives in this browser only. Sign in to save it and pick up on any device.
+                            </p>
+                        </>
+                    )}
+                </div>
+
+                {showLogin ? (
+                    <div className='space-y-3 border-t pt-4'>
+                        <AccountLoginForm onCancel={() => setShowLogin(false)} />
+                        <div className='flex items-center gap-2'>
+                            <span className='text-muted-foreground text-xs'>or</span>
+                            <Button asChild size='sm' variant='outline'>
+                                <a href={ApiRoutes.LinkedInAuth}>
+                                    <Linkedin className='size-4 text-[#0a66c2]' />
+                                    Continue with LinkedIn
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className='flex flex-wrap gap-2'>
+                        <Button size='sm' variant={isGuest ? 'default' : 'outline'} onClick={() => setShowLogin(true)}>
+                            {isGuest ? 'Log in / restore account' : 'Sign in to a different account'}
+                        </Button>
+                        {!isGuest ? (
+                            <Button size='sm' variant='outline' onClick={handleLogout} disabled={loggingOut}>
+                                {loggingOut ? (
+                                    <Loader2 className='mr-2 size-4 animate-spin' />
+                                ) : (
+                                    <LogOutIcon className='mr-2 size-4' />
+                                )}
+                                Log out
+                            </Button>
+                        ) : null}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     )
 }
 

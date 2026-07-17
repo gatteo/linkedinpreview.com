@@ -59,14 +59,15 @@ The most powerful, free LinkedIn content creation and preview tool. No signup re
 
 ## Glossary
 
-| Term            | Definition                                                                                                            |
-| --------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Draft           | A LinkedIn post in progress, stored as TipTap JSON in the `drafts` table                                              |
-| Branding        | User profile, positioning, writing style, and AI context preferences stored in a single jsonb column                  |
-| Feed preview    | A simulated LinkedIn feed showing the user's post in context with placeholder posts - unique to this product          |
-| Anonymous auth  | Supabase `signInAnonymously` - creates a persistent user identity without email, password, or any visible signup flow |
-| Content scoring | Client-side analysis of a post's readability, sentence flow, hashtag count, and length (no API calls)                 |
-| Quick actions   | One-click AI transformations: shorten, lengthen, create variation, restyle                                            |
-| Wave            | A self-contained increment of the product roadmap, each producing a deployable release                                |
-| Hook            | The opening line(s) of a LinkedIn post designed to stop the scroll and compel reading                                 |
-| CTA             | Call-to-action - the closing line(s) of a post that prompt the reader to take an action                               |
+| Term             | Definition                                                                                                                                                                        |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Draft            | A LinkedIn post in progress, stored as TipTap JSON in the `drafts` table                                                                                                          |
+| Branding         | User profile, positioning, writing style, and AI context preferences stored in a single jsonb column                                                                              |
+| Feed preview     | A simulated LinkedIn feed showing the user's post in context with placeholder posts - unique to this product                                                                      |
+| Anonymous auth   | Supabase `signInAnonymously` - creates a persistent user identity without email, password, or any visible signup flow                                                             |
+| Durable identity | An account anchor that survives logout - a confirmed email or a connected LinkedIn. A guest (anonymous, no email/LinkedIn) has none, so logout is replaced by "Save your account" |
+| Content scoring  | Client-side analysis of a post's readability, sentence flow, hashtag count, and length (no API calls)                                                                             |
+| Quick actions    | One-click AI transformations: shorten, lengthen, create variation, restyle                                                                                                        |
+| Wave             | A self-contained increment of the product roadmap, each producing a deployable release                                                                                            |
+| Hook             | The opening line(s) of a LinkedIn post designed to stop the scroll and compel reading                                                                                             |
+| CTA              | Call-to-action - the closing line(s) of a post that prompt the reader to take an action                                                                                           |

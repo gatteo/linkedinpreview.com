@@ -22,7 +22,7 @@
 welcome → connect → fetching → reassure          (section 1: Connect)
 → goal → persona → recap → proof                 (section 2: Personalize profile)
 → voice → topics → schedule → reinforce          (section 3: Personalize content)
-→ building → reveal → buildplan → paywall → confirm   (section 4: Audit & plan)
+→ building → reveal → email → buildplan → paywall → confirm   (section 4: Audit & plan)
 ```
 
 The canonical PostHog funnel is `onb_step_view` filtered per step, in this order, plus
@@ -64,6 +64,8 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 | `onb_building_done`                                     | -                                                                                   | building loader finished                   |
 | `onb_reveal_view`                                       | `kind`, `postsAnalyzed`                                                             | reveal (audit report shown)                |
 | `onb_reveal_continue`                                   | -                                                                                   | reveal CTA                                 |
+| `onb_email_submit`                                      | -                                                                                   | email (bind succeeded, anon user upgraded) |
+| `onb_email_skip`                                        | -                                                                                   | email ("I'll do this later")               |
 | `onb_buildplan_done`                                    | -                                                                                   | buildplan loader finished                  |
 | `onb_post_ideas_ready` / `onb_post_ideas_failed`        | `count` / -                                                                         | buildplan (4 pillar posts)                 |
 | `onb_commitment`                                        | `commitment`                                                                        | commitment popup                           |

@@ -18,8 +18,9 @@ building -> recap -> offer -> done`) that replaces the old setup-only wizard. Al
   checkout.stripe.com, current default) or `'embedded'` (Stripe embedded checkout in the modal).
 - **Plan-aware AI limits**: free keeps the existing daily caps; `pro`/`lifetime` get a high fair-use
   ceiling (AI stays metered, honest with the lifetime promise).
-- **Contextual paywall**: hitting the daily AI cap opens an upgrade dialog; a persistent "Upgrade"
-  entry sits in the sidebar for free users.
+- **Contextual paywall**: hitting the daily AI cap opens an upgrade dialog. The sidebar footer account
+  menu carries a positive plan **Badge** (Free / Pro / Lifetime) plus an Upgrade (free) or Manage plan
+  (paid) item, so paid state is shown, not just the absence of the upsell.
 
 ## Data model
 
@@ -44,7 +45,9 @@ Personalization matrix: `config/onboarding-personalization.ts`.
 
 - Server: `lib/stripe.ts`, `lib/supabase/billing.ts`, `app/api/billing/{checkout,webhook}/route.ts`,
   `app/api/onboarding/{enrich,first-post}/route.ts`, plan-aware `lib/rate-limit.ts`.
-- Client: `components/dashboard/plan-provider.tsx` (shared plan state + `usePlan`),
+- Client: `components/dashboard/plan-provider.tsx` (shared plan state + `usePlan`; a Supabase Realtime
+  subscription on `public.billing` so a late webhook reflects without reload; a no-session guard that
+  resolves `isLoading` to the free default), `components/dashboard/account-menu.tsx` (sidebar plan badge),
   `components/dashboard/upgrade-{provider,dialog}.tsx`, the onboarding flow + `steps/checkout.tsx`
   (redirects to hosted checkout, or renders Stripe Embedded Checkout when `CHECKOUT_UI` is
   `'embedded'`). Wired in `app/dashboard/layout.tsx`.
@@ -63,7 +66,7 @@ back to "Continue on the free plan", so the app runs without them.
     - `SUPABASE_SERVICE_ROLE_KEY` (already used by cron; required for the webhook to write `billing`)
 3. Add a webhook endpoint in Stripe pointing at `/api/billing/webhook`, subscribed to
    `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
-4. Apply migrations `018` and `019`.
+4. Apply migrations `018` and `019` (and `025` to enable Supabase Realtime on `billing`).
 
 Note on Checkout UI modes (`CHECKOUT_UI` in `config/pricing.ts`, one flip switches the API route
 and both purchase surfaces):
@@ -92,8 +95,9 @@ Per the spec's guardrail (§1.5) and inventory (§9), these ship as clearly-flag
 
 ## Known limitation (follow-up)
 
-Entitlements are keyed to the anonymous Supabase `user_id`. A paying user who clears
-cookies/storage or switches device gets a new anonymous identity and loses access with no recovery
-path. Before charging real money at scale, capture the Stripe email on the webhook and add an
-email-based recovery/link flow (connecting LinkedIn already converts the anon session to an
-email-backed account, which is the natural anchor).
+Entitlements are keyed to the anonymous Supabase `user_id`. The onboarding email step and the Settings
+email-OTP login now let a user bind an email (or LinkedIn) to that id, converting the anon session into
+a cross-device account that survives cleared storage - the natural recovery anchor. The remaining gap is
+automatic recovery: a user who never bound an email before losing the session still has no path back.
+Before charging real money at scale, also capture the Stripe email on the webhook and auto-link it to the
+bound account.

@@ -125,6 +125,9 @@ Every API route handler follows the same structure:
 - Run `pnpm type-check` before pushing (build ignores TS errors)
 - Use Sonner for toast notifications
 - Use the Supabase client from `useAuth()` context in dashboard components
+- Convert an anonymous session to a permanent account with `supabase.auth.updateUser({ email })` (or LinkedIn OAuth) - it keeps `user.id`, so drafts, billing, and onboarding stay owned. Never mint a second user to "upgrade" a guest
+- Gate logout on a durable identity (a confirmed email or a LinkedIn connection). An identity-less guest has nothing to return to, so show "Save your account" instead of a data-losing sign-out
+- Read plan/paid state from `usePlan()` (backed by `PlanProvider`) - never re-derive the plan from a `billing` row inside a component
 - Use static generation (SSG) for all pages that don't depend on request-time data
 - Reuse existing shared components before creating new ones
 - Return `{ error, code }` from all API error responses

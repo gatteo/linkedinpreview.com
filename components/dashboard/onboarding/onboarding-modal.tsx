@@ -17,6 +17,7 @@ import { BuildingStep } from './steps/building-step'
 import { BuildplanStep } from './steps/buildplan-step'
 import { ConfirmStep } from './steps/confirm-step'
 import { ConnectStep } from './steps/connect-step'
+import { EmailStep } from './steps/email-step'
 import { FetchingStep } from './steps/fetching-step'
 import { GoalStep } from './steps/goal-step'
 import { PaywallStep } from './steps/paywall-step'
@@ -52,6 +53,8 @@ type OnboardingModalProps = {
     onFinish: (answers: OnboardingAnswers, converted: boolean) => void
     onComplete: () => void
     onConnectLinkedin: (answers: OnboardingAnswers) => void
+    onBindEmail: (email: string) => Promise<{ ok: boolean; taken?: boolean }>
+    userEmail?: string | null
 }
 
 export function OnboardingModal({
@@ -63,6 +66,8 @@ export function OnboardingModal({
     onFinish,
     onComplete,
     onConnectLinkedin,
+    onBindEmail,
+    userEmail,
 }: OnboardingModalProps) {
     const [answers, setAnswers] = React.useState(initialAnswers)
     const [index, setIndex] = React.useState(() => indexOf(startStepId))
@@ -149,10 +154,26 @@ export function OnboardingModal({
             finishOffer,
             complete,
             connectLinkedin,
+            bindEmail: onBindEmail,
+            userEmail,
             linkedinError,
             converted,
         }),
-        [answers, update, goNext, goBack, skip, goTo, finishOffer, complete, connectLinkedin, linkedinError, converted],
+        [
+            answers,
+            update,
+            goNext,
+            goBack,
+            skip,
+            goTo,
+            finishOffer,
+            complete,
+            connectLinkedin,
+            onBindEmail,
+            userEmail,
+            linkedinError,
+            converted,
+        ],
     )
 
     const meta = OB_STEP_META[step] ?? { layout: 'split' as const }
@@ -298,6 +319,8 @@ function StepBody({ step }: { step: StepId }) {
             return <BuildingStep />
         case 'reveal':
             return <RevealStep />
+        case 'email':
+            return <EmailStep />
         case 'buildplan':
             return <BuildplanStep />
         case 'paywall':
