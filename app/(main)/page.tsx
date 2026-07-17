@@ -6,12 +6,14 @@ import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { SOCIAL_PROOF } from '@/config/social-proof'
 import { CtaSection } from '@/components/home/cta-section'
+import { DashboardShowcase } from '@/components/home/dashboard-showcase'
 import { EmbedSection } from '@/components/home/embed-section'
 import { FAQs } from '@/components/home/faqs'
 import { Features } from '@/components/home/features'
 import { Hero } from '@/components/home/hero'
 import { HowToUse } from '@/components/home/how-to-use'
 import { OpenSource } from '@/components/home/opensource'
+import { PlanCta } from '@/components/home/plan-cta'
 import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
 
@@ -102,21 +104,16 @@ export default function Page() {
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
             <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
 
-            <div className='max-w-content border-border mx-auto border-x'>
-                <Hero />
-                <Tool />
-                <HowToUse />
-            </div>
-
+            <Hero />
+            <Tool />
+            <HowToUse />
+            <PlanCta />
+            <DashboardShowcase />
             <OpenSource />
-
-            <div className='max-w-content border-border mx-auto border-x'>
-                <Reason />
-                <Features />
-                <EmbedSection />
-                <FAQs />
-            </div>
-
+            <Reason />
+            <Features />
+            <EmbedSection />
+            <FAQs />
             <CtaSection />
         </>
     )

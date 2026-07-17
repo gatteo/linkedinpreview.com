@@ -3,12 +3,12 @@ import Link from 'next/link'
 import { formatDate } from '@/utils/dates'
 import { absoluteUrl } from '@/utils/urls'
 
-import { BlogPostAuthor, BlogPostSource } from '@/types/blog'
+import { BlogPostAuthor } from '@/types/blog'
 import { Routes } from '@/config/routes'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 
-import { AspectRatio } from '../ui/aspect-ratio'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import { Badge } from '../ui/badge'
 import { ShareIcons } from './share-icons'
 
 type Props = {
@@ -17,7 +17,6 @@ type Props = {
     createdAt: string | Date
     image: string | null
     summary: string
-    source: BlogPostSource
     author: BlogPostAuthor
     tags: string[]
 }

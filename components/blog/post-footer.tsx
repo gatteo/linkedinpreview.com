@@ -1,8 +1,6 @@
-'use client'
-
 import { absoluteUrl } from '@/utils/urls'
 
-import { BlogPostAuthor, BlogPostSource } from '@/types/blog'
+import { BlogPostAuthor } from '@/types/blog'
 import { Routes } from '@/config/routes'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
@@ -11,7 +9,6 @@ import { ShareIcons } from './share-icons'
 type Props = {
     slug: string
     title: string
-    source: BlogPostSource
     author: BlogPostAuthor
 }
 

@@ -107,18 +107,8 @@ export const siteBaseMetadata: Metadata = {
             },
         ],
     },
-    verification: {
-        // google: 'your-google-site-verification-code',
-        // yandex: 'your-yandex-verification-code',
-        // Add your verification codes after registering with search engines:
-        // Google: https://search.google.com/search-console
-        // Bing: https://www.bing.com/webmasters
-    },
     alternates: {
         canonical: site.url,
-        // languages: {
-        //     'en-US': 'https://linkedinpreview.com/en-US',
-        // },
         types: {
             'application/rss+xml': `${site.url}/rss.xml`,
         },

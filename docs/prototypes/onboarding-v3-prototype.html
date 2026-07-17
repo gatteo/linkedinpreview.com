@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding v3 Prototype - The Audit Funnel</title>
+<style>
+    :root {
+        --bg: #0a0a0c;
+        --panel: #131318;
+        --panel2: #1a1a21;
+        --border: #26262e;
+        --text: #f2f2f5;
+        --muted: #8b8b96;
+        --dim: #5c5c66;
+        --primary: #2f6fe4;
+        --primary-hover: #3d7cf0;
+        --green: #34c98e;
+        --amber: #e8b04b;
+        --radius: 14px;
+        font-size: 16px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: var(--bg); color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+        min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    }
+    .mono { font-family: "SF Mono", ui-monospace, Menlo, monospace; letter-spacing: .12em; font-size: .68rem; text-transform: uppercase; color: var(--dim); }
+
+    /* ---- shell ---- */
+    #progress-wrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: #1c1c22; z-index: 50; }
+    #progress { height: 100%; width: 0%; background: var(--primary); transition: width .5s ease; }
+    #proto-nav {
+        position: fixed; bottom: 14px; left: 14px; z-index: 60; display: flex; gap: 6px; align-items: center;
+        background: rgba(19,19,24,.9); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px;
+        font-size: .7rem; color: var(--dim); backdrop-filter: blur(8px);
+    }
+    #proto-nav button { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-size: .7rem; }
+    #proto-nav button:hover { color: var(--text); }
+    .screen { display: none; width: 100%; max-width: 640px; padding: 84px 24px 96px; animation: slidein .35s ease; }
+    .screen.active { display: block; }
+    .screen.wide { max-width: 860px; }
+    @keyframes slidein { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+    h1 { font-size: 1.9rem; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px; }
+    .sub { color: var(--muted); line-height: 1.55; margin-bottom: 28px; font-size: 1rem; }
+
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        background: var(--primary); color: #fff; border: none; border-radius: 999px;
+        padding: 14px 28px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%;
+        transition: background .15s, transform .1s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:active { transform: scale(.985); }
+    .btn:disabled { background: #23232b; color: var(--dim); cursor: not-allowed; }
+    .btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .skip { display: block; text-align: center; margin-top: 16px; color: var(--dim); font-size: .85rem; text-decoration: none; cursor: pointer; }
+    .skip:hover { color: var(--muted); }
+
+    .chips { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+    .chips.row { flex-direction: row; flex-wrap: wrap; }
+    .chip {
+        border: 1px solid var(--border); background: var(--panel); border-radius: var(--radius);
+        padding: 15px 18px; cursor: pointer; font-size: .95rem; color: var(--text);
+        display: flex; align-items: center; gap: 10px; transition: border-color .15s, background .15s;
+    }
+    .chip:hover { border-color: #3a3a45; }
+    .chip.sel { border-color: var(--primary); background: rgba(47,111,228,.1); }
+    .chip .em { font-size: 1.1rem; }
+    .chips.row .chip { padding: 10px 16px; border-radius: 999px; }
+
+    .trust-footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: .78rem; }
+    .ph { color: #6f5d33; } /* placeholder marker tint */
+
+    input[type=text] {
+        width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+        color: var(--text); padding: 15px 16px; font-size: .95rem; margin-bottom: 12px; outline: none;
+    }
+    input[type=text]:focus { border-color: var(--primary); }
+
+    /* ticker */
+    .ticker { display: flex; flex-direction: column; gap: 14px; margin: 34px 0; }
+    .tick { display: flex; gap: 12px; align-items: center; color: var(--dim); font-size: .95rem; opacity: .35; transition: all .3s; }
+    .tick.on { opacity: 1; color: var(--text); }
+    .tick .dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); display: inline-flex; align-items: center; justify-content: center; font-size: .7rem; flex-shrink: 0; }
+    .tick.on .dot { border-color: var(--green); color: var(--green); }
+
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .testimonial { display: flex; gap: 14px; margin-top: 34px; }
+    .testimonial .avatar, .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#2f6fe4,#7c4de4); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .testimonial p { font-size: .88rem; color: var(--muted); line-height: 1.5; }
+    .testimonial .who { margin-top: 6px; font-size: .78rem; color: var(--dim); }
+
+    .mirror-chip { display: inline-block; background: rgba(47,111,228,.14); border: 1px dashed rgba(47,111,228,.5); color: #9dbdf5; border-radius: 8px; padding: 1px 8px; cursor: text; font-weight: 600; }
+
+    .micro { margin-top: 18px; color: var(--green); font-size: .88rem; min-height: 1.4em; }
+
+    /* audit */
+    .audit-hero { text-align: center; padding: 30px 0 42px; }
+    .audit-hero .avatar { width: 72px; height: 72px; margin: 0 auto 18px; font-size: 1.5rem; border: 2px solid var(--green); }
+    .audit-hero h1 { font-size: 2.2rem; }
+    .audit-section { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 18px; overflow: hidden; }
+    .audit-section .inner { display: grid; grid-template-columns: 1fr 1fr; }
+    .audit-section .copy { padding: 26px; border-right: 1px solid var(--border); }
+    .audit-section .viz { padding: 26px; background: var(--panel); }
+    .audit-section h3 { font-size: 1.25rem; margin: 8px 0 10px; }
+    .audit-section p { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+    .statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .stat { background: var(--panel2); padding: 18px; }
+    .stat .n { font-size: 1.7rem; font-weight: 800; }
+    .stat .l { font-size: .68rem; letter-spacing: .1em; color: var(--dim); text-transform: uppercase; margin-top: 4px; }
+    .stat .d { font-size: .75rem; margin-top: 6px; }
+    .d.ok { color: var(--green); } .d.warn { color: var(--amber); }
+    .topic { display: flex; align-items: center; gap: 10px; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; font-size: .9rem; }
+    .topic.fade1 { opacity: .7; } .topic.fade2 { opacity: .45; } .topic.fade3 { opacity: .28; }
+    .topic .medal { color: var(--amber); }
+    .sticky-cta { position: sticky; bottom: 16px; margin-top: 26px; }
+    .sticky-cta .btn { box-shadow: 0 8px 30px rgba(47,111,228,.35); }
+
+    /* linkedin preview card */
+    .li-card { background: #fff; color: #1c1c1e; border-radius: 10px; padding: 18px; font-size: .9rem; line-height: 1.5; }
+    .li-card .head { display: flex; gap: 10px; margin-bottom: 12px; }
+    .li-card .avatar { width: 44px; height: 44px; font-size: 1rem; color: #fff; }
+    .li-card .nm { font-weight: 700; font-size: .9rem; }
+    .li-card .hl { color: #666; font-size: .75rem; }
+    .li-card .meta { color: #999; font-size: .72rem; }
+    .li-card .actions { display: flex; gap: 18px; color: #666; font-size: .78rem; border-top: 1px solid #eee; margin-top: 14px; padding-top: 10px; }
+    .quick { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .quick button { background: var(--panel2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 7px 14px; font-size: .78rem; cursor: pointer; }
+    .quick button:hover { color: var(--text); border-color: #3a3a45; }
+    .score-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(52,201,142,.12); color: var(--green); border-radius: 999px; padding: 4px 12px; font-size: .75rem; font-weight: 600; margin-top: 12px; }
+
+    /* recap + offer */
+    .asset { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: .92rem; }
+    .asset:last-child { border-bottom: none; }
+    .asset .ck { color: var(--green); }
+    .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 22px 0 16px; }
+    .plan { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; }
+    .plan.hero { border-color: var(--primary); background: rgba(47,111,228,.06); }
+    .plan .badge { position: absolute; top: -10px; left: 16px; background: var(--primary); font-size: .65rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: .06em; }
+    .plan .price { font-size: 1.6rem; font-weight: 800; margin: 6px 0 2px; }
+    .plan .per { color: var(--dim); font-size: .78rem; margin-bottom: 10px; }
+    .plan ul { list-style: none; font-size: .78rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .plan .btn { padding: 10px; font-size: .85rem; }
+    table.fvp { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 18px 0; }
+    table.fvp th, table.fvp td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    table.fvp th { color: var(--dim); font-weight: 600; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+    table.fvp td:nth-child(2) { color: var(--dim); }
+    table.fvp td:nth-child(3) { color: var(--green); }
+    .anchor-row { text-align: center; color: var(--muted); font-size: .85rem; margin: 14px 0; }
+    .anchor-row s { color: var(--dim); }
+    .urgency { text-align: center; font-size: .8rem; color: var(--amber); margin-top: 10px; }
+
+    .ribbon { background: linear-gradient(90deg, rgba(47,111,228,.18), rgba(124,77,228,.18)); border: 1px solid rgba(47,111,228,.4); border-radius: 10px; padding: 12px 16px; font-size: .85rem; display: flex; justify-content: space-between; align-items: center; margin-top: 26px; }
+    .ribbon a { color: #9dbdf5; text-decoration: none; font-weight: 600; cursor: pointer; }
+
+    .divider-label { display: flex; align-items: center; gap: 12px; color: var(--dim); font-size: .75rem; margin: 22px 0 4px; }
+    .divider-label::before, .divider-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    @media (max-width: 640px) {
+        .audit-section .inner { grid-template-columns: 1fr; }
+        .audit-section .copy { border-right: none; border-bottom: 1px solid var(--border); }
+        .plans { grid-template-columns: 1fr; }
+        h1 { font-size: 1.55rem; }
+    }
+</style>
+</head>
+<body>
+<div id="progress-wrap"><div id="progress"></div></div>
+
+<!-- S1 WELCOME -->
+<section class="screen" id="welcome">
+    <div class="mono">Free audit · about 2 minutes</div>
+    <h1 style="margin-top:10px">Let's find out what your LinkedIn is actually worth.</h1>
+    <p class="sub">Free 2-minute audit of your real posts. Then we build you the system to fix what it finds.</p>
+    <div class="mono" style="margin-bottom:12px">What are you here to do? Pick all that apply.</div>
+    <div class="chips" id="goal-chips">
+        <div class="chip" data-goal="win clients"><span class="em">💼</span> Win more clients / revenue</div>
+        <div class="chip" data-goal="grow your company's reach"><span class="em">📣</span> Grow my company's awareness</div>
+        <div class="chip" data-goal="build your authority"><span class="em">⭐</span> Build my personal brand / authority</div>
+        <div class="chip" data-goal="get noticed by the right people"><span class="em">🚀</span> Find career opportunities</div>
+        <div class="chip" data-goal="attract better talent"><span class="em">🤝</span> Hire / employer branding</div>
+    </div>
+    <button class="btn" id="welcome-cta" disabled onclick="go('connect')">Continue</button>
+    <div class="trust-footer"><span class="ph">«12,400»</span> audits run · no signup · free forever core</div>
+</section>
+
+<!-- S2 CONNECT -->
+<section class="screen" id="connect">
+    <div class="mono">Step 2 · your profile</div>
+    <h1 style="margin-top:10px">Which profile should we audit?</h1>
+    <p class="sub">Paste your LinkedIn URL. We read your public posts and score them against creators in your niche. Nothing is posted, nothing is changed.</p>
+    <input type="text" value="linkedin.com/in/matteo-g" placeholder="linkedin.com/in/you">
+    <button class="btn" onclick="go('scan')">Run my free audit →</button>
+    <div class="trust-footer">🔒 Public data only. Delete anytime. · ★★★★★ <span class="ph">«4.9»</span></div>
+    <a class="skip" onclick="go('mirror')">I don't have posts yet / set up manually</a>
+</section>
+
+<!-- S3 SCAN -->
+<section class="screen" id="scan">
+    <div class="mono">Reading your profile</div>
+    <h1 style="margin-top:10px">Running your audit…</h1>
+    <div class="ticker" id="scan-ticker">
+        <div class="tick"><span class="dot">✓</span> Finding your profile</div>
+        <div class="tick"><span class="dot">✓</span> Reading your recent posts</div>
+        <div class="tick"><span class="dot">✓</span> Detecting your voice</div>
+        <div class="tick"><span class="dot">✓</span> Benchmarking your niche</div>
+    </div>
+    <div class="testimonial card">
+        <div class="avatar">S</div>
+        <div>
+            <p>"<span class="ph">«My discovery calls now start with 'I've read your posts'. This tool got me posting twice a week without it feeling like work.»</span>"</p>
+            <div class="who"><span class="ph">«Sara T. · Brand consultant»</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- S4 MIRROR -->
+<section class="screen" id="mirror">
+    <div class="mono">From your public profile</div>
+    <h1 style="margin-top:10px">Here's how we see you, Matteo.</h1>
+    <div class="card" style="margin-bottom:18px">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+            <div class="avatar">M</div>
+            <div><strong>Matteo G.</strong><div style="color:var(--dim);font-size:.8rem">Full-stack developer · indie builder</div></div>
+        </div>
+        <p style="line-height:2;color:var(--muted)">You're a <span class="mirror-chip">founder</span> in <span class="mirror-chip">dev tools / SaaS</span>, writing for <span class="mirror-chip">founders &amp; devs</span>.<br>Your posts read <span class="mirror-chip">direct and practical</span>.</p>
+    </div>
+    <p class="sub" style="font-size:.85rem;margin-bottom:20px">Your full audit is being scored in the background: <strong style="color:var(--text)">20 posts found so far.</strong> Tap any highlight to correct it.</p>
+    <button class="btn" onclick="go('goal')">That's me, continue</button>
+</section>
+
+<!-- S5 GOAL -->
+<section class="screen" id="goal">
+    <div class="mono">Your target</div>
+    <h1 style="margin-top:10px">What does winning look like?</h1>
+    <p class="sub">We pre-filled this from your first answer. Adjust if needed.</p>
+    <div class="mono" style="margin-bottom:10px">Primary goal</div>
+    <div class="chips row" id="goal2">
+        <div class="chip sel">Win more clients</div><div class="chip">Company awareness</div><div class="chip">Career opportunities</div><div class="chip">Hiring</div>
+    </div>
+    <div class="mono" style="margin:18px 0 10px">Audience (max 3)</div>
+    <div class="chips row" id="aud">
+        <div class="chip sel">Founders</div><div class="chip sel">Developers</div><div class="chip">Recruiters</div><div class="chip">Investors</div>
+    </div>
+    <p class="micro">Got it. Your audit will score every post against <strong>winning clients</strong>.</p>
+    <button class="btn" onclick="go('voice')">Continue</button>
+    <a class="skip" onclick="go('voice')">Skip for now</a>
+</section>
+
+<!-- S6 VOICE -->
+<section class="screen" id="voice">
+    <div class="mono">Your voice</div>
+    <h1 style="margin-top:10px">How should you sound?</h1>
+    <p class="sub">Detected from your posts: <strong style="color:var(--text)">direct and practical</strong>. Tune it if that's off.</p>
+    <div class="chips row" id="tones">
+        <div class="chip sel">Professional</div><div class="chip sel">Storytelling</div><div class="chip">Casual</div><div class="chip">Educational</div><div class="chip">Inspirational</div><div class="chip">Humorous</div>
+    </div>
+    <input type="text" placeholder="Anything we should avoid? (optional)" style="margin-top:16px">
+    <p class="micro">Every post we draft will pass through this voice profile.</p>
+    <button class="btn" onclick="go('cadence')">Continue</button>
+    <a class="skip" onclick="go('cadence')">Skip for now</a>
+</section>
+
+<!-- S7 CADENCE -->
+<section class="screen" id="cadence">
+    <div class="mono">Your commitment</div>
+    <h1 style="margin-top:10px">How often do you want to show up?</h1>
+    <p class="sub">Right now you post <strong style="color:var(--amber)">0.3x per week</strong> (from your last 20 posts).</p>
+    <div class="chips" id="cad">
+        <div class="chip" data-n="8">2x a week · steady</div>
+        <div class="chip sel" data-n="12">3x a week · recommended</div>
+        <div class="chip" data-n="30">Daily · aggressive growth</div>
+    </div>
+    <p class="micro" id="cad-micro">Great. That's ~12 posts a month. We'll have them drafted for you.</p>
+    <button class="btn" onclick="go('benchmark')">Lock it in</button>
+    <a class="skip" onclick="go('benchmark')">Skip for now</a>
+</section>
+
+<!-- S8 BENCHMARK -->
+<section class="screen" id="benchmark">
+    <div class="mono">People like you</div>
+    <h1 style="margin-top:10px">Founders who post consistently get found.</h1>
+    <p class="sub">You have <strong style="color:var(--text)">1,842 followers</strong> watching. Creators in dev tools who hit 3x/week typically see compounding reach within 90 days.</p>
+    <div class="testimonial card">
+        <div class="avatar">D</div>
+        <div>
+            <p>"<span class="ph">«I closed two deals from posts I wrote in 10 minutes here. It sounds like me, not ChatGPT.»</span>"</p>
+            <div class="who"><span class="ph">«David K. · SaaS founder»</span></div>
+        </div>
+    </div>
+    <button class="btn" style="margin-top:28px" onclick="go('building')">Continue</button>
+</section>
+
+<!-- S9 BUILDING -->
+<section class="screen" id="building">
+    <div class="mono">Almost there</div>
+    <h1 style="margin-top:10px">Scoring your last 20 posts…</h1>
+    <div class="ticker" id="build-ticker">
+        <div class="tick"><span class="dot">✓</span> Topic spread analyzed</div>
+        <div class="tick"><span class="dot">✓</span> Pillar mix computed</div>
+        <div class="tick"><span class="dot">✓</span> Traction vs benchmark</div>
+        <div class="tick"><span class="dot">✓</span> Drafting your fix</div>
+    </div>
+    <div style="display:flex;gap:24px;justify-content:center;margin:26px 0;color:var(--muted);font-size:.85rem;text-align:center">
+        <div><strong style="font-size:1.3rem;color:var(--text)" class="ph">«12,400»</strong><br>audits run</div>
+        <div><strong style="font-size:1.3rem;color:var(--text)" class="ph">«4.9»</strong><br>avg rating</div>
+        <div><strong style="font-size:1.3rem;color:var(--text)" class="ph">«350k»</strong><br>posts previewed</div>
+    </div>
+    <div class="testimonial card">
+        <div class="avatar">L</div>
+        <div>
+            <p>"<span class="ph">«Scripe wanted $40/mo for this. I paid once and my whole posting system lives here.»</span>"</p>
+            <div class="who"><span class="ph">«Lena M. · Agency owner»</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- S10 AUDIT -->
+<section class="screen wide" id="audit">
+    <div class="audit-hero">
+        <div class="avatar">M</div>
+        <div class="mono" style="margin-bottom:8px">Your LinkedIn audit · 20 posts scored</div>
+        <h1>Top 30%. Strong work, Matteo.</h1>
+        <p class="sub" style="margin:10px auto 0;max-width:440px">Here is exactly what we found, and the one gap costing you the most.</p>
+    </div>
+
+    <div class="audit-section">
+        <div class="inner">
+            <div class="copy">
+                <div class="mono">01 · Traction</div>
+                <h3>LinkedIn doesn't know who you are yet.</h3>
+                <p>Every week you don't post, your older posts decay out of feeds. Your engagement per post is solid. Your frequency is the leak.</p>
+            </div>
+            <div class="viz">
+                <div class="statgrid">
+                    <div class="stat"><div class="n">69</div><div class="l">avg likes</div><div class="d ok">on benchmark</div></div>
+                    <div class="stat"><div class="n">8</div><div class="l">avg comments</div><div class="d warn">1.5x below</div></div>
+                    <div class="stat"><div class="n">11.1k</div><div class="l">avg views</div><div class="d ok">1.1x benchmark</div></div>
+                    <div class="stat"><div class="n">0.3</div><div class="l">posts / week</div><div class="d warn">13x below sweet spot</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="audit-section">
+        <div class="inner">
+            <div class="copy">
+                <div class="mono">02 · Topics</div>
+                <h3>You're spread across 4 topics.</h3>
+                <p><strong style="color:var(--text)">Building in public</strong> is your wedge: your strongest post of the last 20 lived there. Top performers in your niche stick to 2-3. The other topics dilute your signal.</p>
+            </div>
+            <div class="viz">
+                <div class="topic"><span class="medal">🥇</span> Building in public</div>
+                <div class="topic fade1"><span class="medal">🥈</span> Dev tooling</div>
+                <div class="topic fade2">🥉 Tech industry takes</div>
+                <div class="topic fade3">· Work culture</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="audit-section">
+        <div class="inner">
+            <div class="copy">
+                <div class="mono">03 · Pillar mix</div>
+                <h3>Almost everything you post is personal.</h3>
+                <p>Winning clients needs more <strong style="color:var(--text)">educational</strong> posts: proof of expertise buyers can act on. Your mix vs the ideal for your goal:</p>
+            </div>
+            <div class="viz" style="display:flex;align-items:center;justify-content:center">
+                <svg viewBox="0 0 220 200" width="230">
+                    <g stroke="#26262e" fill="none">
+                        <polygon points="110,20 195,100 110,180 25,100"/>
+                        <polygon points="110,55 155,100 110,145 65,100"/>
+                    </g>
+                    <polygon points="110,30 130,100 112,120 95,100" fill="rgba(47,111,228,.35)" stroke="#2f6fe4" stroke-width="2"/>
+                    <polygon points="110,62 150,100 110,132 78,100" fill="none" stroke="#34c98e" stroke-width="2" stroke-dasharray="5 4"/>
+                    <g fill="#8b8b96" font-size="10" text-anchor="middle">
+                        <text x="110" y="12">Personal</text><text x="204" y="104" text-anchor="start">Edu.</text>
+                        <text x="110" y="196">Promo</text><text x="16" y="104" text-anchor="end">Org.</text>
+                    </g>
+                    <g font-size="10">
+                        <rect x="52" y="180" width="8" height="8" fill="#2f6fe4"/><text x="65" y="188" fill="#8b8b96">Your mix</text>
+                        <rect x="125" y="180" width="8" height="8" fill="#34c98e"/><text x="138" y="188" fill="#8b8b96">Ideal</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="audit-section" style="border-color:rgba(47,111,228,.5)">
+        <div style="padding:28px;text-align:center">
+            <div class="mono">04 · The prescription</div>
+            <h3 style="margin-top:8px">Your biggest gap: educational posts about building in public.</h3>
+            <p style="color:var(--muted);max-width:420px;margin:8px auto 0;font-size:.9rem">Fixable this week. In fact, we already started.</p>
+        </div>
+    </div>
+
+    <div class="sticky-cta"><button class="btn" onclick="go('firstpost')">Show me the fix →</button></div>
+</section>
+
+<!-- S11 FIRST POST -->
+<section class="screen" id="firstpost">
+    <div class="mono">Your fix · drafted</div>
+    <h1 style="margin-top:10px">So we wrote it for you. In your voice.</h1>
+    <p class="sub">An educational post about building in public, written from your own 20 posts. This took 4 seconds.</p>
+    <div class="li-card">
+        <div class="head">
+            <div class="avatar">M</div>
+            <div><div class="nm">Matteo G.</div><div class="hl">Full-stack developer · indie builder</div><div class="meta">Now · 🌐</div></div>
+        </div>
+        <p><strong>I shipped 3 side projects last year. Two failed for the same reason.</strong><br><br>
+        Not the code. Not the idea.<br><br>
+        I built in silence and launched to nobody.<br><br>
+        Here's the system I use now, so the audience exists before the product does:<br><br>
+        1. Ship one build-log post per week<br>
+        2. Share the numbers, even the ugly ones<br>
+        3. Ask one question at the end, every time<br><br>
+        The third project? 400 signups before launch day.<br><br>
+        What are you building right now?</p>
+        <div class="actions"><span>👍 Like</span><span>💬 Comment</span><span>🔁 Repost</span><span>✈️ Send</span></div>
+    </div>
+    <div class="quick">
+        <button>↻ Regenerate</button><button>⚡ Punchier</button><button>✂️ Shorter</button><button>🪝 Stronger hook</button>
+    </div>
+    <span class="score-badge">● Content score 87 / 100</span>
+    <p style="color:var(--dim);font-size:.8rem;margin-top:14px">Saved to your drafts. It's yours either way.</p>
+    <button class="btn" style="margin-top:18px" onclick="go('recap')">Continue</button>
+</section>
+
+<!-- S12 RECAP -->
+<section class="screen" id="recap">
+    <div class="mono">Everything you just built</div>
+    <h1 style="margin-top:10px">Matteo, your LinkedIn system is ready.</h1>
+    <p class="sub">All of it built around your goal to <strong style="color:var(--text)">win more clients</strong>.</p>
+    <div class="card">
+        <div class="asset"><span class="ck">✓</span> Your audit · 20 posts scored, top 30%</div>
+        <div class="asset"><span class="ck">✓</span> Positioning statement · "I help devs turn side projects into products, in public"</div>
+        <div class="asset"><span class="ck">✓</span> Voice profile · professional + storytelling</div>
+        <div class="asset"><span class="ck">✓</span> First post drafted · fills your educational gap</div>
+        <div class="asset"><span class="ck">✓</span> 3x/week calendar · Tue / Thu / Sat</div>
+        <div class="asset"><span class="ck">✓</span> 8 post ideas queued for your first two weeks</div>
+    </div>
+    <button class="btn" style="margin-top:24px" onclick="go('offer')">Unlock everything free for 7 days →</button>
+</section>
+
+<!-- S13 OFFER -->
+<section class="screen" id="offer">
+    <div class="mono">Your access</div>
+    <h1 style="margin-top:10px">Get 7 days of everything, Matteo. Free.</h1>
+    <p class="sub">Full Pro access: unlimited AI, scheduling, carousels, analytics, so you can <strong style="color:var(--text)">win more clients</strong> starting today. No card. After 7 days you keep the free core forever.</p>
+    <button class="btn" onclick="go('done')">Start my 7 free days →</button>
+
+    <div class="divider-label">or keep it from day one</div>
+    <div class="plans">
+        <div class="plan hero">
+            <div class="badge">MOST POPULAR</div>
+            <div class="mono">Lifetime</div>
+            <div class="price">$29.99</div>
+            <div class="per">once · founding price</div>
+            <ul><li>✓ Power features forever</li><li>✓ Generous monthly AI allowance<br>&nbsp;&nbsp;&nbsp;(metered, not unlimited)</li><li>✓ 7-day money-back</li></ul>
+            <button class="btn" onclick="go('done')">Get lifetime →</button>
+        </div>
+        <div class="plan">
+            <div class="mono">Monthly</div>
+            <div class="price">$7.99</div>
+            <div class="per">per month · cancel anytime</div>
+            <ul><li>✓ All Pro features</li><li>✓ High AI ceiling</li><li>✓ Auto-renews, 2-click cancel</li></ul>
+            <button class="btn ghost" onclick="go('done')">Go monthly →</button>
+        </div>
+    </div>
+    <div class="anchor-row">Others charge <s>$19-199/mo</s> (Taplio $39+, Supergrow $19+). You: <strong style="color:var(--text)">$29.99 once</strong>.</div>
+    <table class="fvp">
+        <tr><th></th><th>Free</th><th>Pro</th></tr>
+        <tr><td>AI generation</td><td>daily taste</td><td>high ceiling</td></tr>
+        <tr><td>Publish + schedule</td><td>-</td><td>✓</td></tr>
+        <tr><td>Carousels</td><td>watermark</td><td>clean</td></tr>
+        <tr><td>Analytics</td><td>-</td><td>✓</td></tr>
+        <tr><td>Content calendar</td><td>-</td><td>✓</td></tr>
+    </table>
+    <div class="urgency">⏳ Founding price ends <span class="ph">«July 31»</span>. Real window, no resets.</div>
+    <a class="skip" onclick="go('done')">Continue on the free plan without the trial →</a>
+</section>
+
+<!-- S14 DONE -->
+<section class="screen" id="done">
+    <div style="text-align:center;padding-top:20px">
+        <div style="font-size:3rem">🎉</div>
+        <h1 style="margin-top:12px">You're in, Matteo.<br>7 days of everything starts now.</h1>
+        <p class="sub" style="max-width:400px;margin:14px auto 0">Your gap-filling post is drafted and your calendar is set. One thing left:</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+        <div class="mono" style="margin-bottom:10px">Your first Pro action</div>
+        <strong>Schedule your first post for Tuesday 9:00</strong>
+        <p style="color:var(--muted);font-size:.85rem;margin-top:6px">The educational post we drafted, at your audience's peak time.</p>
+        <button class="btn" style="margin-top:16px" onclick="alert('→ dashboard, editor open, schedule dialog open (prototype ends here)')">Schedule it →</button>
+    </div>
+    <div class="ribbon">
+        <span>⚡ Pro trial · 7 days left</span>
+        <a onclick="alert('→ offer surface (in-dashboard)')">Keep it for $29.99 once →</a>
+    </div>
+</section>
+
+<div id="proto-nav">
+    <button onclick="prev()">←</button>
+    <span id="nav-label">welcome</span>
+    <button onclick="next()">→</button>
+    <span style="margin-left:6px">prototype nav</span>
+</div>
+
+<script>
+    const ORDER = ['welcome','connect','scan','mirror','goal','voice','cadence','benchmark','building','audit','firstpost','recap','offer','done'];
+    // only collect steps advance the bar
+    const PROGRESS = { welcome: 8, connect: 24, goal: 46, voice: 64, cadence: 82, offer: 95, done: 100 };
+    let current = 'welcome';
+    let lastProgress = 0;
+
+    function go(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const el = document.getElementById(id);
+        el.classList.add('active');
+        window.scrollTo(0, 0);
+        current = id;
+        document.getElementById('nav-label').textContent = id;
+        if (PROGRESS[id] !== undefined) lastProgress = PROGRESS[id];
+        document.getElementById('progress').style.width = lastProgress + '%';
+        if (id === 'scan') runTicker('scan-ticker', () => go('mirror'));
+        if (id === 'building') runTicker('build-ticker', () => go('audit'), 1100);
+    }
+    function next() { const i = ORDER.indexOf(current); if (i < ORDER.length - 1) go(ORDER[i + 1]); }
+    function prev() { const i = ORDER.indexOf(current); if (i > 0) go(ORDER[i - 1]); }
+
+    let tickerTimer = [];
+    function runTicker(id, done, step = 800) {
+        tickerTimer.forEach(clearTimeout); tickerTimer = [];
+        const ticks = document.querySelectorAll('#' + id + ' .tick');
+        ticks.forEach(t => t.classList.remove('on'));
+        ticks.forEach((t, i) => tickerTimer.push(setTimeout(() => t.classList.add('on'), step * (i + 1))));
+        tickerTimer.push(setTimeout(done, step * (ticks.length + 1.6)));
+    }
+
+    // welcome multi-select
+    document.querySelectorAll('#goal-chips .chip').forEach(c => c.addEventListener('click', () => {
+        c.classList.toggle('sel');
+        document.getElementById('welcome-cta').disabled = !document.querySelector('#goal-chips .chip.sel');
+    }));
+    // single-select groups
+    ['goal2','cad'].forEach(gid => document.querySelectorAll('#' + gid + ' .chip').forEach(c => c.addEventListener('click', () => {
+        document.querySelectorAll('#' + gid + ' .chip').forEach(x => x.classList.remove('sel'));
+        c.classList.add('sel');
+        if (gid === 'cad') document.getElementById('cad-micro').innerHTML = 'Great. That\'s ~' + c.dataset.n + ' posts a month. We\'ll have them drafted for you.';
+    })));
+    // multi-select groups
+    ['aud','tones'].forEach(gid => document.querySelectorAll('#' + gid + ' .chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('sel'))));
+
+    go('welcome');
+</script>
+</body>
+</html>

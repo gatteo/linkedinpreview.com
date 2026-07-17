@@ -1,6 +1,13 @@
 import { ApiRoutes } from '@/config/routes'
 
-export async function fetchSuggestions(postText: string): Promise<string[]> {
+export type SuggestionType = 'content' | 'structure' | 'tone' | 'engagement'
+
+export interface Suggestion {
+    text: string
+    type: SuggestionType
+}
+
+export async function fetchSuggestions(postText: string): Promise<Suggestion[]> {
     try {
         const res = await fetch(ApiRoutes.Suggestions, {
             method: 'POST',
@@ -10,7 +17,7 @@ export async function fetchSuggestions(postText: string): Promise<string[]> {
 
         if (!res.ok) return []
 
-        const data = (await res.json()) as { suggestions?: string[] }
+        const data = (await res.json()) as { suggestions?: Suggestion[] }
         return data.suggestions ?? []
     } catch {
         return []

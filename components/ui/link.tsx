@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils'
 export const linkVariants = cva('', {
     variants: {
         variant: {
-            article: 'text-primary underline decoration-primary/30 underline-offset-2 transition-colors hover:decoration-primary/60',
+            article:
+                'text-primary underline decoration-primary/30 underline-offset-2 transition-colors hover:decoration-primary/60',
             muted: 'text-muted-foreground transition-colors hover:text-foreground',
         },
     },

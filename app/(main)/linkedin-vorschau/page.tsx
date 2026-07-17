@@ -140,28 +140,28 @@ function VorschauHero() {
         <DotBackground className='overflow-hidden'>
             <div className='mx-auto flex flex-col items-center px-6 py-20 md:pt-28'>
                 <AnimateIn delay={0}>
-                    <p className='border-border shadow-subtle mb-6 flex items-center gap-2 rounded-full border bg-white px-4 py-1 text-xs text-neutral-600 sm:text-sm'>
+                    <p className='border-border shadow-subtle bg-background text-muted-foreground mb-6 flex items-center gap-2 rounded-full border px-4 py-1 text-xs sm:text-sm'>
                         Kostenlos - keine Anmeldung nötig
                     </p>
                 </AnimateIn>
 
                 <AnimateIn delay={0.1}>
-                    <h1 className='font-heading mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance text-neutral-900 md:text-6xl lg:text-7xl'>
+                    <h1 className='font-heading text-foreground mb-5 text-center text-5xl font-bold tracking-[-0.02em] text-balance md:text-6xl lg:text-7xl'>
                         LinkedIn Post Vorschau
                     </h1>
                 </AnimateIn>
 
                 <AnimateIn delay={0.2}>
-                    <p className='mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 text-neutral-500 md:text-xl md:leading-8'>
+                    <p className='text-muted-foreground mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 md:text-xl md:leading-8'>
                         Der kostenlose Editor, um deinen LinkedIn Beitrag zu formatieren und die Vorschau für Mobil und
                         Desktop zu sehen - bevor du ihn veröffentlichst.
                     </p>
                 </AnimateIn>
 
                 <AnimateIn delay={0.3}>
-                    <div className='mb-8 flex items-center gap-2 rounded-full bg-neutral-50 px-4 py-2'>
+                    <div className='bg-secondary mb-8 flex items-center gap-2 rounded-full px-4 py-2'>
                         <StarRating />
-                        <span className='text-xs font-medium text-neutral-500 sm:text-sm'>
+                        <span className='text-muted-foreground text-xs font-medium sm:text-sm'>
                             Von tausenden LinkedIn-Creators genutzt
                         </span>
                     </div>
@@ -186,10 +186,10 @@ function HowItWorksSection() {
             <div className='pt-20 md:pt-24'>
                 <AnimateIn className='mb-6 px-6'>
                     <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>So geht es</p>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         So funktioniert die LinkedIn Post Vorschau
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         In vier einfachen Schritten zum fertig formatierten Beitrag.
                     </p>
                 </AnimateIn>
@@ -203,8 +203,10 @@ function HowItWorksSection() {
                                 <span className='text-primary/70 mb-1 block text-xs font-semibold tracking-wider uppercase'>
                                     Schritt {index + 1}
                                 </span>
-                                <h3 className='mb-1 text-base font-semibold text-neutral-900'>{step.title}</h3>
-                                <p className='max-w-2xl text-sm leading-relaxed text-neutral-500'>{step.description}</p>
+                                <h3 className='text-foreground mb-1 text-base font-semibold'>{step.title}</h3>
+                                <p className='text-muted-foreground max-w-2xl text-sm leading-relaxed'>
+                                    {step.description}
+                                </p>
                             </div>
                         ))}
                     </div>
@@ -222,8 +224,8 @@ function FeatureCell({ feature, showLeft }: { feature: (typeof VorschauFeatures)
                 className='bg-primary/10 text-primary mb-4 size-8 rounded-lg p-1.5'
                 aria-hidden='true'
             />
-            <h3 className='mb-2 text-base font-semibold text-neutral-900'>{feature.title}</h3>
-            <p className='text-sm leading-relaxed text-neutral-500'>{feature.body}</p>
+            <h3 className='text-foreground mb-2 text-base font-semibold'>{feature.title}</h3>
+            <p className='text-muted-foreground text-sm leading-relaxed'>{feature.body}</p>
         </div>
     )
 }
@@ -236,10 +238,10 @@ function VorschauFeaturesSection() {
                     <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>
                         Alles für deinen Beitrag
                     </p>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         Funktionen der LinkedIn Beitrag Vorschau
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         Vom Formatieren bis zur Echtzeit-Vorschau - alles, was du für einen überzeugenden LinkedIn
                         Beitrag brauchst.
                     </p>
@@ -270,10 +272,10 @@ function BesonderheitenSection() {
             <div className='pt-20 md:pt-24'>
                 <AnimateIn className='mb-6 px-6'>
                     <p className='text-primary mb-2 text-sm font-semibold tracking-wider uppercase'>Gut zu wissen</p>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         Besonderheiten und ehrliche Hinweise
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         Zwei Dinge, die du über die Formatierung und den Datenschutz wissen solltest.
                     </p>
                 </AnimateIn>
@@ -287,8 +289,8 @@ function BesonderheitenSection() {
                                     className='bg-primary/10 text-primary mb-4 size-8 rounded-lg p-1.5'
                                     aria-hidden='true'
                                 />
-                                <h3 className='mb-2 text-base font-semibold text-neutral-900'>{item.title}</h3>
-                                <p className='text-sm leading-relaxed text-neutral-500'>{item.body}</p>
+                                <h3 className='text-foreground mb-2 text-base font-semibold'>{item.title}</h3>
+                                <p className='text-muted-foreground text-sm leading-relaxed'>{item.body}</p>
                             </div>
                         ))}
                     </div>
@@ -318,10 +320,10 @@ function VorschauFAQSection() {
                 <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
                 <AnimateIn className='mb-6 px-6'>
-                    <h2 className='font-heading text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl md:text-5xl'>
+                    <h2 className='font-heading text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl'>
                         Häufige Fragen
                     </h2>
-                    <p className='mt-3 max-w-lg text-base text-neutral-500'>
+                    <p className='text-muted-foreground mt-3 max-w-lg text-base'>
                         Antworten rund um die LinkedIn Post Vorschau.
                     </p>
                 </AnimateIn>
@@ -332,10 +334,10 @@ function VorschauFAQSection() {
                             <Accordion type='multiple'>
                                 {VorschauFAQList.map((faq) => (
                                     <AccordionItem key={faq.question} value={faq.question} className='border-border'>
-                                        <AccordionTrigger className='gap-4 text-start text-base font-medium text-neutral-900 hover:no-underline'>
+                                        <AccordionTrigger className='text-foreground gap-4 text-start text-base font-medium hover:no-underline'>
                                             {faq.question}
                                         </AccordionTrigger>
-                                        <AccordionContent className='text-sm leading-relaxed text-neutral-500'>
+                                        <AccordionContent className='text-muted-foreground text-sm leading-relaxed'>
                                             {faq.answer}
                                         </AccordionContent>
                                     </AccordionItem>
@@ -345,7 +347,7 @@ function VorschauFAQSection() {
 
                         <div className='dash-left relative hidden lg:block'>
                             <div
-                                className='pointer-events-none absolute inset-0 text-neutral-100'
+                                className='text-border pointer-events-none absolute inset-0'
                                 style={{
                                     backgroundImage:
                                         'repeating-linear-gradient(125deg, transparent, transparent 6px, currentColor 6px, currentColor 7px)',
@@ -365,13 +367,13 @@ function VorschauCta() {
             <DotBackground className='overflow-hidden'>
                 <div className='mx-auto flex flex-col items-center px-6 py-20 text-center'>
                     <AnimateIn>
-                        <h2 className='font-heading mb-4 text-3xl font-bold tracking-tight text-balance text-neutral-900 sm:text-4xl md:text-5xl'>
+                        <h2 className='font-heading text-foreground mb-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl md:text-5xl'>
                             Erstelle deinen perfekten LinkedIn Beitrag
                         </h2>
                     </AnimateIn>
 
                     <AnimateIn delay={0.1}>
-                        <p className='mx-auto mb-8 max-w-[480px] text-base leading-7 text-neutral-500'>
+                        <p className='text-muted-foreground mx-auto mb-8 max-w-[480px] text-base leading-7'>
                             Schreibe, formatiere und sieh die Vorschau deines Beitrags - kostenlos und ganz ohne
                             Anmeldung.
                         </p>
@@ -388,9 +390,9 @@ function VorschauCta() {
 
                     <AnimateIn delay={0.3}>
                         <div className='mt-6 flex items-center gap-2'>
-                            <span className='text-sm font-medium text-neutral-500'>{SOCIAL_PROOF.rating}/5</span>
+                            <span className='text-muted-foreground text-sm font-medium'>{SOCIAL_PROOF.rating}/5</span>
                             <StarRating />
-                            <span className='text-sm text-neutral-400'>aus {SOCIAL_PROOF.count} Bewertungen</span>
+                            <span className='text-muted-foreground text-sm'>aus {SOCIAL_PROOF.count} Bewertungen</span>
                         </div>
                     </AnimateIn>
                 </div>

@@ -1,7 +1,3 @@
-/**
- * Inspired by https://jahir.dev/uses
- */
-
 import Image from 'next/image'
 import { UtmUrl } from '@/utils/urls'
 

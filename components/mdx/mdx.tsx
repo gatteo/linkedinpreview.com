@@ -7,9 +7,9 @@ import { type MDXComponents } from 'mdx/types'
 import ReactDOM from 'react-dom'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Link } from '@/components/ui/link'
+import { CtaCard } from '@/components/cta-card'
 
-import { CtaCard } from '../cta-card'
-import { Link } from '../ui/link'
 import { Heading } from './heading'
 import { ImageZoom } from './image-zoom'
 import { ItemGrid } from './item-grid'
@@ -49,7 +49,7 @@ const components: MDXComponents = {
     pre: Pre,
     code: (props: React.ComponentPropsWithoutRef<'code'>) => (
         <code
-            className='rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-sm text-neutral-800 before:content-none after:content-none dark:bg-neutral-800 dark:text-neutral-200'
+            className='bg-secondary text-foreground rounded px-1.5 py-0.5 font-mono text-sm before:content-none after:content-none'
             {...props}
         />
     ),
@@ -107,4 +107,4 @@ const Mdx = ({ code }: MdxProps) => {
 }
 /* eslint-enable react-hooks/static-components */
 
-export default Mdx
+export { Mdx }

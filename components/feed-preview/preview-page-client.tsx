@@ -20,7 +20,7 @@ type Mode = 'desktop' | 'mobile'
 
 const DESKTOP_BREAKPOINT = 768
 
-interface PreviewPageClientProps {
+type PreviewPageClientProps = {
     encodedDraft?: string
 }
 
@@ -41,7 +41,7 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
     }, [])
 
     React.useEffect(() => {
-        posthog.capture('feed_preview_page_viewed')
+        posthog?.capture('feed_preview_page_viewed')
     }, [])
 
     React.useEffect(() => {

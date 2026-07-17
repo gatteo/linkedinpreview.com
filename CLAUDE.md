@@ -29,7 +29,7 @@ Three main areas:
 ### Route Structure
 
 - `app/(main)/` - Route group for public pages (header + footer layout): home, blog, changelog, compare
-- `app/dashboard/` - Dashboard with its own layout (sidebar inset variant, ThemeProvider, AuthProvider). Pages: posts (root), editor, branding, settings
+- `app/dashboard/` - Dashboard with its own layout (sidebar inset variant, AuthProvider). Pages: posts (root), editor, branding, settings
 - `app/api/` - AI endpoints: analyze, chat, suggestions, generate (Vercel AI SDK v6 + OpenAI)
 - `app/embed/` - Minimal embeddable tool variant
 
@@ -69,7 +69,7 @@ Next.js 16 uses `proxy.ts` at project root (not `middleware.ts`). The exported f
 
 ## Analytics (PostHog)
 
-Initialized in `instrumentation-client.ts` (production only). Reverse-proxied through `/ingest` -> `eu.i.posthog.com`. PostHog is uninitialized in dev - all calls must use optional chaining: `posthog?.capture()`. Event names use `snake_case`. `TrackClick` wrapper at `components/tracking/track-click.tsx` enables tracking from server components.
+Initialized in `instrumentation-client.ts` (production only). Reverse-proxied through `/ingest` -> `eu.i.posthog.com`. PostHog is uninitialized in dev - all calls must use optional chaining: `posthog?.capture()`. Event names use `snake_case`. `TrackClick` wrapper at `components/tracking/track-click.tsx` enables tracking from server components. Server-side capture: `captureServer()` in `lib/analytics/server.ts` (posthog-node, prod-only, call inside `after()`), distinctId = Supabase user id (persons identified in `AuthProvider`). Onboarding events go through `track()` in `components/dashboard/onboarding/ai.ts` (stamps `funnel_version`); the event dictionary is `docs/analytics/onboarding-funnel.md` - keep it in sync when adding/changing events.
 
 ## Dashboard Persistence (Supabase)
 
@@ -112,7 +112,7 @@ Always invoke the `update-docs` skill before committing, creating PRs, or finish
 
 ## Known Gotchas
 
-- ThemeProvider (next-themes) is scoped to dashboard layout only - homepage is light-only
+- ThemeProvider (next-themes) lives in the root layout - the whole app (landing included) supports light/dark via the `.dark` class, defaulting to system. `/embed` is the exception: its layout nests a `forcedTheme='light'` provider so third-party embeds stay light
 - TipTap `EditorPanel` is dynamically imported with `ssr: false` - never use in server components
 - The tool component has two variants (`default` and `embed`) - changes must work in both
 - `next.config.mjs` has `skipTrailingSlashRedirect: true` (required for PostHog proxy)

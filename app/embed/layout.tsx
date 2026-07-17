@@ -1,3 +1,4 @@
+import { ThemeProvider } from 'next-themes'
 import { Toaster } from 'sonner'
 
 export default function EmbedLayout({
@@ -6,9 +7,9 @@ export default function EmbedLayout({
     children: React.ReactNode
 }>) {
     return (
-        <>
+        <ThemeProvider attribute='class' forcedTheme='light'>
             <div className='flex min-h-screen flex-col'>{children}</div>
             <Toaster />
-        </>
+        </ThemeProvider>
     )
 }

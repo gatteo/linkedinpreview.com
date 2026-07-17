@@ -3,9 +3,15 @@
 import Script from 'next/script'
 
 import { env } from '@/env.mjs'
+import { useConsent } from '@/hooks/use-consent'
 
+// GTM loads only after analytics consent - before (or on decline) nothing is
+// injected. PostHog is independent of this: it boots cookieless and upgrades
+// on accept (see instrumentation-client.ts).
 export function GTM() {
-    if (process.env.NODE_ENV !== 'production') {
+    const { consent } = useConsent()
+
+    if (process.env.NODE_ENV !== 'production' || consent !== 'accepted') {
         return null
     }
 

@@ -1,0 +1,65 @@
+import {
+    BarChart3Icon,
+    BriefcaseBusinessIcon,
+    BriefcaseIcon,
+    Building2Icon,
+    BuildingIcon,
+    CalendarDaysIcon,
+    ClockIcon,
+    EyeIcon,
+    FileTextIcon,
+    FlameIcon,
+    HeartIcon,
+    HelpCircleIcon,
+    LandmarkIcon,
+    LayoutGridIcon,
+    LightbulbIcon,
+    LinkIcon,
+    MegaphoneIcon,
+    NewspaperIcon,
+    PenLineIcon,
+    SparklesIcon,
+    TargetIcon,
+    TrendingUpIcon,
+    UserCheckIcon,
+    UserPlusIcon,
+    UsersIcon,
+    ZapIcon,
+    type LucideIcon,
+} from 'lucide-react'
+
+// Maps the string icon names used across the strategy/personalization/funnel
+// config (STRATEGY_GOALS, STRATEGY_AUDIENCES, OB_GOALS, OB_VOICES, features) to
+// their lucide components so onboarding steps can render them through primitives.
+const ICON_MAP: Record<string, LucideIcon> = {
+    TrendingUp: TrendingUpIcon,
+    Megaphone: MegaphoneIcon,
+    Briefcase: BriefcaseIcon,
+    BriefcaseBusiness: BriefcaseBusinessIcon,
+    Building2: Building2Icon,
+    Building: BuildingIcon,
+    Newspaper: NewspaperIcon,
+    Sparkles: SparklesIcon,
+    Users: UsersIcon,
+    UserPlus: UserPlusIcon,
+    UserCheck: UserCheckIcon,
+    Landmark: LandmarkIcon,
+    HelpCircle: HelpCircleIcon,
+    BarChart3: BarChart3Icon,
+    CalendarDays: CalendarDaysIcon,
+    LayoutGrid: LayoutGridIcon,
+    Lightbulb: LightbulbIcon,
+    Target: TargetIcon,
+    Zap: ZapIcon,
+    PenLine: PenLineIcon,
+    FileText: FileTextIcon,
+    Heart: HeartIcon,
+    Flame: FlameIcon,
+    Clock: ClockIcon,
+    Eye: EyeIcon,
+    Link: LinkIcon,
+}
+
+export function iconFor(name: string): LucideIcon {
+    return ICON_MAP[name] ?? SparklesIcon
+}

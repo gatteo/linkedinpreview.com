@@ -1,5 +1,7 @@
-interface SuggestionChipsProps {
-    suggestions: string[]
+import type { Suggestion } from '@/lib/ai-suggestions'
+
+type SuggestionChipsProps = {
+    suggestions: Suggestion[]
     loading: boolean
     onSelect: (text: string) => void
 }
@@ -25,11 +27,11 @@ export function SuggestionChips({ suggestions, loading, onSelect }: SuggestionCh
         <div className='flex flex-wrap gap-2'>
             {suggestions.map((suggestion) => (
                 <button
-                    key={suggestion}
+                    key={suggestion.text}
                     type='button'
-                    onClick={() => onSelect(suggestion)}
+                    onClick={() => onSelect(suggestion.text)}
                     className='border-border bg-background text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full border px-3 py-1.5 text-xs transition-colors'>
-                    {suggestion}
+                    {suggestion.text}
                 </button>
             ))}
         </div>

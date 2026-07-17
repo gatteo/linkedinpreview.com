@@ -5,7 +5,7 @@ import { LeftSidebar } from './left-sidebar'
 import { PlaceholderPost } from './placeholder-post'
 import { RightSidebar } from './right-sidebar'
 
-interface FeedLayoutProps {
+type FeedLayoutProps = {
     children: React.ReactNode
     mode: 'desktop' | 'mobile'
 }

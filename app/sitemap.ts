@@ -22,6 +22,8 @@ const sitemap = async () => {
         Routes.Generator,
         Routes.LinkPreview,
         Routes.Vorschau,
+        Routes.Privacy,
+        Routes.Terms,
         ...cmsPages,
     ].map((route) => ({
         url: absoluteUrl(route),

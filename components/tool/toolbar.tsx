@@ -5,9 +5,9 @@ import type { Editor } from '@tiptap/react'
 import { Bold, Italic, List, ListOrdered, Redo, Strikethrough, Underline, Undo } from 'lucide-react'
 import posthog from 'posthog-js'
 
-import { Button } from '../ui/button'
-import { Separator } from '../ui/separator'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type Props = {
     editor: Editor | null
@@ -19,7 +19,7 @@ const Toolbar = ({ editor }: Props) => {
     }
 
     const trackFormatting = (formatType: string) => {
-        posthog.capture('formatting_applied', {
+        posthog?.capture('formatting_applied', {
             format_type: formatType,
         })
     }
@@ -149,4 +149,4 @@ const Toolbar = ({ editor }: Props) => {
     )
 }
 
-export default Toolbar
+export { Toolbar }

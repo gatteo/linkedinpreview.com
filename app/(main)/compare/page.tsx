@@ -49,13 +49,13 @@ export default function Page() {
             {/* Hero */}
             <section className='dot-grid'>
                 <div className='max-w-content mx-auto flex flex-col items-center px-6 pt-20 pb-16 md:pt-28'>
-                    <span className='border-border text-primary shadow-subtle mb-4 inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                    <span className='border-border text-primary shadow-subtle bg-background mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium'>
                         Comparisons
                     </span>
-                    <h1 className='font-heading mb-5 text-center text-4xl font-bold tracking-tight text-neutral-900 md:text-5xl'>
+                    <h1 className='font-heading text-foreground mb-5 text-center text-4xl font-bold tracking-tight md:text-5xl'>
                         LinkedInPreview.com vs <span className='text-primary'>Alternatives</span>
                     </h1>
-                    <p className='mx-auto mb-8 max-w-[540px] text-center text-lg leading-7 text-neutral-500'>
+                    <p className='text-muted-foreground mx-auto mb-8 max-w-[540px] text-center text-lg leading-7'>
                         See how LinkedInPreview.com stacks up against popular LinkedIn tools. Spoiler: it is free,
                         requires no sign-up, and includes AI generation at no cost.
                     </p>
@@ -73,13 +73,13 @@ export default function Page() {
                             <Link
                                 key={comparison.slug}
                                 href={comparison.url}
-                                className='group border-border shadow-subtle hover:shadow-elevated flex flex-col overflow-hidden rounded-xl border bg-white p-6 transition-all duration-200 hover:-translate-y-0.5'>
+                                className='group border-border shadow-subtle hover:shadow-elevated bg-card flex flex-col overflow-hidden rounded-xl border p-6 transition-all duration-200 hover:-translate-y-0.5'>
                                 <div className='mb-3 flex items-center gap-2'>
-                                    <h2 className='group-hover:text-primary text-lg font-semibold text-neutral-900 transition-colors'>
+                                    <h2 className='group-hover:text-primary text-foreground text-lg font-semibold transition-colors'>
                                         LinkedInPreview.com vs {comparison.competitor}
                                     </h2>
                                 </div>
-                                <p className='mb-5 flex-1 text-sm leading-relaxed text-neutral-500'>
+                                <p className='text-muted-foreground mb-5 flex-1 text-sm leading-relaxed'>
                                     {comparison.summary.slice(0, 140)}
                                     {comparison.summary.length > 140 && '...'}
                                 </p>

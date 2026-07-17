@@ -173,7 +173,7 @@ export const Icon = React.forwardRef<
         return null
     }
 
-    return <IconComponent ref={ref} className={className} {...props} />
+    return <IconComponent ref={ref as any} className={className} {...props} />
 })
 
 Icon.displayName = 'Icon'

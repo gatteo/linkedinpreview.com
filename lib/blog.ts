@@ -1,7 +1,7 @@
 import { allBlogPosts } from 'contentlayer/generated'
 import { remark } from 'remark'
 
-import { BlogPostPreview, BlogPostSource, LocalBlogPost, TOC } from '@/types/blog'
+import { BlogPostPreview, LocalBlogPost, TOC } from '@/types/blog'
 import { Routes } from '@/config/routes'
 
 import { remarkHeading } from './mdx/plugins/remark/remark-heading'
@@ -25,7 +25,6 @@ export function getLocalBlogPosts({ limit }: Options = {}): BlogPostPreview[] {
             summary: post.summary,
             date: new Date(post.createdAt),
             image: post.image,
-            source: BlogPostSource.Local,
             url: Routes.BlogPost(post.slug),
             tags: post.tags,
             author: post.author,

@@ -107,14 +107,14 @@ export default async function Page({ params }: Props) {
             {/* Page header */}
             <header className='mt-4 mb-10'>
                 <div className='mb-3 flex items-center gap-2'>
-                    <span className='border-border text-primary shadow-subtle inline-flex items-center rounded-full border bg-white px-3 py-1 text-xs font-medium'>
+                    <span className='border-border text-primary shadow-subtle bg-background inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium'>
                         Comparison
                     </span>
                 </div>
-                <h1 className='font-heading mb-4 text-3xl font-bold tracking-tight text-neutral-900 md:text-4xl'>
+                <h1 className='font-heading text-foreground mb-4 text-3xl font-bold tracking-tight md:text-4xl'>
                     {comparison.title}
                 </h1>
-                <p className='max-w-2xl text-lg leading-7 text-neutral-500'>{comparison.summary}</p>
+                <p className='text-muted-foreground max-w-2xl text-lg leading-7'>{comparison.summary}</p>
             </header>
 
             <Content

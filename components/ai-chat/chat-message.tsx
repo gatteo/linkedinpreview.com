@@ -1,18 +1,18 @@
 import type { UIMessage } from 'ai'
 import { Clock, TriangleAlert } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
-
-import { ChatPreviewCard } from './chat-preview-card'
 import {
     extractTextFromMessage,
     getRateLimitedReason,
     getRefusalReason,
     isRateLimitedMessage,
     isRefusalMessage,
-} from './message-utils'
+} from '@/lib/ai-chat'
+import { cn } from '@/lib/utils'
 
-interface ChatMessageProps {
+import { ChatPreviewCard } from './chat-preview-card'
+
+type ChatMessageProps = {
     message: UIMessage
     isStreaming: boolean
     onOpenInEditor?: () => void
@@ -37,12 +37,12 @@ export function ChatMessage({ message, isStreaming, onOpenInEditor }: ChatMessag
     if (isRateLimitedMessage(message)) {
         return (
             <div className='w-full'>
-                <div className='rounded-lg border border-blue-200 bg-blue-50 p-4'>
+                <div className='border-info/50 bg-info-soft rounded-lg border p-4'>
                     <div className='flex items-start gap-3'>
-                        <Clock className='mt-0.5 size-5 shrink-0 text-blue-600' />
+                        <Clock className='text-info mt-0.5 size-5 shrink-0' />
                         <div>
-                            <p className='font-medium text-blue-900'>Limit reached</p>
-                            <p className='mt-1 text-sm text-blue-700'>{getRateLimitedReason(message)}</p>
+                            <p className='text-info font-medium'>Limit reached</p>
+                            <p className='text-info mt-1 text-sm'>{getRateLimitedReason(message)}</p>
                         </div>
                     </div>
                 </div>
@@ -53,12 +53,12 @@ export function ChatMessage({ message, isStreaming, onOpenInEditor }: ChatMessag
     if (isRefusalMessage(message)) {
         return (
             <div className='w-full'>
-                <div className='rounded-lg border border-amber-200 bg-amber-50 p-4'>
+                <div className='border-warning/50 bg-warning-soft rounded-lg border p-4'>
                     <div className='flex items-start gap-3'>
-                        <TriangleAlert className='mt-0.5 size-5 shrink-0 text-amber-600' />
+                        <TriangleAlert className='text-warning mt-0.5 size-5 shrink-0' />
                         <div>
-                            <p className='font-medium text-amber-900'>Unable to generate</p>
-                            <p className='mt-1 text-sm text-amber-700'>{getRefusalReason(message)}</p>
+                            <p className='text-warning font-medium'>Unable to generate</p>
+                            <p className='text-warning mt-1 text-sm'>{getRefusalReason(message)}</p>
                         </div>
                     </div>
                 </div>

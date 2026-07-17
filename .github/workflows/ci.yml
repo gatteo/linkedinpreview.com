@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Gate 1 - TypeScript. Mirrors `pnpm type-check` (tsc --noEmit).
+      # NOTE: the tree may carry a small set of pre-existing type errors / suppressions
+      # (tracked as a baseline to clear). New errors introduced by a change must fail here.
+      - name: Type-check
+        run: pnpm type-check
+
+      # Gate 2 - Lint (eslint + prettier rules).
+      - name: Lint
+        run: pnpm lint
+
+      # Gate 3 - Production build (contentlayer build + next build).
+      # env.mjs validates env at build time (no SKIP_ENV_VALIDATION wired), so we feed
+      # placeholder values. These are NOT real secrets - they only satisfy the schema so the
+      # build can run. Real values live in the deployment environment.
+      - name: Build
+        env:
+          NODE_ENV: production
+          LLM_API_KEY: ci-placeholder-key
+          NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          NEXT_PUBLIC_GTM_MEASUREMENT_ID: GTM-CIPLACEHOLDER
+          NEXT_PUBLIC_POSTHOG_KEY: phc_ci_placeholder
+        run: pnpm build
