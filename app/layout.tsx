@@ -8,6 +8,7 @@ import { ThemeProvider } from 'next-themes'
 import { site, siteBaseMetadata } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ConsentBanner } from '@/components/consent-banner'
 import { GTM } from '@/components/gtm'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { PostHogPageView } from '@/components/tracking/posthog-page-view'
@@ -75,6 +76,9 @@ export default function RootLayout({
                     <PostHogPageView />
                 </Suspense>
                 <GTM />
+                <Suspense fallback={null}>
+                    <ConsentBanner />
+                </Suspense>
                 <SpeedInsights />
                 <TailwindIndicator />
             </body>

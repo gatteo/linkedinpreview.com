@@ -801,5 +801,5 @@ export const OB_TICKET = {
     spotsFloor: 118,
     spotsPct: '94.9%',
     /** The post-founding price the countdown warns about. */
-    nextPrice: '$49',
+    nextPrice: '$69',
 }

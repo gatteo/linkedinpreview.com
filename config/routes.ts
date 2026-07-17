@@ -31,6 +31,8 @@ export const Routes = {
     Generator: '/linkedin-post-generator',
     LinkPreview: '/linkedin-link-preview',
     Vorschau: '/linkedin-vorschau',
+    Privacy: '/privacy',
+    Terms: '/terms',
     Embed: '/embed',
     EmbedSection: '/#embed',
     Dashboard: '/dashboard',

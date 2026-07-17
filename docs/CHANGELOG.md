@@ -4,6 +4,21 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-17 — Legal pages, cookie consent, pricing copy fix
+
+- **`/privacy` and `/terms` pages** (app/(main)/, prose layout matching the design system), linked
+  from the footer bottom bar and the sitemap. Content reflects the real stack: anonymous Supabase
+  accounts, optional email/LinkedIn, the public-profile audit (Scrapingdog + Bright Data), OpenAI
+  processing, PostHog EU + masked replay, Stripe ($11.99/mo, $39.99 lifetime, 7-day money-back),
+  Featurebase support, Tally. Contact: support@linkedinpreview.com; Italian governing law.
+- **Cookie consent banner** (bottom-left, all surfaces except /embed): PostHog now boots cookieless
+  (memory persistence, no replay) until the visitor accepts; accepting upgrades PostHog to
+  persistent cookies + replay at runtime and loads GTM (which no longer loads pre-consent).
+  Declining keeps cookieless mode permanently. State in `lp-consent` localStorage key.
+- **Pricing copy**: post-founding lifetime price on the paywall ticket corrected to $69
+  (`OB_TICKET.nextPrice`); founding window confirmed at 2026-07-31. No live surface still shows the
+  old $7.99/$29.99 prices (verified by grep).
+
 ## 2026-07-17 — Featurebase messenger portal rollout (phases 2-4)
 
 - **Theme sync**: the messenger follows the dashboard's light/dark theme - boot theme from

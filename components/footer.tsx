@@ -165,6 +165,12 @@ export function Footer() {
                         </Link>
                     </p>
                     <div className='flex items-center gap-4'>
+                        <Link className={linkClass} href={Routes.Privacy}>
+                            Privacy
+                        </Link>
+                        <Link className={linkClass} href={Routes.Terms}>
+                            Terms
+                        </Link>
                         <p className='text-muted-foreground text-[13.5px]'>
                             &copy; {new Date().getFullYear()} LinkedIn Post Preview
                         </p>
