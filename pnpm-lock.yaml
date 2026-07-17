@@ -134,6 +134,9 @@ importers:
       date-fns:
         specifier: ^3.4.0
         version: 3.6.0
+      featurebase-js:
+        specifier: ^1.0.3
+        version: 1.0.3(react@19.2.4)
       fflate:
         specifier: ^0.8.3
         version: 0.8.3
@@ -4484,6 +4487,14 @@ packages:
       picomatch: ^3 || ^4
     peerDependenciesMeta:
       picomatch:
+        optional: true
+
+  featurebase-js@1.0.3:
+    resolution: {integrity: sha512-Q52xH6KEy6mYpxBl0ZRDzCaxW8EhoUjUxLbgG5e2GIMeiaS4uhKGHPK44yTRUmD+PTBgJ79/dc1GDFSwzz/sgg==}
+    peerDependencies:
+      react: '>=17'
+    peerDependenciesMeta:
+      react:
         optional: true
 
   fetch-blob@3.2.0:
@@ -11629,6 +11640,10 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  featurebase-js@1.0.3(react@19.2.4):
+    optionalDependencies:
+      react: 19.2.4
 
   fetch-blob@3.2.0:
     dependencies:

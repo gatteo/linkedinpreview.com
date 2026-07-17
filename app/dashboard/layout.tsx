@@ -10,6 +10,7 @@ import { DashboardSidebar } from '@/components/dashboard/dashboard-sidebar'
 import { OnboardingController } from '@/components/dashboard/onboarding/onboarding-controller'
 import { PlanProvider } from '@/components/dashboard/plan-provider'
 import { UpgradeProvider } from '@/components/dashboard/upgrade-provider'
+import { FeaturebaseRoot } from '@/components/featurebase-root'
 import { TallyScript } from '@/components/feedback/tally-script'
 
 export const metadata: Metadata = {
@@ -25,33 +26,37 @@ export default function DashboardLayout({
 }>) {
     return (
         <>
-            <AuthProvider>
-                <AuthGate>
-                    <PlanProvider>
-                        <UpgradeProvider>
-                            <div className='mx-auto h-svh w-full max-w-[1500px]' style={{ transform: 'translateZ(0)' }}>
-                                <SidebarProvider
-                                    className='h-full !min-h-0'
-                                    style={
-                                        {
-                                            '--sidebar-width': '280px',
-                                            '--header-height': 'calc(var(--spacing) * 12)',
-                                        } as React.CSSProperties
-                                    }>
-                                    <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
-                                        <DashboardSidebar variant='inset' />
-                                    </Suspense>
-                                    <SidebarInset className='overflow-hidden border'>
-                                        <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
-                                    </SidebarInset>
-                                </SidebarProvider>
-                            </div>
-                            <OnboardingController />
-                            {process.env.NODE_ENV === 'development' && <DashboardDebugMenu />}
-                        </UpgradeProvider>
-                    </PlanProvider>
-                </AuthGate>
-            </AuthProvider>
+            <FeaturebaseRoot>
+                <AuthProvider>
+                    <AuthGate>
+                        <PlanProvider>
+                            <UpgradeProvider>
+                                <div
+                                    className='mx-auto h-svh w-full max-w-[1500px]'
+                                    style={{ transform: 'translateZ(0)' }}>
+                                    <SidebarProvider
+                                        className='h-full !min-h-0'
+                                        style={
+                                            {
+                                                '--sidebar-width': '280px',
+                                                '--header-height': 'calc(var(--spacing) * 12)',
+                                            } as React.CSSProperties
+                                        }>
+                                        <Suspense fallback={<div className='w-[--sidebar-width] shrink-0' />}>
+                                            <DashboardSidebar variant='inset' />
+                                        </Suspense>
+                                        <SidebarInset className='overflow-hidden border'>
+                                            <div className='flex flex-1 flex-col overflow-hidden'>{children}</div>
+                                        </SidebarInset>
+                                    </SidebarProvider>
+                                </div>
+                                <OnboardingController />
+                                {process.env.NODE_ENV === 'development' && <DashboardDebugMenu />}
+                            </UpgradeProvider>
+                        </PlanProvider>
+                    </AuthGate>
+                </AuthProvider>
+            </FeaturebaseRoot>
             <Toaster />
             <TallyScript />
         </>
