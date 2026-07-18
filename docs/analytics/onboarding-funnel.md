@@ -89,28 +89,29 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 | `onb_rich_scrape_done`                       | `status`, `postsCount` | poll saw the scrape settle while the tab was open |
 | `onb_rich_scrape_timeout`                    | -                      | client gave up polling (~6 min)                   |
 | `onb_rich_session_missing`                   | -                      | poll got no session row (bug signal)              |
-| `onb_insights_ready` / `onb_insights_failed` | `kind` / -             | insights call resolved client-side                |
+| `onb_insights_ready` / `onb_insights_failed` | `kind` / -             | the insights kick-off + poll resolved client-side |
 
 ## Server events (posthog-node via `lib/analytics/server.ts`, distinctId = user id)
 
 These fire whether or not the tab stays open - they are the error/latency truth.
 
-| Event                   | Properties                                                                                                                     | Route                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `onb_enrich_result`     | `llm_ok`, `fast_source: scrapingdog\|jsonld\|oauth\|none`, `fast_found`, `has_rich_signal`, `rich_status`, `rich_reused`, `ms` | `POST /api/onboarding/enrich`                                                                    |
-| `onb_scrape_settled`    | `status: ready\|empty\|failed`, `corpus: posts-dataset\|profile-activity\|null`, `authored_count`, `ms_since_trigger`          | `GET /api/onboarding/enrich/status` - fires exactly once per scrape, on the poll that settles it |
-| `onb_insights_result`   | `kind: posts\|profile\|benchmark`, `authored_count`, `degraded_reason: llm-failed\|thin-corpus\|null`, `rich_status`, `ms`     | `POST /api/onboarding/insights` - only on generation, not the idempotent echo                    |
-| `onb_first_post_result` | `llm_ok`, `styled`, `gap_category`, `ms`                                                                                       | `POST /api/onboarding/first-post` - fires 4x per user (one per pillar)                           |
-| `onb_rate_limited`      | `action: onbEnrich\|onbInsights\|onbFirstPost`                                                                                 | any onboarding route hitting the daily cap                                                       |
-| `purchase_completed`    | `plan: lifetime\|monthly`, `amount_total` (cents), `currency`                                                                  | Stripe webhook - **the conversion truth**, no `funnel_version`                                   |
-| `subscription_canceled` | -                                                                                                                              | Stripe webhook                                                                                   |
+| Event                   | Properties                                                                                                                     | Route                                                                                                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onb_enrich_result`     | `llm_ok`, `fast_source: scrapingdog\|jsonld\|oauth\|none`, `fast_found`, `has_rich_signal`, `rich_status`, `rich_reused`, `ms` | `POST /api/onboarding/enrich`                                                                                                                                                                |
+| `onb_scrape_settled`    | `status: ready\|empty\|failed`, `corpus: posts-dataset\|profile-activity\|null`, `authored_count`, `ms_since_trigger`          | `GET /api/onboarding/enrich/status` - fires exactly once per scrape, on the poll that settles it                                                                                             |
+| `onb_insights_result`   | `kind: posts\|profile\|benchmark`, `authored_count`, `degraded_reason: llm-failed\|thin-corpus\|null`, `rich_status`, `ms`     | `POST /api/onboarding/insights` - once per generation run (the POST answers 202 and generates in the background past the response; the client polls GET). Never fires on the idempotent echo |
+| `onb_first_post_result` | `llm_ok`, `styled`, `gap_category`, `ms`                                                                                       | `POST /api/onboarding/first-post` - fires 4x per user (one per pillar)                                                                                                                       |
+| `onb_rate_limited`      | `action: onbEnrich\|onbInsights\|onbFirstPost`                                                                                 | any onboarding route hitting the daily cap                                                                                                                                                   |
+| `purchase_completed`    | `plan: lifetime\|monthly`, `amount_total` (cents), `currency`                                                                  | Stripe webhook - **the conversion truth**, no `funnel_version`                                                                                                                               |
+| `subscription_canceled` | -                                                                                                                              | Stripe webhook                                                                                                                                                                               |
 
 ## Supabase data (service-role only)
 
 - **`onboarding_sessions`** - one row per user: raw provider payloads (`fast_raw`,
   `rich_raw`, `posts_raw`), every answer, `resume_at` (last persisted step, `'done'` =
-  finished), `rich_status`, `insights_kind`, `completed_at`, `converted` (client-observed;
-  `billing.plan` is the server truth).
+  finished), `rich_status`, `insights_kind`, `insights_status` + `insights_triggered_at`
+  (the background-generation run lock, migration 026), `completed_at`, `converted`
+  (client-observed; `billing.plan` is the server truth).
 - **`onboarding_funnel_daily`** (view, migration 023) - daily rollup: starts, completed,
   converted_client, paid, rich_status / insights_kind / fast_source distributions.
 - **`onboarding_drop_detail`** (view, migration 023) - per-session PII-free detail:
@@ -126,7 +127,8 @@ These fire whether or not the tab stays open - they are the error/latency truth.
    client polls to 6 min.
 3. **Insights**: `posts` (real audit) → `profile` (no post claims) → `benchmark` (static,
    never persisted - so `insights_kind is null` on a completed session usually means the
-   benchmark path or insights never ran).
+   benchmark path or insights never ran; since migration 026, `insights_status = 'failed'`
+   marks that explicitly).
 4. **First post**: styled (voice-referenced) → unstyled LLM → static `fallbackPost`.
 5. **Checkout**: unconfigured Stripe env → `onb_checkout_failed{unconfigured}` + free-plan
    fallback (expected until billing env is live).

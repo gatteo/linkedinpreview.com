@@ -102,6 +102,16 @@ export type RichStatusResponse = {
 
 // --- Insights ---------------------------------------------------------------
 
+/** Background insights generation state (the run lock, mirrors the rich-scrape's). */
+export type InsightsGenerationStatus = 'idle' | 'pending' | 'ready' | 'failed'
+
+/** Response shape of GET /api/onboarding/insights (the generation poll target). */
+export type InsightsStatusResponse = {
+    status: InsightsGenerationStatus
+    /** Present when status is 'ready'. */
+    insights?: OnboardingInsights
+}
+
 export const INSIGHT_CATEGORIES = [
     'personal-story',
     'educational',

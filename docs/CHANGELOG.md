@@ -4,6 +4,19 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-18 — Background insights generation (audit reveal timeout fix)
+
+- **Root cause found from a live run**: `POST /api/onboarding/insights` hit Vercel's 40s task
+  timeout whenever a real posts corpus reached the analysis model (gpt-5-mini), so every rich-scrape
+  user got the graphless benchmark reveal and `onb_insights_result` never fired in production.
+- **Background run**: POST now claims a run lock (`insights_status`/`insights_triggered_at`,
+  migration 026) and answers 202 while the LLM chain (posts → stored fallback → profile →
+  benchmark) continues in `after()` under `maxDuration = 120` with per-call timeout budgets.
+  The client polls the new GET on the same route; stored payloads still echo synchronously.
+- All settle writes are claim-guarded (a re-submitted profile URL mid-generation is never stomped),
+  a stale-pending backstop (150s) fails dead runs fast, and the reveal loader failsafe widened to
+  30s since waiting is now productive. Event dictionary + feature spec 231 updated.
+
 ## 2026-07-17 — Hosted Stripe Checkout as the default purchase flow
 
 - **`CHECKOUT_UI` switch** in `config/pricing.ts` (`'hosted'` default, `'embedded'` to flip back):

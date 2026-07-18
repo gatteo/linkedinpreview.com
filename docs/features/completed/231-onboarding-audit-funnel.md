@@ -108,5 +108,17 @@
   of degrading to a generic benchmark. `onboarding_sessions.posts_source` (migration 024) records which
   source produced the corpus (`brightdata` / `scrapingdog` / `none`), so a rescued gated profile is
   distinguishable from a genuinely postless one.
+- 2026-07-18 background insights generation: the analysis LLM chain used to run inside the POST
+  request and died on Vercel's timeout for real posts corpora (504 at `maxDuration = 40`, benchmark
+  reveal, no graphs - first observed on a live production run). `POST /api/onboarding/insights` now
+  claims a run lock (`insights_status` + `insights_triggered_at`, migration 026, mirroring
+  `rich_status`/`rich_triggered_at`), answers 202 immediately, and generates in `after()`
+  (`maxDuration = 120`, per-call `AbortSignal.timeout` budgets: posts 70s, profile 30s); the client
+  (`fetchInsights`) polls the new GET on the same route (3s interval, 160s deadline, past the
+  server's 150s stale-pending backstop). Stored payloads still echo as a synchronous 200. Every
+  settle write is guarded on the claim timestamp so a re-submitted URL mid-generation is never
+  stomped; the enrich route resets the lock with the rest of the insights columns on a new URL.
+  The reveal loader failsafe widened 20s → 30s since waiting is now productive, and
+  `onb_insights_result` finally fires reliably (it previously died with the function).
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).

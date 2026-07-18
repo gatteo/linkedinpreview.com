@@ -188,7 +188,7 @@ httpOnly cookie so the client only ever sends a `merge` boolean (identity is nev
 
 Rate limits (per user per day): generation: 1, refinement: 3, analysis: 20, wizard: 5, quickAction: 10. Enforced via Supabase RPC `check_and_record_usage` with row-level locking.
 
-**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`, `INVALID_INPUT`, `GENERATION_FAILED`). All routes export `maxDuration = 30`.
+**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`, `INVALID_INPUT`, `GENERATION_FAILED`). Routes export `maxDuration = 30` by default; publish/cron/import routes use 60, and `/api/onboarding/insights` uses 120 because its LLM chain runs in `after()` past the 202 response (the client polls GET for the result).
 
 **Prompts**: All AI prompts (system and user) are centralized in `config/prompts.ts`. Route handlers import prompt constants/builders from there - no inline prompt strings in route files.
 

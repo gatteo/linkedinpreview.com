@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type {
+    InsightsGenerationStatus,
     ObservedCadence,
     OnboardingInsights,
     RichPost,
@@ -40,6 +41,9 @@ export type OnboardingSessionRow = {
     enrichment: Record<string, unknown> | null
     insights: OnboardingInsights | null
     insights_kind: OnboardingInsights['kind'] | null
+    /** Background generation lock (migration 026): mirrors rich_status / rich_triggered_at. */
+    insights_status: InsightsGenerationStatus
+    insights_triggered_at: string | null
     answers: Record<string, unknown>
     resume_at: string | null
     started_at: string

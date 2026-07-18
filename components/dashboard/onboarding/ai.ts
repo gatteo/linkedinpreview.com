@@ -12,6 +12,7 @@ import posthog from 'posthog-js'
 import type {
     FastIdentity,
     InsightCategory,
+    InsightsStatusResponse,
     OnboardingInsights,
     RichScrapeStatus,
     RichStatusResponse,
@@ -99,22 +100,48 @@ export async function fetchRichStatus(): Promise<RichStatusResponse | null> {
 
 export type InsightsHints = { primaryGoal?: StrategyGoal; niche?: string; role?: Role }
 
+const INSIGHTS_POLL_MS = 3_000
+// Past the server's own stale-pending backstop (150s): by then nothing can
+// still be generating, so a missing result is a real failure.
+const INSIGHTS_DEADLINE_MS = 160_000
+
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 /**
- * Generate (or echo, server-side idempotent) the pre-audit insight payload.
- * The hints carry the just-collected goal/role/niche so the analysis is framed
- * around them even before the debounced session write lands.
+ * Generate the pre-audit insight payload. The POST kick-off either echoes a
+ * stored payload (200, server-side idempotent) or claims a background
+ * generation run (202) - the LLM work outlives the request on purpose - and
+ * this then polls GET until the run settles. The hints carry the
+ * just-collected goal/role/niche so the analysis is framed around them even
+ * before the debounced session write lands.
  */
 export async function fetchInsights(hints: InsightsHints = {}): Promise<OnboardingInsights | null> {
+    const startedAt = Date.now()
     try {
-        // Slightly past the route's maxDuration (40s) so the server always gets
-        // to answer or die first - the client never abandons a live response.
         const res = await fetchWithTimeout(
             '/api/onboarding/insights',
             { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(hints) },
-            42000,
+            15000,
         )
         if (!res.ok) return null
-        return (await res.json()) as OnboardingInsights
+        if (res.status !== 202) return (await res.json()) as OnboardingInsights
+
+        // Background run claimed (by this call or a concurrent one): poll.
+        // Transport blips keep polling - only a settled 'failed'/'idle' (the
+        // session or claim vanished, e.g. a re-submitted URL) gives up early.
+        while (Date.now() - startedAt < INSIGHTS_DEADLINE_MS) {
+            await wait(INSIGHTS_POLL_MS)
+            try {
+                const poll = await fetchWithTimeout('/api/onboarding/insights', {}, 15000)
+                if (!poll.ok) continue
+                const data = (await poll.json()) as InsightsStatusResponse
+                if (data.status === 'ready' && data.insights) return data.insights
+                if (data.status === 'failed' || data.status === 'idle') return null
+            } catch {
+                // keep polling until the deadline
+            }
+        }
+        return null
     } catch {
         return null
     }

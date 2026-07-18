@@ -26,7 +26,10 @@ import { useScrollGate } from '../use-scroll-gate'
 // and healthy metrics get positive framing instead of manufactured deficits.
 // ---------------------------------------------------------------------------
 
-const LOADER_FAILSAFE_MS = 20_000
+// Generation runs server-side in the background (fetchInsights polls for it),
+// so waiting here can actually pay off - but past this the user reads the
+// benchmark report rather than a spinner. The payload still persists for later.
+const LOADER_FAILSAFE_MS = 30_000
 const DORMANT_AFTER_DAYS = 45
 
 /** No server payload is coming (or it failed): honest benchmark content. */

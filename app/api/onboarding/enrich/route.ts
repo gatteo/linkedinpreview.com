@@ -142,6 +142,11 @@ export async function POST(request: Request) {
             richPatch.posts_raw = null
             richPatch.insights = null
             richPatch.insights_kind = null
+            // Also drop the generation lock: an in-flight run for the old URL
+            // loses its claim (settleClaim matches on the timestamp) and the
+            // new URL starts from a clean 'idle'.
+            richPatch.insights_status = 'idle'
+            richPatch.insights_triggered_at = null
         }
         await upsertOnboardingSession(supabase, user.id, richPatch).catch(() => {})
     }
