@@ -1,6 +1,6 @@
 {
     "name": "linkedinpreview.com",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "private": true,
     "type": "module",
     "scripts": {
@@ -137,7 +137,7 @@
         "node": ">=18 <25",
         "pnpm": ">=8"
     },
-    "packageManager": "pnpm@11.10.0",
+    "packageManager": "pnpm@11.13.1",
     "lint-staged": {
         "*.{ts,tsx,mjs}": [
             "eslint --fix",
@@ -146,11 +146,5 @@
         "*.{json,css,md,mdx}": [
             "prettier --write"
         ]
-    },
-    "pnpm": {
-        "overrides": {
-            "@types/react": "19.2.14",
-            "@types/react-dom": "19.2.3"
-        }
     }
 }
