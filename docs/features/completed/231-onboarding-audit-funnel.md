@@ -120,5 +120,13 @@
   stomped; the enrich route resets the lock with the rest of the insights columns on a new URL.
   The reveal loader failsafe widened 20s → 30s since waiting is now productive, and
   `onb_insights_result` finally fires reliably (it previously died with the function).
+- 2026-07-18 connect step hardening (data-driven): funnel analysis showed 5 of 7 connect-step
+  choosers hit "Skip for now", so every recent reveal was `kind: benchmark` and the audit
+  effectively never ran. The connect skip is removed entirely - the only bypass left is the
+  fetch-failure card's "Continue without my data" (`onb_fetch_failed_action{manual}`), so
+  `onb_connect_method` is now `oauth|url` only. The URL input accepts a bare slug or a typed
+  name (`coerceProfileInput` in `lib/linkedin/profile-url.ts`: NFKD-slugified, canonical URL
+  stored in answers; a wrong name guess surfaces on the fetch-failure card). Step copy is
+  value-forward, framed on the audit outcome, with a stronger read-only trust line.
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).

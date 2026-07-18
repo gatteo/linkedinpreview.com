@@ -33,3 +33,26 @@ export function normalizeProfileUrl(input: string | undefined | null): string | 
 export function isLikelyProfileUrl(input: string | undefined | null): boolean {
     return normalizeProfileUrl(input) !== null
 }
+
+/**
+ * Looser coercion for the connect input: everything normalizeProfileUrl takes
+ * (full URL, host path, @slug, bare slug), plus a bare human name ("Matteo
+ * Giardino") slugified the way LinkedIn vanity URLs usually are (lowercase,
+ * hyphens, diacritics stripped). A wrong name guess surfaces on the
+ * fetch-failure card with a retry, never silently.
+ */
+export function coerceProfileInput(input: string | undefined | null): string | null {
+    const direct = normalizeProfileUrl(input)
+    if (direct) return direct
+
+    const raw = (input ?? '').trim()
+    // 2-5 words of letters (apostrophes/dots allowed): a typed name, not a URL.
+    if (!/^[\p{L}][\p{L}'’.]*(?:\s+[\p{L}][\p{L}'’.]*){1,4}$/u.test(raw)) return null
+    const slug = raw
+        .normalize('NFKD')
+        .replace(/\p{M}+/gu, '')
+        .replace(/['’.]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+    return normalizeProfileUrl(slug)
+}

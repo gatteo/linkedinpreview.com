@@ -4,18 +4,19 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRightIcon, LinkedinIcon, LockIcon } from 'lucide-react'
 
-import { isLikelyProfileUrl } from '@/lib/linkedin/profile-url'
+import { coerceProfileInput } from '@/lib/linkedin/profile-url'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { Input } from '@/components/ui/input'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
-import { CTA, GhostLink, H1, Sub } from '../primitives'
+import { CTA, H1, Sub } from '../primitives'
 
 // ---------------------------------------------------------------------------
-// 01 · Connect - two ways in (OAuth or a pasted public URL) so users who won't
-// do OAuth still convert. Both paths land on the fetching loader; a quiet skip
-// hops straight to the questions for the rare hard-no.
+// 01 · Connect - the audit's front door, framed around what they get. Two ways
+// in (OAuth or a pasted URL / bare name, coerced to the canonical profile URL)
+// and both land on the fetching loader. No skip: connecting is what makes the
+// audit real - the only way around is the fetch-failure card's escape hatch.
 // ---------------------------------------------------------------------------
 
 const ERROR_COPY: Record<string, string> = {
@@ -26,7 +27,7 @@ const ERROR_COPY: Record<string, string> = {
 }
 
 export function ConnectStep() {
-    const { answers, update, goNext, goTo, connectLinkedin, linkedinError } = useOnboarding()
+    const { answers, update, goNext, connectLinkedin, linkedinError } = useOnboarding()
     const [url, setUrl] = React.useState(answers.profileUrl ?? '')
     const [urlError, setUrlError] = React.useState(false)
 
@@ -36,9 +37,10 @@ export function ConnectStep() {
     }
 
     const submitUrl = () => {
-        const trimmed = url.trim()
-        if (!trimmed) return
-        if (!isLikelyProfileUrl(trimmed)) {
+        if (!url.trim()) return
+        // URL, bare slug, or a typed name - coerced to the canonical profile URL.
+        const coerced = coerceProfileInput(url)
+        if (!coerced) {
             setUrlError(true)
             return
         }
@@ -46,9 +48,9 @@ export function ConnectStep() {
         // Clear any prior enrichment so the fetching step re-reads this URL from
         // scratch. A DIFFERENT URL also drops the previous profile's identity +
         // inferences (else two profiles mix); an OAuth identity stays.
-        const changedUrl = trimmed !== answers.profileUrl
+        const changedUrl = coerced !== answers.profileUrl
         update({
-            profileUrl: trimmed,
+            profileUrl: coerced,
             enrichConfidence: undefined,
             mirrorFetchOk: undefined,
             richStatus: undefined,
@@ -73,18 +75,14 @@ export function ConnectStep() {
         goNext()
     }
 
-    const skipAll = () => {
-        track('onb_connect_method', { method: 'skip' })
-        goTo('goal')
-    }
-
     return (
         <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col'>
             <motion.div variants={staggerItem}>
-                <H1>Let&rsquo;s build a strategy, just for you.</H1>
+                <H1>First, let&rsquo;s audit your LinkedIn.</H1>
                 <Sub>
-                    Connect LinkedIn so I can build a personalized plan on <strong>your real profile data</strong>, not
-                    a generic template.
+                    I&rsquo;ll read your profile and recent posts to show you{' '}
+                    <strong>what&rsquo;s working, what&rsquo;s missing</strong>, and the plan that fixes it - built on
+                    your real data, not a template.
                 </Sub>
             </motion.div>
 
@@ -111,7 +109,7 @@ export function ConnectStep() {
                         setUrl(e.target.value)
                         if (urlError) setUrlError(false)
                     }}
-                    placeholder='linkedin.com/in/your-name'
+                    placeholder='linkedin.com/in/your-name, or just your name'
                     aria-label='Your LinkedIn profile URL'
                     aria-invalid={urlError}
                     onKeyDown={(e) => {
@@ -121,7 +119,8 @@ export function ConnectStep() {
                 />
                 {urlError && (
                     <p className='text-destructive text-xs'>
-                        That doesn&rsquo;t look like a profile URL - try linkedin.com/in/your-name.
+                        That doesn&rsquo;t look like a profile - try linkedin.com/in/your-name, or just your name as it
+                        appears on LinkedIn.
                     </p>
                 )}
                 <CTA variant='outline' onClick={submitUrl} disabled={!url.trim()}>
@@ -134,10 +133,7 @@ export function ConnectStep() {
                 variants={staggerItem}
                 className='text-muted-foreground mt-[18px] flex items-center gap-2.5 text-[12.5px]'>
                 <LockIcon className='text-petrol-500 size-[15px]' />
-                <span>Read-only. Only you can see this data.</span>
-                <GhostLink onClick={skipAll} className='ml-auto shrink-0'>
-                    Skip for now
-                </GhostLink>
+                <span>Read-only. We never post or message anyone. Only you can see this data.</span>
             </motion.div>
         </motion.div>
     )

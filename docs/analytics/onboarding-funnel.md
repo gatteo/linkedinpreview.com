@@ -46,29 +46,29 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 
 ### Step interactions
 
-| Event                                                   | Properties                                                                          | Step                                       |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------ |
-| `onb_welcome_start`                                     | -                                                                                   | welcome                                    |
-| `onb_connect_method`                                    | `method: oauth\|url\|skip`                                                          | connect                                    |
-| `onb_fetch_done`                                        | `found`, `rich`                                                                     | fetching                                   |
-| `onb_fetch_failed`                                      | -                                                                                   | fetching (URL fetch fell over client-side) |
-| `onb_fetch_failed_action`                               | `action: retry\|manual`                                                             | fetching failure card                      |
-| `onb_goal_select` / `onb_goal_confirm`                  | `goal` / -                                                                          | goal                                       |
-| `onb_persona_role` / `onb_persona_niche`                | `role` / `niche`                                                                    | persona                                    |
-| `onb_recap_confirm`                                     | `corrected`                                                                         | recap                                      |
-| `onb_recap_correct_open`                                | -                                                                                   | recap ("Something's off?")                 |
-| `onb_voice_set`                                         | `voice`, `tone`                                                                     | voice                                      |
-| `onb_topics_toggle`                                     | `topic`, `selected`, `count`, `custom` (true only when typed via the free-text add) | topics                                     |
-| `onb_schedule_frequency` / `onb_schedule_choose_for_me` | `frequency`                                                                         | schedule                                   |
-| `onb_reinforce_view`                                    | `hasFollowers`                                                                      | reinforce                                  |
-| `onb_building_done`                                     | -                                                                                   | building loader finished                   |
-| `onb_reveal_view`                                       | `kind`, `postsAnalyzed`                                                             | reveal (audit report shown)                |
-| `onb_reveal_continue`                                   | -                                                                                   | reveal CTA                                 |
-| `onb_email_submit`                                      | -                                                                                   | email (bind succeeded, anon user upgraded) |
-| `onb_email_skip`                                        | -                                                                                   | email ("I'll do this later")               |
-| `onb_buildplan_done`                                    | -                                                                                   | buildplan loader finished                  |
-| `onb_post_ideas_ready` / `onb_post_ideas_failed`        | `count` / -                                                                         | buildplan (4 pillar posts)                 |
-| `onb_commitment`                                        | `commitment`                                                                        | commitment popup                           |
+| Event                                                   | Properties                                                                                                                                      | Step                                       |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `onb_welcome_start`                                     | -                                                                                                                                               | welcome                                    |
+| `onb_connect_method`                                    | `method: oauth\|url` (`skip` existed until 2026-07-18; the only remaining bypass is the fetch-failure card's `onb_fetch_failed_action{manual}`) | connect                                    |
+| `onb_fetch_done`                                        | `found`, `rich`                                                                                                                                 | fetching                                   |
+| `onb_fetch_failed`                                      | -                                                                                                                                               | fetching (URL fetch fell over client-side) |
+| `onb_fetch_failed_action`                               | `action: retry\|manual`                                                                                                                         | fetching failure card                      |
+| `onb_goal_select` / `onb_goal_confirm`                  | `goal` / -                                                                                                                                      | goal                                       |
+| `onb_persona_role` / `onb_persona_niche`                | `role` / `niche`                                                                                                                                | persona                                    |
+| `onb_recap_confirm`                                     | `corrected`                                                                                                                                     | recap                                      |
+| `onb_recap_correct_open`                                | -                                                                                                                                               | recap ("Something's off?")                 |
+| `onb_voice_set`                                         | `voice`, `tone`                                                                                                                                 | voice                                      |
+| `onb_topics_toggle`                                     | `topic`, `selected`, `count`, `custom` (true only when typed via the free-text add)                                                             | topics                                     |
+| `onb_schedule_frequency` / `onb_schedule_choose_for_me` | `frequency`                                                                                                                                     | schedule                                   |
+| `onb_reinforce_view`                                    | `hasFollowers`                                                                                                                                  | reinforce                                  |
+| `onb_building_done`                                     | -                                                                                                                                               | building loader finished                   |
+| `onb_reveal_view`                                       | `kind`, `postsAnalyzed`                                                                                                                         | reveal (audit report shown)                |
+| `onb_reveal_continue`                                   | -                                                                                                                                               | reveal CTA                                 |
+| `onb_email_submit`                                      | -                                                                                                                                               | email (bind succeeded, anon user upgraded) |
+| `onb_email_skip`                                        | -                                                                                                                                               | email ("I'll do this later")               |
+| `onb_buildplan_done`                                    | -                                                                                                                                               | buildplan loader finished                  |
+| `onb_post_ideas_ready` / `onb_post_ideas_failed`        | `count` / -                                                                                                                                     | buildplan (4 pillar posts)                 |
+| `onb_commitment`                                        | `commitment`                                                                                                                                    | commitment popup                           |
 
 ### Offer & checkout
 

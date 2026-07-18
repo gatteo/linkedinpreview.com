@@ -4,6 +4,20 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-18 — Connect step: no skip, name/slug input, audit-outcome framing
+
+- **Data**: 14-day funnel read showed the connect "Skip for now" link took 5 of 7 choosers
+  around the entire scrape pipeline (`connect → goal`, bypassing `fetching`), so every recent
+  reveal rendered the generic benchmark - the audit never ran for real users. The PostHog
+  "drop" at fetching was this bypass, not abandonment.
+- **Skip removed** from the connect step; the fetch-failure card's "Continue without my data"
+  remains the only escape hatch. `onb_connect_method` no longer emits `skip` (dictionary updated).
+- **Lower input effort**: the URL field now accepts a bare slug or a typed name via
+  `coerceProfileInput` (NFKD slugification, canonical URL stored); wrong guesses land on the
+  failure card with a retry.
+- **Value-forward copy**: the step sells the audit outcome ("what's working, what's missing")
+  and states the read-only guarantee explicitly.
+
 ## 2026-07-18 — Background insights generation (audit reveal timeout fix)
 
 - **Root cause found from a live run**: `POST /api/onboarding/insights` hit Vercel's 40s task
