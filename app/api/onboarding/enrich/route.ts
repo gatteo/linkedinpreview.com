@@ -215,6 +215,9 @@ export async function POST(request: Request) {
                 llm_ok: llmOk,
                 fast_source: fetched?.found ? fetched.source : 'none',
                 fast_found: !!fetched?.found,
+                // Why the fast tier degraded to 'none' (quota/rate-limit/timeout/
+                // empty-record/block) - null when it found a profile or no URL ran.
+                fast_fail_reason: fetched && !fetched.found ? (fetched.failReason ?? 'unknown') : null,
                 has_rich_signal: hasRichSignal,
                 rich_status: richStatus,
                 rich_reused: reuseRich,

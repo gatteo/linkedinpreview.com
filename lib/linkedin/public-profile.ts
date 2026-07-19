@@ -47,6 +47,14 @@ export type PublicProfile = {
     raw?: Record<string, unknown>
     /** Extended identity (Scrapingdog only) for the onboarding profile card. */
     identity?: FastIdentity
+    /**
+     * Why the fast tier produced nothing (only set when `found` is false):
+     * `http-<status>` (e.g. quota 402 / rate-limit 429), `empty-record` (a 200
+     * with no usable fields - Scrapingdog's own scrape failed), `timeout`,
+     * `network`, `parse`, `no-key`, or `html-block` (jsonld tier unreachable).
+     * Threaded onto `onb_enrich_result` so a silent degrade is diagnosable.
+     */
+    failReason?: string
 }
 
 const EMPTY: PublicProfile = {
@@ -240,11 +248,17 @@ function extractIdentity(record: ScrapingdogProfile): FastIdentity {
     return identity
 }
 
-async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Promise<PublicProfile | null> {
+// Returns the profile on success, or a `reason` on failure so the caller can
+// thread WHY the fast tier produced nothing onto the funnel event - a bare null
+// hid quota (402/403), rate-limit (429), timeouts, and empty scrapes behind one
+// silent 'none', making the launch-week degradation undiagnosable.
+type ScrapingdogResult = { profile: PublicProfile | null; reason: string | null }
+
+async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Promise<ScrapingdogResult> {
     const apiKey = env.SCRAPINGDOG_API_KEY
-    if (!apiKey) return null
+    if (!apiKey) return { profile: null, reason: 'no-key' }
     const slug = targetUrl.split('/in/')[1]?.replace(/\/+$/, '')
-    if (!slug) return null
+    if (!slug) return { profile: null, reason: 'bad-slug' }
 
     // Own timeout on top of the caller's overall budget so a slow Scrapingdog
     // response still leaves time for the JSON-LD fallback.
@@ -257,10 +271,18 @@ async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Prom
         // a 404 "Not a valid Linkedin Id".
         const endpoint = `https://api.scrapingdog.com/linkedin?api_key=${encodeURIComponent(apiKey)}&type=profile&linkId=${encodeURIComponent(slug)}&private=false`
         const res = await fetch(endpoint, { signal: controller.signal })
-        if (!res.ok) return null
+        if (!res.ok) {
+            // 402/403 = credits/plan exhausted, 429 = rate-limited, 5xx =
+            // Scrapingdog trouble. Logged so the actual mode is visible in Vercel.
+            console.error(`[enrich] scrapingdog http ${res.status} for /in/${slug}`)
+            return { profile: null, reason: `http-${res.status}` }
+        }
         const body = (await res.json()) as ScrapingdogProfile | ScrapingdogProfile[]
         const record = Array.isArray(body) ? body[0] : body
-        if (!record || typeof record !== 'object') return null
+        if (!record || typeof record !== 'object') {
+            console.warn(`[enrich] scrapingdog empty body for /in/${slug}`)
+            return { profile: null, reason: 'empty-record' }
+        }
 
         const name = (
             record.fullName ||
@@ -279,33 +301,89 @@ async function fetchViaScrapingdog(targetUrl: string, signal: AbortSignal): Prom
         ).slice(0, MAX_POSTS)
 
         const found = Boolean(name || headline || about || recentPosts.length)
-        if (!found) return null
-        return {
-            found,
-            name,
-            headline,
-            about,
-            recentPosts,
-            avatarUrl,
-            url: targetUrl,
-            source: 'scrapingdog',
-            raw: record as Record<string, unknown>,
-            identity: extractIdentity(record),
+        if (!found) {
+            // A 200 whose record carried no usable fields: Scrapingdog's own
+            // scrape of LinkedIn came back thin (the fast-growing failure mode as
+            // LinkedIn tightens anti-bot), distinct from an HTTP error.
+            console.warn(`[enrich] scrapingdog no usable fields for /in/${slug}`)
+            return { profile: null, reason: 'empty-record' }
         }
-    } catch {
-        return null
+        return {
+            profile: {
+                found,
+                name,
+                headline,
+                about,
+                recentPosts,
+                avatarUrl,
+                url: targetUrl,
+                source: 'scrapingdog',
+                raw: record as Record<string, unknown>,
+                identity: extractIdentity(record),
+            },
+            reason: null,
+        }
+    } catch (err) {
+        // The caller's signal aborting cancels the whole chain (client left);
+        // our own controller aborting is the Scrapingdog timeout.
+        const reason = signal.aborted
+            ? 'aborted'
+            : controller.signal.aborted
+              ? 'timeout'
+              : err instanceof SyntaxError
+                ? 'parse'
+                : 'network'
+        console.error(`[enrich] scrapingdog ${reason} for /in/${slug}`, err)
+        return { profile: null, reason }
     } finally {
         clearTimeout(timer)
         signal.removeEventListener('abort', onAbort)
     }
 }
 
+const MAX_HTML_CAP = (html: string) => (html.length > MAX_HTML_BYTES ? html.slice(0, MAX_HTML_BYTES) : html)
+
 /**
- * Get the profile page HTML. Routes through a configured scraping API when set
- * (a raw-HTML proxy), otherwise fetches directly (works from residential IPs /
- * local dev, often blocked from datacenter IPs).
+ * Bright Data Web Unlocker (native API): POST the target URL to /request with a
+ * configured zone and `format: raw`, and it returns the unblocked page HTML from
+ * a residential IP - the way to reach LinkedIn's SEO page from Vercel's
+ * datacenter IP (which LinkedIn 999-blocks). Reuses BRIGHTDATA_API_KEY (same
+ * token as the rich dataset tier); the zone is created in the Bright Data
+ * dashboard and named via BRIGHTDATA_UNLOCKER_ZONE. Null (never throws) so the
+ * caller falls through to the generic proxy / direct fetch.
+ */
+async function fetchViaBrightDataUnlocker(targetUrl: string, signal: AbortSignal): Promise<string | null> {
+    const zone = env.BRIGHTDATA_UNLOCKER_ZONE
+    const token = env.BRIGHTDATA_API_KEY
+    if (!zone || !token) return null
+    try {
+        const res = await fetch('https://api.brightdata.com/request', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ zone, url: targetUrl, format: 'raw' }),
+            signal,
+        })
+        if (!res.ok) {
+            console.warn(`[enrich] brightdata unlocker ${res.status} for ${targetUrl}`)
+            return null
+        }
+        return MAX_HTML_CAP(await res.text())
+    } catch (err) {
+        console.error('[enrich] brightdata unlocker error', err)
+        return null
+    }
+}
+
+/**
+ * Get the profile page HTML. Prefers Bright Data Web Unlocker (residential,
+ * unblocks the datacenter-IP challenge) when a zone is configured, then a generic
+ * raw-HTML proxy (LINKEDIN_SCRAPE_API_URL), then a direct fetch (works from
+ * residential IPs / local dev, blocked from datacenter IPs).
  */
 async function getProfileHtml(targetUrl: string, signal: AbortSignal): Promise<string | null> {
+    const viaBrightData = await fetchViaBrightDataUnlocker(targetUrl, signal)
+    if (viaBrightData) return viaBrightData
+
     const scrapeApi = env.LINKEDIN_SCRAPE_API_URL
     const requestUrl = scrapeApi
         ? `${scrapeApi}${scrapeApi.includes('?') ? '&' : '?'}url=${encodeURIComponent(targetUrl)}`
@@ -318,14 +396,19 @@ async function getProfileHtml(targetUrl: string, signal: AbortSignal): Promise<s
         : { 'User-Agent': BROWSER_UA, 'Accept-Language': 'en-US,en;q=0.9', 'Accept': 'text/html' }
 
     const res = await fetch(requestUrl, { headers, redirect: 'follow', signal })
-    if (!res.ok) return null
+    if (!res.ok) {
+        // HTTP 999 / an authwall redirect is LinkedIn blocking the datacenter IP -
+        // the reason the JSON-LD tier can't rescue a Scrapingdog miss in prod.
+        if (!scrapeApi && !env.BRIGHTDATA_UNLOCKER_ZONE)
+            console.warn(`[enrich] linkedin html blocked ${res.status} (datacenter IP, no unlocker/proxy configured)`)
+        return null
+    }
 
     // Best-effort size guard. A declared-too-large body is rejected up front;
     // otherwise we cap after buffering (the abort timeout bounds a slow stream).
     const len = Number(res.headers.get('content-length') ?? 0)
     if (len && len > MAX_HTML_BYTES) return null
-    const html = await res.text()
-    return html.length > MAX_HTML_BYTES ? html.slice(0, MAX_HTML_BYTES) : html
+    return MAX_HTML_CAP(await res.text())
 }
 
 /**
@@ -348,12 +431,15 @@ export async function fetchPublicProfile(
     externalSignal?.addEventListener('abort', onExternalAbort)
     try {
         const viaScrapingdog = await fetchViaScrapingdog(url, controller.signal)
-        if (viaScrapingdog?.found) return viaScrapingdog
+        if (viaScrapingdog.profile?.found) return viaScrapingdog.profile
 
+        // Scrapingdog produced nothing - carry its reason onto the degraded
+        // result so the enrich event records why (the JSON-LD tier below is
+        // near-always blocked from Vercel's datacenter IP, so it rarely rescues).
         const html = await getProfileHtml(url, controller.signal)
-        if (!html) return { ...EMPTY, url }
+        if (!html) return { ...EMPTY, url, failReason: viaScrapingdog.reason ?? 'html-block' }
         const profile = parsePublicProfileHtml(html, url)
-        return profile.found ? profile : { ...EMPTY, url }
+        return profile.found ? profile : { ...EMPTY, url, failReason: viaScrapingdog.reason ?? 'parse-miss' }
     } catch {
         return { ...EMPTY, url }
     } finally {
