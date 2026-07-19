@@ -187,7 +187,7 @@ export function OnboardingModal({
                 onEscapeKeyDown={(e) => e.preventDefault()}
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onInteractOutside={(e) => e.preventDefault()}
-                className='flex h-[min(790px,90vh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
+                className='flex h-[min(790px,90svh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
                     {step === 'confirm' && converted && <Confetti />}
                     {step === 'paywall' && <Confetti count={14} />}
