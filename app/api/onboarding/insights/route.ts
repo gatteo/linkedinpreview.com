@@ -246,17 +246,27 @@ export async function POST(request: Request) {
         )
     }
 
-    // Atomic claim: exactly one request wins the lock (the conditional update
-    // matches only non-pending or stale rows). Losing the race is fine - the
-    // winner's run is the one the caller will poll for.
+    // Atomic claim, WITHOUT a PostgREST `.or()` filter: an `or()` on an
+    // RLS-enforced UPDATE fails with a spurious "column does not exist" (a
+    // PostgREST quirk - the identical filter works for the service role and as
+    // raw SQL, and a plain `.update().eq()` on the same column works), so the
+    // claim silently matched 0 rows and every audit fell back to the benchmark
+    // (GH #24). The pending-fresh case is already handled above, so here we
+    // optimistic-lock on the exact insights_triggered_at we read: a concurrent
+    // request that claimed first moves the timestamp, our guard misses, and we
+    // defer to its run (Postgres re-checks the predicate under the row lock, so
+    // exactly one writer wins). A stale-pending row is reclaimed the same way -
+    // its stale timestamp is the value we read and guard on.
     const claimedAt = new Date().toISOString()
-    const staleBefore = new Date(Date.now() - STALE_PENDING_MS).toISOString()
-    const { data: claimed } = await supabase
+    const claimBase = supabase
         .from('onboarding_sessions')
         .update({ insights_status: 'pending', insights_triggered_at: claimedAt, updated_at: claimedAt })
         .eq('user_id', user.id)
-        .or(`insights_status.neq.pending,insights_triggered_at.is.null,insights_triggered_at.lt.${staleBefore}`)
-        .select('user_id')
+    const { data: claimed } = await (
+        session.insights_triggered_at
+            ? claimBase.eq('insights_triggered_at', session.insights_triggered_at)
+            : claimBase.is('insights_triggered_at', null)
+    ).select('user_id')
     if (!claimed?.length) return pendingResponse()
 
     after(() => runGeneration(supabase, user.id, session, authored, profileText || undefined, claimedAt))

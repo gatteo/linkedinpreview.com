@@ -3,9 +3,10 @@
 import * as React from 'react'
 
 import { BUILDING_TASKS } from '@/config/onboarding-flow'
+import { resolveRole } from '@/config/onboarding-personalization'
 import { FORMAT_CATEGORIES, type FormatCategory, type StrategyFormat } from '@/lib/strategy'
 
-import { track } from '../ai'
+import { fetchInsights, track } from '../ai'
 import { useOnboarding } from '../context'
 import { LoaderBlock } from '../primitives'
 
@@ -123,6 +124,33 @@ export function BuildingStep() {
                 await wait(600)
             }
             setDoneCount(2)
+
+            // Kick the audit generation from here - a step every user reaches and
+            // that stays mounted - instead of relying on the background pipeline
+            // effect, which raced the scrape settle and the modal lifecycle and
+            // left production at ~100% benchmark. Fire-and-forget: the wait loop
+            // below gives it a window and the reveal drives it again as a backstop.
+            // Only when a scrape/enrich actually ran (richStatus set) and the
+            // goal/role framing exists; the server route degrades kind by itself.
+            const cur = answersRef.current
+            const goal = cur.primaryGoal ?? cur.goals[0]
+            if (
+                !cur.insights &&
+                cur.insightsStatus !== 'failed' &&
+                cur.richStatus &&
+                cur.richStatus !== 'idle' &&
+                goal &&
+                cur.role
+            ) {
+                const firedFor = cur.profileUrl
+                fetchInsights({ primaryGoal: goal, niche: cur.niche || undefined, role: resolveRole(cur.role) }).then(
+                    (payload) => {
+                        if (answersRef.current.profileUrl !== firedFor) return
+                        if (payload) update({ insights: payload, insightsStatus: 'ready' })
+                        else update({ insightsStatus: 'failed' })
+                    },
+                )
+            }
 
             // Then (bounded) while the insights payload is still generating.
             const insightsWaitStart = Date.now()

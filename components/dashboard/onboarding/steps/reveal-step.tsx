@@ -6,11 +6,11 @@ import { AnchorIcon, MessageSquareIcon, RulerIcon, type LucideIcon } from 'lucid
 
 import type { OnboardingInsights } from '@/types/onboarding'
 import { AUDIT_FIXES, AUDIT_IDEAL_MIX, auditMix, auditPercentile, topicStrengths } from '@/config/onboarding-flow'
-import { GOAL_GAP, goalRestated, INSIGHT_CATEGORY_LABELS } from '@/config/onboarding-personalization'
+import { GOAL_GAP, goalRestated, INSIGHT_CATEGORY_LABELS, resolveRole } from '@/config/onboarding-personalization'
 import { EASE_OUT } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
-import { track } from '../ai'
+import { fetchInsights, track } from '../ai'
 import { Radar } from '../charts'
 import { useOnboarding } from '../context'
 import { firstName, H1, PersonAvatar, RingSpinner, Sub, timeAgoLabel } from '../primitives'
@@ -51,7 +51,7 @@ function localBenchmark(answers: OnboardingAnswers): OnboardingInsights {
 }
 
 export function RevealStep() {
-    const { answers, goNext } = useOnboarding()
+    const { answers, update, goNext } = useOnboarding()
     const [timedOut, setTimedOut] = React.useState(false)
     // Once the report is on screen its content is frozen for this mount: a
     // payload that lands late must not swap sections mid-read.
@@ -63,6 +63,27 @@ export function RevealStep() {
         !!answers.richStatus &&
         answers.richStatus !== 'idle'
     const waiting = expecting && !timedOut && !frozen
+
+    // Guaranteed trigger of last resort: the user is on the reveal and mounted,
+    // so drive the generation from here even if every earlier trigger (the
+    // pipeline effect, the building step) missed. Idempotent server-side + a
+    // client dedupe, so this just retrieves whatever is already running rather
+    // than starting a second run. Only when a scrape/enrich ran and the goal/role
+    // framing exists; pure-manual users correctly keep the benchmark.
+    const drivenRef = React.useRef(false)
+    React.useEffect(() => {
+        if (drivenRef.current) return
+        const goal = answers.primaryGoal ?? answers.goals[0]
+        if (answers.insights || !answers.richStatus || answers.richStatus === 'idle' || !goal || !answers.role) return
+        drivenRef.current = true
+        fetchInsights({ primaryGoal: goal, niche: answers.niche || undefined, role: resolveRole(answers.role) }).then(
+            (payload) => {
+                if (payload) update({ insights: payload, insightsStatus: 'ready' })
+                else update({ insightsStatus: 'failed' })
+            },
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     React.useEffect(() => {
         if (!waiting) return
