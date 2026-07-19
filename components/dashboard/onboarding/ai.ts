@@ -107,15 +107,43 @@ const INSIGHTS_DEADLINE_MS = 160_000
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+// One shared in-flight generation per client. The pipeline hook, the building
+// step, and the reveal step all drive this concurrently on purpose - each is a
+// mount the others can miss, so triggering from all three is what makes the
+// audit reliably fire (the old single-trigger effect raced the scrape settle and
+// the modal lifecycle and landed ~0% of the time in production). The server run
+// lock already dedupes the generation itself; this collapses the redundant poll
+// loops into one. Callers within a session pass ~identical hints, so a singleton
+// is safe, and it clears on settle so a re-submitted URL re-generates.
+let inflightInsights: Promise<OnboardingInsights | null> | null = null
+
 /**
  * Generate the pre-audit insight payload. The POST kick-off either echoes a
  * stored payload (200, server-side idempotent) or claims a background
  * generation run (202) - the LLM work outlives the request on purpose - and
  * this then polls GET until the run settles. The hints carry the
  * just-collected goal/role/niche so the analysis is framed around them even
- * before the debounced session write lands.
+ * before the debounced session write lands. Concurrent callers share one
+ * in-flight request.
  */
-export async function fetchInsights(hints: InsightsHints = {}): Promise<OnboardingInsights | null> {
+export function fetchInsights(hints: InsightsHints = {}): Promise<OnboardingInsights | null> {
+    if (inflightInsights) return inflightInsights
+    // Track the outcome once per generation here, not in each caller - the
+    // building step, reveal step, and pipeline hook can all await this same
+    // promise, and firing the funnel event from each would triple-count.
+    const promise = generateInsights(hints).then((payload) => {
+        if (payload) track('onb_insights_ready', { kind: payload.kind })
+        else track('onb_insights_failed')
+        return payload
+    })
+    inflightInsights = promise
+    promise.finally(() => {
+        if (inflightInsights === promise) inflightInsights = null
+    })
+    return promise
+}
+
+async function generateInsights(hints: InsightsHints): Promise<OnboardingInsights | null> {
     const startedAt = Date.now()
     try {
         const res = await fetchWithTimeout(

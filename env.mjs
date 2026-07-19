@@ -39,6 +39,12 @@ export const env = createEnv({
         // LinkedIn People Profile dataset.
         BRIGHTDATA_API_KEY: z.string().optional(),
         BRIGHTDATA_LINKEDIN_DATASET_ID: z.string().optional(),
+        // Bright Data Web Unlocker zone name (created in the Bright Data
+        // dashboard). When set, the fast-tier JSON-LD fallback fetches LinkedIn's
+        // SEO page HTML through the Unlocker (residential, bypasses the
+        // datacenter-IP block) instead of a direct request - reuses
+        // BRIGHTDATA_API_KEY as the bearer token. See lib/linkedin/public-profile.ts.
+        BRIGHTDATA_UNLOCKER_ZONE: z.string().optional(),
         // Scrapingdog LinkedIn profile API - the FAST onboarding enrichment tier
         // (synchronous, ~3-8s, structured JSON). When unset, the fast tier falls
         // back to a direct JSON-LD fetch (works from residential IPs / local dev,
@@ -93,6 +99,7 @@ export const env = createEnv({
         LINKEDIN_SCRAPE_API_KEY: process.env.LINKEDIN_SCRAPE_API_KEY,
         BRIGHTDATA_API_KEY: process.env.BRIGHTDATA_API_KEY,
         BRIGHTDATA_LINKEDIN_DATASET_ID: process.env.BRIGHTDATA_LINKEDIN_DATASET_ID,
+        BRIGHTDATA_UNLOCKER_ZONE: process.env.BRIGHTDATA_UNLOCKER_ZONE,
         SCRAPINGDOG_API_KEY: process.env.SCRAPINGDOG_API_KEY,
         LINKEDIN_ANALYTICS_CLIENT_ID: process.env.LINKEDIN_ANALYTICS_CLIENT_ID,
         LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,

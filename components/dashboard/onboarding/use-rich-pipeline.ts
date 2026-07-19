@@ -165,13 +165,8 @@ export function useRichPipeline(answers: OnboardingAnswers, update: (patch: Part
         })
             .then((payload) => {
                 if (answersRef.current.profileUrl !== firedFor) return
-                if (payload) {
-                    track('onb_insights_ready', { kind: payload.kind })
-                    updateRef.current({ insights: payload, insightsStatus: 'ready' })
-                } else {
-                    track('onb_insights_failed')
-                    updateRef.current({ insightsStatus: 'failed' })
-                }
+                if (payload) updateRef.current({ insights: payload, insightsStatus: 'ready' })
+                else updateRef.current({ insightsStatus: 'failed' })
             })
             .finally(() => {
                 insightsInFlightRef.current = false

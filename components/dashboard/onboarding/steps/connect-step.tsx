@@ -4,7 +4,7 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRightIcon, LinkedinIcon, LockIcon } from 'lucide-react'
 
-import { coerceProfileInput } from '@/lib/linkedin/profile-url'
+import { normalizeProfileUrl } from '@/lib/linkedin/profile-url'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { Input } from '@/components/ui/input'
 
@@ -14,9 +14,11 @@ import { CTA, H1, Sub } from '../primitives'
 
 // ---------------------------------------------------------------------------
 // 01 · Connect - the audit's front door, framed around what they get. Two ways
-// in (OAuth or a pasted URL / bare name, coerced to the canonical profile URL)
-// and both land on the fetching loader. No skip: connecting is what makes the
-// audit real - the only way around is the fetch-failure card's escape hatch.
+// in (OAuth or a pasted profile URL / copied vanity slug) and both land on the
+// fetching loader. A typed human name is NOT accepted - slugifying a name into a
+// guessed URL matched the wrong person or hung the scraper, so we require a real
+// profile reference. No skip: connecting is what makes the audit real - the only
+// way around is the fetch-failure card's escape hatch.
 // ---------------------------------------------------------------------------
 
 const ERROR_COPY: Record<string, string> = {
@@ -38,9 +40,13 @@ export function ConnectStep() {
 
     const submitUrl = () => {
         if (!url.trim()) return
-        // URL, bare slug, or a typed name - coerced to the canonical profile URL.
-        const coerced = coerceProfileInput(url)
-        if (!coerced) {
+        // A real profile URL or a copied vanity slug only - normalizeProfileUrl
+        // rejects a typed human name (with spaces). We used to slugify names into
+        // a best guess, but that hit Scrapingdog with wrong/non-existent slugs
+        // (a wrong-person match, or a ~25s hang then 400 - the launch-week
+        // fast-tier failures), so names are no longer accepted.
+        const normalized = normalizeProfileUrl(url)
+        if (!normalized) {
             setUrlError(true)
             return
         }
@@ -48,9 +54,9 @@ export function ConnectStep() {
         // Clear any prior enrichment so the fetching step re-reads this URL from
         // scratch. A DIFFERENT URL also drops the previous profile's identity +
         // inferences (else two profiles mix); an OAuth identity stays.
-        const changedUrl = coerced !== answers.profileUrl
+        const changedUrl = normalized !== answers.profileUrl
         update({
-            profileUrl: coerced,
+            profileUrl: normalized,
             enrichConfidence: undefined,
             mirrorFetchOk: undefined,
             richStatus: undefined,
@@ -109,7 +115,7 @@ export function ConnectStep() {
                         setUrl(e.target.value)
                         if (urlError) setUrlError(false)
                     }}
-                    placeholder='linkedin.com/in/your-name, or just your name'
+                    placeholder='linkedin.com/in/your-name'
                     aria-label='Your LinkedIn profile URL'
                     aria-invalid={urlError}
                     onKeyDown={(e) => {
@@ -119,8 +125,9 @@ export function ConnectStep() {
                 />
                 {urlError && (
                     <p className='text-destructive text-xs'>
-                        That doesn&rsquo;t look like a profile - try linkedin.com/in/your-name, or just your name as it
-                        appears on LinkedIn.
+                        That doesn&rsquo;t look like a LinkedIn profile URL. Paste your{' '}
+                        <b className='font-semibold'>linkedin.com/in/&hellip;</b> link (open your profile and copy the
+                        address).
                     </p>
                 )}
                 <CTA variant='outline' onClick={submitUrl} disabled={!url.trim()}>

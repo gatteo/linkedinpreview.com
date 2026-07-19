@@ -45,7 +45,7 @@
 - [x] 231-AC-9 The buildplan step generates one post per content pillar in parallel (real AI, user's voice, scraped-post style references) and stores the gap-matching one as the endowed first draft; the paywall's post strip renders only real generated posts (section hides otherwise). _(verified: `steps/buildplan-step.tsx`; `ai.ts` generatePostIdeas; `steps/paywall-step.tsx`)_
 - [x] 231-AC-10 The paywall sells the real PRICING (lifetime ticket + monthly) through the embedded Stripe checkout with the founding-window countdown tied to `FOUNDING_WINDOW_END`; scarcity counters are config-only marketing; a quiet "Continue on the free plan" always exists (also on checkout failure). _(verified: `steps/paywall-step.tsx`; `config/pricing.ts`)_
 - [x] 231-AC-11 Growth projections seed from real numbers when measured and show "modeled" instead of a % when the baseline is a floor. _(verified: `config/onboarding-flow.ts` growthCards)_
-- [x] 231-AC-12 Insights fire only after the goal/persona answers exist and carry them as request hints, so degraded analyses are framed around the actual goal. _(verified: `use-rich-pipeline.ts` framed gate; `app/api/onboarding/insights/route.ts` parseBodyHints)_
+- [x] 231-AC-12 Insights fire only after the goal/persona answers exist and carry them as request hints, so degraded analyses are framed around the actual goal. Generation is driven deterministically from the building + reveal steps (with the pipeline hook as an early best-effort trigger), all sharing one deduped request. _(verified: `steps/building-step.tsx` + `steps/reveal-step.tsx` drivers, `use-rich-pipeline.ts` framed gate, `ai.ts` dedupe; `app/api/onboarding/insights/route.ts` parseBodyHints)_
 - [x] 231-AC-13 OAuth return resumes at the fetching step; finish() maps answers (incl. language + clarification notes) into branding/strategy exactly once. _(verified: `onboarding-controller.tsx`)_
 
 ## Implementation
@@ -128,5 +128,43 @@
   name (`coerceProfileInput` in `lib/linkedin/profile-url.ts`: NFKD-slugified, canonical URL
   stored in answers; a wrong name guess surfaces on the fetch-failure card). Step copy is
   value-forward, framed on the audit outcome, with a stronger read-only trust line.
+- 2026-07-19 audit-reliability fixes (funnel-audit W29, GH #24/#25/#26): production stayed ~100%
+  benchmark with `insights_triggered_at` null for EVERY session (including ready ones that reached
+  paywall/done) because of TWO compounding bugs, both fixed and verified end-to-end in a live local
+  run against the prod DB (a real `posts` audit generated + persisted through claim -> generate ->
+  settle): - Server (the primary blocker): the atomic claim in `app/api/onboarding/insights/route.ts` used a
+  PostgREST `.or()` filter on an RLS-enforced UPDATE
+  (`.update(...).eq('user_id').or('insights_status.neq.pending,...')`). That specific shape fails
+  at the PostgREST layer with a spurious `42703 column onboarding_sessions.insights_status does
+not exist` for the `authenticated` role - even though the column exists, the role HAS UPDATE
+  privilege, a plain `.update({insights_status}).eq('user_id')` on the same column succeeds, and
+  the identical `.or()` works for the service role and as raw SQL. So the claim silently matched 0
+  rows, the run was never claimed, generation never ran, and the reveal always fell to the local
+  benchmark - while observability (service role) read the columns fine, so dashboards looked
+  green. Fixed by replacing the `.or()` with an optimistic-concurrency guard on the exact
+  `insights_triggered_at` we read (`.eq(ts)` / `.is(null)`); Postgres re-checks the predicate
+  under the row lock so exactly one writer still wins, and a stale-pending row is reclaimed the
+  same way. NOTE: a schema-cache reload / GRANT does NOT fix this - it is the `.or()` query shape,
+  not privileges or cache (verified: `has_column_privilege('authenticated', ...) = true`, and
+  `notify pgrst, 'reload schema'` had no effect). - Client: even once the claim works, the POST was fired only from the `use-rich-pipeline.ts`
+  effect, gated on the browser observing the slow rich scrape settle while framed and the modal
+  stayed mounted - a coincidence that held ~0% of the time. Generation is now driven
+  deterministically from the steps every user reaches and stays mounted on: `building-step.tsx`
+  kicks it after the scrape's window, and `reveal-step.tsx` drives it on mount as the guaranteed
+  backstop. All callers (building, reveal, pipeline hook) share one in-flight request deduped in
+  `ai.ts`, which also fires `onb_insights_ready`/`onb_insights_failed` exactly once per generation
+  (was triple-counting). The pure-manual (no-scrape) path still keeps the benchmark.
+- 2026-07-19 mobile modal fix (GH #25): `onboarding-modal.tsx` sized the dialog with `90vh`, which
+  on mobile resolves against the large (chrome-hidden) viewport; at page-load - when the modal
+  auto-opens and the chrome is fully visible - the fixed, centered dialog overflowed the visible
+  screen and clipped the CTA with no scroll recovery, a 100% mobile wipeout at connect. Changed to
+  `90svh` (the `svh` convention already used in `strategy-wizard.tsx` / `dashboard/layout.tsx`).
+- 2026-07-19 fast-tier diagnosability (GH #26): the Scrapingdog fetch collapsed every failure mode
+  (quota 402/403, rate-limit 429, timeout, empty-record, datacenter-IP block) to a bare `null` /
+  `fast_source: none` with no logging, making a gradual production degradation undiagnosable.
+  `fetchViaScrapingdog` (`lib/linkedin/public-profile.ts`) now returns a `failReason`, logs each
+  mode, and threads it onto `onb_enrich_result.fast_fail_reason`. The likely root cause is external
+  (Scrapingdog quota/plan) and the JSON-LD fallback is unreachable from Vercel's datacenter IP
+  unless `LINKEDIN_SCRAPE_API_URL` (a residential/raw-HTML proxy) is configured.
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).
