@@ -58,3 +58,6 @@ CLAUDE.md
 seo-audit/
 tmp/
 skills-lock.json
+
+# Supabase CLI artifacts
+supabase/.temp/

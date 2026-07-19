@@ -7,6 +7,7 @@ import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
 import { assembleBrandingContext, brandingRulesForGenerate } from '@/lib/ai-branding'
+import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { encodeDraft } from '@/lib/draft-url'
 import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
@@ -122,12 +123,20 @@ export function DashboardEditor() {
         return `${window.location.origin}/?draft=${encoded}#tool`
     }, [content])
 
+    // Media is a data URL, far too large for the URL, so it is handed off through
+    // IndexedDB and the preview tab reads it once via the `m` key.
     const handleOpenFeedPreview = React.useCallback(async () => {
         if (!content) return
         const encoded = await encodeDraft(content)
         if (!encoded) return
-        window.open(`/preview?draft=${encoded}`, '_blank')
-    }, [content])
+        const mediaKey = media ? await putDraftMedia(media) : null
+        const url = mediaKey ? `/preview?draft=${encoded}&m=${mediaKey}` : `/preview?draft=${encoded}`
+        window.open(url, '_blank')
+        // Reclaim stale records here too, so cleanup does not depend on the preview tab ever loading.
+        // Safe after the write: the record just handed off is the newest, so neither the TTL sweep
+        // nor the oldest-first trim can drop it.
+        void pruneDraftMedia().catch(() => {})
+    }, [content, media])
 
     const handleApplySuggestion = React.useCallback((newText: string) => {
         setContentReplace(newText)

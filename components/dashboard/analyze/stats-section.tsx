@@ -1,10 +1,15 @@
 import React from 'react'
 
 import { computeContentStats } from '@/lib/content-scoring'
+import { LINKEDIN_CHAR_LIMIT } from '@/lib/linkedin/char-count'
+import { tiptapToLinkedInText } from '@/lib/linkedin/serialize'
 import { cn } from '@/lib/utils'
 
-export function StatsSection({ text }: { text: string }) {
-    const stats = React.useMemo(() => computeContentStats(text), [text])
+export function StatsSection({ text, content }: { text: string; content?: any }) {
+    // Stats must describe the string the user actually copies: hard breaks and list
+    // markers are part of it, and both are dropped by plain-text extraction.
+    const source = React.useMemo(() => (content?.content ? tiptapToLinkedInText(content) : text), [content, text])
+    const stats = React.useMemo(() => computeContentStats(source), [source])
     const dist = stats.sentenceDistribution
     const distEntries = [
         { key: 'tiny', label: 'Tiny', value: dist.tiny, color: 'bg-[var(--chart-1)]' },
@@ -55,7 +60,10 @@ export function StatsSection({ text }: { text: string }) {
                 <div className='grid grid-cols-2 gap-x-4 gap-y-1.5'>
                     <div className='flex items-center justify-between'>
                         <span className='text-muted-foreground text-xs'>Characters</span>
-                        <span className='text-foreground text-xs font-medium tabular-nums'>{stats.charCount}</span>
+                        <span className='text-foreground text-xs font-medium tabular-nums'>
+                            {stats.charCount}{' '}
+                            <span className='text-muted-foreground font-normal'>/ {LINKEDIN_CHAR_LIMIT}</span>
+                        </span>
                     </div>
                     <div className='flex items-center justify-between'>
                         <span className='text-muted-foreground text-xs'>Words</span>

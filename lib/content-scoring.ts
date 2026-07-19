@@ -1,4 +1,7 @@
+import { countPostCharacters, LINKEDIN_CHAR_LIMIT } from '@/lib/linkedin/char-count'
+
 export interface ContentStats {
+    /** Grapheme clusters, matching the editor readout and LinkedIn's own count. */
     charCount: number
     wordCount: number
     sentenceCount: number
@@ -34,7 +37,7 @@ function countSyllables(word: string): number {
 }
 
 export function computeContentStats(text: string): ContentStats {
-    const charCount = text.length
+    const charCount = countPostCharacters(text)
 
     // Words
     const words = text.trim().length === 0 ? [] : text.trim().split(/\s+/).filter(Boolean)
@@ -92,7 +95,7 @@ export function computeContentStats(text: string): ContentStats {
     let lengthStatus: 'too_short' | 'optimal' | 'too_long'
     if (charCount < 100) {
         lengthStatus = 'too_short'
-    } else if (charCount > 3000) {
+    } else if (charCount > LINKEDIN_CHAR_LIMIT) {
         lengthStatus = 'too_long'
     } else {
         lengthStatus = 'optimal'

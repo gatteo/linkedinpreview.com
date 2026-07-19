@@ -707,6 +707,46 @@ pre.shiki .highlighted {
     pointer-events: none;
 }
 
+/* ─── Tiptap Unicode font styles ─── */
+/* The fontStyle mark only records intent. The glyph substitution runs at serialization
+   time (components/tool/utils.ts), so without these rules an applied font is invisible
+   inside the editor. */
+.tiptap [data-font-style],
+.ProseMirror [data-font-style] {
+    border-radius: 0.25rem;
+    padding: 0 0.125rem;
+    background-color: color-mix(in oklch, var(--color-primary) 14%, transparent);
+    box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--color-primary) 55%, transparent);
+}
+
+.dark .tiptap [data-font-style],
+.dark .ProseMirror [data-font-style] {
+    background-color: color-mix(in oklch, var(--color-primary) 24%, transparent);
+    box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--color-primary) 70%, transparent);
+}
+
+/* Family hints so switching between variants reads as a change. They approximate the
+   variant only, the copied text always comes from the Unicode transform. */
+.tiptap [data-font-style='code'],
+.ProseMirror [data-font-style='code'] {
+    font-family: var(--font-mono);
+}
+
+.tiptap [data-font-style='script'],
+.ProseMirror [data-font-style='script'] {
+    font-family: 'Snell Roundhand', 'Segoe Script', 'Brush Script MT', cursive;
+}
+
+.tiptap [data-font-style='fraktur'],
+.ProseMirror [data-font-style='fraktur'] {
+    font-family: 'UnifrakturMaguntia', 'Old English Text MT', 'Blackadder ITC', Luminari, fantasy;
+}
+
+.tiptap [data-font-style='double'],
+.ProseMirror [data-font-style='double'] {
+    letter-spacing: 0.03em;
+}
+
 /* ─── Prose table borders ─── */
 .prose :where(table):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
     border-collapse: separate;
