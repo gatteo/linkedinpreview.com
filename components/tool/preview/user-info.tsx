@@ -26,8 +26,8 @@ type UserInfoProps = {
     promptBranding?: boolean
 }
 
-const FALLBACK_NAME = 'Matteo Giardino'
-const FALLBACK_HEADLINE = 'Founder @ devv.it'
+const FALLBACK_NAME = 'Your Name'
+const FALLBACK_HEADLINE = 'Your headline'
 const FALLBACK_AVATAR =
     'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij4KICA8cGF0aCBmaWxsPSIjZTdlMmRjIiBkPSJNMCAwaDEyOHYxMjhIMHoiLz4KICA8cGF0aCBkPSJNODguNDEgODQuNjdhMzIgMzIgMCAxMC00OC44MiAwIDY2LjEzIDY2LjEzIDAgMDE0OC44MiAweiIgZmlsbD0iIzc4OGZhNSIvPgogIDxwYXRoIGQ9Ik04OC40MSA4NC42N2EzMiAzMiAwIDAxLTQ4LjgyIDBBNjYuNzkgNjYuNzkgMCAwMDAgMTI4aDEyOGE2Ni43OSA2Ni43OSAwIDAwLTM5LjU5LTQzLjMzeiIgZmlsbD0iIzlkYjNjOCIvPgogIDxwYXRoIGQ9Ik02NCA5NmEzMS45MyAzMS45MyAwIDAwMjQuNDEtMTEuMzMgNjYuMTMgNjYuMTMgMCAwMC00OC44MiAwQTMxLjkzIDMxLjkzIDAgMDA2NCA5NnoiIGZpbGw9IiM1NjY4N2EiLz4KPC9zdmc+Cg=='
 
@@ -154,7 +154,7 @@ function BrandingPrompt({ children }: { children: React.ReactNode }) {
                         className='w-auto max-w-[230px] p-3'>
                         <motion.div {...motionProps} transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}>
                             <p className='text-xs leading-relaxed text-neutral-600'>
-                                That is a sample profile.{' '}
+                                This is a placeholder profile.{' '}
                                 <Link
                                     href={Routes.DashboardBranding}
                                     className='text-primary hover:text-primary/80 font-medium underline-offset-2 transition-colors hover:underline'>

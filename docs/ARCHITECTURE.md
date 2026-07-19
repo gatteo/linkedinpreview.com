@@ -244,6 +244,7 @@ project-root/
 │   │   ├── strategy/        # Content strategy wizard + dashboard UI components
 │   │   └── calendar/        # Content calendar grid (month/week, drag-to-reschedule)
 │   ├── tool/                # TipTap editor + LinkedIn preview panel
+│   │   └── extensions/      # Custom TipTap marks (fontStyle: the four Unicode font styles)
 │   ├── ui/                  # shadcn/ui primitives (Button, Dialog, Sheet, etc.)
 │   ├── shadcn-demo/         # shadcn demo components (used by app/dash-example/)
 │   ├── mdx/                 # MDX rendering + syntax highlighting components
@@ -251,10 +252,11 @@ project-root/
 │   └── tracking/            # PostHog TrackClick wrapper for server components
 ├── config/                  # Static config (site metadata, routes, AI limits, prompts, feedback)
 ├── contents/                # MDX source files (blog posts, changelog, compare pages)
-├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, etc.)
+├── hooks/                   # Custom React hooks (drafts, branding, auth, clipboard, public-tool draft persistence, etc.)
 ├── lib/
+│   ├── draft-media.ts       # IndexedDB handoff of an attached image/video from the editor to the /preview tab
 │   ├── supabase/            # Server/client/admin Supabase instances + CRUD, migration
-│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, public-profile fetch (fast onboarding tier) + rich-scrape (Bright Data async tier)
+│   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, grapheme char-count + 3000 limit, public-profile fetch (fast onboarding tier) + rich-scrape (Bright Data async tier)
 │   └── mdx/plugins/         # Remark and rehype plugins for MDX processing
 ├── types/                   # Shared TypeScript type definitions
 ├── styles/                  # globals.css - Tailwind v4 theme via @theme + @plugin

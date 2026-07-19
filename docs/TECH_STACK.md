@@ -18,22 +18,23 @@ Next.js 16.1 App Router monolith deployed on Vercel with Supabase backend for pe
 
 ## Key Packages
 
-| Package                               | Purpose                      | Why this one                                            |
-| ------------------------------------- | ---------------------------- | ------------------------------------------------------- |
-| @tiptap/react + extensions            | Rich text editor             | Extensible, ProseMirror-based, markdown-like formatting |
-| @ai-sdk/openai + @ai-sdk/react        | AI text generation/streaming | Vercel AI SDK v6 for streamText and generateObject      |
-| @supabase/supabase-js + @supabase/ssr | Database client + SSR auth   | Server/client Supabase with cookie-based sessions       |
-| contentlayer                          | MDX blog pipeline            | Type-safe content processing for blog/changelog/compare |
-| @tanstack/react-table                 | Data tables                  | Headless table for posts list with sorting/filtering    |
-| next-themes                           | Theme switching              | Dark mode for dashboard, light-only for public pages    |
-| posthog-js                            | Analytics (client)           | Event tracking, reverse-proxied through /ingest         |
-| posthog-node                          | Analytics (server)           | Server events from onboarding routes + Stripe webhook   |
-| @t3-oss/env-nextjs                    | Environment validation       | Type-safe env vars with Zod schemas                     |
-| sonner                                | Toast notifications          | Lightweight, accessible toast system                    |
-| clsx + tailwind-merge                 | Class utilities              | Conditional Tailwind classes via cn()                   |
-| pako (via CompressionStream)          | Draft URL compression        | Share drafts via compressed URL params                  |
-| featurebase-js                        | Support messenger            | React provider + hooks, portal-only mount               |
-| jose                                  | JWT signing                  | ESM-friendly HS256 for the Featurebase identity JWT     |
+| Package                               | Purpose                      | Why this one                                                                                                                                                                                                                      |
+| ------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @tiptap/react + extensions            | Rich text editor             | Extensible, ProseMirror-based, markdown-like formatting                                                                                                                                                                           |
+| emoji-mart + @emoji-mart/data         | Emoji picker in the toolbar  | Native code points (`set: 'native'`) paste cleanly into LinkedIn and need no sprite CDN. The ~1.4MB data file is dynamic-imported on first open, so it stays out of the initial bundle on the public SEO pages the tool mounts on |
+| @ai-sdk/openai + @ai-sdk/react        | AI text generation/streaming | Vercel AI SDK v6 for streamText and generateObject                                                                                                                                                                                |
+| @supabase/supabase-js + @supabase/ssr | Database client + SSR auth   | Server/client Supabase with cookie-based sessions                                                                                                                                                                                 |
+| contentlayer                          | MDX blog pipeline            | Type-safe content processing for blog/changelog/compare                                                                                                                                                                           |
+| @tanstack/react-table                 | Data tables                  | Headless table for posts list with sorting/filtering                                                                                                                                                                              |
+| next-themes                           | Theme switching              | Dark mode for dashboard, light-only for public pages                                                                                                                                                                              |
+| posthog-js                            | Analytics (client)           | Event tracking, reverse-proxied through /ingest                                                                                                                                                                                   |
+| posthog-node                          | Analytics (server)           | Server events from onboarding routes + Stripe webhook                                                                                                                                                                             |
+| @t3-oss/env-nextjs                    | Environment validation       | Type-safe env vars with Zod schemas                                                                                                                                                                                               |
+| sonner                                | Toast notifications          | Lightweight, accessible toast system                                                                                                                                                                                              |
+| clsx + tailwind-merge                 | Class utilities              | Conditional Tailwind classes via cn()                                                                                                                                                                                             |
+| pako (via CompressionStream)          | Draft URL compression        | Share drafts via compressed URL params                                                                                                                                                                                            |
+| featurebase-js                        | Support messenger            | React provider + hooks, portal-only mount                                                                                                                                                                                         |
+| jose                                  | JWT signing                  | ESM-friendly HS256 for the Featurebase identity JWT                                                                                                                                                                               |
 
 ## Third-Party Services
 

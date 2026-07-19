@@ -348,7 +348,7 @@ export function AnalyzePanel({
                 <div className='border-border border-t' />
 
                 {/* Stats */}
-                <StatsSection text={contentText} />
+                <StatsSection text={contentText} content={content} />
             </div>
         </div>
     )

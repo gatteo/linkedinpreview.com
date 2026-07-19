@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { ArrowLeft, Share2 } from 'lucide-react'
 import posthog from 'posthog-js'
 
+import { pruneDraftMedia, readDraftMedia } from '@/lib/draft-media'
 import { decodeDraft } from '@/lib/draft-url'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Icon } from '@/components/icon'
 import { ShareDialog } from '@/components/tool/share-dialog'
+import type { Media } from '@/components/tool/tool'
 
 import { LINKEDIN_BG } from './constants'
 import { FeedLayout } from './feed-layout'
@@ -24,9 +26,20 @@ type PreviewPageClientProps = {
     encodedDraft?: string
 }
 
+/** The route only forwards `draft`, so the IndexedDB handoff key is read off the URL here. */
+function resolveMediaKey() {
+    if (typeof window === 'undefined') return null
+    try {
+        return new URLSearchParams(window.location.search).get('m')
+    } catch {
+        return null
+    }
+}
+
 export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
     const [mode, setMode] = React.useState<Mode>('desktop')
     const [content, setContent] = React.useState<any>(null)
+    const [media, setMedia] = React.useState<Media | null>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const [shareOpen, setShareOpen] = React.useState(false)
     const postRef = React.useRef<HTMLDivElement>(null)
@@ -45,16 +58,32 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
     }, [])
 
     React.useEffect(() => {
+        let cancelled = false
+
         async function decode() {
-            if (!encodedDraft) {
-                setIsLoading(false)
-                return
-            }
-            const decoded = await decodeDraft(encodedDraft)
+            const key = resolveMediaKey()
+
+            // Resolve both together so the post never flashes without its attached media.
+            const [decoded, storedMedia] = await Promise.all([
+                encodedDraft ? decodeDraft(encodedDraft) : null,
+                key ? readDraftMedia(key) : null,
+            ])
+
+            if (cancelled) return
+
             setContent(decoded)
+            setMedia(storedMedia)
             setIsLoading(false)
+
+            // Runs after the read so reclamation never races the media this page needs
+            void pruneDraftMedia()
         }
+
         decode()
+
+        return () => {
+            cancelled = true
+        }
     }, [encodedDraft])
 
     React.useEffect(() => {
@@ -145,7 +174,7 @@ export function PreviewPageClient({ encodedDraft }: PreviewPageClientProps) {
                 ) : (
                     <FeedLayout mode={mode}>
                         <div ref={postRef}>
-                            <FeedPostCard content={content} media={null} />
+                            <FeedPostCard content={content} media={media} />
                         </div>
                     </FeedLayout>
                 )}

@@ -55,7 +55,7 @@ Structure within each component file:
 - **Client state**: `useState` for local UI state. `useContext` for shared auth (`AuthProvider`). Custom hooks for domain logic (`use-drafts`, `use-branding`).
 - **Form state**: Controlled components with `useState`. No form library currently.
 - **URL state**: `useSearchParams` for editor draft selection. Wrap consumers in `<Suspense>`.
-- **Persistence**: Supabase for all user data (drafts, branding, AI usage). No localStorage for data. localStorage only for UI preferences.
+- **Persistence**: Supabase for all dashboard user data (drafts, branding, AI usage). In the dashboard, localStorage is for UI preferences only. The public tool has no account, so it autosaves its single draft to localStorage via `hooks/use-draft-persistence.ts` and hands an attached image or video to the `/preview` tab through IndexedDB (`lib/draft-media.ts`); both are browser-local and neither is a substitute for Supabase.
 
 ## API Route Conventions
 

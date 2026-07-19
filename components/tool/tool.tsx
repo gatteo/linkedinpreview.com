@@ -9,9 +9,11 @@ import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
 import { Routes } from '@/config/routes'
+import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
-import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
+import { extractPlainText } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
+import { backupStoredDraft, readStoredDraft, takeBackupDraft, useDraftPersistence } from '@/hooks/use-draft-persistence'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
 import { Button } from '@/components/ui/button'
 
@@ -33,40 +35,44 @@ type ToolProps = {
 
 type MobileTab = 'editor' | 'preview'
 
-const STORAGE_KEY = 'linkedinpreview-draft'
-const SAVE_DELAY_MS = 2000
 // One-time nudge toward the dashboard once the user has written a real post.
 const NUDGE_KEY = 'lip-dashboard-nudge-seen'
 const NUDGE_MIN_CHARS = 160
 
-function loadLocalDraft(): any | null {
+/**
+ * Drops the params a shared link carries once they have been consumed, so a
+ * refresh or a bookmark never resurrects the shared post over newer local work.
+ * Uses replaceState so React state and the editor survive untouched.
+ */
+function stripDraftParams() {
     try {
-        const raw = localStorage.getItem(STORAGE_KEY)
-        return raw ? JSON.parse(raw) : null
+        const url = new URL(window.location.href)
+        if (!url.searchParams.has('draft') && !url.searchParams.has('m')) return
+        url.searchParams.delete('draft')
+        url.searchParams.delete('m')
+        window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
     } catch {
-        return null
+        // history/URL unavailable - the param stays, which is the old behavior
     }
 }
 
-function useDraftPersistence(content: any) {
-    const timerRef = React.useRef<ReturnType<typeof setTimeout>>(null)
+/**
+ * True when the document carries text anywhere in the tree. `hasTextContent` only looks one
+ * level below the root, so a post that is entirely a bulleted list (bulletList > listItem >
+ * paragraph > text) reads as empty there, which is one of the most common LinkedIn shapes.
+ * extractPlainText walks the whole tree, so nesting depth stops mattering.
+ */
+function hasText(doc: any): boolean {
+    return extractPlainText(doc).length > 0
+}
 
-    React.useEffect(() => {
-        if (!content) return
-
-        if (timerRef.current) clearTimeout(timerRef.current)
-        timerRef.current = setTimeout(() => {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(content))
-            } catch {
-                // localStorage full or unavailable - silently ignore
-            }
-        }, SAVE_DELAY_MS)
-
-        return () => {
-            if (timerRef.current) clearTimeout(timerRef.current)
-        }
-    }, [content])
+/** Two documents are the same post when they serialize identically. */
+function isSameDoc(a: any, b: any): boolean {
+    try {
+        return JSON.stringify(a) === JSON.stringify(b)
+    } catch {
+        return false
+    }
 }
 
 export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
@@ -74,30 +80,95 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
     const [initialContent, setInitialContent] = React.useState<any>(undefined)
+    // A document that has to be pushed into the already mounted editor: a restored backup, or
+    // a post generated on the page. It is cleared the moment the editor applies it, because a
+    // document left standing here is replayed by every later remount - and crossing the 640px
+    // breakpoint remounts the editor, which is what rotating a phone does.
+    const [pendingDoc, setPendingDoc] = React.useState<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
     const isDesktop = useIsDesktop()
 
-    // Load draft: URL ?draft= param takes priority over localStorage
-    React.useEffect(() => {
-        async function loadDraft() {
-            const params = new URLSearchParams(window.location.search)
-            const draftParam = params.get('draft')
+    const { flush } = useDraftPersistence(content)
 
-            if (draftParam) {
-                const decoded = await decodeDraft(draftParam)
-                if (decoded) {
-                    setInitialContent(decoded)
-                    setIsLoading(false)
-                    return
-                }
+    // Copies the saved draft aside before a document the visitor did not write here
+    // (a shared link, a generated post) takes over the editor, and offers it back.
+    const backupReplacedDraft = React.useCallback((incoming: any) => {
+        const stored = readStoredDraft()
+        if (!hasText(stored)) return
+        // Returning from the feed preview re-opens the very draft that was flushed on the way
+        // out, so the incoming post and the stored one are the same document. Backing that up
+        // and warning about it would report a replacement that never happened.
+        if (isSameDoc(incoming, stored)) return
+        if (!backupStoredDraft()) return
+
+        toast('This post replaced the draft you had here', {
+            description: 'Your previous draft is safe and can be brought back.',
+            duration: 15000,
+            action: {
+                label: 'Restore it',
+                onClick: () => {
+                    const restored = takeBackupDraft()
+                    if (!restored) {
+                        toast.error('That draft is no longer available')
+                        return
+                    }
+                    setPendingDoc(restored)
+                },
+            },
+        })
+    }, [])
+
+    // Load: a shared ?draft= link wins over the saved draft, and its params are
+    // stripped once read so a refresh or a bookmark cannot resurrect it later.
+    React.useEffect(() => {
+        let cancelled = false
+
+        async function loadDraft() {
+            const draftParam = new URLSearchParams(window.location.search).get('draft')
+            const shared = draftParam ? await decodeDraft(draftParam) : null
+            if (cancelled) return
+
+            stripDraftParams()
+
+            if (shared) {
+                backupReplacedDraft(shared)
+                setInitialContent(shared)
+            } else {
+                const stored = readStoredDraft()
+                if (stored) setInitialContent(stored)
             }
 
-            const local = loadLocalDraft()
-            if (local) setInitialContent(local)
             setIsLoading(false)
         }
+
         loadDraft()
+
+        return () => {
+            cancelled = true
+        }
+    }, [backupReplacedDraft])
+
+    // A generated post takes the editor over, so persist and copy aside the draft it
+    // displaces. Routing it through pendingDoc rather than straight to the editor gives it
+    // the same consume-once handling as a restore, and lets a new generation replace an
+    // earlier restore that is still waiting.
+    React.useEffect(() => {
+        if (!injectedDoc) return
+        flush()
+        backupReplacedDraft(injectedDoc)
+        setPendingDoc(injectedDoc)
+    }, [injectedDoc, flush, backupReplacedDraft])
+
+    // Marks the pushed document consumed. Without this the editor re-applies it on every
+    // remount, wiping out everything written since it was first applied.
+    const handlePendingDocApplied = React.useCallback(() => {
+        setPendingDoc(null)
     }, [])
+
+    // EditorPanel seeds itself from this whenever it mounts, and crossing the
+    // mobile/desktop breakpoint remounts it. Seeding from the page-load document
+    // there would replay stale text over everything typed since, so pass the current one.
+    const seedDoc = content ?? initialContent
 
     // Browser processes #hash before React mounts, so re-scroll after loading
     React.useEffect(() => {
@@ -105,8 +176,6 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
             document.querySelector(window.location.hash)?.scrollIntoView()
         }
     }, [isLoading])
-
-    useDraftPersistence(content)
 
     // Memoized so the EditorPanel inject effect (which depends on onChange) does not
     // re-fire on every render. An unstable identity here causes an infinite
@@ -130,15 +199,25 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
 
     const handleOpenFeedPreview = React.useCallback(async () => {
         if (!content) return
-        const encoded = await encodeDraft(content)
+        flush()
+
+        // Media is a data URL, far too large for the share link, so it travels
+        // through IndexedDB under a single-use key. Both awaits run together to
+        // keep window.open close to the click and out of the popup blocker.
+        const [encoded, mediaKey] = await Promise.all([encodeDraft(content), media ? putDraftMedia(media) : null])
         if (!encoded) return
+
         posthog.capture('feed_preview_opened')
-        window.open(`/preview?draft=${encoded}`, '_blank')
-    }, [content])
+        const mediaParam = mediaKey ? `&m=${encodeURIComponent(mediaKey)}` : ''
+        window.open(`/preview?draft=${encoded}${mediaParam}`, '_blank')
+
+        void pruneDraftMedia()
+    }, [content, media, flush])
 
     const handleOpenDashboard = React.useCallback(
         async (source: string) => {
             posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
+            flush()
             if (!content) {
                 window.location.href = Routes.Dashboard
                 return
@@ -150,7 +229,7 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
             }
             window.location.href = `/dashboard/editor?import=${encoded}`
         },
-        [content],
+        [content, flush],
     )
 
     // Light, one-time nudge: once the user has written a real post, invite them to
@@ -193,6 +272,8 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         return null
     }
 
+    const contentHasText = hasText(content)
+
     const inner = (
         <div
             className={cn(
@@ -234,8 +315,10 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                 <Group orientation='horizontal' className='min-h-0 flex-1'>
                     <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col'>
                         <EditorPanel
-                            initialContent={initialContent}
-                            injectedDoc={injectedDoc}
+                            initialContent={seedDoc}
+                            injectedDoc={pendingDoc}
+                            onInjectedDocApplied={handlePendingDocApplied}
+                            onRestoreDoc={setPendingDoc}
                             onChange={handleContentChange}
                             onMediaChange={handleMediaChange}
                             onShare={handleShare}
@@ -248,38 +331,54 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                             media={media}
                             promptBranding={variant === 'default'}
                             onOpenFeedPreview={handleOpenFeedPreview}
-                            hasContent={hasTextContent(content)}
+                            hasContent={contentHasText}
                         />
                     </Panel>
                 </Group>
             ) : (
-                <div className='flex min-h-0 flex-1'>
-                    {mobileTab === 'editor' ? (
-                        <div className='flex min-w-0 flex-1 flex-col'>
-                            <EditorPanel
-                                initialContent={initialContent}
-                                injectedDoc={injectedDoc}
-                                onChange={handleContentChange}
-                                onMediaChange={handleMediaChange}
-                                onShare={handleShare}
-                            />
-                        </div>
-                    ) : (
-                        <div className='flex w-full flex-1 flex-col'>
-                            <PreviewPanel
-                                content={content}
-                                media={media}
-                                promptBranding={variant === 'default'}
-                                onOpenFeedPreview={handleOpenFeedPreview}
-                                hasContent={hasTextContent(content)}
-                            />
-                        </div>
-                    )}
+                // Both panels stay mounted and the inactive one is hidden with visibility
+                // rather than display. Unmounting the editor on a tab switch re-creates it
+                // from the document it was seeded with, replaying that over everything typed
+                // since; display:none keeps it mounted but collapses it to a zero-sized box,
+                // and the preview decides its '...more' cutoff by measuring scrollHeight,
+                // which then reads 0 and drops the cutoff. Out of flow plus invisible leaves
+                // the active panel at full width while the hidden one is still laid out at
+                // the exact size it will have when shown, so it measures correctly there and
+                // needs no re-measure on the way back.
+                <div className='relative flex min-h-0 flex-1'>
+                    <div
+                        className={cn(
+                            'flex flex-col',
+                            mobileTab === 'editor' ? 'min-w-0 flex-1' : 'invisible absolute inset-0',
+                        )}>
+                        <EditorPanel
+                            initialContent={seedDoc}
+                            injectedDoc={pendingDoc}
+                            onInjectedDocApplied={handlePendingDocApplied}
+                            onRestoreDoc={setPendingDoc}
+                            onChange={handleContentChange}
+                            onMediaChange={handleMediaChange}
+                            onShare={handleShare}
+                        />
+                    </div>
+                    <div
+                        className={cn(
+                            'flex flex-col',
+                            mobileTab === 'preview' ? 'w-full flex-1' : 'invisible absolute inset-0',
+                        )}>
+                        <PreviewPanel
+                            content={content}
+                            media={media}
+                            promptBranding={variant === 'default'}
+                            onOpenFeedPreview={handleOpenFeedPreview}
+                            hasContent={contentHasText}
+                        />
+                    </div>
                 </div>
             )}
 
             {/* Dashboard prompt - shown when user has written content */}
-            {variant === 'default' && hasTextContent(content) && (
+            {variant === 'default' && contentHasText && (
                 <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-2'>
                     <span className='text-muted-foreground text-[13.5px] leading-snug'>
                         <b className='text-foreground font-semibold'>Happy with this draft?</b> Get a free audit of your
