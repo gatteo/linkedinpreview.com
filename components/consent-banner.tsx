@@ -5,15 +5,21 @@ import { usePathname } from 'next/navigation'
 
 import { Routes } from '@/config/routes'
 import { useConsent } from '@/hooks/use-consent'
+import { useModalOpen } from '@/hooks/use-modal-open'
 import { Button } from '@/components/ui/button'
 
 // Bottom-left so it never covers the Featurebase launcher or the feedback FAB
-// (both bottom-right). Not shown inside the third-party /embed variant.
+// (both bottom-right). Not shown inside the third-party /embed variant, and
+// deferred while any dialog is open - on small screens the onboarding modal
+// leaves little clearance, and this banner's z-index sits above every dialog
+// so it would otherwise paint over (and, via body's scroll-lock pointer-events
+// none, deafen) the modal's own controls. See GH #25.
 export function ConsentBanner() {
     const { consent, isReady, accept, decline } = useConsent()
     const pathname = usePathname()
+    const modalOpen = useModalOpen()
 
-    if (!isReady || consent !== null || pathname.startsWith('/embed')) return null
+    if (!isReady || consent !== null || pathname.startsWith('/embed') || modalOpen) return null
 
     return (
         <div className='bg-background border-border shadow-subtle fixed bottom-4 left-4 z-[130] w-[calc(100%-2rem)] max-w-sm rounded-xl border p-4'>

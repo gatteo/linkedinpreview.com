@@ -4,6 +4,21 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-20 — Fix cookie banner blocking the onboarding modal on mobile (GH #25)
+
+- **Root cause**: the global cookie consent banner renders at `z-[130]`, above every dialog's
+  `z-50`, so it always stays visible over ordinary pages. On mobile the onboarding modal takes up
+  nearly the full viewport, so the banner's fixed bottom-left box painted directly over the connect
+  step's "Use profile URL" button and trust line - and because Radix sets `body { pointer-events: none }`
+  while a dialog is open (and the banner never overrode it), the banner's own Accept/Decline buttons
+  went dead too, leaving users with an unreachable, undismissable overlay on their very first
+  screen. This matches production: mobile never converted past connect (0/6, W29), desktop degraded
+  but didn't collapse (its taller, mostly-empty dialog kept the banner off the actual CTAs).
+- **Fix**: new `hooks/use-modal-open.ts` watches `document.body`'s `data-scroll-locked` attribute
+  (set by any open Radix Dialog/AlertDialog/Sheet) and `ConsentBanner` now defers rendering while
+  one is open, reappearing as soon as it closes. Generic fix, not onboarding-specific - protects any
+  current or future full-screen dialog from the same collision.
+
 ## 2026-07-18 — Connect step: no skip, name/slug input, audit-outcome framing
 
 - **Data**: 14-day funnel read showed the connect "Skip for now" link took 5 of 7 choosers
