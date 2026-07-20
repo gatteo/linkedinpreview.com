@@ -10,6 +10,7 @@ import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
 import { reportMissingEnv } from '@/lib/dev/report-missing-env'
 
 import { track } from '../ai'
+import { markCheckoutPending } from '../types'
 
 // Load Stripe.js once. Null when the publishable key is not configured yet, so
 // the offer screen falls back gracefully to the free plan. Only needed for the
@@ -73,6 +74,9 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                     // is not counted as an abandon (cancel returns are tracked
                     // by the surface handling the ?checkout=cancelled param).
                     settledRef.current = true
+                    // Outlives the redirect so a browser-Back return, which
+                    // carries no status param, is still resolvable as an abandon.
+                    markCheckoutPending(plan)
                     window.location.assign(data.url)
                     return
                 }

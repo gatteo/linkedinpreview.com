@@ -45,6 +45,14 @@ Personalization matrix: `config/onboarding-personalization.ts`.
 
 - Server: `lib/stripe.ts`, `lib/supabase/billing.ts`, `app/api/billing/{checkout,webhook}/route.ts`,
   `app/api/onboarding/{enrich,first-post}/route.ts`, plan-aware `lib/rate-limit.ts`.
+- Webhook delivery semantics: signature failures return 400 (Stripe must not retry a forgery), but a
+  handler error after a valid signature returns **500 so Stripe retries on its own schedule**. Never
+  200 a failed billing write - an acknowledged event is never redelivered, so one transient Supabase
+  error would strand a paying customer on the free plan.
+- Analytics caveat: `captureServer` is inert outside production (`lib/analytics/server.ts`), so a local
+  `stripe listen` pointed at a dev server writes a real `billing` row to the shared remote Supabase
+  while `purchase_completed` is dropped. That mismatch reads as a broken conversion pipeline; the
+  drop is now logged via `console.debug` so it is visible rather than silent.
 - Client: `components/dashboard/plan-provider.tsx` (shared plan state + `usePlan`; a Supabase Realtime
   subscription on `public.billing` so a late webhook reflects without reload; a no-session guard that
   resolves `isLoading` to the free default), `components/dashboard/account-menu.tsx` (sidebar plan badge),

@@ -219,3 +219,34 @@ export function clearOnboarding() {
         localStorage.removeItem(STORAGE_KEY)
     } catch {}
 }
+
+// --- Hosted-checkout round-trip marker -------------------------------------
+//
+// Hosted checkout leaves the site entirely, so the only outcome signals are the
+// success/cancel URLs Stripe sends the buyer back to. A buyer who instead hits
+// browser Back returns with no query params at all and used to fire nothing,
+// leaving opens with no matching outcome. This marker survives the round-trip
+// (sessionStorage, same tab) so that return can still be counted as an abandon.
+
+const PENDING_CHECKOUT_KEY = 'lp-onboarding-pending-checkout'
+
+export type PendingCheckout = { plan: string }
+
+export function markCheckoutPending(plan: string) {
+    try {
+        sessionStorage.setItem(PENDING_CHECKOUT_KEY, JSON.stringify({ plan } satisfies PendingCheckout))
+    } catch {}
+}
+
+/** Read and consume the marker - a round-trip is only ever resolved once. */
+export function takeCheckoutPending(): PendingCheckout | null {
+    try {
+        const raw = sessionStorage.getItem(PENDING_CHECKOUT_KEY)
+        sessionStorage.removeItem(PENDING_CHECKOUT_KEY)
+        if (!raw) return null
+        const parsed = JSON.parse(raw) as PendingCheckout
+        return typeof parsed?.plan === 'string' ? parsed : null
+    } catch {
+        return null
+    }
+}

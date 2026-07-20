@@ -37,6 +37,7 @@ import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
 import { Eyebrow, firstName, GhostLink, H1, PersonAvatar, ReviewCard, Stars } from '../primitives'
 import { ScrollProgressButton } from '../scroll-progress-button'
+import { takeCheckoutPending } from '../types'
 import { useScrollGate } from '../use-scroll-gate'
 import { OnboardingCheckout } from './checkout'
 
@@ -94,7 +95,14 @@ export function PaywallStep() {
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const status = params.get('checkout')
-        if (!status || params.get('source') !== 'onboarding') return
+        const pending = takeCheckoutPending()
+        if (!status || params.get('source') !== 'onboarding') {
+            // Back out of Stripe rather than through its success/cancel links and
+            // there is no status to read - the marker is the only evidence the
+            // round-trip happened at all.
+            if (pending) track('onb_checkout_abandoned', { plan: pending.plan, via: 'no_return_param' })
+            return
+        }
         const plan: CheckoutPlan = params.get('plan') === 'monthly' ? 'monthly' : 'lifetime'
         params.delete('checkout')
         params.delete('plan')
@@ -107,7 +115,7 @@ export function PaywallStep() {
             refresh()
             finishOffer(true)
         } else {
-            track('onb_checkout_abandoned', { plan })
+            track('onb_checkout_abandoned', { plan, via: 'cancel_url' })
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

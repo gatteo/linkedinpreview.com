@@ -33,7 +33,14 @@ export async function captureServer(
     properties?: Record<string, unknown>,
 ): Promise<void> {
     const posthog = getClient()
-    if (!posthog) return
+    if (!posthog) {
+        // Say so out loud. This path drops every server event outside production,
+        // including conversions written to the shared remote Supabase by a local
+        // `stripe listen` - a silent drop that has made funnel audits misread a
+        // dev-era billing row as a broken analytics pipeline.
+        console.debug(`[analytics] server event dropped (not production): ${event}`)
+        return
+    }
     try {
         await posthog.captureImmediate({ distinctId, event, properties })
     } catch {

@@ -154,8 +154,12 @@ export async function POST(request: Request) {
                 break
         }
     } catch (err) {
-        // Non-signature handler errors: log but still 200 so Stripe does not retry forever.
+        // Never acknowledge a failed billing write: a 200 tells Stripe the event
+        // is handled and it never redelivers, so one transient Supabase error
+        // would strand a paying customer on the free plan with no second chance.
+        // 500 opts into Stripe's retry schedule instead.
         console.error('[billing/webhook] handler error', event.type, err)
+        return Response.json({ error: 'Handler failed' }, { status: 500 })
     }
 
     return Response.json({ received: true })
