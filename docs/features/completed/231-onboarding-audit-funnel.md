@@ -166,5 +166,46 @@ not exist` for the `authenticated` role - even though the column exists, the rol
   mode, and threads it onto `onb_enrich_result.fast_fail_reason`. The likely root cause is external
   (Scrapingdog quota/plan) and the JSON-LD fallback is unreachable from Vercel's datacenter IP
   unless `LINKEDIN_SCRAPE_API_URL` (a residential/raw-HTML proxy) is configured.
+- 2026-07-20 re-derived the GH #26 root cause with the new instrumentation (Vercel prod logs, last
+  7 days): every single production fast-tier failure - 10 of 10 - is `fetchViaScrapingdog` hitting
+  its OWN 9s `SCRAPINGDOG_TIMEOUT_MS` abort (`fast_fail_reason: 'timeout'`), never a quota/rate-limit
+  HTTP status; the "quota/plan" hypothesis in the 2026-07-19 entry above is unconfirmed by any log
+  evidence and should be treated as superseded. The JSON-LD fallback IS confirmed unreachable in
+  prod, but not because it can't work in principle - `BRIGHTDATA_UNLOCKER_ZONE` and
+  `LINKEDIN_SCRAPE_API_URL` are both unset (logs show `linkedin html blocked 999 ... no
+unlocker/proxy configured` on every fallback attempt), so the direct fetch always hits LinkedIn's
+  datacenter-IP block. Fixed a real bug this exposed: `fetchPublicProfile` shared one 12s clock
+  across both tiers, so whenever Scrapingdog spent its full 9s timing out, the fallback inherited
+  only the ~3s remainder - never enough for a real HTTP fetch even with a proxy configured. The
+  fallback now gets its own independent `FALLBACK_TIMEOUT_MS` (8s) window. Also threaded
+  `fetchFailReason` onto the enrich API response and the `onb_fetch_failed` event, and made the
+  fetching-step failure card's copy match the actual reason (`failureCopy` in
+  `fetching-step.tsx`) instead of always claiming "LinkedIn blocked the request" when the real
+  cause was a timeout. Left `SCRAPINGDOG_TIMEOUT_MS` unchanged (9s) on purpose: every observed
+  failure hit that ceiling with no successful completion nearby, so raising it would only slow
+  down an already-failing request, working against the "fail faster" goal - the fix here doesn't
+  change today's success rate on its own; someone still has to confirm Scrapingdog account/plan
+  health and configure `BRIGHTDATA_UNLOCKER_ZONE` (or `LINKEDIN_SCRAPE_API_URL`) for the fallback to
+  actually start rescuing failures.
 - "Grow 10× on LinkedIn in 90 days" is a strong quantified claim - consider a process-based
   variant for paid traffic (per the flow spec's production notes).
+- 2026-07-20 connect wall root cause #2 (GH #25 reopened): the 2026-07-19 `90svh` fix was correct
+  but insufficient - mobile stayed at a 100% wipeout. The real remaining cause: `ConsentBanner`
+  (`components/consent-banner.tsx`) renders globally in the root layout with `z-[130]`, deliberately
+  above every dialog's `z-50` (so it's never hidden behind ordinary page content). On mobile the
+  onboarding modal occupies nearly the whole viewport, so the banner's fixed `bottom-4 left-4` box
+  paints directly over the connect step's lower controls - confirmed with a live Playwright render at
+  375×667: the "Use profile URL" button and the read-only trust line were fully covered. Worse,
+  Radix's dialog scroll-lock sets `body { pointer-events: none }` while a dialog is open, and the
+  banner has no override, so its own Accept/Decline buttons went dead too (verified: Playwright's
+  `click()` timed out on "Accept" while the modal was open) - a user who tries to dismiss the banner
+  to see what's under it gets no response at all. Desktop only degrades partially because the dialog
+  there is far taller than its centered content, so the banner's fixed corner position mostly overlaps
+  blank padding, not the CTAs. Fixed generically (not onboarding-specific): new `hooks/use-modal-open.ts`
+  watches `document.body`'s `data-scroll-locked` attribute (set by every Radix Dialog/AlertDialog/Sheet
+  while open) and `ConsentBanner` now renders `null` while any of them is open, reappearing the instant
+  it closes. Verified end-to-end with Playwright at 375×667: banner absent and both connect-step CTAs
+  fully visible/reachable while the modal is open, banner still renders normally elsewhere. Not verified
+  on a real device with a dynamic mobile browser toolbar (Playwright's mobile emulation doesn't
+  reproduce that address-bar-driven `svh`/`lvh` behavior) - only this z-index/pointer-events collision,
+  which is viewport-static and fully reproducible without one.

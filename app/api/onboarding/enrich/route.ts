@@ -206,6 +206,12 @@ export async function POST(request: Request) {
 
     const openai = createOpenAI({ apiKey: env.LLM_API_KEY })
 
+    // Why the fast tier degraded to 'none' (quota/rate-limit/timeout/
+    // empty-record/block) - undefined when it found a profile or no URL ran.
+    // Threaded onto the response too so the failure card can show an honest
+    // reason instead of a hardcoded one that doesn't match what happened.
+    const fetchFailReason = fetched && !fetched.found ? (fetched.failReason ?? 'unknown') : undefined
+
     // What the browser can't report: which fast tier actually answered, whether
     // the paid rich triggers fired, and whether the inference LLM held up.
     const reportResult = (llmOk: boolean) =>
@@ -215,9 +221,7 @@ export async function POST(request: Request) {
                 llm_ok: llmOk,
                 fast_source: fetched?.found ? fetched.source : 'none',
                 fast_found: !!fetched?.found,
-                // Why the fast tier degraded to 'none' (quota/rate-limit/timeout/
-                // empty-record/block) - null when it found a profile or no URL ran.
-                fast_fail_reason: fetched && !fetched.found ? (fetched.failReason ?? 'unknown') : null,
+                fast_fail_reason: fetchFailReason ?? null,
                 has_rich_signal: hasRichSignal,
                 rich_status: richStatus,
                 rich_reused: reuseRich,
@@ -254,7 +258,7 @@ export async function POST(request: Request) {
         const confidence = hasRichSignal ? Math.max(object.confidence, 0.7) : object.confidence
         await persist({ ...object, niche, confidence })
         reportResult(true)
-        return Response.json({ ...object, niche, confidence, profile: profileOut, rich: richStatus })
+        return Response.json({ ...object, niche, confidence, profile: profileOut, rich: richStatus, fetchFailReason })
     } catch {
         // Graceful degradation: never surface an error on the Mirror screen. Return
         // a low-confidence, role-aware fallback as a normal 200 response.
@@ -269,6 +273,6 @@ export async function POST(request: Request) {
         }
         await persist(fallback)
         reportResult(false)
-        return Response.json({ ...fallback, profile: profileOut, rich: richStatus })
+        return Response.json({ ...fallback, profile: profileOut, rich: richStatus, fetchFailReason })
     }
 }

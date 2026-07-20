@@ -13,9 +13,13 @@ export { isLikelyProfileUrl, normalizeProfileUrl } from './profile-url'
 //      the production-reliable path; set SCRAPINGDOG_API_KEY to enable.
 //   2. LinkedIn's own SEO page: JSON-LD `@graph` (Person + Article nodes) and
 //      Open Graph tags. Works from residential IPs (local dev); LinkedIn
-//      near-universally blocks datacenter IPs (Vercel), so in production this
-//      usually returns a challenge page. LINKEDIN_SCRAPE_API_URL can route it
-//      through a raw-HTML proxy instead.
+//      near-universally blocks datacenter IPs (Vercel) with an HTTP 999, so in
+//      production this needs BRIGHTDATA_UNLOCKER_ZONE or LINKEDIN_SCRAPE_API_URL
+//      configured to route through a residential proxy - without either set,
+//      this tier is unreachable from Vercel, confirmed in production logs.
+//
+// Each tier gets its OWN timeout budget (SCRAPINGDOG_TIMEOUT_MS / FALLBACK_TIMEOUT_MS)
+// so a slow/timed-out Scrapingdog call never starves the fallback's time to run.
 //
 // The RICH tier (Bright Data dataset: full posts + followers, async 42-60s)
 // lives in lib/linkedin/rich-scrape.ts - it can never serve a live screen, so
@@ -68,8 +72,11 @@ const EMPTY: PublicProfile = {
     source: 'none',
 }
 
-const FETCH_TIMEOUT_MS = 12_000
 const SCRAPINGDOG_TIMEOUT_MS = 9_000
+// The JSON-LD/Bright Data fallback gets this as its OWN full window - it must
+// never inherit whatever time Scrapingdog's own timeout already spent (see
+// fetchPublicProfile below).
+const FALLBACK_TIMEOUT_MS = 8_000
 const MAX_HTML_BYTES = 5_000_000
 const MAX_POSTS = 8
 
@@ -423,27 +430,30 @@ export async function fetchPublicProfile(
     const url = normalizeProfileUrl(input)
     if (!url) return EMPTY
 
-    // Abort on either our own timeout or the caller's signal (e.g. client
-    // disconnect), so a request abort cancels the whole fetch chain.
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-    const onExternalAbort = () => controller.abort()
-    externalSignal?.addEventListener('abort', onExternalAbort)
-    try {
-        const viaScrapingdog = await fetchViaScrapingdog(url, controller.signal)
-        if (viaScrapingdog.profile?.found) return viaScrapingdog.profile
+    // Scrapingdog manages its own SCRAPINGDOG_TIMEOUT_MS internally - it only
+    // needs the caller's signal for an early client-disconnect abort.
+    const viaScrapingdog = await fetchViaScrapingdog(url, externalSignal ?? new AbortController().signal)
+    if (viaScrapingdog.profile?.found) return viaScrapingdog.profile
 
-        // Scrapingdog produced nothing - carry its reason onto the degraded
-        // result so the enrich event records why (the JSON-LD tier below is
-        // near-always blocked from Vercel's datacenter IP, so it rarely rescues).
+    // Scrapingdog produced nothing - carry its reason onto the degraded result
+    // so the enrich event records why (the JSON-LD tier below is near-always
+    // blocked from Vercel's datacenter IP without a configured unlocker/proxy,
+    // so it rarely rescues). This fallback gets its OWN fresh timeout window
+    // instead of whatever remained of a shared clock - previously a Scrapingdog
+    // timeout alone could leave it only ~3s, never enough for a real HTTP fetch.
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), FALLBACK_TIMEOUT_MS)
+    const onAbort = () => controller.abort()
+    externalSignal?.addEventListener('abort', onAbort)
+    try {
         const html = await getProfileHtml(url, controller.signal)
         if (!html) return { ...EMPTY, url, failReason: viaScrapingdog.reason ?? 'html-block' }
         const profile = parsePublicProfileHtml(html, url)
         return profile.found ? profile : { ...EMPTY, url, failReason: viaScrapingdog.reason ?? 'parse-miss' }
     } catch {
-        return { ...EMPTY, url }
+        return { ...EMPTY, url, failReason: viaScrapingdog.reason ?? 'html-block' }
     } finally {
         clearTimeout(timer)
-        externalSignal?.removeEventListener('abort', onExternalAbort)
+        externalSignal?.removeEventListener('abort', onAbort)
     }
 }

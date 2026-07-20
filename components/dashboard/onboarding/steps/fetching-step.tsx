@@ -25,10 +25,32 @@ const TICK_MS = 950
 // Just past the client enrich timeout (28s): only a call that never settles hits this.
 const FAILSAFE_MS = 30000
 
+// The failure card used to always blame a LinkedIn block, even when the real
+// reason (surfaced via fetchFailReason) was our own fetch timing out or a
+// provider rate-limit - neither of which is "LinkedIn blocked us". Bucket the
+// server's reason into honest copy instead of one hardcoded message.
+function failureCopy(reason: string | undefined): { title: string; body: string } {
+    if (reason === 'timeout' || reason === 'aborted' || reason === 'network')
+        return {
+            title: 'That took longer than expected',
+            body: "Fetching your profile timed out, so we couldn't pull your details automatically. You can try again, or continue and tell us about you in two taps.",
+        }
+    if (reason?.startsWith('http-4') || reason === 'empty-record')
+        return {
+            title: "We're briefly unable to fetch profiles",
+            body: 'Our profile lookup is temporarily unavailable. You can try again shortly, or continue and tell us about you in two taps.',
+        }
+    return {
+        title: "We couldn't read that profile",
+        body: "LinkedIn blocked the request, so we couldn't pull your details automatically. You can try another URL, or continue and tell us about you in two taps.",
+    }
+}
+
 export function FetchingStep() {
     const { answers, update, goNext, goBack, goTo } = useOnboarding()
     const [doneCount, setDoneCount] = React.useState(0)
     const [failed, setFailed] = React.useState(false)
+    const [failReason, setFailReason] = React.useState<string | undefined>(undefined)
     // Refs survive a StrictMode setup/cleanup/setup cycle: startedRef keeps the
     // enrich call from firing twice, settledRef keeps us committing once.
     const startedRef = React.useRef(false)
@@ -107,7 +129,8 @@ export function FetchingStep() {
                 setDoneCount(FETCHING_TASKS.length)
                 setTimeout(goNext, 500)
             } else {
-                track('onb_fetch_failed')
+                track('onb_fetch_failed', { reason: result?.fetchFailReason ?? 'unknown' })
+                setFailReason(result?.fetchFailReason)
                 setFailed(true)
             }
         }
@@ -136,9 +159,10 @@ export function FetchingStep() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    // A pasted URL we couldn't read (LinkedIn blocks datacenter IPs when no
-    // scrape API is configured). Own the failure instead of silently degrading.
+    // A pasted URL we couldn't read - own the failure instead of silently
+    // degrading, with copy matched to the actual reason (see failureCopy).
     if (failed) {
+        const copy = failureCopy(failReason)
         return (
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -147,11 +171,8 @@ export function FetchingStep() {
                 <div className='bg-destructive/10 text-destructive mb-5 flex size-14 items-center justify-center rounded-2xl'>
                     <TriangleAlertIcon className='size-7' />
                 </div>
-                <H1 className='text-xl'>We couldn&rsquo;t read that profile</H1>
-                <Sub className='mx-auto text-center'>
-                    LinkedIn blocked the request, so we couldn&rsquo;t pull your details automatically. You can try
-                    another URL, or continue and tell us about you in two taps.
-                </Sub>
+                <H1 className='text-xl'>{copy.title}</H1>
+                <Sub className='mx-auto text-center'>{copy.body}</Sub>
                 <div className='flex w-full max-w-[320px] flex-col gap-2.5'>
                     <CTA
                         onClick={() => {

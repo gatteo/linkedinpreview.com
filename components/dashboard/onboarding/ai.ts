@@ -33,6 +33,8 @@ export type EnrichResult = {
     profile?: { name: string; headline: string; avatarUrl: string; about?: string; identity?: FastIdentity }
     /** Rich (Bright Data) scrape state: 'pending' means the pipeline hook should poll. */
     rich?: RichScrapeStatus
+    /** Why the fast profile fetch found nothing (e.g. 'timeout', 'http-429'); undefined on success. */
+    fetchFailReason?: string
 }
 
 export type EnrichInput = {
@@ -70,8 +72,9 @@ export async function enrichProfile(input: EnrichInput): Promise<EnrichResult | 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(input),
                 },
-                // Generous: the fast profile fetch (up to ~12s) plus the LLM call.
-                // Kept under the server maxDuration and the Mirror failsafe.
+                // Generous: the fast profile fetch (Scrapingdog up to 9s, then the
+                // JSON-LD fallback its own up to 8s) plus the LLM call. Kept under
+                // the server maxDuration and the Mirror failsafe.
                 28000,
             )
             if (!res.ok) return null
