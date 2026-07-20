@@ -27,7 +27,11 @@ welcome → connect → fetching → reassure          (section 1: Connect)
 
 The canonical PostHog funnel is `onb_step_view` filtered per step, in this order, plus
 `onb_flow_complete` as the terminal node. Conversion = `purchase_completed` (server
-truth) between `onb_step_view[paywall]` and 1h after.
+truth) between `onb_step_view[paywall]` and 1h after, **filtered to `amount_total > 0`**
+
+- 100%-off comp codes issued to internal testers complete a real checkout and fire the
+  event with `amount_total = 0`. The Supabase `paid` counters cannot tell a comp from a
+  purchase, so PostHog is the conversion truth while comp codes are live.
 
 Every `onb_*` event carries `funnel_version` (from `config/analytics.ts`). Bump it on any
 structural change (step added/removed/reordered); copy experiments keep the version
@@ -72,15 +76,15 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 
 ### Offer & checkout
 
-| Event                    | Properties                                    | Meaning                                                                        |
-| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------ |
-| `onb_paywall_view`       | `ideas`                                       | paywall rendered (`ideas` = real generated posts shown)                        |
-| `onb_offer_select`       | `plan`                                        | plan card clicked (opens checkout)                                             |
-| `onb_checkout_opened`    | `plan`, `ui: hosted\|embedded`                | checkout started - embedded rendered in-modal, or redirecting to hosted Stripe |
-| `onb_checkout_failed`    | `plan`, `reason: unconfigured\|create-failed` | checkout could not open (user saw the free-plan fallback)                      |
-| `onb_checkout_abandoned` | `plan`                                        | embedded: opened checkout unmounted without payment; hosted: cancel-URL return |
-| `onb_purchase_success`   | `plan`                                        | client observed the purchase (embedded `onComplete`, or hosted success return) |
-| `onb_offer_decline`      | -                                             | quiet "Continue on the free plan"                                              |
+| Event                    | Properties                                               | Meaning                                                                                                                                                                                                                                     |
+| ------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onb_paywall_view`       | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
+| `onb_offer_select`       | `plan`                                                   | plan card clicked (opens checkout)                                                                                                                                                                                                          |
+| `onb_checkout_opened`    | `plan`, `ui: hosted\|embedded`                           | checkout started - embedded rendered in-modal, or redirecting to hosted Stripe                                                                                                                                                              |
+| `onb_checkout_failed`    | `plan`, `reason: unconfigured\|create-failed`            | checkout could not open (user saw the free-plan fallback)                                                                                                                                                                                   |
+| `onb_checkout_abandoned` | `plan`, `via: cancel_url\|no_return_param` (hosted only) | embedded: opened checkout unmounted without payment; hosted: `cancel_url` = returned via Stripe's back link, `no_return_param` = returned via browser Back (resolved from a sessionStorage marker, so every hosted open now has an outcome) |
+| `onb_purchase_success`   | `plan`                                                   | client observed the purchase (embedded `onComplete`, or hosted success return)                                                                                                                                                              |
+| `onb_offer_decline`      | -                                                        | quiet "Continue on the free plan"                                                                                                                                                                                                           |
 
 ### Background pipeline (client-observed)
 

@@ -53,6 +53,9 @@ export async function POST(request: Request) {
             line_items: [{ price: priceId, quantity: 1 }],
             client_reference_id: user.id,
             metadata: { user_id: user.id, plan },
+            // Without this Stripe renders no promotion-code field at all, so any
+            // coupon we issue is unredeemable.
+            allow_promotion_codes: true,
         }
 
         if (CHECKOUT_UI === 'hosted') {
