@@ -12,6 +12,10 @@ import { CTA, FieldLabel, GhostLink, H1, Spinner, Sub } from '../primitives'
 // user converts it to permanent WITHOUT changing user.id, so every draft,
 // billing, and onboarding_sessions row stays owned by the same id. Soft-gated:
 // a skip or a bind failure never blocks the funnel.
+//
+// The ask is account recovery, and only that. Nothing here may promise delivery
+// of posts, plans, or reminders: the product sends no transactional email, only
+// Supabase's own address-confirmation message.
 // ---------------------------------------------------------------------------
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -66,8 +70,11 @@ export function EmailStep() {
 
     return (
         <div className='flex flex-col'>
-            <H1>Where should we save your plan?</H1>
-            <Sub>We&rsquo;re about to build your plan - where should we save it and send your posts?</Sub>
+            <H1>Keep access to your plan</H1>
+            <Sub>
+                Your account lives in this browser only. Add your email and you can pick your plan back up from any
+                device - without it, clearing your browser data loses it for good.
+            </Sub>
 
             <FieldLabel>Your email</FieldLabel>
             <input
