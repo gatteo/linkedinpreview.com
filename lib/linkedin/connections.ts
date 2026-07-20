@@ -125,6 +125,17 @@ export async function upsertConnection(
 }
 
 /**
+ * Drop an identity mapping outright, freeing its `linkedin_sub` to be claimed by
+ * another account. Only for an orphan row whose owning account can never be
+ * signed into - keeping it would block that LinkedIn account from connecting
+ * anywhere, forever. Prefer `disconnectConnection` in every other case.
+ */
+export async function releaseConnection(client: SupabaseClient, userId: string): Promise<void> {
+    const { error } = await client.from('linkedin_connections').delete().eq('user_id', userId)
+    if (error) throw error
+}
+
+/**
  * Disconnect publishing while keeping the account and the linkedin_sub -> account
  * mapping intact (so the user can still log back in via LinkedIn). Clears the
  * stored token rather than deleting the row.

@@ -32,7 +32,10 @@ const STATUS_MESSAGES: Record<string, { type: 'success' | 'error'; message: stri
         type: 'error',
         message: 'This LinkedIn is linked to another account. Disconnect it there first.',
     },
-    'signin-failed': { type: 'error', message: 'Could not sign you in with LinkedIn. Please try again.' },
+    'signin-failed': {
+        type: 'error',
+        message: 'Could not sign you in with LinkedIn. Contact support so we can recover your account.',
+    },
 }
 
 const EMAIL_MESSAGES: Record<string, { type: 'success' | 'error'; message: string }> = {

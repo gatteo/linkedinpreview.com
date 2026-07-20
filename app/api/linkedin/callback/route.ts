@@ -12,7 +12,7 @@ import {
     SWITCH_COOKIE,
     SWITCH_COOKIE_MAX_AGE,
 } from '@/lib/linkedin/account-link'
-import { findUserIdByLinkedInSub, upsertConnection } from '@/lib/linkedin/connections'
+import { findUserIdByLinkedInSub, releaseConnection, upsertConnection } from '@/lib/linkedin/connections'
 import { syncIdentityFromLinkedIn } from '@/lib/linkedin/identity-sync'
 import { exchangeCodeForToken, fetchUserInfo, type LinkedInUserInfo } from '@/lib/linkedin/oauth'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -84,7 +84,10 @@ export async function GET(request: NextRequest) {
         const existingOwner = admin ? await findUserIdByLinkedInSub(admin, info.sub) : null
 
         if (existingOwner && existingOwner !== user.id && admin) {
-            return await handleSwitch({ supabase, admin, cookieStore, user, existingOwner, input })
+            const switched = await handleSwitch({ supabase, admin, cookieStore, user, existingOwner, input })
+            // null means the existing owner was an unreachable stale identity and
+            // has been released - fall through and attach to this session instead.
+            if (switched) return switched
         }
 
         // First link (1a/1b) or reconnect of the same account (2): attach to the
@@ -140,11 +143,24 @@ async function handleSwitch({
     user: { id: string; is_anonymous?: boolean }
     existingOwner: string
     input: Parameters<typeof upsertConnection>[2]
-}): Promise<NextResponse> {
+}): Promise<NextResponse | null> {
     // The current user is already a saved account with its own data - never
     // silently abandon it. Block and explain (decision: block on owner conflict).
     if (user.is_anonymous === false) {
         return settingsRedirect('linked-elsewhere')
+    }
+
+    // Signing into E requires an email to mint a magic link against. An account
+    // without one can never be entered by any route, so it is not an identity
+    // worth protecting - it is a stale mapping that would otherwise block this
+    // LinkedIn account from connecting anywhere, permanently, with no recovery.
+    // Release it and let the caller attach the connection to the live session.
+    const { data: target, error: targetErr } = await admin.auth.admin.getUserById(existingOwner)
+    if (targetErr) throw targetErr
+    if (!target.user?.email) {
+        console.warn('[linkedin/callback] releasing unreachable identity', existingOwner)
+        await releaseConnection(admin, existingOwner)
+        return null
     }
 
     // Refresh E's publish token with the freshly obtained one (this login also
