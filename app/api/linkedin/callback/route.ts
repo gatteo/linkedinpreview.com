@@ -18,8 +18,12 @@ import { exchangeCodeForToken, fetchUserInfo, type LinkedInUserInfo } from '@/li
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
-import { OAUTH_STATE_COOKIE } from '../auth/route'
+import { OAUTH_ORIGIN_COOKIE, OAUTH_STATE_COOKIE, oauthReturnRedirect } from '../auth/route'
 
+/**
+ * Account-switch outcomes are the settings page's concern regardless of where
+ * the round-trip started - OnboardingController explicitly bails on them.
+ */
 function settingsRedirect(status: string) {
     return NextResponse.redirect(`${site.url}${Routes.DashboardSettings}?linkedin=${status}`)
 }
@@ -39,7 +43,14 @@ function connectionInput(token: { access_token: string; scope?: string; expires_
 
 /** Handle the OAuth redirect from LinkedIn: validate, exchange, then resolve account. */
 export async function GET(request: NextRequest) {
-    if (!isLinkedInConfigured()) return settingsRedirect('unavailable')
+    // Consume the origin marker up front: this round-trip is over either way,
+    // and every exit below needs to know where to return the member.
+    const cookieStore = await cookies()
+    const fromOnboarding = cookieStore.get(OAUTH_ORIGIN_COOKIE)?.value === 'onboarding'
+    cookieStore.delete(OAUTH_ORIGIN_COOKIE)
+    const redirect = (status: string) => oauthReturnRedirect(status, fromOnboarding)
+
+    if (!isLinkedInConfigured()) return redirect('unavailable')
 
     const params = request.nextUrl.searchParams
     const code = params.get('code')
@@ -47,21 +58,20 @@ export async function GET(request: NextRequest) {
     const error = params.get('error')
 
     // Member denied consent or LinkedIn returned an error.
-    if (error) return settingsRedirect('denied')
+    if (error) return redirect('denied')
 
     // CSRF: the returned state must match the cookie we set at initiation.
-    const cookieStore = await cookies()
     const expectedState = cookieStore.get(OAUTH_STATE_COOKIE)?.value
     cookieStore.delete(OAUTH_STATE_COOKIE)
     if (!code || !state || !expectedState || state !== expectedState) {
-        return settingsRedirect('error')
+        return redirect('error')
     }
 
     const supabase = await createClient()
     const {
         data: { user },
     } = await supabase.auth.getUser()
-    if (!user) return settingsRedirect('session')
+    if (!user) return redirect('session')
 
     try {
         const token = await exchangeCodeForToken(code)
@@ -96,10 +106,10 @@ export async function GET(request: NextRequest) {
             console.error('[linkedin/callback] identity sync', err instanceof Error ? err.message : err)
         }
 
-        return settingsRedirect('connected')
+        return redirect('connected')
     } catch (err) {
         console.error('[linkedin/callback]', err instanceof Error ? err.message : err)
-        return settingsRedirect('error')
+        return redirect('error')
     }
 }
 

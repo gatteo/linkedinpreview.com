@@ -124,6 +124,21 @@ export function isLinkedInConfigured(): boolean {
     return missingLinkedInEnv().length === 0
 }
 
+/**
+ * The `?linkedin=` callback statuses that belong to the onboarding flow.
+ * Account-switch statuses (merge-prompt/linked-elsewhere/welcome/signin-failed)
+ * are owned by the settings page and must not be hijacked by the onboarding
+ * resume gate. Shared by the callback route (which picks the return page) and
+ * OnboardingController (which reads the result) so the two cannot drift.
+ */
+export const ONBOARDING_LINKEDIN_STATUSES: readonly string[] = [
+    'connected',
+    'denied',
+    'error',
+    'session',
+    'unavailable',
+]
+
 /** The exact redirect URI registered on the LinkedIn app. */
 export function linkedInRedirectUri(): string {
     // Use `||` so an empty-string env value falls back to the default.

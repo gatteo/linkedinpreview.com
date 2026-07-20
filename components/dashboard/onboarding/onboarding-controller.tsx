@@ -3,7 +3,8 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 
-import { Routes } from '@/config/routes'
+import { ONBOARDING_LINKEDIN_STATUSES } from '@/config/linkedin'
+import { ApiRoutes, Routes } from '@/config/routes'
 import { site } from '@/config/site'
 import { createDraft as createDraftApi } from '@/lib/supabase/drafts'
 import { upsertOnboardingSession } from '@/lib/supabase/onboarding-session'
@@ -22,11 +23,6 @@ import {
     type OnboardingAnswers,
     type StepId,
 } from './types'
-
-// The `?linkedin=` statuses that belong to onboarding. Account-switch statuses
-// (merge-prompt/linked-elsewhere/welcome/signin-failed) are owned by the
-// settings page and must not be hijacked by the onboarding resume gate.
-const ONBOARDING_LINKEDIN_STATUSES = ['connected', 'denied', 'error', 'session', 'unavailable']
 
 // Detected posting language (ISO code from the scraped corpus) -> the branding
 // writing-style language option. Unknown codes drop rather than guess.
@@ -301,7 +297,10 @@ export function OnboardingController() {
 
     const handleConnectLinkedin = React.useCallback((answers: OnboardingAnswers) => {
         persistOnboarding(answers, 'connect')
-        window.location.href = '/api/linkedin/auth'
+        // `from=onboarding` makes the callback return to /dashboard instead of
+        // settings, whose mount effect would strip the result before the resume
+        // gate below can read it.
+        window.location.href = `${ApiRoutes.LinkedInAuth}?from=onboarding`
     }, [])
 
     // The email step captures the user's email at the earned-value moment and
