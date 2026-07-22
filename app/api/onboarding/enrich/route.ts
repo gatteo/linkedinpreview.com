@@ -154,6 +154,12 @@ export async function POST(request: Request) {
     const effName = fetched?.name || name
     const effHeadline = fetched?.headline || headline
 
+    // Which fast tier answered: a fetched profile names its own source; otherwise
+    // an OAuth identity (name/headline present without a URL fetch) is 'oauth', and
+    // a bare manual form is 'none'. Shared so the persisted session row and the
+    // PostHog event never disagree on the fast-tier mix.
+    const fastSource = fetched?.found ? fetched.source : effName || effHeadline ? 'oauth' : 'none'
+
     const signals: string[] = []
     if (effName) signals.push(`Name: ${effName}`)
     if (effHeadline) signals.push(`Headline: ${effHeadline}`)
@@ -192,7 +198,7 @@ export async function POST(request: Request) {
     // full JSON-LD extraction incl. recent post titles) for later analysis.
     const persist = async (enrichment: Record<string, unknown>) => {
         const patch: OnboardingSessionPatch = {
-            fast_source: fetched?.found ? fetched.source : effName || effHeadline ? 'oauth' : 'none',
+            fast_source: fastSource,
             fast_profile: fetched?.found
                 ? { name: fetched.name, headline: fetched.headline, about: fetched.about, avatarUrl: fetched.avatarUrl }
                 : effName || effHeadline
@@ -219,7 +225,7 @@ export async function POST(request: Request) {
             captureServer(user.id, 'onb_enrich_result', {
                 funnel_version: OB_FUNNEL_VERSION,
                 llm_ok: llmOk,
-                fast_source: fetched?.found ? fetched.source : 'none',
+                fast_source: fastSource,
                 fast_found: !!fetched?.found,
                 fast_fail_reason: fetchFailReason ?? null,
                 has_rich_signal: hasRichSignal,
