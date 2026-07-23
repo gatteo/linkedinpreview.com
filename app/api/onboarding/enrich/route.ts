@@ -187,12 +187,19 @@ export async function POST(request: Request) {
           }
         : undefined
 
+    // The fast tier that actually answered: a fetched profile's own source,
+    // else 'oauth' when the OAuth-provided name/headline seeded the persona,
+    // else 'none'. Computed once so the persisted session row and the PostHog
+    // event report the same value (the event used to drop the 'oauth' branch
+    // and over-count 'none' - GH #33).
+    const fastSource = fetched?.found ? fetched.source : effName || effHeadline ? 'oauth' : 'none'
+
     // Persist the fast tier + the inference (the rich trigger was written above).
     // fast_raw keeps the COMPLETE provider payload (Scrapingdog record, or the
     // full JSON-LD extraction incl. recent post titles) for later analysis.
     const persist = async (enrichment: Record<string, unknown>) => {
         const patch: OnboardingSessionPatch = {
-            fast_source: fetched?.found ? fetched.source : effName || effHeadline ? 'oauth' : 'none',
+            fast_source: fastSource,
             fast_profile: fetched?.found
                 ? { name: fetched.name, headline: fetched.headline, about: fetched.about, avatarUrl: fetched.avatarUrl }
                 : effName || effHeadline
@@ -219,7 +226,7 @@ export async function POST(request: Request) {
             captureServer(user.id, 'onb_enrich_result', {
                 funnel_version: OB_FUNNEL_VERSION,
                 llm_ok: llmOk,
-                fast_source: fetched?.found ? fetched.source : 'none',
+                fast_source: fastSource,
                 fast_found: !!fetched?.found,
                 fast_fail_reason: fetchFailReason ?? null,
                 has_rich_signal: hasRichSignal,
