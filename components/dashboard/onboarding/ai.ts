@@ -172,6 +172,20 @@ async function generateInsights(hints: InsightsHints): Promise<OnboardingInsight
                 // keep polling until the deadline
             }
         }
+        // The deadline is wall-clock, so a suspended tab can sleep through the
+        // whole budget and reach here without one live poll deciding anything
+        // (the in-flight fetch aborts on wake: its abort timer expired during
+        // the freeze). A run that completed during the suspension must resolve
+        // ready, not brand the session 'failed' - one fresh poll settles it.
+        try {
+            const poll = await fetchWithTimeout('/api/onboarding/insights', {}, 15000)
+            if (poll.ok) {
+                const data = (await poll.json()) as InsightsStatusResponse
+                if (data.status === 'ready' && data.insights) return data.insights
+            }
+        } catch {
+            // fall through to the failure result
+        }
         return null
     } catch {
         return null
