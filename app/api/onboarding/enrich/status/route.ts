@@ -49,18 +49,29 @@ export async function GET() {
     const reportSettled = (
         settled: 'ready' | 'empty' | 'failed',
         corpus: 'posts-dataset' | 'profile-activity' | 'scrapingdog-activity' | null,
-    ) =>
-        after(() =>
+    ) => {
+        // A resumed session can settle days after it triggered (the user left
+        // and came back), which reported as scrape latency and corrupted the
+        // p90 (one observed sample: 367,941,450 ms). Only report ms_since_trigger
+        // when it's plausibly a live measurement - the same ~6 min ceiling the
+        // client polls to and this route treats snapshots as stale past - else
+        // null, flagged `resumed` so a resumed settle is still visible without
+        // polluting the latency metric.
+        const rawMsSinceTrigger = session.rich_triggered_at
+            ? Date.now() - new Date(session.rich_triggered_at).getTime()
+            : null
+        const liveMeasurement = rawMsSinceTrigger !== null && rawMsSinceTrigger <= STALE_PENDING_MS
+        return after(() =>
             captureServer(user.id, 'onb_scrape_settled', {
                 funnel_version: OB_FUNNEL_VERSION,
                 status: settled,
                 corpus,
                 authored_count: (posts ?? []).filter((p) => p.origin === 'post').length,
-                ms_since_trigger: session.rich_triggered_at
-                    ? Date.now() - new Date(session.rich_triggered_at).getTime()
-                    : null,
+                ms_since_trigger: liveMeasurement ? rawMsSinceTrigger : null,
+                ...(rawMsSinceTrigger !== null && !liveMeasurement ? { resumed: true } : {}),
             }),
         )
+    }
 
     if (status === 'pending' && (session.rich_snapshot_id || session.posts_snapshot_id)) {
         const failed = { status: 'failed' } as const
@@ -173,6 +184,33 @@ export async function GET() {
         }
         // Any other combination keeps waiting: posts pending is worth holding for
         // even when the profile snapshot already landed or failed.
+    }
+
+    // Best-effort identity backfill (GH #26 hardening): the fast tier can fail
+    // entirely (no Scrapingdog/JSON-LD card) while the independent Bright Data
+    // people-profile snapshot still lands - normally merged in when the posts
+    // corpus settles above, but a posts-only settle (the identity snapshot
+    // wasn't ready at that exact poll) never revisits it once `rich_status`
+    // leaves 'pending'. Recheck it here whenever we still have no name and the
+    // snapshot id is on file, so recap/reveal show a real identity instead of
+    // none - this only reads a snapshot's status, it never retriggers a scrape.
+    if (status !== 'pending' && !profile?.name && !profile?.headline && session.rich_snapshot_id) {
+        const identityResult = await checkRichScrape(session.rich_snapshot_id).catch(
+            () => ({ status: 'failed' }) as const,
+        )
+        if (identityResult.status === 'ready') {
+            profile = {
+                name: identityResult.profile.name || profile?.name || '',
+                headline: identityResult.profile.headline || profile?.headline || '',
+                about: identityResult.profile.about || profile?.about || '',
+                avatarUrl: identityResult.profile.avatarUrl || profile?.avatarUrl || '',
+                followers: profile?.followers ?? identityResult.profile.followers,
+                connections: profile?.connections ?? identityResult.profile.connections,
+                observed: profile?.observed ?? null,
+                styleHints: profile?.styleHints ?? null,
+            }
+            await upsertOnboardingSession(supabase, user.id, { rich_profile: profile }).catch(() => {})
+        }
     }
 
     const authoredCount = (posts ?? []).filter((p) => p.origin === 'post').length
