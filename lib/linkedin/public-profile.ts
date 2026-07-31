@@ -72,7 +72,12 @@ const EMPTY: PublicProfile = {
     source: 'none',
 }
 
-const SCRAPINGDOG_TIMEOUT_MS = 9_000
+// 9s here was the single largest source of onboarding fetch failures: three
+// quarters of all `onb_fetch_failed` events were `reason='timeout'`, which has
+// exactly one source - this controller aborting because Scrapingdog had not
+// answered yet. The profile is the whole basis of a personalized audit, so
+// waiting longer beats degrading to a generic one.
+const SCRAPINGDOG_TIMEOUT_MS = 18_000
 // The JSON-LD/Bright Data fallback gets this as its OWN full window - it must
 // never inherit whatever time Scrapingdog's own timeout already spent (see
 // fetchPublicProfile below).
