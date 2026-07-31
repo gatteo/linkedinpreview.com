@@ -118,8 +118,12 @@ export async function POST() {
     try {
         posts = await fetchMemberPosts(token, authorUrn)
     } catch (err) {
+        // Log LinkedIn's own message, not just the status. A bare 403 cannot be
+        // told apart from a missing permission, an unapproved app, or a tier
+        // restriction, and those have completely different remedies.
         const status = err instanceof LinkedInApiError ? err.status : undefined
-        console.error('[analytics/import] fetch posts failed', status ?? err)
+        const body = err instanceof LinkedInApiError ? err.body : ''
+        console.error('[analytics/import] fetch posts failed', status ?? err, body ? `- ${body.slice(0, 500)}` : '')
         return Response.json(
             { error: 'Failed to fetch your LinkedIn posts', code: LINKEDIN_ERROR_CODES.PUBLISH_FAILED },
             { status: 502 },
