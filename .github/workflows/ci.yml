@@ -16,15 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # No `version:` here on purpose. Pinning one while package.json declares
+      # another makes action-setup abort with "Multiple versions of pnpm
+      # specified" before a single gate runs, which is what had CI failing on
+      # every commit since 2026-07-19. Letting it read `packageManager` keeps
+      # the two in sync by construction.
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9.12.3
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
