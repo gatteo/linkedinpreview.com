@@ -18,6 +18,7 @@ import type {
     RichStatusResponse,
 } from '@/types/onboarding'
 import { OB_FUNNEL_VERSION } from '@/config/analytics'
+import type { ResolvedEntrySource } from '@/config/entry-sources'
 import type { Role } from '@/config/onboarding-personalization'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
@@ -259,6 +260,16 @@ export function postTextToDoc(text: string) {
 }
 
 /** PostHog is uninitialized in dev; optional chaining keeps these no-ops there. */
+// The surface that sent this user into the dashboard. Resolved once by the
+// controller on mount and stamped on every onboarding event, so any step's
+// retention can be split by where the user came from (and what they were
+// promised) without joining across sessions.
+let entrySource: ResolvedEntrySource = 'direct'
+
+export function setEntrySource(source: ResolvedEntrySource) {
+    entrySource = source
+}
+
 export function track(event: string, props?: Record<string, unknown>) {
-    posthog?.capture(event, { funnel_version: OB_FUNNEL_VERSION, ...props })
+    posthog?.capture(event, { funnel_version: OB_FUNNEL_VERSION, entry_source: entrySource, ...props })
 }

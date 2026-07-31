@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { ExternalLinks } from '@/config/urls'
 import { getAllComparisons } from '@/lib/compare'
@@ -64,7 +65,7 @@ export function Footer() {
                                     properties={{ button_name: 'create_plan', source: 'footer' }}>
                                     <Link
                                         className={cn(linkClass, 'text-foreground font-medium')}
-                                        href={Routes.Dashboard}>
+                                        href={withEntrySource(Routes.Dashboard, 'footer')}>
                                         Create my LinkedIn plan
                                     </Link>
                                 </TrackClick>

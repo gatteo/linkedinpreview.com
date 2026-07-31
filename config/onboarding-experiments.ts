@@ -23,7 +23,7 @@ export const OB_EXPERIMENTS = {
             headlinePre: 'Grow ',
             headlineHighlight: '10×',
             headlinePost: ' on LinkedIn in 90 days.',
-            sub: 'I’ll audit your LinkedIn, learn your goals, and build a personalized strategy, all in under 2 minutes.',
+            sub: 'I’ll audit your LinkedIn, learn your goals, and build a personalized strategy, all in about 3 minutes.',
         },
     },
 } as const

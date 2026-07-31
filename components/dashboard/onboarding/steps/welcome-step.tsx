@@ -1,8 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ClockIcon, SparklesIcon, StarIcon } from 'lucide-react'
+import { CheckIcon, ClockIcon, SparklesIcon, StarIcon } from 'lucide-react'
 
+import { ENTRY_WELCOME } from '@/config/entry-sources'
 import { SOCIAL_PROOF } from '@/config/social-proof'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { useObExperiment } from '@/hooks/use-ob-experiment'
@@ -17,8 +18,12 @@ import { useOnboarding } from '../context'
 // ---------------------------------------------------------------------------
 
 export function WelcomeStep() {
-    const { goNext } = useOnboarding()
-    const hero = useObExperiment('onb-welcome-hero')
+    const { answers, goNext } = useOnboarding()
+    const experimentHero = useObExperiment('onb-welcome-hero')
+    // An entry with its own promise to continue overrides the default hero. Any
+    // source without one falls through to the experiment-controlled copy.
+    const entryHero = ENTRY_WELCOME[answers.entrySource]
+    const hero = entryHero ?? experimentHero
 
     const start = () => {
         track('onb_welcome_start')
@@ -47,6 +52,12 @@ export function WelcomeStep() {
                 </Button>
             </motion.div>
             <motion.div variants={staggerItem} className='mt-5 flex flex-nowrap gap-2 max-sm:flex-wrap'>
+                {entryHero?.draftSaved && (
+                    <HeroPill>
+                        <CheckIcon className='size-3.5 text-[var(--orange-300)]' />
+                        Your draft is saved
+                    </HeroPill>
+                )}
                 <HeroPill>
                     <StarIcon className='size-[13px] fill-[var(--orange-300)] text-[var(--orange-300)]' />
                     <b className='font-bold'>{SOCIAL_PROOF.rating}</b>&nbsp;from {SOCIAL_PROOF.count} professionals
@@ -57,7 +68,7 @@ export function WelcomeStep() {
                 </HeroPill>
                 <HeroPill>
                     <ClockIcon className='size-3.5 text-[var(--orange-300)]' />
-                    90 seconds
+                    About 3 minutes
                 </HeroPill>
             </motion.div>
         </motion.div>

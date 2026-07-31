@@ -8,6 +8,7 @@ import posthog from 'posthog-js'
 import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
+import { withEntrySource, type EntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
@@ -218,16 +219,17 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         async (source: string) => {
             posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
             flush()
+            const entry: EntrySource = source === 'tool_nudge' ? 'tool_nudge' : 'tool_footer'
             if (!content) {
-                window.location.href = Routes.Dashboard
+                window.location.href = withEntrySource(Routes.Dashboard, entry)
                 return
             }
             const encoded = await encodeDraft(content)
             if (!encoded) {
-                window.location.href = Routes.Dashboard
+                window.location.href = withEntrySource(Routes.Dashboard, entry)
                 return
             }
-            window.location.href = `/dashboard/editor?import=${encoded}`
+            window.location.href = withEntrySource(`/dashboard/editor?import=${encoded}`, entry)
         },
         [content, flush],
     )
