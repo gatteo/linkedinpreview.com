@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 
+import { ENTRY_PARAM, parseEntrySource, type ResolvedEntrySource } from '@/config/entry-sources'
 import { ONBOARDING_LINKEDIN_STATUSES } from '@/config/linkedin'
 import { ApiRoutes, Routes } from '@/config/routes'
 import { site } from '@/config/site'
@@ -12,7 +13,7 @@ import { useBranding } from '@/hooks/use-branding'
 import { useStrategy } from '@/hooks/use-strategy'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
-import { postTextToDoc } from './ai'
+import { postTextToDoc, setEntrySource } from './ai'
 import { onOnboardingDebug } from './debug-events'
 import { OnboardingModal } from './onboarding-modal'
 import {
@@ -45,7 +46,7 @@ const BRANDING_LANGUAGE_BY_CODE: Record<string, string> = {
 // ---------------------------------------------------------------------------
 
 export function OnboardingController() {
-    const { isReady, userId, supabase } = useAuth()
+    const { isReady, userId, supabase, email: authEmail } = useAuth()
     const { branding, isLoading: brandingLoading, updateBranding } = useBranding()
     const { strategy, isLoading: strategyLoading, updateStrategy } = useStrategy()
     const router = useRouter()
@@ -53,6 +54,7 @@ export function OnboardingController() {
     const [open, setOpen] = React.useState(false)
     const [mountSeq, setMountSeq] = React.useState(0)
     const [startStepId, setStartStepId] = React.useState<StepId>('welcome')
+    const [entry, setEntry] = React.useState<ResolvedEntrySource>('direct')
     const [linkedinError, setLinkedinError] = React.useState<string | null>(null)
     const [resumeAnswers, setResumeAnswers] = React.useState<OnboardingAnswers | null>(null)
     const decidedRef = React.useRef(false)
@@ -67,6 +69,14 @@ export function OnboardingController() {
         const saved = readOnboarding()
         const params = new URLSearchParams(window.location.search)
         const linkedinStatus = params.get('linkedin')
+
+        // Attribute the visit before any branch returns, so entry_source is on
+        // every onboarding event including the ones fired by a resumed session.
+        // A resumed session keeps the source it started with - the ?from= on a
+        // later navigation describes that navigation, not the original entry.
+        const entry = saved?.answers.entrySource ?? parseEntrySource(params.get(ENTRY_PARAM))
+        setEntrySource(entry)
+        setEntry(entry)
 
         // Already onboarded - never show again; clear any stale saved progress.
         if (branding.meta.onboardedAt) {
@@ -328,14 +338,11 @@ export function OnboardingController() {
 
     // Prefill the email field from the current auth user when one is already set
     // (a returning user who bound in a prior session). Anonymous users have none.
-    const [userEmail, setUserEmail] = React.useState<string | null>(null)
-    React.useEffect(() => {
-        if (!isReady) return
-        supabase.auth
-            .getUser()
-            .then(({ data }) => setUserEmail(data.user?.email ?? null))
-            .catch(() => {})
-    }, [isReady, supabase])
+    // Read it off AuthProvider rather than calling getUser() again: a second call
+    // contends for the same Supabase auth-token lock and was timing out at 10s
+    // ("Acquiring an exclusive Navigator LockManager lock ... timed out"), which
+    // stalls the whole dashboard behind an unresolved session.
+    const userEmail = authEmail
 
     if (!open) return null
 
@@ -343,7 +350,7 @@ export function OnboardingController() {
         <OnboardingModal
             key={mountSeq}
             open={open}
-            initialAnswers={resumeAnswers ?? initialAnswers(branding, strategy)}
+            initialAnswers={resumeAnswers ?? { ...initialAnswers(branding, strategy), entrySource: entry }}
             startStepId={startStepId}
             linkedinError={linkedinError}
             onPersist={handlePersist}

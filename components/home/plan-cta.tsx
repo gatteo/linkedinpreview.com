@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 
 import { TrackClick } from '../tracking/track-click'
@@ -38,7 +39,7 @@ export function PlanCta() {
                         properties={{ button_name: 'create_plan', source: 'plan_section' }}>
                         <span className='gradient-border'>
                             <Button asChild size='lg' className='h-12 px-6 text-[15px]'>
-                                <Link href={Routes.Dashboard}>
+                                <Link href={withEntrySource(Routes.Dashboard, 'plan_section')}>
                                     Create my LinkedIn plan
                                     <ArrowRight className='size-4' />
                                 </Link>

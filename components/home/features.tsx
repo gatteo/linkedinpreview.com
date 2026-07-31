@@ -20,6 +20,7 @@ import {
     type LucideIcon,
 } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
 
@@ -107,7 +108,7 @@ export function Features() {
                     sub='From formatting options to real-time previews - everything you need to create perfect LinkedIn posts.'
                     action={
                         <Button asChild variant='outline'>
-                            <Link href={Routes.DashboardEditor()}>
+                            <Link href={withEntrySource(Routes.DashboardEditor(), 'features_header')}>
                                 Open in full editor
                                 <ArrowUpRight className='size-4' />
                             </Link>
@@ -139,7 +140,7 @@ export function Features() {
                             </p>
                         </div>
                         <Button asChild size='lg' className='h-11'>
-                            <Link href={Routes.DashboardEditor()}>
+                            <Link href={withEntrySource(Routes.DashboardEditor(), 'features_card')}>
                                 Open the full editor
                                 <ArrowRight className='size-4' />
                             </Link>

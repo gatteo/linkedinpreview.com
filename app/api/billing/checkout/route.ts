@@ -1,5 +1,6 @@
 import type Stripe from 'stripe'
 
+import { ENTRY_PARAM } from '@/config/entry-sources'
 import { CHECKOUT_UI } from '@/config/pricing'
 import { devMissingEnv } from '@/lib/dev/missing-env'
 import { getStripe, isStripeConfigured, missingStripeEnv, priceIdFor } from '@/lib/stripe'
@@ -63,8 +64,8 @@ export async function POST(request: Request) {
             // where the initiating surface (source) resumes via the query params.
             const origin = new URL(request.url).origin
             params.ui_mode = 'hosted_page'
-            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&session_id={CHECKOUT_SESSION_ID}`
-            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}`
+            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return&session_id={CHECKOUT_SESSION_ID}`
+            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return`
         } else {
             // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
             // 'embedded_page' (the old 'embedded' is gone). This is the mode that

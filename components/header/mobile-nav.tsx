@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { LayoutDashboardIcon } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { HeaderLinks } from '@/config/urls'
 import {
@@ -38,7 +39,9 @@ export function MobileNav() {
                 ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href={Routes.Dashboard} className='text-primary flex items-center gap-3 font-medium'>
+                    <Link
+                        href={withEntrySource(Routes.Dashboard, 'mobile_nav')}
+                        className='text-primary flex items-center gap-3 font-medium'>
                         <LayoutDashboardIcon className='size-4' />
                         <div>Open Dashboard</div>
                     </Link>

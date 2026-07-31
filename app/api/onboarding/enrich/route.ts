@@ -24,7 +24,10 @@ import { bodySchema, enrichSchema } from './route.schema'
 // Fast-tier profile fetch (~3-12s) plus the inference LLM call. The rich Bright
 // Data scrape is only TRIGGERED here (~1-2s, async 42-60s to complete) and is
 // polled via ./status while the user answers the question steps.
-export const maxDuration = 30
+export const maxDuration = 60
+
+/** The enrich model's own deadline, inside the route's overall budget. */
+const LLM_TIMEOUT_MS = 8_000
 
 // Don't re-trigger a pending scrape for the same URL within this window; past
 // it we assume the snapshot is stuck and fire a fresh one.
@@ -235,14 +238,23 @@ export async function POST(request: Request) {
             }),
         )
 
+    // Bound the model explicitly. Without its own deadline this call was limited
+    // only by the platform, and `maxRetries: 1` could double the worst case - a
+    // slow-but-successful fetch followed by a slow model blew the client budget
+    // and surfaced as an unattributable failure. Aborts on either the client
+    // hanging up or the deadline, whichever comes first.
+    const llmAbort = new AbortController()
+    const llmDeadline = setTimeout(() => llmAbort.abort(), LLM_TIMEOUT_MS)
+    request.signal.addEventListener('abort', () => llmAbort.abort(), { once: true })
+
     try {
         const { object } = await generateObject({
             model: openai(env.LLM_ANALYSIS_MODEL ?? DEFAULT_ANALYSIS_MODEL),
             schema: enrichSchema,
             system: ENRICH_SYSTEM_PROMPT,
             prompt,
-            abortSignal: request.signal,
-            maxRetries: 1,
+            abortSignal: llmAbort.signal,
+            maxRetries: 0,
         })
 
         // A niche the model itself isn't sure about is worse than none: the
@@ -280,5 +292,7 @@ export async function POST(request: Request) {
         await persist(fallback)
         reportResult(false)
         return Response.json({ ...fallback, profile: profileOut, rich: richStatus, fetchFailReason })
+    } finally {
+        clearTimeout(llmDeadline)
     }
 }
