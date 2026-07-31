@@ -37,6 +37,30 @@ Every `onb_*` event carries `funnel_version` (from `config/analytics.ts`). Bump 
 structural change (step added/removed/reordered); copy experiments keep the version
 (PostHog auto-attaches `$feature/<flag>` properties for variant splits).
 
+## Entry attribution (`entry_source`)
+
+Every `onb_*` event also carries `entry_source`: the surface that sent the user into the
+dashboard, and therefore into the flow. Taxonomy lives in `config/entry-sources.ts`:
+`navbar`, `mobile_nav`, `hero`, `plan_section`, `footer`, `tool_nudge`, `tool_footer`,
+plus `direct` for any arrival with no attributable surface.
+
+It is carried as a `?from=` query param on every dashboard link, NOT inferred from a click
+event. A param survives keyboard activation, middle-click, and a dropped event; relying on
+`cta_button_clicked` left roughly three quarters of entries unattributed. The controller
+resolves it once on mount (`onboarding-controller.tsx`), hands it to `setEntrySource()` so
+`track()` stamps it, and stores it on `answers.entrySource` so it lands in
+`onboarding_sessions.answers` and can be joined to the paid outcome.
+
+A **resumed** session keeps the source it started with: a later navigation's `?from=`
+describes that navigation, not the original entry. Sessions started before this shipped
+have no `entrySource` and resolve to `direct` - do not read pre-2026-07-31 `direct` volume
+as a real acquisition channel.
+
+Entry source is also a **content** dimension, not just a label: `config/entry-sources.ts`
+maps sources to entry-coherent welcome copy, so a user who was promised one thing does not
+land on a screen offering another. Sources with no entry copy fall through to the
+experiment-controlled default hero.
+
 ## Client events (posthog-js via `track()` in `components/dashboard/onboarding/ai.ts`)
 
 ### Funnel spine
