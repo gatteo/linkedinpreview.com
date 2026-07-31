@@ -10,7 +10,7 @@ import { GOAL_GAP, goalRestated, INSIGHT_CATEGORY_LABELS, resolveRole } from '@/
 import { EASE_OUT } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
-import { fetchInsights, track } from '../ai'
+import { fetchInsights, fetchInsightsStatus, track } from '../ai'
 import { Radar } from '../charts'
 import { useOnboarding } from '../context'
 import { firstName, H1, PersonAvatar, RingSpinner, Sub, timeAgoLabel } from '../primitives'
@@ -30,6 +30,13 @@ import { useScrollGate } from '../use-scroll-gate'
 // so waiting here can actually pay off - but past this the user reads the
 // benchmark report rather than a spinner. The payload still persists for later.
 const LOADER_FAILSAFE_MS = 30_000
+// Server p50 for the posts audit is ~40s, regularly past the failsafe above -
+// freezing the benchmark forever the instant the failsafe fires guarantees a
+// miss (GH #41). Keep a light, bounded poll going after the freeze so a
+// result that lands a few seconds (or minutes) late still reaches the screen,
+// upgraded in place instead of stuck on the degrade.
+const BACKGROUND_POLL_MS = 8_000
+const BACKGROUND_POLL_BUDGET_MS = 120_000
 const DORMANT_AFTER_DAYS = 45
 
 /** No server payload is coming (or it failed): honest benchmark content. */
@@ -54,25 +61,50 @@ export function RevealStep() {
     const { answers, update, goNext } = useOnboarding()
     const [timedOut, setTimedOut] = React.useState(false)
     // Once the report is on screen its content is frozen for this mount: a
-    // payload that lands late must not swap sections mid-read.
+    // payload that lands late must not swap sections mid-read - it upgrades
+    // in place instead (see the background-poll effect below).
     const [frozen, setFrozen] = React.useState<OnboardingInsights | null>(null)
+    const [justUpgraded, setJustUpgraded] = React.useState(false)
+
+    // Rehydrate from the server before trusting local state: a resumed session
+    // can lose `answers.insights` from localStorage even when the server
+    // already finished generating it, and the local benchmark must never be
+    // the first thing tried in that case (GH #41, pinned case c). Cheap and
+    // read-only - the route just echoes the stored/claim state.
+    const [echoDone, setEchoDone] = React.useState(false)
+    const echoRef = React.useRef(false)
+    React.useEffect(() => {
+        if (echoRef.current) return
+        echoRef.current = true
+        if (answers.insights) {
+            setEchoDone(true)
+            return
+        }
+        fetchInsightsStatus().then((res) => {
+            if (res?.status === 'ready' && res.insights) update({ insights: res.insights, insightsStatus: 'ready' })
+            else if (res?.status === 'failed') update({ insightsStatus: 'failed' })
+            setEchoDone(true)
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const expecting =
         !answers.insights &&
         answers.insightsStatus !== 'failed' &&
         !!answers.richStatus &&
         answers.richStatus !== 'idle'
-    const waiting = expecting && !timedOut && !frozen
+    const waiting = !echoDone || (expecting && !timedOut && !frozen)
 
     // Guaranteed trigger of last resort: the user is on the reveal and mounted,
     // so drive the generation from here even if every earlier trigger (the
     // pipeline effect, the building step) missed. Idempotent server-side + a
     // client dedupe, so this just retrieves whatever is already running rather
     // than starting a second run. Only when a scrape/enrich ran and the goal/role
-    // framing exists; pure-manual users correctly keep the benchmark.
+    // framing exists; pure-manual users correctly keep the benchmark. Waits on
+    // the echo above so a stored payload is never raced by a fresh kick-off.
     const drivenRef = React.useRef(false)
     React.useEffect(() => {
-        if (drivenRef.current) return
+        if (drivenRef.current || !echoDone) return
         const goal = answers.primaryGoal ?? answers.goals[0]
         if (answers.insights || !answers.richStatus || answers.richStatus === 'idle' || !goal || !answers.role) return
         drivenRef.current = true
@@ -83,7 +115,7 @@ export function RevealStep() {
             },
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [echoDone])
 
     React.useEffect(() => {
         if (!waiting) return
@@ -96,6 +128,35 @@ export function RevealStep() {
         setFrozen(answers.insights ?? localBenchmark(answers))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [waiting, frozen])
+
+    // The report is showing a degrade (not a real posts audit): keep checking,
+    // bounded, for a run that's still plausibly in flight. A hit swaps the
+    // content in place with a one-line note instead of freezing forever.
+    React.useEffect(() => {
+        if (!frozen || frozen.kind === 'posts') return
+        let stopped = false
+        let timer: ReturnType<typeof setTimeout>
+        const startedAt = Date.now()
+        const poll = async () => {
+            if (stopped) return
+            const res = await fetchInsightsStatus()
+            if (stopped) return
+            if (res?.status === 'ready' && res.insights && res.insights.kind === 'posts') {
+                update({ insights: res.insights, insightsStatus: 'ready' })
+                setFrozen(res.insights)
+                setJustUpgraded(true)
+                return
+            }
+            if (Date.now() - startedAt >= BACKGROUND_POLL_BUDGET_MS) return
+            timer = setTimeout(poll, BACKGROUND_POLL_MS)
+        }
+        timer = setTimeout(poll, BACKGROUND_POLL_MS)
+        return () => {
+            stopped = true
+            clearTimeout(timer)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [!!frozen])
 
     const insights = frozen ?? answers.insights ?? localBenchmark(answers)
 
@@ -118,14 +179,24 @@ export function RevealStep() {
     }
 
     return (
-        <AuditReport
-            answers={answers}
-            insights={insights}
-            onContinue={() => {
-                track('onb_reveal_continue')
-                goNext()
-            }}
-        />
+        <>
+            {justUpgraded && (
+                <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className='bg-accent border-primary/25 text-accent-foreground mb-3 rounded-xl border px-3.5 py-2.5 text-center text-[12.5px] font-medium'>
+                    Your full audit just finished - this report now reflects your real posts.
+                </motion.div>
+            )}
+            <AuditReport
+                answers={answers}
+                insights={insights}
+                onContinue={() => {
+                    track('onb_reveal_continue')
+                    goNext()
+                }}
+            />
+        </>
     )
 }
 
@@ -142,8 +213,13 @@ function AuditReport({
 }) {
     const fn = firstName(answers.profile.name)
     const isPosts = insights.kind === 'posts'
+    // No post corpus at all (never connected, skipped the ask, or the scrape
+    // came up empty/failed) - this reads as "your plan, built from your
+    // answers", never as an audit that came up short (#36).
+    const noCorpus = insights.kind === 'benchmark'
     const posts = insights.observed.postsAnalyzed
     const percentile = auditPercentile(answers.richSummary)
+    const niche = answers.niche || undefined
 
     const anchorRef = React.useRef<HTMLDivElement>(null)
     const rectRef = React.useRef<SVGRectElement>(null)
@@ -165,12 +241,16 @@ function AuditReport({
                 <h1 className='font-heading mb-2 text-[23px] font-semibold tracking-[-0.02em]'>
                     {isPosts
                         ? `${percentile}. Strong work${fn ? `, ${fn}` : ''}.`
-                        : `Your starting point${fn ? `, ${fn}` : ''}.`}
+                        : noCorpus
+                          ? `Your personalized plan${fn ? `, ${fn}` : ''}.`
+                          : `Your starting point${fn ? `, ${fn}` : ''}.`}
                 </h1>
                 <p className='text-muted-foreground mx-auto max-w-[42ch] text-[13.5px] leading-normal'>
                     {isPosts
                         ? `I analyzed your ${posts} most recent posts. Here is exactly what I found, and how we fix it.`
-                        : 'I read your profile and your goal. Here is where we would start, and how we fix it.'}
+                        : noCorpus
+                          ? `Built from your goal, your niche, and the topics you picked. Here’s what works for ${niche ? `${niche} creators` : 'creators like you'}, and how we apply it to you.`
+                          : 'I read your profile and your goal. Here is where we would start, and how we fix it.'}
                 </p>
             </div>
 
@@ -364,24 +444,32 @@ function TractionSection({ answers, insights }: { answers: OnboardingAnswers; in
             ? ` Your ${CATEGORY_PLURAL[top.category]} pull ${(top.avgReactions / bottom.avgReactions).toFixed(1)}x the reactions of your ${CATEGORY_PLURAL[bottom.category]} - lean into what your audience already rewards.`
             : ''
 
+    // No observed data at all (no corpus - never connected, skipped the ask,
+    // or a scrape that came up empty/failed): frame the benchmark around what
+    // works for their niche instead of implying a failed measurement (#36).
+    const noData = metrics.length === 0
+    const niche = answers.niche || undefined
+
     return (
         <Section
             num='02'
             label='TRACTION'
             head={
-                healthy
-                    ? 'Your rhythm is real. Now make every post pull its weight.'
-                    : dormant
-                      ? "You've gone quiet, and the feed forgets fast."
-                      : "You haven't given LinkedIn enough to know who you are yet."
+                noData
+                    ? `Consistency is the whole game${niche ? ` for ${niche} creators` : ''}.`
+                    : healthy
+                      ? 'Your rhythm is real. Now make every post pull its weight.'
+                      : dormant
+                        ? "You've gone quiet, and the feed forgets fast."
+                        : "You haven't given LinkedIn enough to know who you are yet."
             }
             copy={
-                metrics.length
-                    ? (healthy
+                noData
+                    ? 'Posting 3 to 4 times a week is the sweet spot most creators miss. We pre-write and schedule yours, so hitting it stops depending on motivation.'
+                    : (healthy
                           ? 'You already show up more than most. The gap is not effort, it is aim: pointing that consistency at content with a job.'
                           : 'Your posts hold up when you show up. The problem is you barely do, so your reach never gets to compound.') +
                       engagementLine
-                    : 'We could not measure your posting rhythm this time, so hold these as the benchmarks to beat: 3 to 4 posts a week, every week.'
             }
             visual={
                 metrics.length ? (
@@ -470,7 +558,7 @@ function ContentSection({ answers, insights }: { answers: OnboardingAnswers; ins
                 num='03'
                 label='CONTENT'
                 head='Packaging decides who keeps reading.'
-                copy='We could not score your recent posts this time, so we will enforce the three habits that decide reach: open on a hook, stay tight, end on a question.'
+                copy='Three habits decide whether a post gets read: open on a hook, stay tight, end on a question. We build every draft we hand you around them.'
                 fix={AUDIT_FIXES.content}
             />
         )
