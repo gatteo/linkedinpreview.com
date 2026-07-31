@@ -35,10 +35,11 @@ export const ENTRY_SOURCES = [
     // Branding intent - clicked to set a name and photo.
     'branding_popover', // preview popover "Show your own name and photo"
 
-    // Server redirects back into the dashboard.
+    // Server redirects back into the dashboard. Only these two are emitted: the
+    // email-confirm redirect lands on settings and belongs to a user who already
+    // finished onboarding, so it can never be a funnel entry.
     'oauth_return',
     'billing_return',
-    'email_confirm_return',
 
     'hero', // legacy: components/home/hero-cta.tsx, currently unmounted
 ] as const

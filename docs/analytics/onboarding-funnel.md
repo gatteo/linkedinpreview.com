@@ -66,7 +66,7 @@ grouped by what the CTA **promised**, which is the axis that predicts conversion
 | Plan/audit | `navbar`, `mobile_nav`, `plan_section`, `footer`, `tool_nudge`, `tool_footer` | a plan or an audit - matches the flow                        |
 | Editor     | `hero_editor`, `features_header`, `features_card`, `showcase`, `tool_header`  | "Open the full editor" - the majority of arrivals            |
 | Branding   | `branding_popover`                                                            | "Show your own name and photo"                               |
-| Return     | `oauth_return`, `billing_return`, `email_confirm_return`                      | server redirects back into the dashboard                     |
+| Return     | `oauth_return`, `billing_return`                                              | server redirects back into the dashboard                     |
 | -          | `direct`                                                                      | no attributable surface (typed URL, bookmark, external link) |
 
 One source per **placement**, not per copy string: "Open the full editor" renders on four
