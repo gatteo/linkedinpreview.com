@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto'
 import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { ENTRY_PARAM, type EntrySource } from '@/config/entry-sources'
 import { isLinkedInConfigured, missingLinkedInEnv, ONBOARDING_LINKEDIN_STATUSES } from '@/config/linkedin'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
@@ -34,7 +35,13 @@ const OAUTH_COOKIE_OPTIONS = {
 export function oauthReturnRedirect(status: string, fromOnboarding: boolean, extra = '') {
     const path =
         fromOnboarding && ONBOARDING_LINKEDIN_STATUSES.includes(status) ? Routes.Dashboard : Routes.DashboardSettings
-    return NextResponse.redirect(`${site.url}${path}?linkedin=${status}${extra}`)
+    // Tag the return so it stops counting as `direct` entry traffic. A resumed
+    // onboarding session keeps the source it originally started with (the
+    // controller prefers the saved value), so this only labels arrivals that
+    // have no prior session - which is exactly what it should mean.
+    return NextResponse.redirect(
+        `${site.url}${path}?linkedin=${status}${extra}&${ENTRY_PARAM}=${'oauth_return' satisfies EntrySource}`,
+    )
 }
 
 /** Start the LinkedIn OAuth consent flow. */
