@@ -257,9 +257,9 @@ Deep LinkedIn performance insights without expensive tools.
 
 ### Features
 
-| Feature                                                | Status  | Notes                                                                                                                                                                                 |
-| ------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [230 - Analytics](features/230-analytics-dashboard.md) | PARTIAL | Built: dashboard, KPIs, engagement trends, content insights, per-post table, manual + CSV metric entry. Auto API sync scaffolded but inert (needs Community Management API approval). |
+| Feature                                                | Status  | Notes                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [230 - Analytics](features/230-analytics-dashboard.md) | PARTIAL | Built: dashboard, KPIs, engagement trends, content insights, per-post table, manual + CSV history entry (creates new posts, not just metrics), account-wide follower/aggregate section (test mode available). Auto API sync + account section scaffolded but inert live (needs Community Management API approval). |
 
 ### To complete this wave
 
