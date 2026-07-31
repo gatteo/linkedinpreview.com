@@ -27,6 +27,7 @@ import Link from 'next/link'
 import { ArrowDown, ArrowRight } from 'lucide-react'
 import { useFeatureFlagVariantKey } from 'posthog-js/react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 
 import { TrackClick } from '../tracking/track-click'
@@ -75,7 +76,7 @@ export function HeroCTA() {
                 event='cta_button_clicked'
                 properties={{ button_name: 'open_dashboard', source: 'hero', variant: variantKey }}>
                 <Link
-                    href={Routes.Dashboard}
+                    href={withEntrySource(Routes.Dashboard, 'hero')}
                     className='text-muted-foreground hover:text-foreground group inline-flex items-center gap-1.5 text-sm font-medium transition-colors'>
                     or open the full dashboard
                     <ArrowRight className='size-3.5 transition-transform group-hover:translate-x-0.5' />

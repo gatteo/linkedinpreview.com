@@ -13,7 +13,7 @@ import * as React from 'react'
 // traps the user on a short screen.
 // ---------------------------------------------------------------------------
 
-function findScrollParent(el: HTMLElement | null): HTMLElement | null {
+export function findScrollParent(el: HTMLElement | null): HTMLElement | null {
     let node = el?.parentElement ?? null
     while (node) {
         const overflowY = getComputedStyle(node).overflowY

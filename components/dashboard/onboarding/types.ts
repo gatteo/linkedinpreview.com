@@ -16,6 +16,7 @@ import type {
     RichSummary,
 } from '@/types/onboarding'
 import type { Tone } from '@/config/ai'
+import type { ResolvedEntrySource } from '@/config/entry-sources'
 import { obGoalFromStrategy, type Commitment, type ObGoalId, type ObVoiceId } from '@/config/onboarding-flow'
 import type { Cadence } from '@/config/onboarding-personalization'
 import type { BrandingData, BrandingRole, BrandingWritingStyle } from '@/lib/branding'
@@ -67,6 +68,8 @@ const LEGACY_RESUME: Record<string, StepId> = {
 const STATE_VERSION = 3
 
 export type OnboardingAnswers = {
+    /** Surface that sent the user here, for entry-to-outcome attribution. */
+    entrySource: ResolvedEntrySource
     profile: { name: string; headline: string; avatarUrl: string }
     role: BrandingRole
     goals: StrategyGoal[]
@@ -156,6 +159,7 @@ export type OnboardingAnswers = {
 /** Seed the wizard from whatever the user already has, so partial setups prefill. */
 export function initialAnswers(branding: BrandingData, strategy: StrategyData): OnboardingAnswers {
     return {
+        entrySource: 'direct',
         profile: { ...branding.profile },
         role: branding.role,
         goals: strategy.goals,
