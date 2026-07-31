@@ -104,8 +104,9 @@ export async function fetchFollowerCount(accessToken: string): Promise<number | 
 export async function fetchFollowerSeries(accessToken: string, range: DateRange): Promise<FollowerSeriesPoint[]> {
     if (isLinkedInAnalyticsTestMode()) return mockFollowerSeries(range)
 
-    const params = new URLSearchParams({ q: 'dateRange', dateRange: encodeDateRange(range) })
-    const res = await fetch(`${LINKEDIN_API.memberFollowersCount}?${params.toString()}`, {
+    // Rest.li 2.0 structs use literal parens in the query string; URLSearchParams
+    // would percent-encode them, diverging from the documented request shape.
+    const res = await fetch(`${LINKEDIN_API.memberFollowersCount}?q=dateRange&dateRange=${encodeDateRange(range)}`, {
         method: 'GET',
         headers: baseHeaders(accessToken),
     })
@@ -156,10 +157,9 @@ async function fetchMemberAggregateMetric(
     metricType: string,
     range?: DateRange,
 ): Promise<number | null> {
-    const params = new URLSearchParams({ q: 'me', queryType: metricType, aggregation: 'TOTAL' })
-    if (range) params.set('dateRange', encodeDateRange(range))
-
-    const res = await fetch(`${LINKEDIN_API.memberPostAnalytics}?${params.toString()}`, {
+    const rangeParam = range ? `&dateRange=${encodeDateRange(range)}` : ''
+    const url = `${LINKEDIN_API.memberPostAnalytics}?q=me&queryType=${metricType}&aggregation=TOTAL${rangeParam}`
+    const res = await fetch(url, {
         method: 'GET',
         headers: baseHeaders(accessToken),
     })
