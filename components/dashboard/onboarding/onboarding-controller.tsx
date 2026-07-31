@@ -305,6 +305,13 @@ export function OnboardingController() {
         router.push(id ? Routes.DashboardEditor(id) : Routes.Dashboard)
     }, [router])
 
+    // Closing without finishing: everything up to now is already persisted
+    // incrementally (handlePersist), so this just hides the modal. `decidedRef`
+    // stays true and `branding.meta.onboardedAt` stays unset, so the mount
+    // effect's resume branch reopens it at the saved step on the next visit -
+    // no separate resume UI needed.
+    const handleDismiss = React.useCallback(() => setOpen(false), [])
+
     const handleConnectLinkedin = React.useCallback((answers: OnboardingAnswers) => {
         persistOnboarding(answers, 'connect')
         // `from=onboarding` makes the callback return to /dashboard instead of
@@ -359,6 +366,7 @@ export function OnboardingController() {
             onConnectLinkedin={handleConnectLinkedin}
             onBindEmail={handleBindEmail}
             userEmail={userEmail}
+            onDismiss={handleDismiss}
         />
     )
 }

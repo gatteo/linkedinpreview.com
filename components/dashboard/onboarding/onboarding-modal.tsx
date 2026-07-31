@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
+import { XIcon } from 'lucide-react'
 
 import { OB_STEP_META, sectionFor } from '@/config/onboarding-flow'
 import { slideStep } from '@/lib/motion'
@@ -55,6 +56,8 @@ type OnboardingModalProps = {
     onConnectLinkedin: (answers: OnboardingAnswers) => void
     onBindEmail: (email: string) => Promise<{ ok: boolean; taken?: boolean }>
     userEmail?: string | null
+    /** Closing without finishing (X, Escape, outside click) - resumable next visit. */
+    onDismiss: () => void
 }
 
 export function OnboardingModal({
@@ -68,6 +71,7 @@ export function OnboardingModal({
     onConnectLinkedin,
     onBindEmail,
     userEmail,
+    onDismiss,
 }: OnboardingModalProps) {
     const [answers, setAnswers] = React.useState(initialAnswers)
     const [index, setIndex] = React.useState(() => indexOf(startStepId))
@@ -122,6 +126,16 @@ export function OnboardingModal({
         track('onb_flow_complete', { converted })
         onComplete()
     }, [converted, onComplete])
+
+    // Closing without finishing (X, Escape, outside click) - distinct from
+    // `complete`: it never marks the account onboarded, so the controller's
+    // existing resume gate reopens the flow at this step on the next visit.
+    // Every answer up to this point is already incrementally persisted (the
+    // effect below), so there is nothing extra to save here.
+    const dismiss = React.useCallback(() => {
+        track('onb_flow_dismissed', { step })
+        onDismiss()
+    }, [step, onDismiss])
 
     // Incremental persistence: stash answers + current step after each change so a
     // refresh or the LinkedIn OAuth round-trip rehydrates without losing progress
@@ -181,12 +195,9 @@ export function OnboardingModal({
     const connected = index > indexOf('fetching') && !!answers.profile.name
 
     return (
-        <Dialog open={open}>
+        <Dialog open={open} onOpenChange={(next) => !next && dismiss()}>
             <DialogContent
                 showCloseButton={false}
-                onEscapeKeyDown={(e) => e.preventDefault()}
-                onPointerDownOutside={(e) => e.preventDefault()}
-                onInteractOutside={(e) => e.preventDefault()}
                 className='flex h-[min(790px,90svh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
                     {step === 'confirm' && converted && <Confetti />}
@@ -196,6 +207,14 @@ export function OnboardingModal({
                     <DialogDescription className='sr-only'>
                         Connect your profile, answer a few questions, and get a personalized LinkedIn strategy.
                     </DialogDescription>
+
+                    <button
+                        type='button'
+                        onClick={dismiss}
+                        aria-label='Close'
+                        className='bg-background/90 text-muted-foreground hover:text-foreground absolute top-3 right-3 z-30 flex size-8 items-center justify-center rounded-full shadow-sm ring-1 ring-black/5 backdrop-blur transition-colors'>
+                        <XIcon className='size-4' />
+                    </button>
 
                     <OnboardingProvider value={ctxValue}>
                         {meta.layout === 'hero' ? (
