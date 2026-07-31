@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
 
@@ -64,7 +65,7 @@ export function Header() {
                                     event='cta_button_clicked'
                                     properties={{ button_name: 'create_plan', source: 'navbar' }}>
                                     <Button asChild size='lg' className='hidden md:flex'>
-                                        <Link href={Routes.Dashboard}>
+                                        <Link href={withEntrySource(Routes.Dashboard, 'navbar')}>
                                             Create my plan
                                             <ArrowRight className='size-4' />
                                         </Link>

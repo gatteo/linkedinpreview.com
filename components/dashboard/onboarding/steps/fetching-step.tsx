@@ -23,7 +23,7 @@ import { CTA, GhostLink, H1, LoaderBlock, Sub } from '../primitives'
 const MAX_AUDIENCE = 3
 const TICK_MS = 950
 // Just past the client enrich timeout (28s): only a call that never settles hits this.
-const FAILSAFE_MS = 30000
+const FAILSAFE_MS = 45000
 
 // The failure card used to always blame a LinkedIn block, even when the real
 // reason (surfaced via fetchFailReason) was our own fetch timing out or a

@@ -188,7 +188,7 @@ httpOnly cookie so the client only ever sends a `merge` boolean (identity is nev
 
 Rate limits (per user per day): generation: 1, refinement: 3, analysis: 20, wizard: 5, quickAction: 10. Enforced via Supabase RPC `check_and_record_usage` with row-level locking.
 
-**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`, `INVALID_INPUT`, `GENERATION_FAILED`). Routes export `maxDuration = 30` by default; publish/cron/import routes use 60, and `/api/onboarding/insights` uses 120 because its LLM chain runs in `after()` past the 202 response (the client polls GET for the result).
+**Error format**: All API routes return errors as `{ error: string, code: string }` with the appropriate HTTP status code. Error codes are defined in `config/ai.ts` (`RATE_LIMITED`, `AUTH_REQUIRED`, `INVALID_INPUT`, `GENERATION_FAILED`). Routes export `maxDuration = 30` by default; publish/cron/import routes use 60, `/api/onboarding/enrich` uses 60 (its fast profile fetch waits up to 18s on Scrapingdog before a bounded 8s LLM call), and `/api/onboarding/insights` uses 120 because its LLM chain runs in `after()` past the 202 response (the client polls GET for the result). The enrich budgets are ordered `maxDuration 60s > client failsafe 45s > client fetch budget 40s`; changing one without the others reintroduces unattributable timeouts.
 
 **Prompts**: All AI prompts (system and user) are centralized in `config/prompts.ts`. Route handlers import prompt constants/builders from there - no inline prompt strings in route files.
 

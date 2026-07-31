@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { ArrowRight, Calendar, FileText, Flame, Palette, Plus, Sparkles } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
 
@@ -176,7 +177,7 @@ export function DashboardShowcase() {
             </div>
             <AnimateIn className='mt-12 flex flex-col items-center gap-2.5 text-center'>
                 <Button asChild size='lg' className='h-11'>
-                    <Link href={Routes.DashboardEditor()}>
+                    <Link href={withEntrySource(Routes.DashboardEditor(), 'showcase')}>
                         Open the full editor
                         <ArrowRight className='size-4' />
                     </Link>

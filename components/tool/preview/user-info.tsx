@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -156,7 +157,7 @@ function BrandingPrompt({ children }: { children: React.ReactNode }) {
                             <p className='text-xs leading-relaxed text-neutral-600'>
                                 This is a placeholder profile.{' '}
                                 <Link
-                                    href={Routes.DashboardBranding}
+                                    href={withEntrySource(Routes.DashboardBranding, 'branding_popover')}
                                     className='text-primary hover:text-primary/80 font-medium underline-offset-2 transition-colors hover:underline'>
                                     Show your own name and photo
                                 </Link>
