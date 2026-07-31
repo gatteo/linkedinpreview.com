@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { LinkedinIcon, Loader2Icon } from 'lucide-react'
+import { LinkedinIcon, Loader2Icon, RefreshCwIcon } from 'lucide-react'
+import posthog from 'posthog-js'
 import { toast } from 'sonner'
 
 import { ApiRoutes } from '@/config/routes'
@@ -9,37 +10,34 @@ import { reportMissingEnv, reportMissingEnvFromQuery } from '@/lib/dev/report-mi
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
-type ImportLinkedInButtonProps = {
+type RefreshMetricsButtonProps = {
     variant?: React.ComponentProps<typeof Button>['variant']
     size?: React.ComponentProps<typeof Button>['size']
     className?: string
 }
 
-type Availability = { configured: boolean; connected: boolean; available: boolean }
+type Availability = { configured: boolean; connected: boolean }
 
 /**
- * Drives the LinkedIn API analytics flow. Self-hides unless the analytics app
- * (App B / Community Management API) is configured. When configured but the
- * member hasn't authorized App B yet, it offers a Connect action; once connected
- * it imports their existing posts. Members without API access never see it.
+ * Drives the App B (Community Management API) analytics connection. Self-hides
+ * unless the analytics app is configured. Offers "Connect for analytics" until
+ * the member authorizes App B, then a "Refresh metrics" action that pulls fresh
+ * numbers for the posts published through this app (the same data the daily
+ * cron syncs, on demand). Members without API access never see it.
  */
-export function ImportLinkedInButton({ variant = 'default', size = 'sm', className }: ImportLinkedInButtonProps) {
+export function RefreshMetricsButton({ variant = 'default', size = 'sm', className }: RefreshMetricsButtonProps) {
     const { userId } = useAuth()
-    const [state, setState] = React.useState<Availability>({ configured: false, connected: false, available: false })
-    const [importing, setImporting] = React.useState(false)
+    const [state, setState] = React.useState<Availability>({ configured: false, connected: false })
+    const [refreshing, setRefreshing] = React.useState(false)
 
     React.useEffect(() => {
         if (!userId) return
         let cancelled = false
-        fetch(ApiRoutes.AnalyticsImportLinkedIn)
+        fetch(ApiRoutes.AnalyticsRefreshMetrics)
             .then((res) => (res.ok ? res.json() : null))
             .then((data: Partial<Availability> | null) => {
                 if (cancelled || !data) return
-                setState({
-                    configured: Boolean(data.configured),
-                    connected: Boolean(data.connected),
-                    available: Boolean(data.available),
-                })
+                setState({ configured: Boolean(data.configured), connected: Boolean(data.connected) })
             })
             .catch(() => {})
         return () => {
@@ -53,7 +51,7 @@ export function ImportLinkedInButton({ variant = 'default', size = 'sm', classNa
         const params = new URLSearchParams(window.location.search)
         const status = params.get('analytics')
         if (!status) return
-        if (status === 'connected') toast.success('LinkedIn analytics connected. You can now import your posts.')
+        if (status === 'connected') toast.success('LinkedIn analytics connected')
         else if (status === 'denied') toast.error('Analytics connection was cancelled')
         else if (status === 'unavailable') {
             if (!reportMissingEnvFromQuery('LinkedIn analytics', params))
@@ -65,34 +63,32 @@ export function ImportLinkedInButton({ variant = 'default', size = 'sm', classNa
     }, [])
 
     const connect = React.useCallback(() => {
+        posthog?.capture('linkedin_analytics_connect_clicked')
         window.location.href = ApiRoutes.LinkedInAnalyticsAuth
     }, [])
 
-    const runImport = React.useCallback(async () => {
-        setImporting(true)
+    const refresh = React.useCallback(async () => {
+        setRefreshing(true)
         try {
-            const res = await fetch(ApiRoutes.AnalyticsImportLinkedIn, { method: 'POST' })
-            const data = (await res.json().catch(() => ({}))) as {
-                success?: boolean
-                imported?: number
-                error?: string
-            }
+            const res = await fetch(ApiRoutes.AnalyticsRefreshMetrics, { method: 'POST' })
+            const data = (await res.json().catch(() => ({}))) as { success?: boolean; synced?: number; error?: string }
             if (!res.ok || !data.success) {
                 if (reportMissingEnv('LinkedIn analytics', (data as { missing?: unknown }).missing)) return
-                toast.error(data.error ?? 'Failed to import from LinkedIn')
+                toast.error(data.error ?? 'Failed to refresh metrics')
                 return
             }
-            const imported = data.imported ?? 0
+            posthog?.capture('linkedin_metrics_refreshed', { synced: data.synced ?? 0 })
+            const synced = data.synced ?? 0
             toast.success(
-                imported > 0
-                    ? `Imported ${imported} post${imported === 1 ? '' : 's'} from LinkedIn`
-                    : 'Your LinkedIn posts are already up to date',
+                synced > 0
+                    ? `Refreshed metrics for ${synced} post${synced === 1 ? '' : 's'}`
+                    : 'Your metrics are already up to date',
             )
             window.location.reload()
         } catch {
-            toast.error('Failed to import from LinkedIn')
+            toast.error('Failed to refresh metrics')
         } finally {
-            setImporting(false)
+            setRefreshing(false)
         }
     }, [])
 
@@ -108,9 +104,9 @@ export function ImportLinkedInButton({ variant = 'default', size = 'sm', classNa
     }
 
     return (
-        <Button variant={variant} size={size} className={className} onClick={runImport} disabled={importing}>
-            {importing ? <Loader2Icon className='size-4 animate-spin' /> : <LinkedinIcon className='size-4' />}
-            {importing ? 'Importing…' : 'Sync from LinkedIn'}
+        <Button variant={variant} size={size} className={className} onClick={refresh} disabled={refreshing}>
+            {refreshing ? <Loader2Icon className='size-4 animate-spin' /> : <RefreshCwIcon className='size-4' />}
+            {refreshing ? 'Refreshing…' : 'Refresh metrics'}
         </Button>
     )
 }

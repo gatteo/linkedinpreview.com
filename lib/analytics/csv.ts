@@ -1,33 +1,56 @@
 // ---------------------------------------------------------------------------
-// LinkedIn analytics CSV import.
+// LinkedIn post history import.
 //
-// LinkedIn lets a member export their post analytics as a spreadsheet from the
-// native UI. The exact columns drift between exports, so this parser is tolerant:
-// it tokenizes the CSV, finds the header row by looking for a URL-ish column, and
-// maps the remaining columns to our metric fields by fuzzy header matching. Rows
-// are then matched back to the member's drafts by the stored LinkedIn post URL.
+// LinkedIn's native "Post analytics" export (linkedin.com/analytics/creator/content/
+// > Export) is an XLSX workbook with several sheets (DISCOVERY, ENGAGEMENT, TOP
+// POSTS, FOLLOWERS, DEMOGRAPHICS); the one with per-post numbers is "Top posts".
+// We don't parse XLSX directly (no workbook dependency in the project), so the
+// UI asks the member to save that sheet as CSV first. The exact columns drift
+// between exports, so this parser is tolerant: it tokenizes the CSV, finds the
+// header row by looking for a URL-ish column, and maps the remaining columns to
+// our metric fields by fuzzy header matching.
+//
+// Rows are matched back to the member's drafts by the stored LinkedIn post URL
+// when possible. Rows for posts the member wrote before/outside the app have no
+// matching draft - those become new `published` history posts (see
+// `planCsvImport`) so the export is a genuine one-time backfill, not just a
+// metrics top-up for posts already tracked.
 // ---------------------------------------------------------------------------
 
 import type { MetricValues } from '@/lib/analytics/metrics'
-import { EMPTY_METRIC_VALUES } from '@/lib/analytics/metrics'
+import { EMPTY_METRIC_VALUES, hasAnyMetric } from '@/lib/analytics/metrics'
 import type { DraftManifestEntry } from '@/lib/drafts'
 
-/** One parsed row: the post URL plus whatever metric columns were recognized. */
+/** One parsed row: the post URL plus whatever metric/date columns were recognized. */
 export interface ParsedMetricRow extends MetricValues {
     url: string
+    /** Epoch ms parsed from a date/publish-date column, or null when not found. */
+    publishedAtMs: number | null
 }
 
-/** A CSV row matched to a draft, ready to upsert. */
+/** A CSV row matched to a post already tracked by the app, ready to upsert. */
 export interface CsvMatch {
+    kind: 'matched'
     draftId: string
     title: string
     values: MetricValues
 }
 
+/** A CSV row for a post the app doesn't know about yet - a new history post. */
+export interface CsvNewPost {
+    kind: 'new'
+    url: string
+    values: MetricValues
+    publishedAtMs: number | null
+}
+
+export type CsvImportRow = CsvMatch | CsvNewPost
+
 export interface CsvImportResult {
     matched: CsvMatch[]
-    /** Parsed rows that did not correspond to any post published through the app. */
-    unmatchedCount: number
+    newPosts: CsvNewPost[]
+    /** Parsed rows with no url match AND no usable metric - nothing to import. */
+    skippedCount: number
     /** Total data rows parsed (excludes the header). */
     totalRows: number
 }
@@ -59,9 +82,12 @@ export function parseLinkedInCsv(text: string): ParsedMetricRow[] {
     const urlCol = header.findIndex((h) => h.includes('url') || h.includes('link'))
     if (urlCol === -1) return []
 
+    const usedCols = new Set<number>([urlCol])
+    const dateCol = header.findIndex((h, i) => !usedCols.has(i) && (h.includes('date') || h.includes('publish')))
+    if (dateCol !== -1) usedCols.add(dateCol)
+
     // Resolve each metric field to a column index (first matching, unused column).
     const fieldCols: Partial<Record<keyof MetricValues, number>> = {}
-    const usedCols = new Set<number>([urlCol])
     for (const { field, keywords } of HEADER_MATCHERS) {
         const col = header.findIndex((h, i) => !usedCols.has(i) && keywords.some((k) => h.includes(k)))
         if (col !== -1) {
@@ -80,35 +106,42 @@ export function parseLinkedInCsv(text: string): ParsedMetricRow[] {
         for (const [field, col] of Object.entries(fieldCols) as [keyof MetricValues, number][]) {
             values[field] = parseCount(cells[col])
         }
-        out.push({ url, ...values })
+        const publishedAtMs = dateCol !== -1 ? parseCsvDate(cells[dateCol]) : null
+        out.push({ url, publishedAtMs, ...values })
     }
     return out
 }
 
 /**
- * Match parsed rows to the member's drafts by LinkedIn post URL. Only posts
- * published through the app carry a `linkedinPostUrl`, so rows for posts created
- * elsewhere fall into `unmatchedCount`.
+ * Reconcile parsed rows against the member's drafts by LinkedIn post URL. Posts
+ * already published through the app (or backfilled by a previous import) update
+ * in place; everything else becomes a new history post, as long as it carries at
+ * least one real metric (a bare URL with no numbers isn't worth creating a post
+ * for).
  */
-export function matchCsvToDrafts(rows: ParsedMetricRow[], drafts: DraftManifestEntry[]): CsvImportResult {
+export function planCsvImport(rows: ParsedMetricRow[], drafts: DraftManifestEntry[]): CsvImportResult {
     const byUrl = new Map<string, DraftManifestEntry>()
     for (const d of drafts) {
         if (d.linkedinPostUrl) byUrl.set(normalizeUrl(d.linkedinPostUrl), d)
     }
 
     const matched: CsvMatch[] = []
-    let unmatchedCount = 0
+    const newPosts: CsvNewPost[] = []
+    let skippedCount = 0
+
     for (const row of rows) {
-        const draft = byUrl.get(normalizeUrl(row.url))
-        if (!draft) {
-            unmatchedCount++
-            continue
+        const { url, publishedAtMs, ...values } = row
+        const draft = byUrl.get(normalizeUrl(url))
+        if (draft) {
+            matched.push({ kind: 'matched', draftId: draft.id, title: draft.title || 'Untitled', values })
+        } else if (hasAnyMetric(values)) {
+            newPosts.push({ kind: 'new', url, values, publishedAtMs })
+        } else {
+            skippedCount++
         }
-        const { url: _url, ...values } = row
-        matched.push({ draftId: draft.id, title: draft.title || 'Untitled', values })
     }
 
-    return { matched, unmatchedCount, totalRows: rows.length }
+    return { matched, newPosts, skippedCount, totalRows: rows.length }
 }
 
 // ---------------------------------------------------------------------------
@@ -131,6 +164,27 @@ function parseCount(raw: string | undefined): number | null {
     if (cleaned === '' || cleaned === '-') return null
     const n = Number(cleaned)
     return Number.isFinite(n) ? Math.round(n) : null
+}
+
+/** Parse a date cell (ISO, "Jul 3, 2026", or M/D/YYYY). Returns null when unrecognized. */
+function parseCsvDate(raw: string | undefined): number | null {
+    if (!raw) return null
+    const trimmed = raw.trim()
+    if (!trimmed) return null
+
+    const parsed = Date.parse(trimmed)
+    if (!Number.isNaN(parsed)) return parsed
+
+    // Excel/Sheets often localize dates to M/D/YYYY, which some engines fail to
+    // parse via Date.parse - handle it explicitly rather than dropping the row.
+    const match = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(trimmed)
+    if (match) {
+        const [, m, d, y] = match
+        const year = y.length === 2 ? 2000 + Number(y) : Number(y)
+        const ms = Date.UTC(year, Number(m) - 1, Number(d))
+        return Number.isNaN(ms) ? null : ms
+    }
+    return null
 }
 
 /** Find the first row that looks like a header (has a URL/link column). */

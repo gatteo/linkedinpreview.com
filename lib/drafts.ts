@@ -120,3 +120,18 @@ export function computeStats(content: any): { charCount: number; wordCount: numb
         wordCount: trimmed ? trimmed.split(/\s+/).length : 0,
     }
 }
+
+/**
+ * Convert plain text into a minimal TipTap document so it can be stored in
+ * `drafts.content` and round-tripped by the editor / preview / `extractTitle`.
+ * Blank lines become empty paragraphs. Used for posts backfilled from an
+ * external source (e.g. a LinkedIn CSV export) that only gives us a title-worthy
+ * line of text, not real post content.
+ */
+export function plainTextToTiptapDoc(text: string): { type: 'doc'; content: unknown[] } {
+    const lines = text.split('\n')
+    const content = lines.map((line) =>
+        line.length > 0 ? { type: 'paragraph', content: [{ type: 'text', text: line }] } : { type: 'paragraph' },
+    )
+    return { type: 'doc', content: content.length > 0 ? content : [{ type: 'paragraph' }] }
+}

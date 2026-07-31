@@ -4,7 +4,7 @@ import { BarChart3Icon, PencilLineIcon, TrendingUpIcon, UploadIcon } from 'lucid
 
 import { Button } from '@/components/ui/button'
 
-import { ImportLinkedInButton } from './import-linkedin-button'
+import { RefreshMetricsButton } from './refresh-metrics-button'
 
 type AnalyticsEmptyProps = {
     onImport: () => void
@@ -13,7 +13,7 @@ type AnalyticsEmptyProps = {
 const BENEFITS = [
     { icon: TrendingUpIcon, text: 'Track impressions and engagement across all your posts' },
     { icon: BarChart3Icon, text: 'See which formats, lengths, and days perform best' },
-    { icon: PencilLineIcon, text: 'Enter metrics by hand or import a LinkedIn CSV export' },
+    { icon: PencilLineIcon, text: 'Enter metrics by hand or import your LinkedIn history' },
 ]
 
 export function AnalyticsEmpty({ onImport }: AnalyticsEmptyProps) {
@@ -49,11 +49,11 @@ export function AnalyticsEmpty({ onImport }: AnalyticsEmptyProps) {
                 </ul>
 
                 <div className='flex flex-col items-center gap-2'>
-                    {/* Self-hides unless LinkedIn API import is available. */}
-                    <ImportLinkedInButton />
+                    {/* Self-hides unless the analytics app (App B) is configured. */}
+                    <RefreshMetricsButton />
                     <Button variant='outline' onClick={onImport}>
                         <UploadIcon className='mr-1.5 size-4' />
-                        Import CSV
+                        Import history
                     </Button>
                 </div>
             </div>
