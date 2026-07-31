@@ -33,3 +33,15 @@ export function normalizeProfileUrl(input: string | undefined | null): string | 
 export function isLikelyProfileUrl(input: string | undefined | null): boolean {
     return normalizeProfileUrl(input) !== null
 }
+
+/**
+ * Coarse bucket for a rejected connect-step input, for `onb_connect_url_rejected`
+ * analytics only - never used to change behavior, just to size WHY people fail
+ * here (typed their name vs. pasted the wrong kind of LinkedIn URL vs. other).
+ */
+export function classifyProfileUrlRejection(input: string | undefined | null): 'name' | 'company-url' | 'other' {
+    const raw = (input ?? '').trim()
+    if (/linkedin\.com\/company/i.test(raw)) return 'company-url'
+    if (raw.includes(' ') && !raw.includes('/') && !raw.includes('.')) return 'name'
+    return 'other'
+}
