@@ -11,6 +11,7 @@ import {
     fetchMemberAggregate,
     type DateRange,
 } from '@/lib/linkedin/member-analytics'
+import { LinkedInApiError } from '@/lib/linkedin/posts'
 import { createClient } from '@/lib/supabase/server'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -54,32 +55,63 @@ export async function GET(request: NextRequest) {
     const endMs = Date.now()
     const range: DateRange = { startMs: endMs - days * DAY_MS, endMs }
 
-    try {
-        const [lifetime, series, aggregateByType] = await Promise.all([
-            fetchFollowerCount(token),
-            fetchFollowerSeries(token, range),
-            fetchMemberAggregate(token, ACCOUNT_AGGREGATE_METRICS, range),
-        ])
+    // The three surfaces fail independently: a member who connected App B
+    // before `r_member_profileAnalytics` was added to the scopes will 403 on
+    // the follower calls while the aggregate calls still work. One scope gap
+    // must not blank data the member is authorized for.
+    const [lifetime, series, aggregateByType] = await Promise.all([
+        settle('followerCount', fetchFollowerCount(token)),
+        settle('followerSeries', fetchFollowerSeries(token, range)),
+        fetchMemberAggregate(token, ACCOUNT_AGGREGATE_METRICS, range),
+    ])
 
-        return Response.json({
-            configured,
-            connected: true,
-            testMode,
-            days,
-            followers: { lifetime, series },
-            aggregate: {
-                impressions: aggregateByType.IMPRESSION ?? null,
-                reach: aggregateByType.MEMBERS_REACHED ?? null,
-                reactions: aggregateByType.REACTION ?? null,
-                comments: aggregateByType.COMMENT ?? null,
-                reshares: aggregateByType.RESHARE ?? null,
-            },
-        })
-    } catch (err) {
-        console.error('[analytics/linkedin] fetch failed', err instanceof Error ? err.message : err)
+    const followersDenied =
+        (lifetime.error instanceof LinkedInApiError && lifetime.error.status === 403) ||
+        (series.error instanceof LinkedInApiError && series.error.status === 403)
+
+    const aggregate = {
+        impressions: aggregateByType.IMPRESSION ?? null,
+        reach: aggregateByType.MEMBERS_REACHED ?? null,
+        reactions: aggregateByType.REACTION ?? null,
+        comments: aggregateByType.COMMENT ?? null,
+        reshares: aggregateByType.RESHARE ?? null,
+    }
+
+    const followersFailed = lifetime.error !== undefined && series.error !== undefined
+    const aggregateFailed = Object.values(aggregate).every((v) => v === null)
+    if (followersFailed && aggregateFailed) {
         return Response.json(
             { error: 'Failed to load LinkedIn account analytics', code: LINKEDIN_ERROR_CODES.PUBLISH_FAILED },
             { status: 502 },
         )
+    }
+
+    return Response.json({
+        configured,
+        connected: true,
+        testMode,
+        days,
+        followers: {
+            lifetime: lifetime.value ?? null,
+            series: series.value ?? [],
+            // 'reconnect' = the token predates the profile-analytics scope;
+            // retrying can never succeed until the member reconnects App B.
+            unavailable: followersDenied ? 'reconnect' : followersFailed ? 'error' : undefined,
+        },
+        aggregate,
+    })
+}
+
+/** Await a LinkedIn call, logging failures (status + error body) instead of throwing. */
+async function settle<T>(label: string, promise: Promise<T>): Promise<{ value?: T; error?: unknown }> {
+    try {
+        return { value: await promise }
+    } catch (err) {
+        if (err instanceof LinkedInApiError) {
+            console.error(`[analytics/linkedin] ${label} failed`, err.status, err.body?.slice(0, 500) ?? '')
+        } else {
+            console.error(`[analytics/linkedin] ${label} failed`, err instanceof Error ? err.message : err)
+        }
+        return { error: err }
     }
 }

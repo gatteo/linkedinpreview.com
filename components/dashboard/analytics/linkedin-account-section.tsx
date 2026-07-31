@@ -38,7 +38,12 @@ type LinkedInAnalyticsResponse = {
     connected: boolean
     testMode: boolean
     days?: number
-    followers?: { lifetime: number | null; series: { dateMs: number; count: number }[] }
+    followers?: {
+        lifetime: number | null
+        series: { dateMs: number; count: number }[]
+        /** 'reconnect' = token predates the follower-analytics scope; retry can't fix it. */
+        unavailable?: 'reconnect' | 'error'
+    }
     aggregate?: AggregateKpis
     error?: string
 }
@@ -62,37 +67,38 @@ export function LinkedInAccountSection() {
     const [data, setData] = React.useState<LinkedInAnalyticsResponse | null>(null)
     const [range, setRange] = React.useState<WindowKey>('30')
 
-    const load = React.useCallback(
-        (days: number) => {
-            if (!userId) return
-            setStatus((prev) => (prev === 'ready' ? prev : 'loading'))
-            fetch(`${ApiRoutes.AnalyticsLinkedIn}?days=${days}`)
-                .then(async (res) => {
-                    // A non-OK response is a real failure (LinkedIn call errored) -
-                    // distinct from a 200 with `connected: false`, which just means
-                    // the member hasn't linked App B yet and the section self-hides.
-                    if (!res.ok) {
-                        setStatus('error')
-                        return
-                    }
-                    const json = (await res.json().catch(() => ({}))) as LinkedInAnalyticsResponse
-                    if (!json.connected) {
-                        setStatus('hidden')
-                        return
-                    }
-                    setData(json)
-                    setStatus('ready')
-                    posthog?.capture('linkedin_account_analytics_viewed', { test_mode: json.testMode, days })
-                })
-                .catch(() => setStatus('error'))
-        },
-        [userId],
-    )
+    const [reloadKey, setReloadKey] = React.useState(0)
 
     React.useEffect(() => {
+        if (!userId) return
         const days = WINDOWS.find((w) => w.key === range)?.days ?? 30
-        load(days)
-    }, [load, range])
+        // Abort on range change/unmount so a slow 30d response can't render
+        // under the 90d tab (last-resolved-wins race).
+        const controller = new AbortController()
+        setStatus((prev) => (prev === 'ready' ? prev : 'loading'))
+        fetch(`${ApiRoutes.AnalyticsLinkedIn}?days=${days}`, { signal: controller.signal })
+            .then(async (res) => {
+                // A non-OK response is a real failure (LinkedIn call errored) -
+                // distinct from a 200 with `connected: false`, which just means
+                // the member hasn't linked App B yet and the section self-hides.
+                if (!res.ok) {
+                    setStatus('error')
+                    return
+                }
+                const json = (await res.json().catch(() => ({}))) as LinkedInAnalyticsResponse
+                if (!json.connected) {
+                    setStatus('hidden')
+                    return
+                }
+                setData(json)
+                setStatus('ready')
+                posthog?.capture('linkedin_account_analytics_viewed', { test_mode: json.testMode, days })
+            })
+            .catch((err) => {
+                if ((err as Error | null)?.name !== 'AbortError') setStatus('error')
+            })
+        return () => controller.abort()
+    }, [userId, range, reloadKey])
 
     if (status === 'hidden') return null
 
@@ -136,7 +142,7 @@ export function LinkedInAccountSection() {
                             size='sm'
                             onClick={() => {
                                 posthog?.capture('linkedin_account_analytics_retry_clicked')
-                                load(WINDOWS.find((w) => w.key === range)?.days ?? 30)
+                                setReloadKey((k) => k + 1)
                             }}>
                             <RefreshCwIcon className='size-3.5' />
                             Retry
@@ -185,7 +191,29 @@ export function LinkedInAccountSection() {
                         />
                     </div>
 
-                    <FollowerChart lifetime={data.followers?.lifetime ?? null} series={data.followers?.series ?? []} />
+                    {data.followers?.unavailable === 'reconnect' ? (
+                        <Card>
+                            <CardContent className='py-6'>
+                                <p className='text-muted-foreground text-sm'>
+                                    Follower analytics need a fresh LinkedIn connection - reconnect LinkedIn analytics
+                                    to unlock them. Your other metrics are unaffected.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ) : data.followers?.unavailable === 'error' ? (
+                        <Card>
+                            <CardContent className='py-6'>
+                                <p className='text-muted-foreground text-sm'>
+                                    Follower data didn't load this time - it will retry on the next refresh.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <FollowerChart
+                            lifetime={data.followers?.lifetime ?? null}
+                            series={data.followers?.series ?? []}
+                        />
+                    )}
                 </>
             )}
         </section>

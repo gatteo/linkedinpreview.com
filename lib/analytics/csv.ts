@@ -129,9 +129,19 @@ export function planCsvImport(rows: ParsedMetricRow[], drafts: DraftManifestEntr
     const newPosts: CsvNewPost[] = []
     let skippedCount = 0
 
+    // A URL appearing twice in one file (a re-exported sheet with duplicated
+    // rows) must not plan two posts or two upserts - first occurrence wins.
+    const seenUrls = new Set<string>()
+
     for (const row of rows) {
         const { url, publishedAtMs, ...values } = row
-        const draft = byUrl.get(normalizeUrl(url))
+        const key = normalizeUrl(url)
+        if (seenUrls.has(key)) {
+            skippedCount++
+            continue
+        }
+        seenUrls.add(key)
+        const draft = byUrl.get(key)
         if (draft) {
             matched.push({ kind: 'matched', draftId: draft.id, title: draft.title || 'Untitled', values })
         } else if (hasAnyMetric(values)) {
@@ -175,14 +185,24 @@ function parseCsvDate(raw: string | undefined): number | null {
     const parsed = Date.parse(trimmed)
     if (!Number.isNaN(parsed)) return parsed
 
-    // Excel/Sheets often localize dates to M/D/YYYY, which some engines fail to
-    // parse via Date.parse - handle it explicitly rather than dropping the row.
+    // Excel/Sheets often localize dates to M/D/YYYY or D/M/YYYY, which some
+    // engines fail to parse via Date.parse - handle it explicitly rather than
+    // dropping the row. When the first number can't be a month, read it as the
+    // day; when both could be either, month-first wins (LinkedIn's own export
+    // is US-formatted). Date.UTC month overflow would silently roll into the
+    // wrong year, so validate ranges and round-trip instead.
     const match = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(trimmed)
     if (match) {
-        const [, m, d, y] = match
+        const [, a, b, y] = match
         const year = y.length === 2 ? 2000 + Number(y) : Number(y)
-        const ms = Date.UTC(year, Number(m) - 1, Number(d))
-        return Number.isNaN(ms) ? null : ms
+        let month = Number(a)
+        let day = Number(b)
+        if (month > 12 && day <= 12) [month, day] = [day, month]
+        if (month < 1 || month > 12 || day < 1 || day > 31) return null
+        const ms = Date.UTC(year, month - 1, day)
+        const roundTrip = new Date(ms)
+        if (roundTrip.getUTCMonth() !== month - 1 || roundTrip.getUTCDate() !== day) return null
+        return ms
     }
     return null
 }

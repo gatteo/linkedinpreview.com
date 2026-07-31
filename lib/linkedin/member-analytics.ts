@@ -201,11 +201,20 @@ export async function fetchMemberAggregate(
         try {
             out[metricType] = await fetchMemberAggregateMetric(accessToken, metricType, range)
         } catch (err) {
-            console.error(
-                '[member-analytics] aggregate metric failed',
-                metricType,
-                err instanceof Error ? err.message : err,
-            )
+            if (err instanceof LinkedInApiError) {
+                console.error(
+                    '[member-analytics] aggregate metric failed',
+                    metricType,
+                    err.status,
+                    err.body.slice(0, 500),
+                )
+            } else {
+                console.error(
+                    '[member-analytics] aggregate metric failed',
+                    metricType,
+                    err instanceof Error ? err.message : err,
+                )
+            }
             out[metricType] = null
         }
     }
