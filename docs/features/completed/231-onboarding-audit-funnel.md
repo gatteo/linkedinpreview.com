@@ -210,3 +210,12 @@ unlocker/proxy configured` on every fallback attempt), so the direct fetch alway
   on a real device with a dynamic mobile browser toolbar (Playwright's mobile emulation doesn't
   reproduce that address-bar-driven `svh`/`lvh` behavior) - only this z-index/pointer-events collision,
   which is viewport-static and fully reproducible without one.
+- 2026-07-30 suspended-tab insights recovery (funnel-audit W31, GH #43): `fetchInsights`'s 160s poll
+  deadline is wall-clock, so a tab suspended mid-generation could sleep through the whole budget and
+  return `null` without one live poll deciding anything (on wake the in-flight poll aborts instantly -
+  its 15s abort timer expired during the freeze). The client then persisted `insightsStatus: 'failed'`
+  and the reveal froze the local benchmark even though a completed posts audit sat in the session row
+  (observed live: audit persisted 08:02, client marked failed 09:14, benchmark reveal 09:25, paywall
+  drop). `generateInsights` now makes one final fresh poll after the deadline loop exits, so a run
+  that completed during the suspension resolves `ready` via the idempotent echo instead of branding
+  the session failed.
