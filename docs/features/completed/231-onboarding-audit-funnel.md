@@ -9,7 +9,7 @@
 
 ## What
 
-- A new user's first dashboard visit opens a full-width, non-dismissable modal that runs an
+- A new user's first dashboard visit opens a full-width modal that runs an
   18-step conversion funnel: a full-bleed hero ("Grow 10× on LinkedIn in 90 days") → connect
   LinkedIn or paste a profile URL → a fetching loader (fast profile fetch) → a "Nice to meet you"
   reassure card built from real profile data (photo, cover, location, languages, companies,
@@ -219,3 +219,61 @@ unlocker/proxy configured` on every fallback attempt), so the direct fetch alway
   drop). `generateInsights` now makes one final fresh poll after the deadline loop exits, so a run
   that completed during the suspension resolves `ready` via the idempotent echo instead of branding
   the session failed.
+- 2026-07-31 answers-first restructure (GH #26/#36/#38/#39/#40/#41/#46): OAuth is the majority
+  connect path and OIDC never returns a profile URL (a LinkedIn API constraint - `r_member_social`
+  is closed, `r_basicprofile` is CMA-only), so those sessions silently degraded to the generic
+  benchmark with no way to notice or recover, and the modal itself had no exit at all (no close
+  button, Escape and outside-click both suppressed, and no step wired the existing `skip()`) - so a
+  user who wanted out could only close the tab, making refusal and entrapment the same signal.
+  Fixed on several fronts:
+    - **Exit** (#46): the modal now closes via X / Escape / outside click
+      (`onboarding-modal.tsx`), firing `onb_flow_dismissed{step}`. It never marks the account
+      onboarded, so the existing resume gate (`onboarding-controller.tsx`, unchanged) reopens the
+      flow at the saved step on the next visit - no new resume UI needed.
+    - **Connect-step escape + honesty** (#40): a quiet "Skip for now" revives the `skip` value on
+      `onb_connect_method` (removed 2026-07-18, see above) and jumps straight to `goal` - an
+      answers-only plan instead of the fetch-failure card being the only way out. The trust line's
+      "Read-only. We never post or message anyone." was false (the OAuth scope requests
+      `w_member_social` for the separate publish feature) - reworded to "We never post anything
+      without you pressing publish." A rejected paste now fires `onb_connect_url_rejected{input_kind}`
+      (`classifyProfileUrlRejection` in `lib/linkedin/profile-url.ts`) so a typed name is
+      distinguishable from a pasted company URL from genuinely bad input.
+    - **Post-OAuth URL ask** (#39): `fetching-step.tsx` no longer treats `connected && !profileUrl` as
+      success - it never had data to fetch. `OAuthUrlAsk` renders instead of the loader, showing the
+      real OIDC name/avatar with a warm ask for the profile URL (submit re-enters the normal fetch
+      path; "Continue without post analysis" advances honestly, with no fake `mirrorFetchOk`/rich
+      claim). Events: `onb_oauth_url_ask_view`, `onb_oauth_url_submit`, `onb_oauth_url_skip`.
+    - **Reveal never freezes a stale benchmark** (#41): three pinned failure modes shared one root
+      cause - `reveal-step.tsx`'s `frozen` local state locked in the benchmark and ignored anything
+      that arrived after (the failsafe firing 3s before generation landed; the same for the profile
+      fallback; a resumed session whose `localStorage` never carried the already-finished server
+      payload). Fixed with `fetchInsightsStatus` (`ai.ts`, a GET-only echo of
+      `/api/onboarding/insights`, no LLM spend): reveal now rehydrates from the server before ever
+      trying the local benchmark, and keeps a bounded (~2 min) background poll running after a
+      benchmark/profile freeze that upgrades the report in place with a one-line "Your full audit
+      just finished" note the instant a real posts audit lands.
+    - **Answers-first framing** (#36): when there is no post corpus (`richStatus`
+      empty/failed/absent, `insights.kind === 'benchmark'`, or either skip path above), the reveal
+      now reads as "your personalized plan, built from your answers" with the benchmark framed as
+      "what works for {niche} creators" - the Traction/Content sections' no-data copy no longer
+      implies a failed measurement ("You haven't given LinkedIn enough..." / "We could not score
+      your posts this time"). The building loader's copy is conditional
+      (`BUILDING_TASKS_NO_CORPUS` in `config/onboarding-flow.ts`): "Building your plan" instead of
+      "Auditing your LinkedIn" when there's nothing to score. The buildplan/paywall pillar-post
+      generation already worked from answers alone and needed no change.
+    - **Honest scrape-latency metric** (#38): `onb_scrape_settled.ms_since_trigger`
+      (`enrich/status/route.ts`) stamped `now - rich_triggered_at` unconditionally, so a session
+      resumed long after triggering reported days of wall-clock absence as scrape latency (one
+      observed sample: 367,941,450 ms, corrupting the p90). Now `null` unless the gap is
+      `<= STALE_PENDING_MS` (the same ~6 min ceiling the route already treats snapshots as stale
+      past), with `resumed: true` on the event when it was suppressed for that reason. The settle
+      behavior itself is unchanged.
+    - **Rich-profile identity backfill** (best-effort hardening for GH #26): when the fast tier
+      failed entirely (no Scrapingdog/JSON-LD card) and the posts corpus settled the scrape before
+      the independent Bright Data people-profile snapshot happened to be ready in that same poll,
+      identity was never revisited once `rich_status` left `pending`, leaving recap/reveal with a
+      blank name despite a working audit. `enrich/status/route.ts` now opportunistically rechecks
+      the identity snapshot whenever the merged profile still has no name/headline and the snapshot
+      id is on file (a status read only, never a re-trigger).
+    - `funnel_version` stays `v3` - no step was added, removed, or reordered; only affordances and
+      framing changed.

@@ -4,6 +4,41 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-07-31 — Onboarding: answers-first flow (exit, post-OAuth URL ask, honest degrades)
+
+- **The flow had no exit** (GH #46): no close button, Escape and outside-click both suppressed,
+  no step wired the existing `skip()` - refusal and entrapment were the same signal (~217
+  users/week). The modal now closes via X / Escape / outside click (`onb_flow_dismissed{step}`),
+  never marking the account onboarded, so the existing resume gate reopens it at the saved step
+  next visit.
+- **Connect step escape + honesty** (GH #40): a quiet "Skip for now" revives `onb_connect_method`'s
+  `skip` value (removed 2026-07-18) as an answers-only path instead of the fetch-failure card
+  being the only way out. The trust line falsely promised "We never post or message anyone" while
+  the OAuth scope requests `w_member_social` - reworded to match what the product actually does.
+  Rejected pastes now fire `onb_connect_url_rejected{input_kind}` (previously unattributed: 142 of
+  229 connect viewers).
+- **Post-OAuth profile-URL ask** (GH #40 origin issue, connect/reveal): OAuth is the majority
+  connect path and OIDC never returns a profile URL, so those sessions silently degraded to the
+  generic benchmark. `fetching-step.tsx` now asks for the URL (warm, with the real OIDC
+  name/avatar already shown) instead of claiming a fetch succeeded with zero data.
+- **Reveal no longer freezes a stale benchmark** (GH #41): the 30s loader failsafe regularly fired
+  before the server's ~40s p50 for a posts audit, and a resumed session's local state could miss an
+  already-finished server payload entirely. Reveal now rehydrates from the server (GET
+  `/api/onboarding/insights` echo) before ever trying the local benchmark, and upgrades the report
+  in place (bounded background poll, ~2 min) with a "Your full audit just finished" note.
+- **Answers-first framing** (GH #36): with no post corpus, the reveal now reads as "your
+  personalized plan, built from your answers" (benchmark framed as "what works for {niche}
+  creators") instead of an audit that came up short; the building loader's copy no longer claims
+  to be scoring posts that don't exist.
+- **Honest scrape-latency metric** (GH #38): `onb_scrape_settled.ms_since_trigger` stamped
+  wall-clock since trigger unconditionally, so a resumed session reported days of absence as
+  scrape latency (one sample: 367,941,450 ms, corrupting the p90). Now `null` past the plausible
+  live-measurement window, with `resumed: true` on that event.
+- **Rich-profile identity backfill** (best-effort hardening for GH #26): when the fast tier failed
+  and the posts corpus settled before the independent identity snapshot happened to be ready,
+  identity was never revisited - `enrich/status` now rechecks it opportunistically.
+- Event dictionary (`docs/analytics/onboarding-funnel.md`) and feature spec (`docs/features/completed/231-onboarding-audit-funnel.md`) updated. `funnel_version` stays `v3` - no step added/removed/reordered.
+
 ## 2026-07-20 — Fix cookie banner blocking the onboarding modal on mobile (GH #25)
 
 - **Root cause**: the global cookie consent banner renders at `z-[130]`, above every dialog's
