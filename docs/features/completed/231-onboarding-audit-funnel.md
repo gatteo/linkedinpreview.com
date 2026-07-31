@@ -44,6 +44,7 @@
 - [x] 231-AC-8 The audit report pairs measured findings with fixes: radar mix from server-counted labels, hooks/CTA counts labeled by the LLM and counted server-side, traction from observed cadence/followers, with healthy-state positive variants and honest degraded (profile/benchmark) variants. _(verified: `app/api/onboarding/insights/route.ts` audit counts; `steps/reveal-step.tsx`)_
 - [x] 231-AC-9 The buildplan step generates one post per content pillar in parallel (real AI, user's voice, scraped-post style references) and stores the gap-matching one as the endowed first draft; the paywall's post strip renders only real generated posts (section hides otherwise). _(verified: `steps/buildplan-step.tsx`; `ai.ts` generatePostIdeas; `steps/paywall-step.tsx`)_
 - [x] 231-AC-10 The paywall sells the real PRICING (lifetime ticket + monthly) through the embedded Stripe checkout with the founding-window countdown tied to `FOUNDING_WINDOW_END`; scarcity counters are config-only marketing; a quiet "Continue on the free plan" always exists (also on checkout failure). _(verified: `steps/paywall-step.tsx`; `config/pricing.ts`)_
+- [x] 231-AC-10b The offer's scroll gate never dead-ends a buyer. The CTA stays clickable: before the reader reaches the end it carries them to the offer and fires `onb_paywall_gate_blocked`, rather than sitting disabled (a disabled button swallows the click, so purchase intent was invisible AND the decline link is below the fold too - a user who did not scroll saw no working affordance). Scroll depth is reported via `onb_paywall_scroll{depth}` at 25/50/75/100 so a non-scroller is distinguishable from a decliner. _(verified: `scroll-progress-button.tsx`; `steps/paywall-step.tsx`; `use-scroll-gate.ts`)_
 - [x] 231-AC-11 Growth projections seed from real numbers when measured and show "modeled" instead of a % when the baseline is a floor. _(verified: `config/onboarding-flow.ts` growthCards)_
 - [x] 231-AC-12 Insights fire only after the goal/persona answers exist and carry them as request hints, so degraded analyses are framed around the actual goal. Generation is driven deterministically from the building + reveal steps (with the pipeline hook as an early best-effort trigger), all sharing one deduped request. _(verified: `steps/building-step.tsx` + `steps/reveal-step.tsx` drivers, `use-rich-pipeline.ts` framed gate, `ai.ts` dedupe; `app/api/onboarding/insights/route.ts` parseBodyHints)_
 - [x] 231-AC-13 OAuth return resumes at the fetching step; finish() maps answers (incl. language + clarification notes) into branding/strategy exactly once. _(verified: `onboarding-controller.tsx`)_
@@ -209,3 +210,12 @@ unlocker/proxy configured` on every fallback attempt), so the direct fetch alway
   on a real device with a dynamic mobile browser toolbar (Playwright's mobile emulation doesn't
   reproduce that address-bar-driven `svh`/`lvh` behavior) - only this z-index/pointer-events collision,
   which is viewport-static and fully reproducible without one.
+- 2026-07-30 suspended-tab insights recovery (funnel-audit W31, GH #43): `fetchInsights`'s 160s poll
+  deadline is wall-clock, so a tab suspended mid-generation could sleep through the whole budget and
+  return `null` without one live poll deciding anything (on wake the in-flight poll aborts instantly -
+  its 15s abort timer expired during the freeze). The client then persisted `insightsStatus: 'failed'`
+  and the reveal froze the local benchmark even though a completed posts audit sat in the session row
+  (observed live: audit persisted 08:02, client marked failed 09:14, benchmark reveal 09:25, paywall
+  drop). `generateInsights` now makes one final fresh poll after the deadline loop exits, so a run
+  that completed during the suspension resolves `ready` via the idempotent echo instead of branding
+  the session failed.

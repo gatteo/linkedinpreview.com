@@ -2,13 +2,21 @@
 
 import * as React from 'react'
 
+import { track } from './ai'
 import { CTA } from './primitives'
+import { findScrollParent } from './use-scroll-gate'
 
 // ---------------------------------------------------------------------------
-// ScrollProgressButton - a CTA that stays disabled until the reader reaches the
-// end of a scroll container, with its border tracing scroll depth. Progress is
-// written to the rect imperatively by the caller (rectRef + useScrollGate's
-// onProgress), so the indicator updates per-frame without re-rendering the page.
+// ScrollProgressButton - a CTA whose border traces scroll depth through the
+// offer. Progress is written to the rect imperatively by the caller (rectRef +
+// useScrollGate's onProgress), so the indicator updates per-frame without
+// re-rendering the page.
+//
+// The button used to be `disabled` until the reader hit the end. That dead-ended
+// a third of paywall traffic: a disabled button swallows the click, so the user
+// got no feedback AND the attempt was invisible to analytics. It stays clickable
+// now - clicking before the end carries the reader to the offer instead of doing
+// nothing, and the attempt is tracked so the gate's cost stays measurable.
 // ---------------------------------------------------------------------------
 
 export function ScrollProgressButton({
@@ -39,7 +47,18 @@ export function ScrollProgressButton({
     const radius = 12 // matches the CTA's rounded-xl
     return (
         <div ref={wrapRef} className='relative w-full'>
-            <CTA disabled={!atEnd} onClick={onClick}>
+            <CTA
+                onClick={() => {
+                    if (atEnd) {
+                        onClick()
+                        return
+                    }
+                    // Not read yet: take them to the offer rather than swallowing
+                    // the click, and record that the gate blocked a purchase intent.
+                    track('onb_paywall_gate_blocked')
+                    const scroller = findScrollParent(wrapRef.current)
+                    scroller?.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
+                }}>
                 {children}
             </CTA>
             {!atEnd && size.w > 0 && (

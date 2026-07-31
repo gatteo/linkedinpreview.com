@@ -78,10 +78,20 @@ export function PaywallStep() {
     // page. Progress is fed to the button's border imperatively (no re-render).
     const rootRef = React.useRef<HTMLDivElement>(null)
     const rectRef = React.useRef<SVGRectElement>(null)
+    // How far the offer is actually read. Without this a user who never scrolls
+    // is indistinguishable from one who read the price and declined, which made
+    // the largest paywall cohort (viewers who leave with no event at all)
+    // impossible to explain. Milestones fire once each, in order.
+    const depthRef = React.useRef(0)
     const { atEnd } = useScrollGate(rootRef, {
         endThreshold: 48,
         onProgress: (p) => {
             if (rectRef.current) rectRef.current.style.strokeDashoffset = String(1 - p)
+            const milestone = p >= 1 ? 100 : Math.floor(p * 4) * 25
+            if (milestone > depthRef.current) {
+                depthRef.current = milestone
+                track('onb_paywall_scroll', { depth: milestone })
+            }
         },
     })
 

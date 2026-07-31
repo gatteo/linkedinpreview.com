@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowDown, ArrowUpRight, Github } from 'lucide-react'
 
+import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { SOCIAL_PROOF } from '@/config/social-proof'
 import { ExternalLinks } from '@/config/urls'
@@ -65,7 +66,7 @@ export function Hero() {
                                 </Button>
                             </span>
                             <Button asChild variant='outline' size='lg' className='h-12 px-5 text-[15px]'>
-                                <Link href={Routes.DashboardEditor()}>
+                                <Link href={withEntrySource(Routes.DashboardEditor(), 'hero_editor')}>
                                     Open the full editor
                                     <ArrowUpRight className='size-4' />
                                 </Link>

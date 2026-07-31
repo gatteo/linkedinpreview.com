@@ -59,8 +59,12 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
         () =>
             new DefaultChatTransport({
                 api: ApiRoutes.Chat,
-                prepareSendMessagesRequest: ({ body }) => ({
-                    body: { ...body, brandingContext: brandingContext || undefined },
+                // The SDK only merges its defaults (id, messages, trigger,
+                // messageId) when the prepared body is undefined. Returning an
+                // object replaces them, so they must be threaded through here
+                // explicitly or /api/chat receives a request with no messages.
+                prepareSendMessagesRequest: ({ id, messages, trigger, messageId, body }) => ({
+                    body: { ...body, id, messages, trigger, messageId, brandingContext: brandingContext || undefined },
                 }),
             }),
         [brandingContext],
@@ -70,6 +74,12 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
         transport,
         onFinish: ({ message, messages: allMessages }) => {
             const text = extractTextFromMessage(message)
+            // An empty assistant message means nothing actually generated. Don't
+            // report it as a success - a hollow completion event masked a fully
+            // broken feature for weeks.
+            if (!text.trim()) {
+                return
+            }
             posthog.capture('ai_generation_completed', {
                 output_length: text.length,
                 tone: toneRef.current,
