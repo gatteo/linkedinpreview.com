@@ -33,6 +33,8 @@
 ## Implementation
 
 - Init: `instrumentation-client.ts` (production-only, `/ingest` host, `capture_exceptions: true`).
+- Exception filter: `instrumentation-client.ts` `before_send` drops `$exception` events whose every stack frame resolves to a non-first-party origin (vendor bundles like Featurebase's `sdk.js`), while first-party frames - including `_next/static` Turbopack chunk errors - keep reporting.
+- Error boundaries: `app/global-error.tsx` (root layout failures) and `app/(main)/error.tsx` (public pages) report the error to PostHog and offer a hard reload, which refetches the current build manifest and recovers a stale-deploy chunk mismatch.
 - Proxy rewrites: `next.config.mjs:25-38` plus `skipTrailingSlashRedirect`.
 - Reusable wrapper: `components/tracking/track-click.tsx`.
 - App-wide pageviews: `components/tracking/posthog-page-view.tsx` emits `page_viewed` on every route change (deps `[pathname, searchParams]`), mounted in `app/layout.tsx` inside a `<Suspense>` boundary so public pages stay statically prerendered.
