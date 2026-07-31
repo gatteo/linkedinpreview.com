@@ -4,7 +4,7 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
-## 2026-07-31 — Onboarding: answers-first flow (exit, post-OAuth URL ask, honest degrades)
+## 2026-07-31 - Onboarding: answers-first flow (exit, post-OAuth URL ask, honest degrades)
 
 - **The flow had no exit** (GH #46): no close button, Escape and outside-click both suppressed,
   no step wired the existing `skip()` - refusal and entrapment were the same signal (~217
@@ -38,6 +38,30 @@
   and the posts corpus settled before the independent identity snapshot happened to be ready,
   identity was never revisited - `enrich/status` now rechecks it opportunistically.
 - Event dictionary (`docs/analytics/onboarding-funnel.md`) and feature spec (`docs/features/completed/231-onboarding-audit-funnel.md`) updated. `funnel_version` stays `v3` - no step added/removed/reordered.
+
+## 2026-07-31 - Drop the dead LinkedIn import, align on the official analytics surface
+
+- **Root cause**: the "Sync from LinkedIn" history import called the Posts API author finder
+  (`GET /rest/posts?q=author`), which requires `r_member_social` - a permission LinkedIn closed to new
+  applications entirely. It 403s unconditionally and could never work. Removed
+  `app/api/analytics/import-linkedin/route.ts`, `lib/linkedin/import.ts` (`fetchMemberPosts`), and
+  `import-linkedin-button.tsx`.
+- **History backfill is now the CSV/XLSX export path**: `import-metrics-dialog.tsx` explains, before a
+  file is picked, where to get LinkedIn's own "Post analytics" export, that it's a one-time backfill,
+  and that posts published/scheduled through the app track automatically going forward. Rows not
+  matched to an existing draft now create new `published` posts (`planCsvImport` in
+  `lib/analytics/csv.ts`, `createImportedPublishedPost` generalized in `lib/supabase/drafts.ts`) instead
+  of being silently dropped as "unmatched".
+- **The route's other job survives**: refreshing metrics for posts already published through the app is
+  now its own slim endpoint, `app/api/analytics/refresh-metrics/route.ts`, with no dependency on the App
+  A (publishing) connection.
+- **New account-wide analytics surface**: `lib/linkedin/member-analytics.ts` adds follower growth
+  (`memberFollowersCount`) and account-aggregate post metrics (`memberCreatorPostAnalytics q=me`),
+  gated behind a new `r_member_profileAnalytics` scope alongside the existing
+  `r_member_postAnalytics`. Fetch-and-display only - never written to Supabase, per LinkedIn's 48h
+  storage cap on member social activity. `linkedin-account-section.tsx` renders it on the analytics
+  page once App B is connected. A `LINKEDIN_ANALYTICS_TEST_MODE` env flag serves deterministic mock
+  data with a "Test data" badge so the surface is reviewable before Community Management API approval.
 
 ## 2026-07-20 — Fix cookie banner blocking the onboarding modal on mobile (GH #25)
 

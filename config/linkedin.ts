@@ -19,8 +19,14 @@ export const LINKEDIN_API = {
     videos: 'https://api.linkedin.com/rest/videos',
     // Member post analytics (Community Management API, launched mid-2025). Returns
     // impressions/reach/reactions/comments/reshares/etc. for the authenticated
-    // member's own posts. Gated behind r_member_postAnalytics (see LINKEDIN_SCOPES).
+    // member's own posts. Gated behind r_member_postAnalytics (see
+    // LINKEDIN_ANALYTICS_SCOPES). Used both per-post (q=entity) and account-wide
+    // (q=me) - see lib/linkedin/analytics.ts and lib/linkedin/member-analytics.ts.
     memberPostAnalytics: 'https://api.linkedin.com/rest/memberCreatorPostAnalytics',
+    // Member follower count (Community Management API, 202504+). Lifetime (q=me)
+    // and daily time-bound (q=dateRange) finders. Gated behind
+    // r_member_profileAnalytics (see LINKEDIN_ANALYTICS_SCOPES).
+    memberFollowersCount: 'https://api.linkedin.com/rest/memberFollowersCount',
 } as const
 
 /**
@@ -54,8 +60,11 @@ export function linkedInScopes(): string[] {
 // connection - it identifies the same member.
 // ---------------------------------------------------------------------------
 
-/** Read scope for member post analytics (Community Management API, App B). */
-export const LINKEDIN_ANALYTICS_SCOPES = ['r_member_postAnalytics'] as const
+/**
+ * Read scopes for the analytics app (Community Management API, App B):
+ * per-post/account post analytics, and follower + profile-view counts.
+ */
+export const LINKEDIN_ANALYTICS_SCOPES = ['r_member_postAnalytics', 'r_member_profileAnalytics'] as const
 
 /** The env vars the analytics app (App B) needs. Single source of truth. */
 export const LINKEDIN_ANALYTICS_ENV_VARS = [
@@ -72,6 +81,19 @@ export function missingLinkedInAnalyticsEnv(): string[] {
 /** Whether the analytics app (App B) is configured on the server. */
 export function isLinkedInAnalyticsConfigured(): boolean {
     return missingLinkedInAnalyticsEnv().length === 0
+}
+
+/**
+ * Test mode for the account-wide analytics surface (follower series + account
+ * aggregates): lets the "LinkedIn account analytics" section be built and
+ * reviewed before the Community Management API approval that unlocks it for
+ * real. When enabled, the connection check passes without a real App B
+ * connection and `lib/linkedin/member-analytics.ts` returns deterministic mock
+ * data instead of calling LinkedIn - the UI path stays identical to production,
+ * with a small "Test data" badge so it's never confused for the real thing.
+ */
+export function isLinkedInAnalyticsTestMode(): boolean {
+    return env.LINKEDIN_ANALYTICS_TEST_MODE === '1'
 }
 
 /** The exact redirect URI registered on the analytics app (App B). */

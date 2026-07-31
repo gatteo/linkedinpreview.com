@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { type DraftKind, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
 import {
     createDraft as createDraftApi,
+    createImportedPublishedPost,
     deleteDraft as deleteDraftApi,
     deleteEmptyDrafts as deleteEmptyDraftsApi,
     duplicateDraft as duplicateDraftApi,
@@ -57,6 +58,17 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
             return entry
         },
         [supabase, userId, kind],
+    )
+
+    /** Backfill a post published outside the app (CSV history import). */
+    const createImportedPost = React.useCallback(
+        async (input: { content: any; url: string; publishedAtMs: number | null }): Promise<DraftManifestEntry> => {
+            if (!userId) throw new Error('Not authenticated')
+            const entry = await createImportedPublishedPost(supabase, userId, input)
+            setDrafts((prev) => [entry, ...prev])
+            return entry
+        },
+        [supabase, userId],
     )
 
     const deleteDraft = React.useCallback(
@@ -141,6 +153,7 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
         recentDrafts,
         isLoading,
         createDraft,
+        createImportedPost,
         deleteDraft,
         duplicateDraft,
         updateDraft,

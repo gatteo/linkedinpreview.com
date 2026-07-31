@@ -60,6 +60,12 @@ export const env = createEnv({
         LINKEDIN_ANALYTICS_CLIENT_SECRET: z.string().optional(),
         // Optional override; defaults to `${site.url}/api/linkedin/analytics/callback`.
         LINKEDIN_ANALYTICS_REDIRECT_URI: z.string().optional(),
+        // Set to '1' to preview the account-wide LinkedIn analytics surface
+        // (follower growth + aggregate KPIs) before Community Management API
+        // approval: the connection check passes and lib/linkedin/member-analytics.ts
+        // returns deterministic mock data instead of calling LinkedIn. Never set in
+        // production. See config/linkedin.ts (isLinkedInAnalyticsTestMode).
+        LINKEDIN_ANALYTICS_TEST_MODE: z.string().optional(),
         // Supabase service-role key - used by the cron publisher AND the Stripe
         // webhook to write across users (no user session). Never exposed to the client.
         SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
@@ -104,6 +110,7 @@ export const env = createEnv({
         LINKEDIN_ANALYTICS_CLIENT_ID: process.env.LINKEDIN_ANALYTICS_CLIENT_ID,
         LINKEDIN_ANALYTICS_CLIENT_SECRET: process.env.LINKEDIN_ANALYTICS_CLIENT_SECRET,
         LINKEDIN_ANALYTICS_REDIRECT_URI: process.env.LINKEDIN_ANALYTICS_REDIRECT_URI,
+        LINKEDIN_ANALYTICS_TEST_MODE: process.env.LINKEDIN_ANALYTICS_TEST_MODE,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
         STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,

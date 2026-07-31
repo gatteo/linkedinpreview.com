@@ -5,7 +5,10 @@ import { MotionConfig } from 'framer-motion'
 import { ActivityIcon, LayersIcon, UploadIcon } from 'lucide-react'
 
 import { publishedPosts, statusCounts } from '@/lib/analytics/aggregate'
+import type { CsvImportRow } from '@/lib/analytics/csv'
+import { formatDate } from '@/lib/analytics/format'
 import type { MetricValues } from '@/lib/analytics/metrics'
+import { plainTextToTiptapDoc } from '@/lib/drafts'
 import { useDrafts } from '@/hooks/use-drafts'
 import { usePostMetrics } from '@/hooks/use-post-metrics'
 import { usePublishedContent } from '@/hooks/use-published-content'
@@ -20,10 +23,11 @@ import { ContentDnaSection } from './content-dna-section'
 import { ContentInsights } from './content-insights'
 import { EngagementTrendChart } from './engagement-trend-chart'
 import { GoldenHourCard } from './golden-hour-card'
-import { ImportLinkedInButton } from './import-linkedin-button'
 import { ImportMetricsDialog } from './import-metrics-dialog'
 import { KpiCards } from './kpi-cards'
+import { LinkedInAccountSection } from './linkedin-account-section'
 import { PostsPerformanceTable } from './posts-performance-table'
+import { RefreshMetricsButton } from './refresh-metrics-button'
 import { Reveal } from './reveal'
 import { SectionHeading } from './section-heading'
 
@@ -45,7 +49,7 @@ function AnalyticsPageSkeleton() {
 }
 
 export function AnalyticsPage() {
-    const { drafts, isLoading: draftsLoading } = useDrafts()
+    const { drafts, isLoading: draftsLoading, createImportedPost } = useDrafts()
     const { metrics, isLoading: metricsLoading, saveMetrics, saveManyMetrics, removeMetrics } = usePostMetrics()
     const { features, isLoading: contentLoading } = usePublishedContent()
     const [importOpen, setImportOpen] = React.useState(false)
@@ -61,9 +65,39 @@ export function AnalyticsPage() {
         (draftId: string, values: MetricValues) => saveMetrics(draftId, values, 'manual'),
         [saveMetrics],
     )
+
+    // CSV rows come in two flavors: metrics for a post already tracked by the
+    // app ('matched'), and posts the app has never seen before ('new') - the
+    // latter get created as history posts first so their metrics have somewhere
+    // to land.
     const handleImport = React.useCallback(
-        (rows: { draftId: string; values: MetricValues }[]) => saveManyMetrics(rows, 'csv'),
-        [saveManyMetrics],
+        async (rows: CsvImportRow[]) => {
+            const metricsRows: { draftId: string; values: MetricValues }[] = []
+            let created = 0
+            for (const row of rows) {
+                if (row.kind === 'matched') {
+                    metricsRows.push({ draftId: row.draftId, values: row.values })
+                    continue
+                }
+                try {
+                    const label = row.publishedAtMs
+                        ? `LinkedIn post - ${formatDate(row.publishedAtMs)}`
+                        : 'Imported LinkedIn post'
+                    const entry = await createImportedPost({
+                        content: plainTextToTiptapDoc(label),
+                        url: row.url,
+                        publishedAtMs: row.publishedAtMs,
+                    })
+                    metricsRows.push({ draftId: entry.id, values: row.values })
+                    created++
+                } catch {
+                    // Skip the failed row; the rest of the import still proceeds.
+                }
+            }
+            const saved = await saveManyMetrics(metricsRows, 'csv')
+            return { saved, created }
+        },
+        [createImportedPost, saveManyMetrics],
     )
 
     const importDialog = (
@@ -94,10 +128,10 @@ export function AnalyticsPage() {
     return (
         <>
             <PageHeader title='Analytics'>
-                <ImportLinkedInButton variant='outline' />
+                <RefreshMetricsButton variant='outline' />
                 <Button variant='outline' size='sm' onClick={() => setImportOpen(true)}>
                     <UploadIcon className='mr-1.5 size-3.5' />
-                    Import CSV
+                    Import history
                 </Button>
             </PageHeader>
             <MotionConfig reducedMotion='user'>
@@ -121,10 +155,14 @@ export function AnalyticsPage() {
                         </Reveal>
 
                         <Reveal index={3}>
-                            <ContentDnaSection posts={posts} features={features} />
+                            <LinkedInAccountSection />
                         </Reveal>
 
                         <Reveal index={4}>
+                            <ContentDnaSection posts={posts} features={features} />
+                        </Reveal>
+
+                        <Reveal index={5}>
                             <section className='space-y-4'>
                                 <SectionHeading
                                     icon={ActivityIcon}
@@ -135,7 +173,7 @@ export function AnalyticsPage() {
                             </section>
                         </Reveal>
 
-                        <Reveal index={5}>
+                        <Reveal index={6}>
                             <section className='space-y-4'>
                                 <SectionHeading
                                     icon={LayersIcon}
@@ -146,7 +184,7 @@ export function AnalyticsPage() {
                             </section>
                         </Reveal>
 
-                        <Reveal index={6}>
+                        <Reveal index={7}>
                             <PostsPerformanceTable posts={posts} onSave={handleSave} onRemove={removeMetrics} />
                         </Reveal>
                     </div>

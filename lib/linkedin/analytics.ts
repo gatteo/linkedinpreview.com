@@ -13,11 +13,12 @@ import { LinkedInApiError } from './posts'
 // the separate analytics app (App B) and the member connects it. Called with App
 // B's access token.
 //
-// The request/response shapes below follow the documented metric set but should
-// be re-verified against the live API when the integration is first switched on
-// (LinkedIn warns these counts are "best-effort" and may lag the UI). The parser
-// is deliberately tolerant: it scans the response for known metric keys rather
-// than assuming an exact envelope, so minor version drift does not break it.
+// The docs require ONE `queryType` per request (there is no multi-metric
+// param), so a full refresh is one call per metric. LinkedIn warns these counts
+// are "best-effort" and may lag the UI. The parser is deliberately tolerant: it
+// scans the response for known metric keys rather than assuming an exact
+// envelope, so minor version drift (object vs plain-string metricType) does not
+// break it.
 // ---------------------------------------------------------------------------
 
 /** Maps LinkedIn metric keys to our metric fields. */
@@ -43,32 +44,46 @@ const REQUESTED_METRICS = Object.keys(METRIC_KEY_MAP)
  * values; throws `LinkedInApiError` on a non-OK response.
  */
 export async function fetchMemberPostAnalytics(accessToken: string, postUrn: string): Promise<MetricValues> {
+    // Rest.li 2.0 tuple: literal parens in the query string, URN percent-encoded
+    // inside. URLSearchParams would re-encode the parens, so build it by hand.
     const entity = postUrn.startsWith('urn:li:ugcPost:')
-        ? `(ugcPost:${encodeURIComponent(postUrn)})`
+        ? `(ugc:${encodeURIComponent(postUrn)})`
         : `(share:${encodeURIComponent(postUrn)})`
 
-    const params = new URLSearchParams({
-        q: 'entity',
-        entity,
-        aggregation: 'TOTAL',
-        metricTypes: REQUESTED_METRICS.join(','),
-    })
+    const values: MetricValues = { ...EMPTY_METRIC_VALUES }
 
-    const res = await fetch(`${LINKEDIN_API.memberPostAnalytics}?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'LinkedIn-Version': LINKEDIN_API_VERSION,
-            'X-Restli-Protocol-Version': LINKEDIN_RESTLI_VERSION,
-        },
-    })
+    for (const metric of REQUESTED_METRICS) {
+        const url = `${LINKEDIN_API.memberPostAnalytics}?q=entity&entity=${entity}&queryType=${metric}&aggregation=TOTAL`
+        const res = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'LinkedIn-Version': LINKEDIN_API_VERSION,
+                'X-Restli-Protocol-Version': LINKEDIN_RESTLI_VERSION,
+            },
+        })
 
-    if (!res.ok) {
-        throw new LinkedInApiError('memberCreatorPostAnalytics failed', res.status, await res.text().catch(() => ''))
+        if (!res.ok) {
+            // Auth and rate-limit failures apply to every subsequent call, so
+            // surface them. A metric-specific rejection (e.g. an unsupported
+            // queryType on an older version) only skips that metric.
+            if (res.status === 401 || res.status === 403 || res.status === 429) {
+                throw new LinkedInApiError(
+                    'memberCreatorPostAnalytics failed',
+                    res.status,
+                    await res.text().catch(() => ''),
+                )
+            }
+            continue
+        }
+
+        const json = (await res.json()) as unknown
+        const parsed = parseAnalyticsResponse(json)
+        const field = METRIC_KEY_MAP[metric]
+        values[field] = parsed[field]
     }
 
-    const json = (await res.json()) as unknown
-    return parseAnalyticsResponse(json)
+    return values
 }
 
 /**

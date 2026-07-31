@@ -34,6 +34,7 @@
 
 - Init: `instrumentation-client.ts` (production-only, `/ingest` host, `capture_exceptions: true`).
 - Exception noise filter: `instrumentation-client.ts` passes a `before_send` hook that drops `$exception` events which are not ours - a value denylist (`ResizeObserver loop`, `Script error.`, the Outlook SafeLinks `Object Not Found Matching Id` crawler probe, `CustomEvent captured as exception`) plus any exception whose stack frames are all `<anonymous>` or from a non-first-party origin (`chrome-extension:`/`moz-extension:` and anything not served from `linkedinpreview.com` or the current host). Frameless throws and bundler-internal frames are kept.
+- Error boundaries: `app/global-error.tsx` (root layout failures) and `app/(main)/error.tsx` (public pages) report the error to PostHog and offer a hard reload, which refetches the current build manifest and recovers a stale-deploy chunk mismatch.
 - Proxy rewrites: `next.config.mjs:25-38` plus `skipTrailingSlashRedirect`.
 - Reusable wrapper: `components/tracking/track-click.tsx`.
 - App-wide pageviews: `components/tracking/posthog-page-view.tsx` emits `page_viewed` on every route change (deps `[pathname, searchParams]`), mounted in `app/layout.tsx` inside a `<Suspense>` boundary so public pages stay statically prerendered.

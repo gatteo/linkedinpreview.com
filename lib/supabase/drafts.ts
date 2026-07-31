@@ -140,36 +140,23 @@ export async function createDraft(
 }
 
 // ---------------------------------------------------------------------------
-// LinkedIn import (Wave 5 analytics): backfill the member's existing published
-// posts as `published` drafts so they appear in analytics.
+// History backfill: create a `published` post draft for a LinkedIn post the
+// member wrote outside the app, so it appears in analytics. The only source for
+// this today is the CSV/XLSX history import (see lib/analytics/csv.ts) - a post's
+// real content isn't available from that export, so `content` is a placeholder
+// (e.g. a line naming the post's publish date) good enough to derive a title.
 // ---------------------------------------------------------------------------
-
-/** Find the draft id for a given LinkedIn post URN owned by the user, if any. */
-export async function findDraftIdByLinkedInUrn(
-    client: SupabaseClient,
-    userId: string,
-    urn: string,
-): Promise<string | null> {
-    const { data, error } = await client
-        .from('drafts')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('linkedin_post_urn', urn)
-        .maybeSingle()
-    if (error) throw error
-    return (data?.id as string | undefined) ?? null
-}
 
 /**
  * Create a `published` post draft from an imported LinkedIn post. Returns the new
- * draft id. The caller is responsible for deduping by URN first (see
- * `findDraftIdByLinkedInUrn`).
+ * manifest entry. The caller is responsible for deduping (e.g. by the stored
+ * `linkedinPostUrl`) first.
  */
 export async function createImportedPublishedPost(
     client: SupabaseClient,
     userId: string,
-    input: { content: any; urn: string; url: string; publishedAtMs: number | null },
-): Promise<string> {
+    input: { content: any; url: string; urn?: string | null; publishedAtMs: number | null },
+): Promise<DraftManifestEntry> {
     const id = crypto.randomUUID()
     const title = extractTitle(input.content)
     const stats = computeStats(input.content)
@@ -191,14 +178,14 @@ export async function createImportedPublishedPost(
             created_at: published,
             updated_at: published,
             published_at: published,
-            linkedin_post_urn: input.urn,
+            linkedin_post_urn: input.urn ?? null,
             linkedin_post_url: input.url,
         })
-        .select('id')
+        .select(ENTRY_COLUMNS)
         .single()
 
     if (error) throw error
-    return (data as { id: string }).id
+    return rowToEntry(data as DraftRow)
 }
 
 /**
