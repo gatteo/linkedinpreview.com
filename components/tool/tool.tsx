@@ -412,7 +412,7 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                         </h2>
                     </div>
                     <Button asChild variant='outline'>
-                        <Link href={Routes.DashboardEditor()}>
+                        <Link href={withEntrySource(Routes.DashboardEditor(), 'tool_header')}>
                             Open in full editor
                             <ArrowUpRight className='size-4' />
                         </Link>

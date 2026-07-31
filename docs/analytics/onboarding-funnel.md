@@ -25,7 +25,25 @@ welcome → connect → fetching → reassure          (section 1: Connect)
 → building → reveal → email → buildplan → paywall → confirm   (section 4: Audit & plan)
 ```
 
-The canonical PostHog funnel is `onb_step_view` filtered per step, in this order, plus
+**The funnel does not start at `welcome`.** Two loss boundaries sit before the first
+`onb_step_view`, and together they have historically been larger than every in-flow step
+combined. Any analysis that opens at `welcome` inherits a closed-system model of a flow
+users did not ask to be in, which is precisely how the largest leak went unexamined for
+weeks. Always measure, in this order:
+
+```
+site visitor  ->  reached a dashboard entrypoint  ->  onb_step_view[welcome]
+              ->  onb_welcome_start  ->  the 17 steps below
+```
+
+- **visitor -> entrypoint**: most traffic never reaches the flow at all. Size it before
+  concluding anything about in-flow conversion; a fix that lifts a step nobody reaches is
+  worth less than one that routes more people to it.
+- **welcome -> `onb_welcome_start`**: arrivals who see the offer and never begin. This is a
+  relevance signal, not a UI signal - read it against `entry_source` (below) and against
+  what the clicked CTA promised.
+
+The in-flow funnel is `onb_step_view` filtered per step, in this order, plus
 `onb_flow_complete` as the terminal node. Conversion = `purchase_completed` (server
 truth) between `onb_step_view[paywall]` and 1h after, **filtered to `amount_total > 0`**
 

@@ -13,14 +13,34 @@
 
 export const ENTRY_PARAM = 'from'
 
+// One source per PLACEMENT, not per copy string: "Open the full editor" appears on
+// four different surfaces, and collapsing them would hide which one is worth fixing.
 export const ENTRY_SOURCES = [
+    // Plan/audit intent - the CTA promises what the flow actually delivers.
     'navbar', // header "Create my plan" (desktop only - hidden md:flex)
     'mobile_nav', // header mobile sheet
-    'hero', // home hero "or open the full dashboard"
     'plan_section', // home plan CTA
     'footer', // site footer
     'tool_nudge', // toast after writing a post - carries the draft
-    'tool_footer', // tool footer button - carries the draft
+    'tool_footer', // tool footer strip - carries the draft
+
+    // Editor intent - the CTA promises an editor and the flow opens on an audit.
+    // These are the majority of arrivals and the weakest converters.
+    'hero_editor', // home hero "Open the full editor"
+    'features_header', // home features header "Open in full editor"
+    'features_card', // home features card "Open the full editor"
+    'showcase', // home dashboard showcase "Open the full editor"
+    'tool_header', // tool section header "Open in full editor"
+
+    // Branding intent - clicked to set a name and photo.
+    'branding_popover', // preview popover "Show your own name and photo"
+
+    // Server redirects back into the dashboard.
+    'oauth_return',
+    'billing_return',
+    'email_confirm_return',
+
+    'hero', // legacy: components/home/hero-cta.tsx, currently unmounted
 ] as const
 
 export type EntrySource = (typeof ENTRY_SOURCES)[number]
@@ -73,5 +93,31 @@ export const ENTRY_WELCOME: Partial<Record<ResolvedEntrySource, EntryWelcomeCopy
         headlinePost: ' behind it.',
         sub: 'I’ll audit your LinkedIn, learn your goals, and build the strategy that makes posts like this one land, plus the full toolkit to write them.',
         draftSaved: true,
+    },
+
+    // Editor intent: two thirds of all arrivals clicked a button promising an
+    // editor and landed on an audit. They reach the paywall at roughly a third
+    // the rate of people who were promised a plan. The editor IS what they get
+    // (the flow ends in it, free plan included), so the honest fix is to say so
+    // and frame the audit as what makes the editor theirs rather than blank.
+    ...Object.fromEntries(
+        (['hero_editor', 'features_header', 'features_card', 'showcase', 'tool_header'] as const).map((source) => [
+            source,
+            {
+                headlinePre: 'Your editor is ready. First, let’s make it ',
+                headlineHighlight: 'yours',
+                headlinePost: '.',
+                sub: 'I’ll read your LinkedIn and tune the editor to your voice, topics and goals, so every draft starts personalized instead of blank. About 3 minutes.',
+            },
+        ]),
+    ),
+
+    // Clicked to put their own name and photo on the preview. The flow does
+    // exactly that, from their profile - lead with it.
+    branding_popover: {
+        headlinePre: 'Let’s put ',
+        headlineHighlight: 'your name and face',
+        headlinePost: ' on it.',
+        sub: 'I’ll pull your name, photo and headline straight from LinkedIn, then tune the editor to how you actually write. About 3 minutes.',
     },
 }

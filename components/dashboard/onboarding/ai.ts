@@ -73,10 +73,11 @@ export async function enrichProfile(input: EnrichInput): Promise<EnrichResult | 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(input),
                 },
-                // Generous: the fast profile fetch (Scrapingdog up to 9s, then the
-                // JSON-LD fallback its own up to 8s) plus the LLM call. Kept under
-                // the server maxDuration and the Mirror failsafe.
-                28000,
+                // Generous: the fast profile fetch (Scrapingdog up to 18s, then the
+                // JSON-LD fallback its own up to 8s) plus the bounded LLM call (8s).
+                // Ordering that must hold: server maxDuration (60s) > Mirror
+                // failsafe (45s) > this budget.
+                40000,
             )
             if (!res.ok) return null
             return (await res.json()) as EnrichResult
