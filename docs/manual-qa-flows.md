@@ -144,17 +144,22 @@ Expected outcome: the wizard closes and the dashboard populates with your inputs
 
 ## Flow 8: Analytics
 
-What to test: analytics is backed by real data (LinkedIn import, CSV, or manual), and AI insights are real.
+What to test: analytics is backed by real data (LinkedIn history import, CSV, or manual), and AI insights are real.
 
 How to test:
 
 1. Go to `/dashboard/analytics`. Until you have published posts you'll see the empty state.
-2. If LinkedIn analytics is configured: "Connect for analytics" (OAuth) then "Sync from LinkedIn".
-3. Or "Import CSV": upload a LinkedIn analytics CSV, review the "N matched" preview, "Import N".
+2. "Import history": follow the numbered steps to export LinkedIn's "Top posts" sheet as CSV, upload it,
+   review the matched/new preview, "Import N". Rows that don't match an existing post create new
+   published posts (not just a metrics update).
+3. If LinkedIn analytics (App B) is configured: "Connect for analytics" (OAuth), then once connected the
+   same button becomes "Refresh metrics" for posts published through this app.
 4. Or in the Posts Performance table, click "Add"/"Edit" on a row and enter metrics manually.
 5. Once you have 3+ published posts, open AI Insights -> "Generate insights".
+6. With `LINKEDIN_ANALYTICS_TEST_MODE=1` (or a real App B connection), scroll to "LinkedIn account
+   analytics": follower growth chart + KPI tiles, with a "Test data" badge in test mode.
 
-Expected outcome: KPIs and charts populate from real posts/metrics (no fabricated numbers); import toasts report the real count imported; each post row shows a source badge (Manual/Imported/Synced); AI insights returns a headline + 4 insight cards + a "next post" recommendation.
+Expected outcome: KPIs and charts populate from real posts/metrics (no fabricated numbers); import toasts report the real matched/created/skipped counts; each post row shows a source badge (Manual/Imported/Synced); AI insights returns a headline + 4 insight cards + a "next post" recommendation; the LinkedIn account analytics section only renders when App B is connected or test mode is on, and shows a quiet retry state (never a broken chart) if the LinkedIn call fails.
 
 ---
 
