@@ -58,9 +58,22 @@ structural change (step added/removed/reordered); copy experiments keep the vers
 ## Entry attribution (`entry_source`)
 
 Every `onb_*` event also carries `entry_source`: the surface that sent the user into the
-dashboard, and therefore into the flow. Taxonomy lives in `config/entry-sources.ts`:
-`navbar`, `mobile_nav`, `hero`, `plan_section`, `footer`, `tool_nudge`, `tool_footer`,
-plus `direct` for any arrival with no attributable surface.
+dashboard, and therefore into the flow. Taxonomy lives in `config/entry-sources.ts` and is
+grouped by what the CTA **promised**, which is the axis that predicts conversion:
+
+| Intent     | Sources                                                                       | What they were told                                          |
+| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Plan/audit | `navbar`, `mobile_nav`, `plan_section`, `footer`, `tool_nudge`, `tool_footer` | a plan or an audit - matches the flow                        |
+| Editor     | `hero_editor`, `features_header`, `features_card`, `showcase`, `tool_header`  | "Open the full editor" - the majority of arrivals            |
+| Branding   | `branding_popover`                                                            | "Show your own name and photo"                               |
+| Return     | `oauth_return`, `billing_return`, `email_confirm_return`                      | server redirects back into the dashboard                     |
+| -          | `direct`                                                                      | no attributable surface (typed URL, bookmark, external link) |
+
+One source per **placement**, not per copy string: "Open the full editor" renders on four
+different surfaces with an identical href, so a shared source would hide which one to fix.
+
+`hero` is legacy - `components/home/hero-cta.tsx` is currently mounted nowhere, so it
+records nothing. The live hero button is `hero_editor`.
 
 It is carried as a `?from=` query param on every dashboard link, NOT inferred from a click
 event. A param survives keyboard activation, middle-click, and a dropped event; relying on
@@ -118,15 +131,17 @@ experiment-controlled default hero.
 
 ### Offer & checkout
 
-| Event                    | Properties                                               | Meaning                                                                                                                                                                                                                                     |
-| ------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onb_paywall_view`       | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
-| `onb_offer_select`       | `plan`                                                   | plan card clicked (opens checkout)                                                                                                                                                                                                          |
-| `onb_checkout_opened`    | `plan`, `ui: hosted\|embedded`                           | checkout started - embedded rendered in-modal, or redirecting to hosted Stripe                                                                                                                                                              |
-| `onb_checkout_failed`    | `plan`, `reason: unconfigured\|create-failed`            | checkout could not open (user saw the free-plan fallback)                                                                                                                                                                                   |
-| `onb_checkout_abandoned` | `plan`, `via: cancel_url\|no_return_param` (hosted only) | embedded: opened checkout unmounted without payment; hosted: `cancel_url` = returned via Stripe's back link, `no_return_param` = returned via browser Back (resolved from a sessionStorage marker, so every hosted open now has an outcome) |
-| `onb_purchase_success`   | `plan`                                                   | client observed the purchase (embedded `onComplete`, or hosted success return)                                                                                                                                                              |
-| `onb_offer_decline`      | -                                                        | quiet "Continue on the free plan"                                                                                                                                                                                                           |
+| Event                      | Properties                                               | Meaning                                                                                                                                                                                                                                     |
+| -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onb_paywall_view`         | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
+| `onb_paywall_scroll`       | `depth: 25\|50\|75\|100`                                 | how far the offer was actually read; each milestone fires once. A paywall viewer with NO `onb_paywall_scroll` never scrolled at all, which is what distinguishes a non-reader from a decliner                                               |
+| `onb_paywall_gate_blocked` | -                                                        | the CTA was clicked before the reader reached the end of the offer; the click scrolls them there instead of buying. Counts purchase intent that the old disabled button swallowed                                                           |
+| `onb_offer_select`         | `plan`                                                   | plan card clicked (opens checkout)                                                                                                                                                                                                          |
+| `onb_checkout_opened`      | `plan`, `ui: hosted\|embedded`                           | checkout started - embedded rendered in-modal, or redirecting to hosted Stripe                                                                                                                                                              |
+| `onb_checkout_failed`      | `plan`, `reason: unconfigured\|create-failed`            | checkout could not open (user saw the free-plan fallback)                                                                                                                                                                                   |
+| `onb_checkout_abandoned`   | `plan`, `via: cancel_url\|no_return_param` (hosted only) | embedded: opened checkout unmounted without payment; hosted: `cancel_url` = returned via Stripe's back link, `no_return_param` = returned via browser Back (resolved from a sessionStorage marker, so every hosted open now has an outcome) |
+| `onb_purchase_success`     | `plan`                                                   | client observed the purchase (embedded `onComplete`, or hosted success return)                                                                                                                                                              |
+| `onb_offer_decline`        | -                                                        | quiet "Continue on the free plan"                                                                                                                                                                                                           |
 
 ### Background pipeline (client-observed)
 
