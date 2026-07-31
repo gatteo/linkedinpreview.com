@@ -88,12 +88,14 @@ export function RevealStep() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const expecting =
-        !answers.insights &&
-        answers.insightsStatus !== 'failed' &&
-        !!answers.richStatus &&
-        answers.richStatus !== 'idle'
-    const waiting = !echoDone || (expecting && !timedOut && !frozen)
+    // Only a session that actually ran a scrape/enrich has anything for the
+    // echo to rehydrate - a manual/connect-skip/oauth-skip user has no
+    // richStatus at all and used to render instantly, so the echo must not
+    // gate them behind a network round trip for a report that never claims
+    // an audit in the first place.
+    const hasRichStatus = !!answers.richStatus && answers.richStatus !== 'idle'
+    const expecting = !answers.insights && answers.insightsStatus !== 'failed' && hasRichStatus
+    const waiting = (hasRichStatus && !echoDone) || (expecting && !timedOut && !frozen)
 
     // Guaranteed trigger of last resort: the user is on the reveal and mounted,
     // so drive the generation from here even if every earlier trigger (the

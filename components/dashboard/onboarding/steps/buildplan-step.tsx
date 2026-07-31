@@ -27,7 +27,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const IDEAS_FAILSAFE_MS = 22000
 
 export function BuildplanStep() {
-    const { answers, update, goNext, role } = useOnboarding()
+    const { answers, update, goNext, role, setUninterruptible } = useOnboarding()
     const fn = firstName(answers.profile.name)
     const [doneCount, setDoneCount] = React.useState(0)
     const [popupOpen, setPopupOpen] = React.useState(false)
@@ -43,9 +43,24 @@ export function BuildplanStep() {
         commitmentRef.current = commitment
     })
 
+    // The popup asks for a real choice - a stray Escape/outside-click/X must
+    // not close the whole flow out from under it. Always clears on unmount too
+    // (the failsafe below can advance away while the popup is still open).
     React.useEffect(() => {
+        setUninterruptible(popupOpen)
+    }, [popupOpen, setUninterruptible])
+    React.useEffect(() => {
+        return () => setUninterruptible(false)
+    }, [setUninterruptible])
+
+    React.useEffect(() => {
+        // Cancellable: a dismiss during the popup wait must stop `run()` cleanly
+        // instead of polling `commitmentRef` forever with nothing left mounted
+        // to ever set it (the failsafe timer is also cleared below on unmount).
+        let stopped = false
+
         const advance = () => {
-            if (advancedRef.current) return
+            if (advancedRef.current || stopped) return
             advancedRef.current = true
             track('onb_buildplan_done')
             goNext()
@@ -98,34 +113,46 @@ export function BuildplanStep() {
 
             setDoneCount(0)
             await wait(1000)
+            if (stopped) return
             setDoneCount(1)
             await wait(900)
+            if (stopped) return
             setDoneCount(2)
 
             // Halfway: pause the checklist, ask for the commitment.
             setPopupOpen(true)
-            while (!commitmentRef.current) {
+            while (!commitmentRef.current && !stopped) {
                 await wait(250)
             }
+            if (stopped) return
             setPopupOpen(false)
 
             await wait(700)
+            if (stopped) return
             setDoneCount(3)
             // Hold (bounded) while the pillar posts finish writing.
             await ideasWithTimeout
+            if (stopped) return
             setDoneCount(4)
             await wait(700)
+            if (stopped) return
             setDoneCount(5)
             await wait(450)
+            if (stopped) return
             advance()
         }
 
         if (!startedRef.current) {
             startedRef.current = true
-            run().catch(advance)
+            run().catch(() => {
+                if (!stopped) advance()
+            })
         }
 
-        return () => clearTimeout(failsafe)
+        return () => {
+            stopped = true
+            clearTimeout(failsafe)
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

@@ -194,7 +194,7 @@ export async function GET() {
     // leaves 'pending'. Recheck it here whenever we still have no name and the
     // snapshot id is on file, so recap/reveal show a real identity instead of
     // none - this only reads a snapshot's status, it never retriggers a scrape.
-    if (status !== 'pending' && !profile?.name && !profile?.headline && session.rich_snapshot_id) {
+    if (status !== 'pending' && !profile?.name && session.rich_snapshot_id) {
         const identityResult = await checkRichScrape(session.rich_snapshot_id).catch(
             () => ({ status: 'failed' }) as const,
         )
