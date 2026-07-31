@@ -2,15 +2,18 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { TriangleAlertIcon } from 'lucide-react'
+import { ArrowRightIcon, TriangleAlertIcon } from 'lucide-react'
 
 import { FETCHING_TASKS, languagesLabel } from '@/config/onboarding-flow'
 import { getRoleContent, resolveRole, toneFromSummary } from '@/config/onboarding-personalization'
+import { classifyProfileUrlRejection, normalizeProfileUrl } from '@/lib/linkedin/profile-url'
+import { staggerContainer, staggerItem } from '@/lib/motion'
 import type { StrategyAudience } from '@/lib/strategy'
+import { Input } from '@/components/ui/input'
 
 import { enrichProfile, track } from '../ai'
 import { useOnboarding } from '../context'
-import { CTA, GhostLink, H1, LoaderBlock, Sub } from '../primitives'
+import { CTA, firstName, GhostLink, H1, LoaderBlock, PersonAvatar, Sub } from '../primitives'
 
 // ---------------------------------------------------------------------------
 // 02 · Fetching - the fast profile fetch behind a checklist loader. Fires the
@@ -18,6 +21,12 @@ import { CTA, GhostLink, H1, LoaderBlock, Sub } from '../primitives'
 // runs, commits the result into answers, and auto-advances to Reassure. The
 // enrich response also hands the rich-scrape status to the pipeline hook,
 // which starts the background polling the question steps then mask.
+//
+// A user who arrives here via OAuth never handed us a profile URL - OIDC only
+// returns name/picture/email, never a public profile link (a LinkedIn API
+// constraint, not a bug) - so there is nothing to scrape and the loader would
+// be theater over zero work. `OAuthUrlAsk` asks for the URL instead of
+// silently degrading every reveal to the generic benchmark (#39).
 // ---------------------------------------------------------------------------
 
 const MAX_AUDIENCE = 3
@@ -47,6 +56,122 @@ function failureCopy(reason: string | undefined): { title: string; body: string 
 }
 
 export function FetchingStep() {
+    const { answers } = useOnboarding()
+    const hasUrl = !!answers.profileUrl
+    const connected = answers.linkedinConnected
+    // Resolved once the ask is dealt with this mount (URL submitted, or
+    // skipped) - re-rendering then falls through to the normal fetch loader.
+    const [askResolved, setAskResolved] = React.useState(false)
+
+    if (connected && !hasUrl && !askResolved) {
+        return <OAuthUrlAsk onResolved={() => setAskResolved(true)} />
+    }
+
+    return <FetchLoader />
+}
+
+// ── Post-OAuth ask: no profile URL to scrape, so ask instead of pretending ──
+
+function OAuthUrlAsk({ onResolved }: { onResolved: () => void }) {
+    const { answers, update, goNext } = useOnboarding()
+    const [url, setUrl] = React.useState('')
+    const [urlError, setUrlError] = React.useState(false)
+    const fn = firstName(answers.profile.name)
+
+    const viewedRef = React.useRef(false)
+    React.useEffect(() => {
+        if (viewedRef.current) return
+        viewedRef.current = true
+        track('onb_oauth_url_ask_view')
+    }, [])
+
+    const submit = () => {
+        if (!url.trim()) return
+        const normalized = normalizeProfileUrl(url)
+        if (!normalized) {
+            setUrlError(true)
+            track('onb_connect_url_rejected', { input_kind: classifyProfileUrlRejection(url) })
+            return
+        }
+        setUrlError(false)
+        track('onb_oauth_url_submit')
+        // Same reset shape as the connect step's URL submit: the fetching loader
+        // that mounts next re-reads this URL from scratch. The OAuth identity
+        // (name/avatar) already on `answers.profile` stays - it's real.
+        update({
+            profileUrl: normalized,
+            enrichConfidence: undefined,
+            mirrorFetchOk: undefined,
+            richStatus: undefined,
+            richSummary: undefined,
+            insights: undefined,
+            insightsStatus: undefined,
+            postIdeas: undefined,
+            postIdeasStatus: undefined,
+            firstPostGap: undefined,
+        })
+        onResolved()
+    }
+
+    const skip = () => {
+        track('onb_oauth_url_skip')
+        // Advance without ever claiming a fetch succeeded - richStatus stays
+        // unset, so Reassure/Reveal correctly treat this as no post analysis
+        // rather than a silently benchmarked "audit".
+        goNext()
+    }
+
+    return (
+        <motion.div variants={staggerContainer} initial='hidden' animate='visible' className='flex flex-col'>
+            <motion.div variants={staggerItem} className='mb-1 flex justify-center'>
+                <PersonAvatar name={answers.profile.name} src={answers.profile.avatarUrl} size={72} ring />
+            </motion.div>
+            <motion.div variants={staggerItem}>
+                <H1 className='text-center'>{fn ? `You're connected, ${fn}.` : "You're connected."}</H1>
+                <Sub className='mx-auto text-center'>
+                    One more thing - paste your public profile URL so I can read your recent posts and make this audit
+                    yours.
+                </Sub>
+            </motion.div>
+
+            <motion.div variants={staggerItem} className='flex flex-col gap-2.5'>
+                <Input
+                    value={url}
+                    onChange={(e) => {
+                        setUrl(e.target.value)
+                        if (urlError) setUrlError(false)
+                    }}
+                    placeholder='linkedin.com/in/your-name'
+                    aria-label='Your LinkedIn profile URL'
+                    aria-invalid={urlError}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') submit()
+                    }}
+                    className='h-[46px] rounded-xl text-sm'
+                />
+                {urlError && (
+                    <p className='text-destructive text-xs'>
+                        That doesn&rsquo;t look like a LinkedIn profile URL. Paste your{' '}
+                        <b className='font-semibold'>linkedin.com/in/&hellip;</b> link (open your profile and copy the
+                        address).
+                    </p>
+                )}
+                <CTA onClick={submit} disabled={!url.trim()}>
+                    Analyze my posts
+                    <ArrowRightIcon className='size-[18px]' />
+                </CTA>
+            </motion.div>
+
+            <motion.div variants={staggerItem} className='mt-2 flex justify-center'>
+                <GhostLink onClick={skip}>Continue without post analysis</GhostLink>
+            </motion.div>
+        </motion.div>
+    )
+}
+
+// ── The fast profile fetch behind the checklist loader ──────────────────────
+
+function FetchLoader() {
     const { answers, update, goNext, goBack, goTo } = useOnboarding()
     const [doneCount, setDoneCount] = React.useState(0)
     const [failed, setFailed] = React.useState(false)
@@ -65,6 +190,9 @@ export function FetchingStep() {
 
     React.useEffect(() => {
         // Nothing to fetch (deep link / stale resume): skip the theater entirely.
+        // (The connected-without-a-URL case is intercepted by OAuthUrlAsk before
+        // this component ever mounts, so reaching here with `connected` true
+        // always means a URL is already set.)
         if (!hasUrl && !connected) {
             goTo('goal')
             return

@@ -370,6 +370,16 @@ export const BUILDING_TASKS = [
     'Compiling your report',
 ]
 
+/** Building-step copy when there is no post corpus to score (#36) - claiming to
+ * "score your recent posts" with zero posts scraped is the exact dishonesty this
+ * flow otherwise avoids, so the no-corpus path gets its own honest framing. */
+export const BUILDING_TASKS_NO_CORPUS = [
+    'Structuring your answers',
+    'Mapping your pillar mix',
+    'Building your content plan',
+    'Compiling your report',
+]
+
 export const BUILDPLAN_TASKS = [
     'Applying the fixes we found',
     'Formulating your content strategy',

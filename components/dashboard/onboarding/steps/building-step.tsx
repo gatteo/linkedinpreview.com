@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { BUILDING_TASKS } from '@/config/onboarding-flow'
+import { BUILDING_TASKS, BUILDING_TASKS_NO_CORPUS } from '@/config/onboarding-flow'
 import { resolveRole } from '@/config/onboarding-personalization'
 import { FORMAT_CATEGORIES, type FormatCategory, type StrategyFormat } from '@/lib/strategy'
 
@@ -184,14 +184,24 @@ export function BuildingStep() {
     }, [])
 
     const postsCount = answers.richSummary?.postsCount ?? 0
-    const tasks = BUILDING_TASKS.map((t, i) =>
-        i === 0 && postsCount > 1 ? `Scoring your last ${postsCount} posts` : t,
+    // No post corpus to score (never connected, skipped the ask, or the scrape
+    // came up empty/failed): the loader must not claim to be scoring posts that
+    // don't exist (#36) - "Building your plan" instead of "Auditing your LinkedIn".
+    const hasCorpus = answers.richStatus === 'ready' && postsCount > 0
+    const tasks = (hasCorpus ? BUILDING_TASKS : BUILDING_TASKS_NO_CORPUS).map((t, i) =>
+        i === 0 && hasCorpus && postsCount > 1 ? `Scoring your last ${postsCount} posts` : t,
     )
 
     return (
         <LoaderBlock
-            title='Auditing your LinkedIn.'
-            status={doneCount >= 3 ? 'Compiling your report…' : 'Scoring what you’ve published…'}
+            title={hasCorpus ? 'Auditing your LinkedIn.' : 'Building your plan.'}
+            status={
+                doneCount >= 3
+                    ? 'Compiling your report…'
+                    : hasCorpus
+                      ? 'Scoring what you’ve published…'
+                      : 'Structuring your answers…'
+            }
             steps={tasks}
             doneCount={doneCount}
         />

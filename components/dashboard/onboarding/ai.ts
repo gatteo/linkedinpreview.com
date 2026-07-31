@@ -103,6 +103,22 @@ export async function fetchRichStatus(): Promise<RichStatusResponse | null> {
     }
 }
 
+/**
+ * One-shot GET echo of the generation state - no POST, no LLM spend, no rate
+ * limit. Safe to call opportunistically (e.g. on Reveal mount) to rehydrate a
+ * resumed session whose local `answers.insights` never made it into
+ * localStorage, before ever falling back to the local benchmark (GH #41).
+ */
+export async function fetchInsightsStatus(): Promise<InsightsStatusResponse | null> {
+    try {
+        const res = await fetchWithTimeout('/api/onboarding/insights', {}, 15000)
+        if (!res.ok) return null
+        return (await res.json()) as InsightsStatusResponse
+    } catch {
+        return null
+    }
+}
+
 export type InsightsHints = { primaryGoal?: StrategyGoal; niche?: string; role?: Role }
 
 const INSIGHTS_POLL_MS = 3_000

@@ -4,21 +4,23 @@ import * as React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRightIcon, LinkedinIcon, LockIcon } from 'lucide-react'
 
-import { normalizeProfileUrl } from '@/lib/linkedin/profile-url'
+import { classifyProfileUrlRejection, normalizeProfileUrl } from '@/lib/linkedin/profile-url'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { Input } from '@/components/ui/input'
 
 import { track } from '../ai'
 import { useOnboarding } from '../context'
-import { CTA, H1, Sub } from '../primitives'
+import { CTA, GhostLink, H1, Sub } from '../primitives'
 
 // ---------------------------------------------------------------------------
 // 01 · Connect - the audit's front door, framed around what they get. Two ways
 // in (OAuth or a pasted profile URL / copied vanity slug) and both land on the
 // fetching loader. A typed human name is NOT accepted - slugifying a name into a
 // guessed URL matched the wrong person or hung the scraper, so we require a real
-// profile reference. No skip: connecting is what makes the audit real - the only
-// way around is the fetch-failure card's escape hatch.
+// profile reference. A quiet "Skip for now" escape hatch answers straight into
+// the question steps instead (an answers-only plan), so refusing to connect is
+// distinguishable from being stuck (#46) rather than routed through the
+// fetch-failure card as the only way out.
 // ---------------------------------------------------------------------------
 
 const ERROR_COPY: Record<string, string> = {
@@ -29,13 +31,23 @@ const ERROR_COPY: Record<string, string> = {
 }
 
 export function ConnectStep() {
-    const { answers, update, goNext, connectLinkedin, linkedinError } = useOnboarding()
+    const { answers, update, goNext, goTo, connectLinkedin, linkedinError } = useOnboarding()
     const [url, setUrl] = React.useState(answers.profileUrl ?? '')
     const [urlError, setUrlError] = React.useState(false)
 
     const connect = () => {
         track('onb_connect_method', { method: 'oauth' })
         connectLinkedin()
+    }
+
+    const skipToAnswers = () => {
+        // The historical 'skip' enum value (removed 2026-07-18, see docs/features/
+        // completed/231-onboarding-audit-funnel.md) is revived here on purpose -
+        // same meaning, same taxonomy, this time with an honest degrade instead of
+        // silently benchmarking every reveal. Straight to `goal`: fetching/reassure
+        // have nothing to show without a profile.
+        track('onb_connect_method', { method: 'skip' })
+        goTo('goal')
     }
 
     const submitUrl = () => {
@@ -48,6 +60,7 @@ export function ConnectStep() {
         const normalized = normalizeProfileUrl(url)
         if (!normalized) {
             setUrlError(true)
+            track('onb_connect_url_rejected', { input_kind: classifyProfileUrlRejection(url) })
             return
         }
         setUrlError(false)
@@ -136,11 +149,17 @@ export function ConnectStep() {
                 </CTA>
             </motion.div>
 
+            <motion.div variants={staggerItem} className='mt-2 flex justify-center'>
+                <GhostLink onClick={skipToAnswers}>
+                    Skip for now - I&rsquo;ll build your plan from a few quick questions
+                </GhostLink>
+            </motion.div>
+
             <motion.div
                 variants={staggerItem}
-                className='text-muted-foreground mt-[18px] flex items-center gap-2.5 text-[12.5px]'>
+                className='text-muted-foreground mt-[14px] flex items-center gap-2.5 text-[12.5px]'>
                 <LockIcon className='text-petrol-500 size-[15px]' />
-                <span>Read-only. We never post or message anyone. Only you can see this data.</span>
+                <span>We never post anything without you pressing publish. Only you can see this data.</span>
             </motion.div>
         </motion.div>
     )
