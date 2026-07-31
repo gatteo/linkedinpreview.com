@@ -33,6 +33,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Contentlayer generates `.contentlayer/generated`, which lib/blog.ts,
+      # lib/changelog.ts, lib/compare.ts and app/sitemap.ts all import. A fresh
+      # checkout has no such directory, so type-check reported 16 phantom errors
+      # ("Cannot find module 'contentlayer/generated'") that do not exist on any
+      # developer machine. It has to run before the type gate, not just inside
+      # the build.
+      - name: Generate contentlayer types
+        env:
+          NODE_ENV: production
+        run: pnpm contentlayer build
+
       # Gate 1 - TypeScript. Mirrors `pnpm type-check` (tsc --noEmit).
       # NOTE: the tree may carry a small set of pre-existing type errors / suppressions
       # (tracked as a baseline to clear). New errors introduced by a change must fail here.
