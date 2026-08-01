@@ -55,6 +55,7 @@ export function OnboardingController() {
     const [mountSeq, setMountSeq] = React.useState(0)
     const [startStepId, setStartStepId] = React.useState<StepId>('welcome')
     const [entry, setEntry] = React.useState<ResolvedEntrySource>('direct')
+    const [arrival, setArrival] = React.useState<ResolvedEntrySource>('direct')
     const [linkedinError, setLinkedinError] = React.useState<string | null>(null)
     const [resumeAnswers, setResumeAnswers] = React.useState<OnboardingAnswers | null>(null)
     const decidedRef = React.useRef(false)
@@ -74,7 +75,12 @@ export function OnboardingController() {
         // every onboarding event including the ones fired by a resumed session.
         // A resumed session keeps the source it started with - the ?from= on a
         // later navigation describes that navigation, not the original entry.
-        const entry = saved?.answers.entrySource ?? parseEntrySource(params.get(ENTRY_PARAM))
+        // Two entry notions: `arrival` is THIS navigation's ?from= (what the user
+        // just clicked - drives the welcome copy), `entry` is the session's
+        // attribution (kept from the original entry on resume - drives events).
+        const arrivalNow = parseEntrySource(params.get(ENTRY_PARAM))
+        setArrival(arrivalNow)
+        const entry = saved?.answers.entrySource ?? arrivalNow
         setEntrySource(entry)
         setEntry(entry)
 
@@ -359,6 +365,7 @@ export function OnboardingController() {
             open={open}
             initialAnswers={resumeAnswers ?? { ...initialAnswers(branding, strategy), entrySource: entry }}
             startStepId={startStepId}
+            arrivalSource={arrival}
             linkedinError={linkedinError}
             onPersist={handlePersist}
             onFinish={handleFinish}

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 
+import type { ResolvedEntrySource } from '@/config/entry-sources'
 import { getRoleContent, resolveRole, type Role, type RoleContent } from '@/config/onboarding-personalization'
 
 import type { OnboardingAnswers, StepId } from './types'
@@ -34,6 +35,10 @@ export type OnboardingContextValue = {
     bindEmail: (email: string) => Promise<{ ok: boolean; taken?: boolean }>
     /** The current auth user's email, if one is already set (resume prefill). */
     userEmail?: string | null
+    /** The entry source of THIS navigation's ?from= param (not the session's
+     *  stored attribution). Drives the welcome copy so the screen answers the
+     *  promise the user just clicked, even on a resumed session. */
+    arrivalSource: ResolvedEntrySource
     linkedinError?: string | null
     /** Whether the user converted (set when leaving the offer); drives the done screen. */
     converted: boolean
