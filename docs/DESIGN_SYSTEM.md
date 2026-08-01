@@ -128,7 +128,7 @@ All tokenized. `Alert` `warning` variant uses the `warning` status tokens. `Empt
 - **`Section`** - rail-grid section frame (shared vertical hairlines, bleeding top divider).
 - **`Eyebrow`** - the canonical mono eyebrow.
 - **`SectionHead`** - eyebrow + display `h2` + sub + optional action.
-- **`IconTile`** - the accent icon tile (`md` = size-10 / 10px radius, `sm` = size-8.5 / 9px) with the inset vermilion hairline ring. Single source of truth for feature icons.
+- **`IconTile`** - the accent icon tile (`md` = size-10 / 10px radius, `sm` = size-8.5 / 9px) with the inset vermilion hairline ring. Single source of truth for feature icons, including outside `home/` (the mobile nav uses it). Pass a lucide component as `icon`, or pass `children` for non-lucide glyphs (`<Icon name>` / Tabler) - the tile sizes the child svg either way.
 - **`FeatureItem`** - horizontal accent-tile + heading + body row, shared across feature sections.
 
 ### PostPreviewCard / post preview

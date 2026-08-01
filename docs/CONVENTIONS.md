@@ -49,6 +49,35 @@ Structure within each component file:
 - **Shared components**: Reuse existing components before creating new ones. Extract shared UI patterns into `components/ui/` or feature-level shared components. Avoid duplicating similar layouts, cards, or interactive patterns across pages.
 - **Dynamic imports**: Use `dynamic(() => import(...), { ssr: false })` for client-heavy components (TipTap editor). Never import SSR-false components in server components directly.
 
+## Responsive Layout
+
+The landing page must not scroll horizontally at 320px. A single element wider than the
+viewport shifts the whole page and makes every section look broken, so the failure is never
+local to the component that caused it.
+
+- **Fixed-width decorative mockups** (browser chrome, sidebars, streak grids) set the page's
+  minimum width unless every hardcoded `w-[...]`/`size-[...]` has a mobile branch. Give the
+  mockup a smaller mobile variant (`w-[118px] sm:w-[150px]`), `truncate` any long unbroken
+  string, and `min-w-0` the grid/flex item that holds it - grid and flex items default to
+  `min-width: auto` and refuse to shrink below their content.
+- **`flex-1` does not wrap.** It resolves to `flex: 1 1 0%`, so the item's hypothetical size
+  is 0, it always "fits" the current line, and `flex-wrap` never fires - the item is squeezed
+  below its content width instead. A flex child that should drop to its own row needs a real
+  `min-w-[...]` floor per breakpoint.
+- **Unbreakable phrases set the type floor.** When a headline glues words together
+  (`whitespace-nowrap`, an inline logo), the clamp floor must be the size that phrase fits in,
+  measured - not the size that looks good on desktop. Pair it with `text-balance`: the free
+  words wrap _around_ the glued unit and strand a one-word orphan line without it.
+- **Long labels get a short mobile twin**, not a smaller font: two spans gated on a measured
+  arbitrary breakpoint (`max-[440px]:hidden` / `min-[441px]:hidden`) keeps one line everywhere
+  while desktop keeps the descriptive copy.
+- **Simulated device !== viewport.** In the tool preview, `screenSize` is the device the user
+  is _previewing_, so a phone can be rendering the desktop preview. Anything that must not
+  wrap needs `whitespace-nowrap` + `truncate`, not a `screenSize === 'mobile'` branch.
+- **Verify by measuring, not by eye**: compare `documentElement.scrollWidth` against
+  `clientWidth`, and check element rects rather than `scrollWidth` on `overflow:hidden` boxes
+  (clipped `::before` decorations produce false positives).
+
 ## State Management
 
 - **Server state**: Server components fetch data directly from Supabase. No React Query or SWR.

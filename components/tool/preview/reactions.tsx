@@ -18,25 +18,35 @@ export const Reactions: React.FC<{ social?: PostSocialCounts }> = ({ social }) =
     const reposts = social?.reposts ?? 1
 
     return (
-        <div className='flex items-center justify-between'>
-            <div className='flex items-center justify-start gap-2'>
+        // `screenSize` is the simulated device, not the real viewport: a narrow phone can be
+        // showing the desktop preview. Every label is nowrap so the row degrades by truncating
+        // the left caption instead of folding both groups into ragged columns.
+        <div className='flex items-center justify-between gap-2'>
+            <div className='flex min-w-0 items-center justify-start gap-2'>
                 <Image
                     alt='post reactions'
                     loading='lazy'
                     width={24}
                     height={24}
-                    className='h-5 w-auto'
+                    className='h-5 w-auto shrink-0'
                     src='/images/home/post-reactions.svg'
                 />
-                <span className={cn('font-normal text-[#666]', screenSize === 'mobile' ? 'hidden' : 'text-xs')}>
+                <span
+                    className={cn(
+                        'truncate font-normal whitespace-nowrap text-[#666]',
+                        screenSize === 'mobile' ? 'hidden' : 'text-xs',
+                    )}>
                     John Doe and {others} others
                 </span>
             </div>
-            <div className='flex items-center justify-end gap-2'>
+            <div className='flex shrink-0 items-center justify-end gap-2'>
                 {[`${comments} comments`, '•', `${reposts} repost${reposts === 1 ? '' : 's'}`].map((text) => (
                     <span
                         key={text}
-                        className={cn('font-normal text-[#666]', screenSize === 'mobile' ? 'text-[10px]' : 'text-xs')}>
+                        className={cn(
+                            'font-normal whitespace-nowrap text-[#666]',
+                            screenSize === 'mobile' ? 'text-[10px]' : 'text-xs',
+                        )}>
                         {text}
                     </span>
                 ))}

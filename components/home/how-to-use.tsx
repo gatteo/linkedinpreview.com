@@ -62,17 +62,6 @@ export function HowToUse() {
                                 className='block size-full object-cover'>
                                 <source src='/images/home/screen-rec.mp4' type='video/mp4' />
                             </video>
-                            <figcaption className='absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[oklch(0.16_0.03_222_/_0.86)] via-[oklch(0.16_0.03_222_/_0.35)] to-transparent p-5 pt-16 text-[oklch(0.98_0.01_90)]'>
-                                <p className='tracking-label font-mono text-[11px] font-medium text-[color:var(--orange-200)] uppercase'>
-                                    Live demo
-                                </p>
-                                <p className='font-heading mt-1.5 text-lg font-semibold tracking-[-0.01em]'>
-                                    Watch a post take shape
-                                </p>
-                                <p className='mt-1 text-[13px] leading-snug text-white/70'>
-                                    From blank cursor to a feed-ready draft in under a minute.
-                                </p>
-                            </figcaption>
                         </figure>
                     </div>
                 </div>

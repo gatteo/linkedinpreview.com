@@ -77,19 +77,24 @@ export function IconTile({
     icon: Icon,
     size = 'md',
     className,
+    children,
 }: {
-    icon: LucideIcon
+    icon?: LucideIcon
     size?: 'md' | 'sm'
     className?: string
+    /** Escape hatch for icon sets that aren't lucide (e.g. tabler via `<Icon name>`). */
+    children?: ReactNode
 }) {
     return (
         <span
             className={cn(
                 'bg-accent text-accent-foreground flex shrink-0 items-center justify-center shadow-[inset_0_0_0_1px_var(--orange-100)]',
                 size === 'md' ? 'size-10 rounded-[10px]' : 'size-8.5 rounded-[9px]',
+                '[&>svg]:size-[19px]',
+                size === 'sm' && '[&>svg]:size-[17px]',
                 className,
             )}>
-            <Icon className={size === 'md' ? 'size-[19px]' : 'size-[17px]'} />
+            {Icon ? <Icon className={size === 'md' ? 'size-[19px]' : 'size-[17px]'} /> : children}
         </span>
     )
 }

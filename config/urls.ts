@@ -10,12 +10,12 @@ export const ExternalLinks = {
 
 export const HeaderLinks: HeaderLinksT = [
     {
-        icon: 'learningProductsPage',
+        icon: 'preview',
         href: Routes.Tool,
         text: 'Use Tool',
     },
     {
-        icon: 'learningProductsPage',
+        icon: 'howItWorks',
         href: Routes.HowItWorks,
         text: 'How it works',
     },
@@ -25,7 +25,7 @@ export const HeaderLinks: HeaderLinksT = [
         text: 'Features',
     },
     {
-        icon: 'projectsPage',
+        icon: 'faq',
         href: Routes.Faqs,
         text: 'FAQ',
     },
@@ -35,7 +35,7 @@ export const HeaderLinks: HeaderLinksT = [
         text: 'Blog & Guides',
     },
     {
-        icon: 'projectsPage',
+        icon: 'changelog',
         href: Routes.Changelog,
         text: 'Changelog',
     },

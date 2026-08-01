@@ -280,6 +280,9 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         <div
             className={cn(
                 'border-border bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border',
+                // Edge-to-edge on phones: side borders and corner radius would read as a seam
+                // right on the screen edge.
+                'max-sm:rounded-none max-sm:border-x-0',
                 variant === 'embed' && 'h-full rounded-none border-0',
             )}>
             {/* Mobile tab bar */}
@@ -418,7 +421,10 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                         </Link>
                     </Button>
                 </div>
-                <div className='flex flex-col' style={{ height: 'max(70vh, 520px)' }}>
+                {/* Full-bleed below sm: the panel is the product, and 56px of gutter on a phone
+                    squeezed the post preview badly enough to wrap its own caption. The heading
+                    above keeps its padding so copy never touches the screen edge. */}
+                <div className='flex flex-col max-sm:-mx-7' style={{ height: 'max(70vh, 520px)' }}>
                     {inner}
                 </div>
             </div>

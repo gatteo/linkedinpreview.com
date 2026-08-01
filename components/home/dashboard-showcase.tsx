@@ -83,12 +83,12 @@ function DashboardMockup() {
                 <span className='bg-petrol-700 size-2.5 rounded-full' />
                 <span className='bg-petrol-700 size-2.5 rounded-full' />
                 <span className='bg-petrol-700 size-2.5 rounded-full' />
-                <div className='bg-secondary text-muted-foreground ml-2 flex-1 rounded-md px-2.5 py-1 font-mono text-[10px]'>
+                <div className='bg-secondary text-muted-foreground ml-2 min-w-0 flex-1 truncate rounded-md px-2.5 py-1 font-mono text-[10px]'>
                     linkedinpreview.com/dashboard
                 </div>
             </div>
             <div className='flex'>
-                <div className='border-border flex w-[150px] shrink-0 flex-col gap-0.5 border-r bg-[color:color-mix(in_oklch,var(--card)_50%,transparent)] p-2'>
+                <div className='border-border flex w-[118px] shrink-0 flex-col gap-0.5 border-r bg-[color:color-mix(in_oklch,var(--card)_50%,transparent)] p-2 sm:w-[150px]'>
                     {NAV_ITEMS.map((item, i) => {
                         const active = i === activeNav
                         const Icon = item.icon
@@ -96,21 +96,21 @@ function DashboardMockup() {
                             <div
                                 key={item.label}
                                 className={cn(
-                                    'flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-medium transition-colors',
+                                    'flex min-w-0 items-center gap-2 rounded-lg px-2 py-2 text-xs font-medium transition-colors sm:px-2.5',
                                     active
                                         ? 'text-primary bg-[color:color-mix(in_oklch,var(--orange-500)_14%,transparent)]'
                                         : 'text-muted-foreground',
                                 )}>
-                                <Icon className='size-3.5' />
-                                <span>{item.label}</span>
+                                <Icon className='size-3.5 shrink-0' />
+                                <span className='truncate'>{item.label}</span>
                             </div>
                         )
                     })}
                 </div>
-                <div className='min-w-0 flex-1 p-4'>
-                    <div className='mb-3.5 flex items-center justify-between'>
+                <div className='min-w-0 flex-1 p-3 sm:p-4'>
+                    <div className='mb-3.5 flex items-center justify-between gap-2'>
                         <span className='text-sm font-semibold'>Posts</span>
-                        <span className='bg-primary inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-white'>
+                        <span className='bg-primary inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium whitespace-nowrap text-white'>
                             <Plus className='size-3' />
                             New post
                         </span>
@@ -119,12 +119,12 @@ function DashboardMockup() {
                         {MOCK_POSTS.map((post) => (
                             <div
                                 key={post.title}
-                                className='border-border bg-card flex items-center gap-2.5 rounded-[10px] border px-3 py-2.5'>
+                                className='border-border bg-card flex items-center gap-2.5 rounded-[10px] border px-2.5 py-2.5 sm:px-3'>
                                 <FileText className='text-muted-foreground size-3.5 shrink-0' />
                                 <span className='min-w-0 flex-1 truncate text-[12.5px]'>{post.title}</span>
                                 <span
                                     className={cn(
-                                        'shrink-0 rounded-full px-2.5 py-[3px] text-[10px] font-medium',
+                                        'shrink-0 rounded-full px-2 py-[3px] text-[10px] font-medium whitespace-nowrap sm:px-2.5',
                                         TONE[post.tone],
                                     )}>
                                     {post.status}
@@ -133,13 +133,15 @@ function DashboardMockup() {
                         ))}
                     </div>
                     <div className='mt-4.5 flex items-center gap-2'>
-                        <Flame className='size-3.5 text-[color:var(--amber)]' />
-                        <span className='text-muted-foreground text-[11px] font-medium'>This week</span>
-                        <div className='flex gap-1'>
+                        <Flame className='size-3.5 shrink-0 text-[color:var(--amber)]' />
+                        <span className='text-muted-foreground shrink-0 text-[11px] font-medium whitespace-nowrap'>
+                            This week
+                        </span>
+                        <div className='flex gap-[3px] sm:gap-1'>
                             {Array.from({ length: 7 }).map((_, i) => (
                                 <span
                                     key={i}
-                                    className='bg-primary size-[11px] rounded-[3px]'
+                                    className='bg-primary size-[9px] shrink-0 rounded-[3px] sm:size-[11px]'
                                     style={
                                         live ? { animation: `dashpulse 5s ${i * 0.18}s infinite` } : { opacity: 0.2 }
                                     }
@@ -164,14 +166,14 @@ export function DashboardShowcase() {
                 />
             </AnimateIn>
             <div className='grid items-center gap-12 md:grid-cols-2'>
-                <div className='flex flex-col gap-6.5'>
+                <div className='flex min-w-0 flex-col gap-6.5'>
                     {VALUE_PROPS.map((p, i) => (
                         <AnimateIn key={p.title} delay={i * 0.06}>
                             <FeatureItem icon={p.icon} title={p.title} body={p.body} />
                         </AnimateIn>
                     ))}
                 </div>
-                <AnimateIn from='fade' delay={0.1}>
+                <AnimateIn from='fade' delay={0.1} className='min-w-0'>
                     <DashboardMockup />
                 </AnimateIn>
             </div>

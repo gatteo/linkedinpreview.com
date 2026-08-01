@@ -57,7 +57,9 @@ export function Footer() {
                         </div>
                     </div>
 
-                    <div className='grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4 md:min-w-[460px] md:flex-none'>
+                    {/* min-w is what makes flex-wrap fire: `flex-1` bases at 0, so without a floor
+                        the link grid stays on the branding row and gets crushed under its columns' width. */}
+                    <div className='grid min-w-[260px] flex-1 grid-cols-2 gap-8 sm:min-w-[460px] sm:grid-cols-4 md:flex-none'>
                         <FooterCol title='Product'>
                             <li>
                                 <TrackClick

@@ -18,7 +18,8 @@ export const ENTRY_PARAM = 'from'
 export const ENTRY_SOURCES = [
     // Plan/audit intent - the CTA promises what the flow actually delivers.
     'navbar', // header "Create my plan" (desktop only - hidden md:flex)
-    'mobile_nav', // header mobile sheet
+    'mobile_nav', // header mobile sheet - "Dashboard" nav row
+    'mobile_nav_cta', // header mobile sheet - pinned "Create my LinkedIn plan" button
     'plan_section', // home plan CTA
     'footer', // site footer
     'tool_nudge', // toast after writing a post - carries the draft

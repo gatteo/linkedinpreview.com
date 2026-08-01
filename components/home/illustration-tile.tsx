@@ -17,6 +17,7 @@ export function IllustrationTile({
     title,
     subtitle,
     priority,
+    sizes = '(max-width: 980px) 100vw, 50vw',
     className,
 }: {
     src: string
@@ -26,12 +27,13 @@ export function IllustrationTile({
     title?: ReactNode
     subtitle?: ReactNode
     priority?: boolean
+    sizes?: string
     className?: string
 }) {
     const hasCaption = Boolean(eyebrow || title || subtitle)
     return (
         <figure className={cn('sticker m-0', className)} style={{ aspectRatio: ratio }}>
-            <Image src={src} alt={alt} fill priority={priority} sizes='(max-width: 980px) 100vw, 50vw' />
+            <Image src={src} alt={alt} fill priority={priority} sizes={sizes} />
             {hasCaption && (
                 <figcaption className='absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[oklch(0.16_0.03_222_/_0.86)] via-[oklch(0.16_0.03_222_/_0.35)] to-transparent p-5 pt-16 text-[oklch(0.98_0.01_90)]'>
                     {eyebrow && (

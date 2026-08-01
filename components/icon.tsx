@@ -148,6 +148,10 @@ export const Icons = {
     contactsPage: IconMessageCircle,
     blogPage: IconPencil,
 
+    howItWorks: IconSchool,
+    faq: IconMessageCircle,
+    changelog: IconListDetails,
+
     plWhatIsSection: IconInfoSquareRounded,
     plIsForYouSection: IconFlame,
     plWhatIsIncludedSection: IconListDetails,

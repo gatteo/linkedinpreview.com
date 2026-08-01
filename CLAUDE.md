@@ -93,6 +93,7 @@ Client: `NEXT_PUBLIC_GTM_MEASUREMENT_ID`, `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLI
 
 - **Data attribute selectors**: TW v4 requires `data-[active=true]:` syntax (NOT `data-active:` shorthand) unless a `@custom-variant` is registered. Same for `data-[state=open]:`, `data-[state=checked]:`, etc.
 - **Radix Switch**: Uses `data-[state=checked]:`/`data-[state=unchecked]:` (Radix sets `data-state`, NOT `data-checked`)
+- **Radix open/close animations**: Radix sets `data-state="open"|"closed"`, so the variant is `data-[state=open]:`. The `data-open:`/`data-closed:`/`data-starting-style:` classes in `ui/sheet.tsx` and `ui/dropdown-menu.tsx` are Base UI syntax and are inert - don't copy them into new overlays.
 - **SelectTrigger height override**: Use `data-[size=default]:h-9` not just `h-9`. Tailwind Merge doesn't merge conditional vs unconditional selectors.
 - **SidebarProvider `min-h-svh`**: Hardcoded in the component. Override with `!min-h-0 h-full` for viewport-constrained layouts.
 

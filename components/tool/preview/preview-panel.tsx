@@ -48,9 +48,11 @@ function PreviewPanelContent({
                     <button
                         type='button'
                         onClick={onOpenFeedPreview}
-                        className='border-border bg-secondary text-secondary-foreground hover:bg-muted shadow-subtle flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors'>
-                        <ExternalLink className='size-3' />
-                        Open realistic feed preview
+                        className='border-border bg-secondary text-secondary-foreground hover:bg-muted shadow-subtle flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors'>
+                        <ExternalLink className='size-3 shrink-0' />
+                        {/* The full label needs ~197px and the row only clears it above ~440px wide. */}
+                        <span className='max-[440px]:hidden'>Open realistic feed preview</span>
+                        <span className='min-[441px]:hidden'>Feed preview</span>
                     </button>
                 )}
                 <div className='bg-muted ml-auto inline-flex items-center rounded-lg p-1'>

@@ -61,16 +61,18 @@ Every `onb_*` event also carries `entry_source`: the surface that sent the user 
 dashboard, and therefore into the flow. Taxonomy lives in `config/entry-sources.ts` and is
 grouped by what the CTA **promised**, which is the axis that predicts conversion:
 
-| Intent     | Sources                                                                       | What they were told                                          |
-| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Plan/audit | `navbar`, `mobile_nav`, `plan_section`, `footer`, `tool_nudge`, `tool_footer` | a plan or an audit - matches the flow                        |
-| Editor     | `hero_editor`, `features_header`, `features_card`, `showcase`, `tool_header`  | "Open the full editor" - the majority of arrivals            |
-| Branding   | `branding_popover`                                                            | "Show your own name and photo"                               |
-| Return     | `oauth_return`, `billing_return`                                              | server redirects back into the dashboard                     |
-| -          | `direct`                                                                      | no attributable surface (typed URL, bookmark, external link) |
+| Intent     | Sources                                                                                         | What they were told                                          |
+| ---------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Plan/audit | `navbar`, `mobile_nav`, `mobile_nav_cta`, `plan_section`, `footer`, `tool_nudge`, `tool_footer` | a plan or an audit - matches the flow                        |
+| Editor     | `hero_editor`, `features_header`, `features_card`, `showcase`, `tool_header`                    | "Open the full editor" - the majority of arrivals            |
+| Branding   | `branding_popover`                                                                              | "Show your own name and photo"                               |
+| Return     | `oauth_return`, `billing_return`                                                                | server redirects back into the dashboard                     |
+| -          | `direct`                                                                                        | no attributable surface (typed URL, bookmark, external link) |
 
 One source per **placement**, not per copy string: "Open the full editor" renders on four
 different surfaces with an identical href, so a shared source would hide which one to fix.
+The mobile sheet holds two placements and so gets two sources: `mobile_nav` is the
+"Dashboard" nav row, `mobile_nav_cta` the pinned "Create my LinkedIn plan" button.
 
 `hero` is legacy - `components/home/hero-cta.tsx` is currently mounted nowhere, so it
 records nothing. The live hero button is `hero_editor`.
@@ -99,12 +101,12 @@ experiment-controlled default hero.
 
 ### Funnel spine
 
-| Event                | Properties                  | Fires when                                                                                                                                                                                |
-| -------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onb_step_view`      | `step`                      | every screen enter (incl. revisits)                                                                                                                                                       |
-| `onb_step_completed` | `step`, `to`, `duration_ms` | leaving a step (any direction); duration = time on step                                                                                                                                   |
-| `onb_skip`           | `step`                      | the step's skip affordance                                                                                                                                                                |
-| `onb_flow_complete`  | `converted`                 | confirm-screen CTA into the dashboard - the true funnel end                                                                                                                               |
+| Event                | Properties                  | Fires when                                                                                                                                                                                                                                                         |
+| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `onb_step_view`      | `step`                      | every screen enter (incl. revisits)                                                                                                                                                                                                                                |
+| `onb_step_completed` | `step`, `to`, `duration_ms` | leaving a step (any direction); duration = time on step                                                                                                                                                                                                            |
+| `onb_skip`           | `step`                      | the step's skip affordance                                                                                                                                                                                                                                         |
+| `onb_flow_complete`  | `converted`                 | confirm-screen CTA into the dashboard - the true funnel end                                                                                                                                                                                                        |
 | `onb_flow_dismissed` | `step`                      | modal closed via X / Escape / outside click, not finished - resumable next visit. While the `onb-modal-exit` experiment is live this only fires for the `control` variant (the `locked` variant has no exit); events carry `$feature/onb-modal-exit` for the split |
 
 ### Step interactions
