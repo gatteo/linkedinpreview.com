@@ -18,11 +18,13 @@ import { useOnboarding } from '../context'
 // ---------------------------------------------------------------------------
 
 export function WelcomeStep() {
-    const { answers, goNext } = useOnboarding()
+    const { answers, arrivalSource, goNext } = useOnboarding()
     const experimentHero = useObExperiment('onb-welcome-hero')
-    // An entry with its own promise to continue overrides the default hero. Any
-    // source without one falls through to the experiment-controlled copy.
-    const entryHero = ENTRY_WELCOME[answers.entrySource]
+    // The promise the user JUST clicked wins: this navigation's ?from= source
+    // first (a resumed session keeps its stored attribution, but the screen
+    // must still answer the button that opened it), then the session's stored
+    // source, then the experiment-controlled default hero.
+    const entryHero = ENTRY_WELCOME[arrivalSource] ?? ENTRY_WELCOME[answers.entrySource]
     const hero = entryHero ?? experimentHero
 
     const start = () => {

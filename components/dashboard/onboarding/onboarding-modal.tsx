@@ -4,6 +4,7 @@ import * as React from 'react'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
 import { XIcon } from 'lucide-react'
 
+import type { ResolvedEntrySource } from '@/config/entry-sources'
 import { OB_STEP_META, sectionFor } from '@/config/onboarding-flow'
 import { slideStep } from '@/lib/motion'
 import { cn } from '@/lib/utils'
@@ -50,6 +51,8 @@ type OnboardingModalProps = {
     open: boolean
     initialAnswers: OnboardingAnswers
     startStepId?: StepId
+    /** This navigation's ?from= source - welcome copy, not attribution. */
+    arrivalSource: ResolvedEntrySource
     linkedinError?: string | null
     onPersist: (answers: OnboardingAnswers, step: StepId) => void
     onFinish: (answers: OnboardingAnswers, converted: boolean) => void
@@ -65,6 +68,7 @@ export function OnboardingModal({
     open,
     initialAnswers,
     startStepId = 'welcome',
+    arrivalSource,
     linkedinError,
     onPersist,
     onFinish,
@@ -189,6 +193,7 @@ export function OnboardingModal({
             linkedinError,
             converted,
             setUninterruptible,
+            arrivalSource,
         }),
         [
             answers,
@@ -205,6 +210,7 @@ export function OnboardingModal({
             linkedinError,
             converted,
             setUninterruptible,
+            arrivalSource,
         ],
     )
 

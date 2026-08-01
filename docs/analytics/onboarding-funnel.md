@@ -83,7 +83,10 @@ resolves it once on mount (`onboarding-controller.tsx`), hands it to `setEntrySo
 `onboarding_sessions.answers` and can be joined to the paid outcome.
 
 A **resumed** session keeps the source it started with: a later navigation's `?from=`
-describes that navigation, not the original entry. Sessions started before this shipped
+describes that navigation, not the original entry. That rule is for ATTRIBUTION only -
+the welcome COPY resolves from the current navigation's `?from=` first (the promise the
+user just clicked must be answered even on resume; `arrivalSource` in the onboarding
+context), falling back to the stored source, then the default hero. Sessions started before this shipped
 have no `entrySource` and resolve to `direct` - do not read pre-2026-07-31 `direct` volume
 as a real acquisition channel.
 
