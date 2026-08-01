@@ -229,7 +229,10 @@ unlocker/proxy configured` on every fallback attempt), so the direct fetch alway
     - **Exit** (#46): the modal now closes via X / Escape / outside click
       (`onboarding-modal.tsx`), firing `onb_flow_dismissed{step}`. It never marks the account
       onboarded, so the existing resume gate (`onboarding-controller.tsx`, unchanged) reopens the
-      flow at the saved step on the next visit - no new resume UI needed.
+      flow at the saved step on the next visit - no new resume UI needed. Since 2026-08-01 the
+      exit is experiment-gated (`onb-modal-exit`, config/onboarding-experiments.ts): `control`
+      keeps this dismissible behavior, `locked` renders no exit and suppresses Radix dismissal,
+      testing whether the pre-#51 hard flow converts better (see docs/experiments/log.md).
     - **Connect-step escape + honesty** (#40): a quiet "Skip for now" revives the `skip` value on
       `onb_connect_method` (removed 2026-07-18, see above) and jumps straight to `goal` - an
       answers-only plan instead of the fetch-failure card being the only way out. The trust line's

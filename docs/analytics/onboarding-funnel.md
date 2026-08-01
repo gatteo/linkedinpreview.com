@@ -102,7 +102,7 @@ experiment-controlled default hero.
 | `onb_step_completed` | `step`, `to`, `duration_ms` | leaving a step (any direction); duration = time on step                                                                                                                                   |
 | `onb_skip`           | `step`                      | the step's skip affordance                                                                                                                                                                |
 | `onb_flow_complete`  | `converted`                 | confirm-screen CTA into the dashboard - the true funnel end                                                                                                                               |
-| `onb_flow_dismissed` | `step`                      | modal closed via X / Escape / outside click, not finished - resumable next visit (the modal has no other exit, see the connect/fetching skip events below for the in-flow escape hatches) |
+| `onb_flow_dismissed` | `step`                      | modal closed via X / Escape / outside click, not finished - resumable next visit. While the `onb-modal-exit` experiment is live this only fires for the `control` variant (the `locked` variant has no exit); events carry `$feature/onb-modal-exit` for the split |
 
 ### Step interactions
 
