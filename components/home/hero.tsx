@@ -67,8 +67,7 @@ export function Hero() {
                             </span>
                             <Button asChild variant='outline' size='lg' className='h-12 px-5 text-[15px]'>
                                 <Link href={withEntrySource(Routes.DashboardEditor(), 'hero_editor')}>
-                                    Open the full editor
-                                    <ArrowUpRight className='size-4' />
+                                    Create my personalized post plan
                                 </Link>
                             </Button>
                         </div>

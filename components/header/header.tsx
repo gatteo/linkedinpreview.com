@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 
 import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
@@ -66,8 +65,7 @@ export function Header() {
                                     properties={{ button_name: 'create_plan', source: 'navbar' }}>
                                     <Button asChild size='lg' className='hidden md:flex'>
                                         <Link href={withEntrySource(Routes.Dashboard, 'navbar')}>
-                                            Create my plan
-                                            <ArrowRight className='size-4' />
+                                            Create my Linkedin plan
                                         </Link>
                                     </Button>
                                 </TrackClick>
