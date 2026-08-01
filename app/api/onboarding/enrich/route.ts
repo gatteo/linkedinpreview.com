@@ -26,8 +26,14 @@ import { bodySchema, enrichSchema } from './route.schema'
 // polled via ./status while the user answers the question steps.
 export const maxDuration = 60
 
-/** The enrich model's own deadline, inside the route's overall budget. */
-const LLM_TIMEOUT_MS = 8_000
+/**
+ * The enrich model's own deadline, inside the route's overall budget. The
+ * synthesis call routinely needs 9-15s (the 8s bound introduced 2026-07-31
+ * cut off 4/4 post-deploy runs at 8.4-11.0s against a 69/69 success baseline
+ * with no bound - GH #53). 20s keeps the chain ordered: fast fetch 18s + LLM
+ * 20s = 38s worst case, under the client's 40s poll and the 45s failsafe.
+ */
+const LLM_TIMEOUT_MS = 20_000
 
 // Don't re-trigger a pending scrape for the same URL within this window; past
 // it we assume the snapshot is stuck and fire a fresh one.
