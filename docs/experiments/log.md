@@ -16,7 +16,7 @@ Format per entry:
 ---
 
 ## onb-modal-exit - a locked flow converts better than a dismissible one
-- Issue: #55 · Branch: exp/onb-modal-exit · Launched: pending (flag created at 0%) · Concluded: -
+- Issue: #55 · Branch: exp/onb-modal-exit · Launched: 2026-08-01 · Concluded: -
 - Primary metric: paywall reach per exposed user (onb_paywall_view / flag exposure) · Result: -
 - Guardrails: onb_flow_complete rate, purchase_completed (amount>0, directional), onb_step_view drop pattern, error rates
-- Note: the same PR changes the editor-intent welcome title to "View the full editor and complete an audit." for BOTH variants (entry-coherence, not part of the experiment) - resets the GH #42 verification window.
+- Note: the same PR changes the editor-promise welcome title (features_header/features_card/showcase/tool_header; hero_editor is plan-framed since the hero CTA rename) to "View the full editor and complete an audit." for BOTH variants (entry-coherence, not part of the experiment) - resets the GH #42 verification window.

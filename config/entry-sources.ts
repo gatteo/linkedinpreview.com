@@ -96,13 +96,14 @@ export const ENTRY_WELCOME: Partial<Record<ResolvedEntrySource, EntryWelcomeCopy
         draftSaved: true,
     },
 
-    // Editor intent: two thirds of all arrivals clicked a button promising an
-    // editor and landed on an audit. They reach the paywall at roughly a third
-    // the rate of people who were promised a plan. The title names both halves
-    // of the deal up front - the editor they clicked for, and the audit that
-    // stands between them and it - so the flow is never a surprise.
+    // Editor intent: these CTAs still say "Open the full editor", so the title
+    // names both halves of the deal up front - the editor they clicked for, and
+    // the audit that stands between them and it. `hero_editor` is NOT in this
+    // list anymore: since 2026-08-01 the hero button says "Create my
+    // personalized post plan" (plan intent), so it falls through to the
+    // plan-framed default hero, which is the promise it now carries.
     ...Object.fromEntries(
-        (['hero_editor', 'features_header', 'features_card', 'showcase', 'tool_header'] as const).map((source) => [
+        (['features_header', 'features_card', 'showcase', 'tool_header'] as const).map((source) => [
             source,
             {
                 headlinePre: 'View the ',

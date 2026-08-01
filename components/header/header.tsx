@@ -65,7 +65,7 @@ export function Header() {
                                     properties={{ button_name: 'create_plan', source: 'navbar' }}>
                                     <Button asChild size='lg' className='hidden md:flex'>
                                         <Link href={withEntrySource(Routes.Dashboard, 'navbar')}>
-                                            Create my Linkedin plan
+                                            Create my LinkedIn plan
                                         </Link>
                                     </Button>
                                 </TrackClick>
