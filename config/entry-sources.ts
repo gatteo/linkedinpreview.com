@@ -98,16 +98,16 @@ export const ENTRY_WELCOME: Partial<Record<ResolvedEntrySource, EntryWelcomeCopy
 
     // Editor intent: two thirds of all arrivals clicked a button promising an
     // editor and landed on an audit. They reach the paywall at roughly a third
-    // the rate of people who were promised a plan. The editor IS what they get
-    // (the flow ends in it, free plan included), so the honest fix is to say so
-    // and frame the audit as what makes the editor theirs rather than blank.
+    // the rate of people who were promised a plan. The title names both halves
+    // of the deal up front - the editor they clicked for, and the audit that
+    // stands between them and it - so the flow is never a surprise.
     ...Object.fromEntries(
         (['hero_editor', 'features_header', 'features_card', 'showcase', 'tool_header'] as const).map((source) => [
             source,
             {
-                headlinePre: 'Your editor is ready. First, let’s make it ',
-                headlineHighlight: 'yours',
-                headlinePost: '.',
+                headlinePre: 'View the ',
+                headlineHighlight: 'full editor',
+                headlinePost: ' and complete an audit.',
                 sub: 'I’ll read your LinkedIn and tune the editor to your voice, topics and goals, so every draft starts personalized instead of blank. About 3 minutes.',
             },
         ]),
