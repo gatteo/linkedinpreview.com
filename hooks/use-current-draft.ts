@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
+import { ENTRY_PARAM } from '@/config/entry-sources'
 import { decodeDraft } from '@/lib/draft-url'
 import { type DraftStatus } from '@/lib/drafts'
 import { hasTextContent } from '@/lib/editor-utils'
@@ -40,6 +41,13 @@ const EMPTY: CurrentDraftState = {
     isLoading: true,
 }
 
+/** Re-attach the arrival's `?from=` to a URL this hook rewrites, so the redirect
+ *  that resolves the draft does not destroy attribution the user arrived with. */
+function withEntry(href: string, entry: string | null): string {
+    if (!entry) return href
+    return `${href}${href.includes('?') ? '&' : '?'}${ENTRY_PARAM}=${encodeURIComponent(entry)}`
+}
+
 /**
  * Hook for the dashboard editor. Handles:
  * - Loading the correct draft from the URL `?draft=` param
@@ -56,6 +64,11 @@ export function useCurrentDraft() {
     const searchParams = useSearchParams()
     const draftIdParam = searchParams.get('draft')
     const importParam = searchParams.get('import')
+    // The entry source the user arrived with. Every redirect below rewrites the
+    // URL to the resolved draft, which used to drop `?from=` before
+    // OnboardingController read it off window.location - so a tool handoff was
+    // attributed `direct` and lost its entry-coherent welcome copy. Carry it.
+    const entryParam = searchParams.get(ENTRY_PARAM)
     const { isReady, supabase } = useAuth()
     const {
         drafts,
@@ -111,7 +124,7 @@ export function useCurrentDraft() {
                     const draft = await createDraftHook(decoded ?? undefined)
                     if (callId !== loadCallRef.current) return
                     loadedEmptyRef.current = !hasTextContent(decoded)
-                    router.replace(`/dashboard/editor?draft=${draft.id}`)
+                    router.replace(withEntry(`/dashboard/editor?draft=${draft.id}`, entryParam))
                     setState({
                         ...EMPTY,
                         draftId: draft.id,
@@ -123,7 +136,7 @@ export function useCurrentDraft() {
                 } catch {
                     if (callId !== loadCallRef.current) return
                     toast.error('Failed to create draft')
-                    router.replace('/dashboard')
+                    router.replace(withEntry('/dashboard', entryParam))
                     setState({ ...EMPTY, initialContent: null, isLoading: false })
                 }
                 loadedRef.current = true
@@ -153,7 +166,7 @@ export function useCurrentDraft() {
                         const draft = await createDraftHook()
                         if (callId !== loadCallRef.current) return
                         loadedEmptyRef.current = true
-                        router.replace(`/dashboard/editor?draft=${draft.id}`)
+                        router.replace(withEntry(`/dashboard/editor?draft=${draft.id}`, entryParam))
                         setState({
                             ...EMPTY,
                             draftId: draft.id,
@@ -175,7 +188,7 @@ export function useCurrentDraft() {
             // No params - load most recent draft or create one
             if (drafts.length > 0) {
                 const mostRecent = [...drafts].sort((a, b) => b.updatedAt - a.updatedAt)[0]
-                router.replace(`/dashboard/editor?draft=${mostRecent.id}`)
+                router.replace(withEntry(`/dashboard/editor?draft=${mostRecent.id}`, entryParam))
                 try {
                     const result = await fetchDraft(supabase, mostRecent.id)
                     if (callId !== loadCallRef.current) return
@@ -201,7 +214,7 @@ export function useCurrentDraft() {
                     const draft = await createDraftHook()
                     if (callId !== loadCallRef.current) return
                     loadedEmptyRef.current = true
-                    router.replace(`/dashboard/editor?draft=${draft.id}`)
+                    router.replace(withEntry(`/dashboard/editor?draft=${draft.id}`, entryParam))
                     setState({
                         ...EMPTY,
                         draftId: draft.id,
