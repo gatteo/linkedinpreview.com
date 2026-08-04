@@ -4,6 +4,30 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-08-04 - Build: remove syntax highlighting, gate redundant deploys (~40x faster builds)
+
+- **Vercel builds took 9-11 minutes; `next build` accounted for 12 seconds of that.** The rest was
+  `contentlayer build`: `lib/mdx/plugins/rehype/rehype-inline-code.ts` cached its Shiki highlighter
+  in the plugin factory closure, but unified instantiates plugins once per document. That built one
+  highlighter per MDX file, each loading every bundled grammar (~3s x 207 documents = ~10.5 min).
+  Shiki's own "N instances have been created" warning had been printing in the build log, counting
+  up to 200, since the blog was first published.
+- **Syntax highlighting removed entirely** rather than repaired: the 207 documents held exactly one
+  fenced block (`html`) and zero inline `{:lang}` spans - the content set is LinkedIn how-to
+  writing, not code tutorials. Deleted `rehype-code.ts`, `rehype-inline-code.ts` and
+  `remark-code.ts`; dropped `shiki`, `@shikijs/rehype`, `@shikijs/transformers` (21 packages).
+  `rehypePlugins` is now empty. The `.shiki` CSS is replaced by a plain `pre code` rule; `Pre`
+  gained horizontal padding to replace what shiki's `.line` supplied; the `code` mapping in
+  `mdx.tsx` now skips the inline pill for `language-*` blocks so fenced code no longer inherits it.
+  Full production build: **~350s -> 16.3s** locally, 207 documents, 260 routes, type-check and lint
+  clean.
+- **Build gate** (`scripts/vercel-build-gate.sh`, wired via `ignoreCommand` in `vercel.json`): skips
+  deploys whose diff touches only `docs/`, `*.md`, `.github/`, `.husky/`, `.claude/`, `.agents/`,
+  `.cursor/`, `LICENCE`, `.prettierignore`. Diffs against `VERCEL_GIT_PREVIOUS_SHA` so a run of
+  skipped commits cannot hide a change; falls back to `HEAD^`; fails open; `[deploy]` in the commit
+  message overrides. No daily deploy cap - a skipped deploy is dropped, not queued, so a cap would
+  silently strand hotfixes.
+
 ## 2026-07-31 - Onboarding: answers-first flow (exit, post-OAuth URL ask, honest degrades)
 
 - **The flow had no exit** (GH #46): no close button, Escape and outside-click both suppressed,

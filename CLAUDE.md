@@ -52,6 +52,14 @@ No `tailwind.config.ts`. All config is in `styles/globals.css` via `@theme`, `@p
 
 Next.js 16 uses `proxy.ts` at project root (not `middleware.ts`). The exported function is `proxy` (not `middleware`). Currently handles Supabase session refresh.
 
+## Build Cost
+
+A full build is ~16s (contentlayer ~5s for 207 MDX docs, `next build` ~11s for 260 routes). Every push builds on Vercel and merging to `main` builds the same commit again as production, so a regression here bills twice.
+
+- **MDX plugins run per document.** Unified instantiates each remark/rehype plugin once per file. Cache anything expensive at **module** scope, never in the factory closure. A closure-scoped Shiki highlighter loading all bundled grammars cost ~3s x 207 docs = ~10.5 min of every build, which is how this project spent ~$100 of build minutes.
+- **No syntax highlighting.** shiki, `@shikijs/rehype` and `@shikijs/transformers` were removed - the content set is LinkedIn how-to writing with one fenced block total. `rehypePlugins` is empty. Fenced code renders as plain text inside `components/mdx/pre.tsx` (frame + copy button + styling); the `code` mapping in `components/mdx/mdx.tsx` skips the inline pill when `className` starts with `language-`.
+- **Build gate.** `vercel.json` `ignoreCommand` runs `scripts/vercel-build-gate.sh`, which skips deploys whose diff only touches `docs/`, `*.md`, `.github/`, `.husky/`, `.claude/`, `.agents/`, `.cursor/`, `LICENCE`, `.prettierignore`. `*.md` does not match `*.mdx`, so content always builds. `[deploy]` in the commit message forces a build. It fails open.
+
 ## Contentlayer + React 19
 
 `withContentlayer` was removed from next.config.mjs. Build runs `NODE_ENV=production contentlayer build` as a separate step before `next build`. A custom `useMDXComponent` in `components/mdx/mdx.tsx` patches `jsxDEV -> jsx` as a safety net. See `docs/ARCHITECTURE.md` for details.

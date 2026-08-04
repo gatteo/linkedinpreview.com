@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { type MDXComponents } from 'mdx/types'
 import ReactDOM from 'react-dom'
 
+import { cn } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Link } from '@/components/ui/link'
 import { CtaCard } from '@/components/cta-card'
@@ -47,12 +48,20 @@ const components: MDXComponents = {
         </>
     ),
     pre: Pre,
-    code: (props: React.ComponentPropsWithoutRef<'code'>) => (
-        <code
-            className='bg-secondary text-foreground rounded px-1.5 py-0.5 font-mono text-sm before:content-none after:content-none'
-            {...props}
-        />
-    ),
+    code: ({ className, ...rest }: React.ComponentPropsWithoutRef<'code'>) =>
+        // Fenced blocks arrive as `language-*` and are already framed by <Pre>. Only
+        // standalone inline code gets the pill treatment.
+        className?.startsWith('language-') ? (
+            <code className={cn('font-mono', className)} {...rest} />
+        ) : (
+            <code
+                className={cn(
+                    'bg-secondary text-foreground rounded px-1.5 py-0.5 font-mono text-sm before:content-none after:content-none',
+                    className,
+                )}
+                {...rest}
+            />
+        ),
 
     // Custom components
     Alert: (props: React.ComponentPropsWithoutRef<typeof Alert>) => <Alert {...props} />,

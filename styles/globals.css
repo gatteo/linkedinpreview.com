@@ -670,24 +670,11 @@
     animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ─── Code Highlighting ─── */
-.shiki span {
-    color: var(--shiki-light);
-}
-
-.dark .shiki span {
-    color: var(--shiki-dark);
-}
-
-pre.shiki .line {
+/* ─── Code Blocks ─── */
+pre code {
+    display: block;
     font-size: 13px;
-    padding: 0 1rem;
-}
-
-pre.shiki .highlighted {
-    width: 100%;
-    display: inline-block;
-    background-color: color-mix(in oklch, var(--color-primary) 10%, transparent);
+    line-height: 1.6;
 }
 
 /* ─── Tiptap ─── */

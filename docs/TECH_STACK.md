@@ -67,3 +67,4 @@ Next.js 16.1 App Router monolith deployed on Vercel with Supabase backend for pe
 - Vercel AI SDK v6 over direct OpenAI SDK: unified streaming/generation API, framework integration, useCompletion/useChat hooks
 - prettier-plugin-tailwindcss over eslint-plugin-tailwindcss: eslint plugin incompatible with TW v4
 - No test runner configured: trade-off for speed, type-check + lint as quality gates
+- No syntax highlighter (removed shiki + @shikijs/rehype + @shikijs/transformers): the content set is LinkedIn how-to writing, not code tutorials - 207 MDX documents held one fenced block and no inline highlighting. Shiki cost ~10.5 minutes of every Vercel build against 12 seconds of actual `next build`. Fenced code renders as plain text inside the existing `Pre` frame. Re-adding it means restoring the rehype plugins with a module-scoped highlighter (see ARCHITECTURE.md "Build & Deploy")

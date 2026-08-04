@@ -247,7 +247,7 @@ project-root/
 │   │   └── extensions/      # Custom TipTap marks (fontStyle: the four Unicode font styles)
 │   ├── ui/                  # shadcn/ui primitives (Button, Dialog, Sheet, etc.)
 │   ├── shadcn-demo/         # shadcn demo components (used by app/dash-example/)
-│   ├── mdx/                 # MDX rendering + syntax highlighting components
+│   ├── mdx/                 # MDX rendering components (headings, tables, code frame, embeds)
 │   ├── feedback/            # Tally.so feedback FAB, article helpfulness
 │   └── tracking/            # PostHog TrackClick wrapper for server components
 ├── config/                  # Static config (site metadata, routes, AI limits, prompts, feedback)
@@ -257,15 +257,17 @@ project-root/
 │   ├── draft-media.ts       # IndexedDB handoff of an attached image/video from the editor to the /preview tab
 │   ├── supabase/            # Server/client/admin Supabase instances + CRUD, migration
 │   ├── linkedin/            # OAuth, token crypto, Posts API + media upload, connections, serialize, grapheme char-count + 3000 limit, public-profile fetch (fast onboarding tier) + rich-scrape (Bright Data async tier)
-│   └── mdx/plugins/         # Remark and rehype plugins for MDX processing
+│   └── mdx/plugins/         # Remark and rehype plugins for MDX processing (heading slugs/TOC, Substack image cleanup). No syntax highlighter.
 ├── types/                   # Shared TypeScript type definitions
 ├── styles/                  # globals.css - Tailwind v4 theme via @theme + @plugin
 ├── supabase/migrations/     # Numbered SQL migration files
+├── scripts/
+│   └── vercel-build-gate.sh # Ignored Build Step: skips deploys whose diff cannot change output
 ├── public/                  # Static assets (images, fonts, og images)
 ├── proxy.ts                 # Session refresh on every request (replaces middleware.ts in Next 16)
 ├── env.mjs                  # Environment variable validation via @t3-oss/env-nextjs
 ├── contentlayer.config.ts   # MDX content pipeline configuration
-├── vercel.json              # Vercel Cron schedule for /api/cron/publish (Wave 4)
+├── vercel.json              # Vercel Cron schedules + `ignoreCommand` build gate
 └── next.config.mjs          # Next.js config (rewrites for PostHog proxy, image domains)
 ```
 
@@ -282,6 +284,16 @@ project-root/
 | Contentlayer       | Build-time MDX processing                                                         | pnpm build / pnpm dev                                                                             | Runs as a separate step before next build for React 19 compatibility                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | LinkedIn           | OAuth 2.0 / OpenID Connect + REST Posts API (`Linkedin-Version` header)           | Connect from Settings; publish from editor; Vercel Cron for scheduled posts                       | Wave 4. Tokens encrypted at rest (AES-256-GCM). Self-serve apps get no refresh token (60-day token, member reconnects). Configured only when the LinkedIn env vars are set; not live-verified.                                                                                                                                                                                                                                                                                              |
 | Vercel Cron        | Scheduled GET to `/api/cron/publish`                                              | `vercel.json` schedule (`* * * * *`)                                                              | Publishes due scheduled posts. Per-minute schedule requires Vercel Pro; Hobby cron runs once/day. Auth via `CRON_SECRET`.                                                                                                                                                                                                                                                                                                                                                                   |
+
+## Build & Deploy
+
+Every push builds on Vercel; merging to `main` builds the same commit a second time as production. Keeping a single build cheap is therefore worth roughly double.
+
+**Build shape** (~16s locally end to end): `contentlayer build` compiles 207 MDX documents (~5s), then `next build` compiles and prerenders 260 routes (~11s). The two run as separate steps, separated by `;` not `&&`, so `next build` still runs if contentlayer exits non-zero - contentlayer 0.3.4 throws a harmless `ERR_INVALID_ARG_TYPE` from clipanion on exit after writing its output.
+
+**MDX plugins are instantiated per document.** Unified calls each plugin factory once per file, so any expensive resource a plugin builds must be cached at _module_ scope, never in the factory closure. A closure-scoped Shiki highlighter cost ~3s x 207 documents - about 10.5 minutes of every Vercel build, against 12 seconds of actual `next build`. Syntax highlighting has since been removed entirely (the content set had one fenced block and no inline highlighting); fenced code renders as plain text inside `components/mdx/pre.tsx`, which supplies the frame, the copy button and the styling.
+
+**Build gate.** `vercel.json` sets `ignoreCommand` to `scripts/vercel-build-gate.sh`, Vercel's Ignored Build Step. It exits 0 to skip a build and 1 to run one, and only skips when the diff touches nothing but `docs/`, `*.md`, `.github/`, `.husky/`, `.claude/`, `.agents/`, `.cursor/`, `LICENCE` and `.prettierignore`. Note `*.md` does not match `*.mdx`, so blog, changelog and compare content always builds. It diffs against `VERCEL_GIT_PREVIOUS_SHA` (the last successfully deployed commit, exposed only when an ignore step is configured) so a run of skipped commits cannot hide a change, and falls back to `HEAD^`. It fails open: an unusable diff base builds. `[deploy]` anywhere in the commit message forces a build.
 
 ## Environment Variables
 

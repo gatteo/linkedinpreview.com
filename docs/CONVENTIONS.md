@@ -120,6 +120,7 @@ Every API route handler follows the same structure:
 - **Images**: Always use `next/image`. Set `priority` on above-the-fold / LCP images. Provide `sizes` for responsive images (e.g., `sizes='(max-width: 768px) 100vw, 768px'`). Don't set `loading='lazy'` explicitly - it's the default. Use `placeholder='blur'` only with static imports.
 - **Bundle size**: Keep public pages lean - no heavy client-side JS. Use `dynamic(() => import(...), { ssr: false })` for large client components. Prefer lightweight libraries. Avoid importing full icon sets or utility libraries.
 - **Environment variables**: Always access through `env.mjs` (validated by `@t3-oss/env-nextjs`), never read `process.env` directly.
+- **MDX plugins**: Unified instantiates every remark/rehype plugin once per document. Cache anything expensive a plugin builds (a highlighter, a parser, a WASM module) at **module** scope, not in the factory closure - a closure-level cache silently becomes per-file work multiplied by 207 documents, and it only shows up as build minutes on Vercel. See ARCHITECTURE.md "Build & Deploy".
 
 ## Accessibility
 

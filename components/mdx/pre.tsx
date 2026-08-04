@@ -67,7 +67,7 @@ export const Pre = (props: PreProps) => {
                 <CopyButton className='absolute top-3 right-3 z-10' text={text} />
             )}
 
-            <pre ref={textInput} className={cn('overflow-scroll py-4', className)} {...rest}>
+            <pre ref={textInput} className={cn('overflow-scroll p-4', className)} {...rest}>
                 {children}
             </pre>
         </figure>
