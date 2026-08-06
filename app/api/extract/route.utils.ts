@@ -1,7 +1,6 @@
 import { Readability } from '@mozilla/readability'
 import { parseHTML } from 'linkedom'
 import mammoth from 'mammoth'
-import { PDFParse } from 'pdf-parse'
 
 const MAX_TEXT_LENGTH = 10_000
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -14,6 +13,34 @@ function truncate(text: string): string {
 function getExtension(filename: string): string {
     const idx = filename.lastIndexOf('.')
     return idx >= 0 ? filename.slice(idx).toLowerCase() : ''
+}
+
+/**
+ * pdf-parse pulls in pdfjs, whose legacy build evaluates `new DOMMatrix()` at
+ * module scope. It tries to polyfill that itself by `createRequire`-ing its
+ * optional `@napi-rs/canvas` dep, but that call is invisible to Next's file
+ * tracer, so the package never reaches the deployment and the module throws
+ * `ReferenceError: DOMMatrix is not defined` while evaluating. Importing canvas
+ * ourselves both installs the globals and makes the dependency traceable.
+ *
+ * Both imports stay inside this branch: a top-level one took the whole route
+ * down with it, so URL, .docx and .txt extraction 500'd on a PDF-only fault.
+ */
+async function extractPdfText(buffer: ArrayBuffer): Promise<string> {
+    const canvas = await import('@napi-rs/canvas')
+    const globals = globalThis as Record<string, unknown>
+    globals.DOMMatrix ??= canvas.DOMMatrix
+    globals.ImageData ??= canvas.ImageData
+    globals.Path2D ??= canvas.Path2D
+
+    const { PDFParse } = await import('pdf-parse')
+    const pdf = new PDFParse({ data: new Uint8Array(buffer) })
+    try {
+        const result = await pdf.getText()
+        return result.text
+    } finally {
+        await pdf.destroy()
+    }
 }
 
 export async function extractFromUrl(url: string): Promise<{ text: string; title?: string }> {
@@ -51,10 +78,7 @@ export async function extractFromFile(file: File): Promise<{ text: string; title
     let text: string
 
     if (ext === '.pdf') {
-        const pdf = new PDFParse({ data: new Uint8Array(await file.arrayBuffer()) })
-        const result = await pdf.getText()
-        text = result.text
-        await pdf.destroy()
+        text = await extractPdfText(await file.arrayBuffer())
     } else if (ext === '.docx') {
         const result = await mammoth.extractRawText({ buffer: Buffer.from(await file.arrayBuffer()) })
         text = result.value
