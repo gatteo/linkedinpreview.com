@@ -74,8 +74,10 @@ different surfaces with an identical href, so a shared source would hide which o
 The mobile sheet holds two placements and so gets two sources: `mobile_nav` is the
 "Dashboard" nav row, `mobile_nav_cta` the pinned "Create my LinkedIn plan" button.
 
-`hero` is legacy - `components/home/hero-cta.tsx` is currently mounted nowhere, so it
-records nothing. The live hero button is `hero_editor`.
+`hero` was retired on 2026-08-06 along with `components/home/hero-cta.tsx`, the unmounted
+component that was its only emitter. It never recorded anything, so no historical volume is
+affected; a stray `?from=hero` now resolves to `direct` like any other unknown value. The
+live hero button is `hero_editor`.
 
 It is carried as a `?from=` query param on every dashboard link, NOT inferred from a click
 event. A param survives keyboard activation, middle-click, and a dropped event; relying on

@@ -38,11 +38,13 @@ Format per entry:
   through `useObExperiment` so the wiring stays exercised. ~510 `$feature_flag_called`
   events per 14 days is expected and means nothing is being tested. Not an experiment;
   do not analyze it as one.
-- **`hero-cta-copy`** - a multivariate flag that still exists in PostHog, read by
-  `components/home/hero-cta.tsx` (`HeroCTA`). **That component is exported but mounted
-  nowhere** (`config/entry-sources.ts:45` records the same fact for the `hero` entry
-  source), so the flag decides nothing and records ~11 calls per 14 days of residual
-  noise. It is a zombie, not a live landing-page test - earlier baselines describing it
-  as "live" were wrong. Either delete the dead component and archive the flag, or mount
-  it deliberately; leaving it as-is keeps producing a flag that looks like a running
-  experiment in every flag listing.
+- **`hero-cta-copy`** - **RETIRED 2026-08-06.** A multivariate flag (id 145657, created
+  2026-02-22, 100% rollout across four 25% variants) whose only reader was
+  `components/home/hero-cta.tsx` (`HeroCTA`) - a component that was exported but mounted
+  nowhere, so the flag decided nothing despite looking fully live in the flag list. It was
+  never a landing-page test; earlier baselines describing it as "live" were wrong. The
+  component is deleted, the `hero` entry source it emitted is removed from
+  `config/entry-sources.ts`, and the flag is archived in PostHog (`active: false`,
+  `archived: true`, last called 2026-08-04). Its variant copy ("Get Started", "Use Free
+  Tool") predated the move to plan framing in 736c4fa, so a future hero test should be
+  written fresh rather than revived from it.
