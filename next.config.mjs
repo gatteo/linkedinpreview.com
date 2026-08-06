@@ -122,6 +122,13 @@ const nextConfig = {
     // Next.js 16 uses Turbopack by default; empty config opts in explicitly.
     turbopack: {},
 
+    // pdfjs (via pdf-parse) resolves its DOMMatrix polyfill with a runtime
+    // createRequire against its own module URL. Bundled into a server chunk that
+    // lookup misses, and the module throws while evaluating. Loading these from
+    // node_modules keeps the polyfill working and traces the native canvas
+    // binary into the deployment. See app/api/extract/route.utils.ts.
+    serverExternalPackages: ['pdf-parse', 'pdfjs-dist', '@napi-rs/canvas'],
+
     // Webpack fallback config - used when building with --webpack flag.
     // Required for contentlayer's ESM/CJS interop.
     webpack: (config) => {

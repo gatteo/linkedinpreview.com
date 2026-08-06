@@ -105,6 +105,7 @@ Every API route handler follows the same structure:
 - **Streaming**: For streaming responses (chat), use `streamText()` from Vercel AI SDK and return `result.toUIMessageStreamResponse()`.
 - **Timeouts**: Export `maxDuration` for routes that may take longer than Vercel's default (e.g., `export const maxDuration = 30` for AI generation).
 - **Rate limiting**: All AI endpoints must enforce rate limits via Supabase RPC `check_and_record_usage`. Rate limits defined in `config/ai.ts`.
+- **Heavy or DOM-dependent parsers are imported lazily, inside the branch that needs them.** A top-level import runs during module evaluation, so a package that throws on import takes down every request to the route, including the ones that never touch it. `/api/extract` served 500s for a week on all input types because `pdf-parse` was imported at the top and its pdfjs dependency threw `ReferenceError: DOMMatrix is not defined` while evaluating. Such packages also belong in `serverExternalPackages` (next.config.mjs) so they load from `node_modules` instead of a bundled chunk - bundling breaks the runtime `createRequire` lookups these libraries use to find their own native/optional deps, and hides those deps from Next's file tracer.
 
 ## Error Handling
 

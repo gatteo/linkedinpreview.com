@@ -1,10 +1,12 @@
 import { cookies } from 'next/headers'
-import { NextResponse, type NextRequest } from 'next/server'
+import { after, NextResponse, type NextRequest } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { OB_FUNNEL_VERSION } from '@/config/analytics'
 import { isLinkedInConfigured } from '@/config/linkedin'
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { captureServer } from '@/lib/analytics/server'
 import {
     countDrafts,
     encodePendingSwitch,
@@ -48,7 +50,25 @@ export async function GET(request: NextRequest) {
     const cookieStore = await cookies()
     const fromOnboarding = cookieStore.get(OAUTH_ORIGIN_COOKIE)?.value === 'onboarding'
     cookieStore.delete(OAUTH_ORIGIN_COOKIE)
-    const redirect = (status: string) => oauthReturnRedirect(status, fromOnboarding)
+
+    // Resolved before the first exit so every onboarding outcome below - including
+    // the ones that return early - can be attributed to a person. A member who
+    // abandons on LinkedIn's consent screen never reaches this route at all; this
+    // names the outcome for everyone who does come back (GH #62).
+    const supabase = await createClient()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
+
+    const trackOutcome = (status: string) => {
+        if (!fromOnboarding || !user) return
+        after(() => captureServer(user.id, 'onb_oauth_callback', { funnel_version: OB_FUNNEL_VERSION, status }))
+    }
+
+    const redirect = (status: string) => {
+        trackOutcome(status)
+        return oauthReturnRedirect(status, fromOnboarding)
+    }
 
     if (!isLinkedInConfigured()) return redirect('unavailable')
 
@@ -67,10 +87,6 @@ export async function GET(request: NextRequest) {
         return redirect('error')
     }
 
-    const supabase = await createClient()
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
     if (!user) return redirect('session')
 
     try {
@@ -84,7 +100,15 @@ export async function GET(request: NextRequest) {
         const existingOwner = admin ? await findUserIdByLinkedInSub(admin, info.sub) : null
 
         if (existingOwner && existingOwner !== user.id && admin) {
-            const switched = await handleSwitch({ supabase, admin, cookieStore, user, existingOwner, input })
+            const switched = await handleSwitch({
+                supabase,
+                admin,
+                cookieStore,
+                user,
+                existingOwner,
+                input,
+                onOutcome: trackOutcome,
+            })
             // null means the existing owner was an unreachable stale identity and
             // has been released - fall through and attach to this session instead.
             if (switched) return switched
@@ -136,6 +160,7 @@ async function handleSwitch({
     user,
     existingOwner,
     input,
+    onOutcome,
 }: {
     supabase: SupabaseClient
     admin: SupabaseClient
@@ -143,11 +168,19 @@ async function handleSwitch({
     user: { id: string; is_anonymous?: boolean }
     existingOwner: string
     input: Parameters<typeof upsertConnection>[2]
+    onOutcome: (status: string) => void
 }): Promise<NextResponse | null> {
+    // A switch ends the onboarding round-trip somewhere onboarding cannot follow,
+    // so it still has to be named - otherwise it reads as unexplained OAuth loss.
+    const exit = (status: string) => {
+        onOutcome(status)
+        return settingsRedirect(status)
+    }
+
     // The current user is already a saved account with its own data - never
     // silently abandon it. Block and explain (decision: block on owner conflict).
     if (user.is_anonymous === false) {
-        return settingsRedirect('linked-elsewhere')
+        return exit('linked-elsewhere')
     }
 
     // Signing into E requires an email to mint a magic link against. An account
@@ -178,7 +211,7 @@ async function handleSwitch({
             path: '/',
             maxAge: SWITCH_COOKIE_MAX_AGE,
         })
-        return settingsRedirect('merge-prompt')
+        return exit('merge-prompt')
     }
 
     try {
@@ -186,7 +219,7 @@ async function handleSwitch({
     } catch (err) {
         // E has no usable email, or the sign-in token failed - cannot switch.
         console.error('[linkedin/callback] switch', err instanceof Error ? err.message : err)
-        return settingsRedirect('signin-failed')
+        return exit('signin-failed')
     }
-    return settingsRedirect('welcome')
+    return exit('welcome')
 }

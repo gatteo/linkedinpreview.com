@@ -13,7 +13,7 @@ import { useBranding } from '@/hooks/use-branding'
 import { useStrategy } from '@/hooks/use-strategy'
 import { useAuth } from '@/components/dashboard/auth-provider'
 
-import { postTextToDoc, setEntrySource } from './ai'
+import { postTextToDoc, setEntrySource, track } from './ai'
 import { onOnboardingDebug } from './debug-events'
 import { OnboardingModal } from './onboarding-modal'
 import {
@@ -83,6 +83,16 @@ export function OnboardingController() {
         const entry = saved?.answers.entrySource ?? arrivalNow
         setEntrySource(entry)
         setEntry(entry)
+
+        // The OAuth round-trip came back. Fired before every gate below so a
+        // return that cannot resume the flow (no saved session) is still visible -
+        // otherwise it is indistinguishable from a member who never came back at
+        // all, which is the blindness #62 is about. The server fires the matching
+        // `onb_oauth_callback`; the pair separates "never returned" from "returned
+        // but the flow did not reopen".
+        if (linkedinStatus && ONBOARDING_LINKEDIN_STATUSES.includes(linkedinStatus)) {
+            track('onb_oauth_result', { status: linkedinStatus, resumable: Boolean(saved) })
+        }
 
         // Already onboarded - never show again; clear any stale saved progress.
         if (branding.meta.onboardedAt) {

@@ -4,6 +4,35 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-08-06 - Fix: `/api/extract` was dead for a week; name the OAuth outcomes it hid
+
+- **`/api/extract` returned 500 for every request from 2026-07-31 to 2026-08-06.** `pdf-parse` was
+  imported at the top of `route.utils.ts`; its pdfjs dependency evaluates `new DOMMatrix()` at
+  module scope and self-polyfills only via a runtime `createRequire('@napi-rs/canvas')`. Bundled
+  into a server chunk that lookup fails, so the module threw `ReferenceError: DOMMatrix is not
+defined` while the route was still evaluating - taking URL, `.docx`, `.txt` and `.md` extraction
+  down with the PDF path that caused it. Fix: import `pdf-parse` lazily inside the PDF branch,
+  polyfill `DOMMatrix`/`ImageData`/`Path2D` from an explicit `@napi-rs/canvas` import (a static
+  specifier Next's file tracer can see - it traced 0 canvas files before, 13 after), and add
+  `pdf-parse`, `pdfjs-dist`, `@napi-rs/canvas` to `serverExternalPackages`. Verified by extracting
+  a real PDF through the exact polyfill-then-import sequence.
+- **The daily funnel health check could not have caught this**: its Vercel step was gated on an
+  onboarding anomaly and scoped to `/api/onboarding/*` and `/api/billing/*`. Added an ungated
+  weekly whole-surface error sweep to the runbook, with module-evaluation errors graded RED at
+  n >= 1 - that stack shape always means the route is fully dead, not degraded.
+- **LinkedIn OAuth outcomes are now observable (GH #62).** OAuth was the only lossy connect method
+  (21/29 progressed vs 15/15 for URL and 17/17 for skip) and every failure fired no event, so
+  refusal, breakage, and a closed tab were indistinguishable. The callback route now fires
+  `onb_oauth_callback{status}` for onboarding-origin round-trips (including the account-switch
+  exits, which leave the flow), and `OnboardingController` fires `onb_oauth_result{status,
+resumable}` when it reads the return param - before every gate, so a return that cannot reopen
+  the flow is visible instead of silent. `session` is the one outcome that cannot be attributed:
+  no Supabase user resolved, so there is no distinctId.
+- **Flag inventory corrected.** `hero-cta-copy` was recorded in baselines as a live landing-page
+  test; its component (`HeroCTA`) is mounted nowhere, so it decides nothing (~11 flag calls per 14
+  days). `onb-welcome-hero` is control-only plumbing, not an experiment. The only live experiment is
+  `onb-modal-exit`. Recorded in `docs/experiments/log.md` so audits stop re-deriving it.
+
 ## 2026-08-04 - Build: remove syntax highlighting, gate redundant deploys (~40x faster builds)
 
 - **Vercel builds took 9-11 minutes; `next build` accounted for 12 seconds of that.** The rest was

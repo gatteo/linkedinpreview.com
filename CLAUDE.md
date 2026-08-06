@@ -125,3 +125,4 @@ Always invoke the `update-docs` skill before committing, creating PRs, or finish
 - TipTap `EditorPanel` is dynamically imported with `ssr: false` - never use in server components
 - The tool component has two variants (`default` and `embed`) - changes must work in both
 - `next.config.mjs` has `skipTrailingSlashRedirect: true` (required for PostHog proxy)
+- Parsers with native or DOM dependencies (`pdf-parse`/pdfjs today) are lazy-imported inside the branch that uses them AND listed in `serverExternalPackages`. A top-level import throws during module evaluation, which 500s every request to the route rather than just the one that needed the parser - `/api/extract` was dead for a week that way. Bundling also breaks the runtime `createRequire` these libs use to load their own optional deps, so the polyfill (`@napi-rs/canvas`) is imported explicitly to stay visible to Next's file tracer
