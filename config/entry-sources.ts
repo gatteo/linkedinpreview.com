@@ -41,8 +41,6 @@ export const ENTRY_SOURCES = [
     // finished onboarding, so it can never be a funnel entry.
     'oauth_return',
     'billing_return',
-
-    'hero', // legacy: components/home/hero-cta.tsx, currently unmounted
 ] as const
 
 export type EntrySource = (typeof ENTRY_SOURCES)[number]

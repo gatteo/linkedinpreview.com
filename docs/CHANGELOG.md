@@ -4,6 +4,21 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-08-06 - Chore: retire the orphaned hero CTA and its flag
+
+- **Deleted `components/home/hero-cta.tsx`.** `HeroCTA` rendered a "Get Started" / "Learn more"
+  pair plus an "or open the full dashboard" link, gated on the `hero-cta-copy` multivariate
+  flag. Nothing imported it - the landing page renders `components/home/hero.tsx`, whose CTAs
+  were rewritten to plan framing in 736c4fa. The flag was at 100% rollout across four 25%
+  variants, so it read as a live landing-page A/B test in every flag listing while deciding
+  nothing; that appearance is what led a funnel baseline to record it as running.
+- **Archived the PostHog flag** (id 145657, `active: false`, `archived: true`, last called
+  2026-08-04). A future hero test should be written fresh: the retired variants ("Get Started",
+  "Use Free Tool") predate the plan-framing rewrite.
+- **Removed the `hero` entry source** from `config/entry-sources.ts` - the deleted component was
+  its only emitter, so it never recorded anything and no historical volume is affected. A stray
+  `?from=hero` now resolves to `direct` like any other unknown value.
+
 ## 2026-08-06 - Fix: `/api/extract` was dead for a week; name the OAuth outcomes it hid
 
 - **`/api/extract` returned 500 for every request from 2026-07-31 to 2026-08-06.** `pdf-parse` was
