@@ -274,7 +274,7 @@ function AuditReport({
             <div
                 className='sticky bottom-0 z-10 -mx-[clamp(20px,4vw,40px)] mt-2 flex flex-col items-center gap-2 px-[clamp(20px,4vw,40px)] pt-10 pb-1'
                 style={{ background: 'linear-gradient(to bottom, transparent, var(--card) 42%)' }}>
-                <ScrollProgressButton rectRef={rectRef} atEnd={atEnd} onClick={onContinue}>
+                <ScrollProgressButton rectRef={rectRef} atEnd={atEnd} step='reveal' onClick={onContinue}>
                     Create my plan
                 </ScrollProgressButton>
                 <span
