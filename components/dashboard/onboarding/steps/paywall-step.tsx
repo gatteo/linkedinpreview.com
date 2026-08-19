@@ -61,7 +61,7 @@ function seededSocialCounts(seed: string) {
 }
 
 export function PaywallStep() {
-    const { answers, finishOffer, role, setUninterruptible } = useOnboarding()
+    const { answers, finishOffer, role } = useOnboarding()
     const { refresh } = usePlan()
     const fn = firstName(answers.profile.name)
     const goal = obGoal(answers.goalId)
@@ -74,18 +74,7 @@ export function PaywallStep() {
     const [checkout, setCheckout] = React.useState(false)
     const [checkoutError, setCheckoutError] = React.useState(false)
 
-    // The embedded Stripe checkout (cross-origin iframe) has no Radix
-    // DismissableLayer of its own, so a stray Escape/outside-click/X while it's
-    // open or still creating the session must not close the whole flow
-    // mid-payment. `checkoutError` already fell back to a normal in-flow error
-    // state, so dismissal is fine again there. Always clears on unmount too.
     const inCheckout = checkout && !checkoutError
-    React.useEffect(() => {
-        setUninterruptible(inCheckout)
-    }, [inCheckout, setUninterruptible])
-    React.useEffect(() => {
-        return () => setUninterruptible(false)
-    }, [setUninterruptible])
 
     // Gate the purchase button on scrolling the whole offer, mirroring the audit
     // page. Progress is fed to the button's border imperatively (no re-render).

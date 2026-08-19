@@ -27,7 +27,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const IDEAS_FAILSAFE_MS = 22000
 
 export function BuildplanStep() {
-    const { answers, update, goNext, role, setUninterruptible } = useOnboarding()
+    const { answers, update, goNext, role } = useOnboarding()
     const fn = firstName(answers.profile.name)
     const [doneCount, setDoneCount] = React.useState(0)
     const [popupOpen, setPopupOpen] = React.useState(false)
@@ -42,16 +42,6 @@ export function BuildplanStep() {
     React.useEffect(() => {
         commitmentRef.current = commitment
     })
-
-    // The popup asks for a real choice - a stray Escape/outside-click/X must
-    // not close the whole flow out from under it. Always clears on unmount too
-    // (the failsafe below can advance away while the popup is still open).
-    React.useEffect(() => {
-        setUninterruptible(popupOpen)
-    }, [popupOpen, setUninterruptible])
-    React.useEffect(() => {
-        return () => setUninterruptible(false)
-    }, [setUninterruptible])
 
     React.useEffect(() => {
         // Cancellable: a dismiss during the popup wait must stop `run()` cleanly
