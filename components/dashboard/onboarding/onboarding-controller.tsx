@@ -47,8 +47,8 @@ const BRANDING_LANGUAGE_BY_CODE: Record<string, string> = {
 
 export function OnboardingController() {
     const { isReady, userId, supabase, email: authEmail } = useAuth()
-    const { branding, isLoading: brandingLoading, updateBranding } = useBranding()
-    const { strategy, isLoading: strategyLoading, updateStrategy } = useStrategy()
+    const { branding, isLoading: brandingLoading, loadFailed: brandingFailed, updateBranding } = useBranding()
+    const { strategy, isLoading: strategyLoading, loadFailed: strategyFailed, updateStrategy } = useStrategy()
     const router = useRouter()
 
     const [open, setOpen] = React.useState(false)
@@ -66,6 +66,14 @@ export function OnboardingController() {
 
     React.useEffect(() => {
         if (!ready || decidedRef.current) return
+
+        // A failed branding/strategy read leaves both at their defaults, which is
+        // indistinguishable from a brand-new user - so every gate below falls
+        // through and the full flow reopens for someone who already finished it.
+        // Defer the decision instead: a deferred onboarding costs one visit, a
+        // re-run costs a completed user all 17 steps. decidedRef stays unset so a
+        // later successful read still decides.
+        if (brandingFailed || strategyFailed) return
 
         const saved = readOnboarding()
         const params = new URLSearchParams(window.location.search)
@@ -162,7 +170,7 @@ export function OnboardingController() {
         // Genuinely new - open the flow.
         decidedRef.current = true
         setOpen(true)
-    }, [ready, branding, strategy, updateBranding, router])
+    }, [ready, brandingFailed, strategyFailed, branding, strategy, updateBranding, router])
 
     // Dev-only debug menu drives the live modal (open/close) via a window event bus.
     React.useEffect(() => {
