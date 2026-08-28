@@ -218,6 +218,8 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     const handleOpenDashboard = React.useCallback(
         async (source: string) => {
             posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
+            if (source === 'tool_nudge') posthog.capture('dashboard_nudge_clicked', { source })
+            posthog.capture('tool_pro_cta_click', { source })
             flush()
             const entry: EntrySource = source === 'tool_nudge' ? 'tool_nudge' : 'tool_footer'
             if (!content) {

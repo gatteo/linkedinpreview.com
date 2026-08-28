@@ -31,11 +31,15 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
             setSelected(completedPlan ?? null)
             setError(false)
             setSucceeded(!!completedPlan)
-            if (!completedPlan) track('upgrade_prompt_view', { reason })
+            if (!completedPlan) {
+                track('upgrade_prompt_view', { reason })
+                track('pricing_view', { reason, source: 'upgrade_dialog' })
+            }
         }
     }, [open, reason, completedPlan])
 
     const choose = (plan: CheckoutPlan) => {
+        track('upgrade_click', { plan, reason, source: 'upgrade_dialog' })
         track('upgrade_select', { plan, reason })
         setError(false)
         setSelected(plan)
