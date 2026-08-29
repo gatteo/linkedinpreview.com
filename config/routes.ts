@@ -34,6 +34,7 @@ export const Routes = {
     Vorschau: '/linkedin-vorschau',
     Privacy: '/privacy',
     Terms: '/terms',
+    Sponsor: '/sponsor',
     Embed: '/embed',
     EmbedSection: '/#embed',
     Dashboard: '/dashboard',
