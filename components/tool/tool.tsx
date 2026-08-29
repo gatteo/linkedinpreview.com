@@ -261,12 +261,11 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
         }
 
         posthog.capture('dashboard_nudge_shown', { source: 'tool' })
-        toast('Nice post! Want a plan behind it?', {
-            description:
-                'Get a free audit of your LinkedIn and a personalized 90-day posting plan - this draft comes with you.',
+        toast('Nice post. Plan what to publish next.', {
+            description: 'Get a free audit and a personalized 90-day posting plan. This draft comes with you.',
             duration: 12000,
             action: {
-                label: 'Create my plan',
+                label: 'Create a free plan',
                 onClick: () => handleOpenDashboard('tool_nudge'),
             },
         })
