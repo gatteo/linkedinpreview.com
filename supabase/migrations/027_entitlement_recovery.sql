@@ -69,6 +69,7 @@ returns void
 language plpgsql security definer set search_path = public as $$
 declare
     v_plan text;
+    v_existing_plan text;
     v_source text;
     v_customer_id text;
     v_subscription_id text;
@@ -80,9 +81,17 @@ begin
     order by case e.plan when 'lifetime' then 0 else 1 end, e.created_at asc
     limit 1;
 
-    select b.plan_source into v_source
+    select b.plan, b.plan_source
+    into v_existing_plan, v_source
     from public.billing b
     where b.user_id = p_user_id;
+
+    -- A pre-ledger lifetime entitlement remains the stronger plan until a reviewed
+    -- import creates its immutable ledger record. A later monthly purchase must not
+    -- downgrade it through this derived projection.
+    if v_plan = 'pro' and v_existing_plan = 'lifetime' and coalesce(v_source, '') not like 'stripe_entitlement_%' then
+        return;
+    end if;
 
     -- The new sources are intentionally distinct from legacy billing rows. This
     -- means a transfer cannot revoke a paid legacy row that has not been reviewed

@@ -15,6 +15,7 @@
         "db:migrate": "bash scripts/db-migrate.sh",
         "format": "prettier --write .",
         "test:entitlement-recovery": "bash scripts/test-entitlement-recovery.sh",
+        "test:entitlement-ingress": "node --experimental-strip-types --test tests/entitlement-ingress.test.mjs",
         "check-updates": "pnpm dlx npm-check-updates --interactive --format group",
         "prepare": "husky"
     },

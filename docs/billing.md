@@ -105,7 +105,9 @@ without that source.
 
 Migration `027_entitlement_recovery.sql` is **not applied to production and the live webhook does not use it yet**. It introduces an immutable Checkout-session ledger, append-only owner assignments, a Stripe event ledger and service-role-only recovery RPCs. Its local regression command is `pnpm test:entitlement-recovery`; it starts an isolated temporary PostgreSQL 16 database, applies `018` and `027`, and verifies the core replay sequence: grant to anonymous A, transfer to confirmed B, redeliver both the same and a distinct event for that session, then assert B stays paid, A stays free, and exactly one conversion grant exists.
 
-The next implementation slice must route signed, paid, allowlisted Checkout events through that immutable ledger, add server-peppered checkout-email proof, and test it with Stripe test-mode signatures before any production migration or recovery UI. Do not backfill or transfer historical paid rows automatically.
+The branch now also contains a test-only ingress helper, `lib/billing/entitlement-ingress.ts`, and `pnpm test:entitlement-ingress`. The test generates a real Stripe test-mode signature, retrieves a mocked canonical paid Checkout Session, deliberately supplies contradictory event/session metadata, and verifies the service RPC payload derives plan only from the allowlisted canonical price while including the immutable session identity, raw-payload digest, and normalized-email HMAC. It is not wired into the live webhook yet.
+
+The next implementation slice must route signed, paid, allowlisted Checkout events through that immutable ledger, add server-peppered checkout-email proof to the production environment, and test the actual webhook integration before any production migration or recovery UI. Do not backfill or transfer historical paid rows automatically.
 
 ## Known limitation (follow-up)
 

@@ -5,7 +5,8 @@ begin;
 
 insert into auth.users (id, email_confirmed_at) values
     ('00000000-0000-0000-0000-0000000000a1', null),
-    ('00000000-0000-0000-0000-0000000000b2', now());
+    ('00000000-0000-0000-0000-0000000000b2', now()),
+    ('00000000-0000-0000-0000-0000000000c3', now());
 
 select * from public.record_stripe_entitlement(
     'evt_test_1',
@@ -32,6 +33,26 @@ select public.claim_entitlement(
     '10000000-0000-0000-0000-000000000001'
 );
 
+-- A legacy lifetime row must never be downgraded by an independent new monthly purchase.
+insert into public.billing (user_id, plan, plan_source)
+values ('00000000-0000-0000-0000-0000000000c3', 'lifetime', 'stripe_lifetime');
+
+select * from public.record_stripe_entitlement(
+    'evt_test_legacy_monthly',
+    'checkout.session.completed',
+    now(),
+    'digest-legacy-monthly',
+    'cs_test_legacy_monthly',
+    '00000000-0000-0000-0000-0000000000c3',
+    'pro',
+    'active',
+    null,
+    'sub_test_legacy_monthly',
+    'cus_test_legacy_monthly',
+    'email-hmac-legacy-monthly',
+    1
+);
+
 -- Exact and distinct Stripe event redelivery must never restore owner A.
 select * from public.record_stripe_entitlement(
     'evt_test_1', 'checkout.session.completed', now(), 'digest-1', 'cs_test_1',
@@ -49,6 +70,7 @@ declare
     v_owner uuid;
     v_a_plan text;
     v_b_plan text;
+    v_legacy_plan text;
     v_assignments integer;
     v_entitlements integer;
     v_events integer;
@@ -59,6 +81,7 @@ begin
     select owner_user_id into v_owner from public.billing_entitlements where stripe_checkout_session_id = 'cs_test_1';
     select plan into v_a_plan from public.billing where user_id = '00000000-0000-0000-0000-0000000000a1';
     select plan into v_b_plan from public.billing where user_id = '00000000-0000-0000-0000-0000000000b2';
+    select plan into v_legacy_plan from public.billing where user_id = '00000000-0000-0000-0000-0000000000c3';
     select count(*) into v_assignments from public.billing_entitlement_assignments;
     select count(*) into v_entitlements from public.billing_entitlements;
     select count(*) into v_events from public.stripe_webhook_events;
@@ -69,10 +92,11 @@ begin
     if v_owner <> '00000000-0000-0000-0000-0000000000b2'::uuid
        or v_a_plan <> 'free'
        or v_b_plan <> 'lifetime'
+       or v_legacy_plan <> 'lifetime'
        or v_assignments <> 1
-       or v_entitlements <> 1
-       or v_events <> 2
-       or v_capture_events <> 1
+       or v_entitlements <> 2
+       or v_events <> 3
+       or v_capture_events <> 2
        or v_anon_can_execute
        or not v_service_can_execute then
         raise exception 'replay invariant or RPC privilege failed: owner %, A %, B %, assignments %, entitlements %, events %, grants %, anon %, service %',
