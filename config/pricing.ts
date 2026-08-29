@@ -33,12 +33,6 @@ export const PRICING = {
     },
 }
 
-/** Money-back guarantee window, in days. */
-export const MONEY_BACK_DAYS = 7
-
-/** Competitor pricing range shown for comparison. */
-export const COMPETITOR_PRICE_RANGE = '$39-199/mo'
-
 /** Note shown on the lifetime card (§7.3): AI generation is metered monthly. */
 export const AI_METERED_NOTE = 'AI generation stays on a generous monthly limit'
 

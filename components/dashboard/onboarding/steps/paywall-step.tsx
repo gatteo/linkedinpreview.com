@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ArrowLeftIcon, ArrowUpRightIcon, CheckIcon, ShieldIcon, StarIcon } from 'lucide-react'
+import { ArrowLeftIcon, ArrowUpRightIcon, CheckIcon, StarIcon } from 'lucide-react'
 
 import {
     growthCards,
@@ -9,15 +9,12 @@ import {
     OB_FEATURES,
     OB_FEATURES_MORE,
     OB_IDEA_PILLARS,
-    OB_PROOF,
-    OB_PW_TESTIMONIALS,
     obGoal,
     obVoice,
     type ObFeature,
 } from '@/config/onboarding-flow'
 import { rolePlural } from '@/config/onboarding-personalization'
-import { MONEY_BACK_DAYS, PRICING, type CheckoutPlan } from '@/config/pricing'
-import { SOCIAL_PROOF } from '@/config/social-proof'
+import { PRICING, type CheckoutPlan } from '@/config/pricing'
 import { cn } from '@/lib/utils'
 import { usePlan } from '@/hooks/use-plan'
 import { PostCard } from '@/components/tool/preview/post-card'
@@ -27,7 +24,7 @@ import { postTextToDoc, track } from '../ai'
 import { GrowthCard, smoothPath } from '../charts'
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
-import { Eyebrow, firstName, GhostLink, H1, ReviewCard, Stars } from '../primitives'
+import { Eyebrow, firstName, GhostLink, H1 } from '../primitives'
 import { ScrollProgressButton } from '../scroll-progress-button'
 import { takeCheckoutPending } from '../types'
 import { useScrollGate } from '../use-scroll-gate'
@@ -307,47 +304,6 @@ export function PaywallStep() {
                 </p>
             </PwSection>
 
-            {/* awards */}
-            <PwSection center>
-                <div className='flex items-center justify-center gap-3.5'>
-                    <Wreath />
-                    <div>
-                        <div className='font-heading text-[34px] leading-none font-bold'>{OB_PROOF.professionals}</div>
-                        <div className='text-muted-foreground mt-1 text-xs leading-[1.35]'>
-                            professionals grew their
-                            <br />
-                            LinkedIn with us
-                        </div>
-                    </div>
-                    <Wreath flip />
-                </div>
-                <div className='bg-secondary border-border text-muted-foreground mt-3.5 inline-flex items-center gap-2.5 rounded-xl border px-4 py-[11px] text-xs'>
-                    <Stars size={14} />
-                    <div>
-                        <b className='text-foreground'>{SOCIAL_PROOF.rating}</b> out of 5, from {OB_PROOF.reviewsLine}
-                    </div>
-                </div>
-            </PwSection>
-
-            {/* testimonials - two explicit columns that each fill and clip, so the
-                bento never leaves a half-empty column the way CSS multi-column did */}
-            <div className='pt-5'>
-                <div
-                    className='grid max-h-[440px] grid-cols-2 gap-2 overflow-hidden max-sm:grid-cols-1'
-                    style={{
-                        maskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, #000 62%, transparent 98%)',
-                    }}>
-                    {[0, 1].map((col) => (
-                        <div key={col} className='flex flex-col'>
-                            {OB_PW_TESTIMONIALS.filter((_, i) => i % 2 === col).map((t, i) => (
-                                <ReviewCard key={i} t={t} compact />
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            </div>
-
             {/* pricing */}
             <PwSection>
                 <Eyebrow className='text-center'>Claim your plan</Eyebrow>
@@ -392,18 +348,6 @@ export function PaywallStep() {
                     </span>
                 </button>
 
-                <div className='text-muted-foreground mt-4 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
-                    <span className='inline-flex items-center gap-1.5'>
-                        <ShieldIcon className='text-success size-[15px]' />
-                        <b className='text-foreground font-semibold'>{MONEY_BACK_DAYS}-day money-back guarantee</b>
-                    </span>
-                    <span className='bg-border-strong size-1 rounded-full' />
-                    <span className='inline-flex items-center gap-1.5'>
-                        <StarIcon className='size-3.5 fill-[var(--orange-500)] text-[var(--orange-500)]' />
-                        <b className='text-foreground font-semibold'>{SOCIAL_PROOF.rating}</b> from {SOCIAL_PROOF.count}{' '}
-                        reviews
-                    </span>
-                </div>
                 <div className='mt-3 text-center'>
                     <GhostLink onClick={decline} className='text-xs'>
                         Continue on the free plan
@@ -617,28 +561,6 @@ const FEAT_ART: Record<NonNullable<ObFeature['art']>, React.ComponentType> = {
     preview: ArtPreview,
     calendar: ArtCalendar,
     analytics: ArtAnalytics,
-}
-
-// ── Awards wreath ───────────────────────────────────────────────────────────
-
-// Laurel branch (the "trophy plant"), one half of a wreath framing the number.
-// The art is a split laurel SVG masked so it renders in the brand orange.
-function Wreath({ flip }: { flip?: boolean }) {
-    const src = flip ? '/images/laurel-right.svg' : '/images/laurel-left.svg'
-    const mask = `url(${src}) center / contain no-repeat`
-    return (
-        <span
-            aria-hidden
-            className='block shrink-0'
-            style={{
-                width: flip ? 52 : 58,
-                height: 84,
-                background: 'var(--orange-500)',
-                mask,
-                WebkitMask: mask,
-            }}
-        />
-    )
 }
 
 // ── Lifetime plan card ──────────────────────────────────────────────────────

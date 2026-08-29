@@ -97,7 +97,7 @@ Per the spec's guardrail (§1.5) and inventory (§9), these ship as clearly-flag
 
 - All proof stats + testimonials in `config/onboarding-personalization.ts` (`ROLE_CONTENT[*].proof`,
   flagged `// PLACEHOLDER`).
-- `config/pricing.ts`: `MONEY_BACK_DAYS`, `COMPETITOR_PRICE_RANGE` - confirm the refund policy and competitor range before quoting them publicly. The expired founding-window setting and its fake scarcity UI were removed on 2026-08-29; do not reintroduce urgency without a real, enforced window.
+- The offer exposes only the live plan prices and plan terms. Its expired founding-window setting, scarcity UI, unverified refund guarantee, competitor-price comparison, and unverified proof wall were removed on 2026-08-29. Do not reintroduce any such claim without a current, auditable source and, for urgency, a real enforced window.
 - 7 per-role fallback first-post templates (`FALLBACK_POSTS`) - solid but worth a copy pass.
 
 ## Known limitation (follow-up)
