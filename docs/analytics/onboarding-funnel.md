@@ -142,6 +142,18 @@ experiment-controlled default hero.
 | `onb_post_ideas_ready` / `onb_post_ideas_failed`        | `count` / -                                                                                                                                                                                                                                                                          | buildplan (4 pillar posts)                                                                |
 | `onb_commitment`                                        | `commitment`                                                                                                                                                                                                                                                                         | commitment popup                                                                          |
 
+### Public tool and upgrade entry events
+
+The free-tool events are captured before the dashboard onboarding controller, so they carry only the properties below. Dashboard upgrade events use `track()` and also carry the current `funnel_version` and `entry_source`. Use `source` to split the free-tool placements. `affiliate_click` is the canonical event reserved for the post-copy Next step module and `/tools`; it is documented before those surfaces ship so all future placements use the same schema.
+
+| Event                     | Properties                                  | Fires when                                                                                          |
+| ------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `dashboard_nudge_clicked` | `source: tool_nudge`                        | The one-time free-tool nudge's "Create my plan" action is clicked.                                  |
+| `tool_pro_cta_click`      | `source: tool_nudge\|tool_footer`           | A free-tool CTA that opens the dashboard is clicked, including the persistent post-copy footer CTA. |
+| `pricing_view`            | `source: upgrade_dialog`, `reason?`         | An unpaid user sees the dashboard upgrade dialog's plan cards.                                      |
+| `upgrade_click`           | `source: upgrade_dialog`, `plan`, `reason?` | A plan button in the dashboard upgrade dialog is clicked, before checkout starts.                   |
+| `affiliate_click`         | `partner`, `placement`, `destination`       | A future affiliate destination is clicked.                                                          |
+
 ### Offer & checkout
 
 | Event                      | Properties                                               | Meaning                                                                                                                                                                                                                                     |
