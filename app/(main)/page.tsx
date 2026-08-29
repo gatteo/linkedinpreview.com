@@ -18,9 +18,9 @@ import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
 
 export const metadata: Metadata = {
-    title: { absolute: 'LinkedIn Post Preview, Formatter & Editor - Free, No Signup' },
+    title: { absolute: 'LinkedIn Post Preview Tool - Free Formatter & Editor' },
     description:
-        'Free LinkedIn post preview, formatter, and editor. Write, format (bold, italic, underline, lists), and preview your post on mobile and desktop before publishing. No signup required.',
+        'Free LinkedIn post formatter and editor with a live preview. Add bold, italic, underline, and lists, then check mobile and desktop before publishing. No signup.',
     alternates: {
         canonical: site.url,
         languages: {
