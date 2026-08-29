@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { ArrowLeftIcon, CheckIcon } from 'lucide-react'
 
-import { AI_METERED_NOTE, COMPETITOR_PRICE_RANGE, MONEY_BACK_DAYS, PRICING, type CheckoutPlan } from '@/config/pricing'
+import { AI_METERED_NOTE, PRICING, type CheckoutPlan } from '@/config/pricing'
 import { usePlan } from '@/hooks/use-plan'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -59,7 +59,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                         <div className='bg-success-soft border-success text-success grid size-14 place-items-center rounded-full border'>
                             <CheckIcon className='size-7' strokeWidth={2.5} />
                         </div>
-                        <DialogTitle>{selected === 'lifetime' ? 'Founder Pass unlocked' : "You're on Pro"}</DialogTitle>
+                        <DialogTitle>{selected === 'lifetime' ? 'Lifetime unlocked' : "You're on Pro"}</DialogTitle>
                         <DialogDescription className='max-w-[38ch]'>
                             Payment confirmed - your higher limits and power features are active now.
                             {selected === 'lifetime' ? ' No renewals, ever.' : ' Manage it anytime in Settings.'}
@@ -137,20 +137,13 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                             </div>
                         </div>
                         <ul className='text-foreground/80 flex flex-col gap-1.5 text-sm'>
-                            {[
-                                'Higher daily AI limits',
-                                'Carousels, calendar & analytics',
-                                `${MONEY_BACK_DAYS}-day money-back`,
-                            ].map((item) => (
+                            {['Higher daily AI limits', 'Carousels, calendar & analytics'].map((item) => (
                                 <li key={item} className='flex items-center gap-2'>
                                     <CheckIcon className='text-primary size-4 shrink-0' />
                                     {item}
                                 </li>
                             ))}
                         </ul>
-                        <p className='text-muted-foreground text-center text-xs'>
-                            Others charge <span className='line-through'>{COMPETITOR_PRICE_RANGE}</span>.
-                        </p>
                         <button
                             type='button'
                             onClick={() => onOpenChange(false)}
