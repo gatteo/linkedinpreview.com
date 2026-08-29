@@ -101,11 +101,15 @@ without that source.
 - The offer exposes only the live plan prices and plan terms. Its expired founding-window setting, scarcity UI, unverified refund guarantee, competitor-price comparison, and unverified proof wall were removed on 2026-08-29. Do not reintroduce any such claim without a current, auditable source and, for urgency, a real enforced window.
 - 7 per-role fallback first-post templates (`FALLBACK_POSTS`) - solid but worth a copy pass.
 
+## Entitlement recovery work in progress
+
+Migration `027_entitlement_recovery.sql` is **not applied to production and the live webhook does not use it yet**. It introduces an immutable Checkout-session ledger, append-only owner assignments, a Stripe event ledger and service-role-only recovery RPCs. Its local regression command is `pnpm test:entitlement-recovery`; it starts an isolated temporary PostgreSQL 16 database, applies `018` and `027`, and verifies the core replay sequence: grant to anonymous A, transfer to confirmed B, redeliver both the same and a distinct event for that session, then assert B stays paid, A stays free, and exactly one conversion grant exists.
+
+The next implementation slice must route signed, paid, allowlisted Checkout events through that immutable ledger, add server-peppered checkout-email proof, and test it with Stripe test-mode signatures before any production migration or recovery UI. Do not backfill or transfer historical paid rows automatically.
+
 ## Known limitation (follow-up)
 
-Entitlements are keyed to the anonymous Supabase `user_id`. The onboarding email step and the Settings
+Entitlements are currently keyed to the anonymous Supabase `user_id`. The onboarding email step and the Settings
 email-OTP login now let a user bind an email (or LinkedIn) to that id, converting the anon session into
 a cross-device account that survives cleared storage - the natural recovery anchor. The remaining gap is
 automatic recovery: a user who never bound an email before losing the session still has no path back.
-Before charging real money at scale, also capture the Stripe email on the webhook and auto-link it to the
-bound account.
