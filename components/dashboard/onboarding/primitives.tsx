@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { motion } from 'framer-motion'
-import { AwardIcon, CheckIcon, GlobeIcon, LinkedinIcon, Loader2Icon, StarIcon, type LucideIcon } from 'lucide-react'
+import { AwardIcon, CheckIcon, GlobeIcon, Loader2Icon, StarIcon, type LucideIcon } from 'lucide-react'
 
 import type { FastIdentity } from '@/types/onboarding'
-import type { ObReaction, ObTestimonial } from '@/config/onboarding-flow'
+import type { ObReaction } from '@/config/onboarding-flow'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -15,9 +15,8 @@ import { Button } from '@/components/ui/button'
 //
 // The audit funnel reuses a small kit across all 17 steps: editorial type, a
 // full-width vermilion CTA, big tappable choice cards, selectable chips, the
-// assistant reaction bubble, checklist loaders, the LinkedIn-style profile
-// card, and the social-proof review card. Centralizing them keeps each step
-// lean and the look consistent.
+// assistant reaction bubble, checklist loaders, and the LinkedIn-style profile
+// card. Centralizing them keeps each step lean and the look consistent.
 // ---------------------------------------------------------------------------
 
 export function Spinner({ className }: { className?: string }) {
@@ -464,83 +463,6 @@ export function LinkedInCard({
                     </div>
                 )}
             </div>
-        </div>
-    )
-}
-
-// ── Review card (social proof wall) ─────────────────────────────────────────
-
-export function ReviewCard({
-    t,
-    followersOnly,
-    compact,
-}: {
-    t: ObTestimonial
-    followersOnly?: boolean
-    compact?: boolean
-}) {
-    const meta = followersOnly
-        ? t.followers
-            ? `${t.followers} followers`
-            : t.role
-        : `${t.role}${t.followers ? ` · ${t.followers} followers` : ''}`
-    return (
-        <div
-            className={cn(
-                'bg-secondary border-border mb-2 break-inside-avoid rounded-xl border',
-                compact ? 'rounded-[10px] p-[10px_11px]' : 'p-3',
-            )}>
-            <div className={cn('flex items-center gap-2', compact ? 'mb-1.5' : 'mb-2')}>
-                <PersonAvatar name={t.name} src={t.avatar ? `/images/reviews/${t.avatar}` : undefined} size={30} />
-                <div className='min-w-0'>
-                    <b className={cn('block leading-[1.2] font-semibold', compact ? 'text-[11.5px]' : 'text-[12.5px]')}>
-                        {t.name}
-                    </b>
-                    <span className={cn('text-muted-foreground', compact ? 'text-[10px]' : 'text-[10.5px]')}>
-                        {meta}
-                    </span>
-                </div>
-                <span className='ml-auto grid size-5 shrink-0 place-items-center rounded-[5px] bg-[var(--linkedin)] text-white'>
-                    <LinkedinIcon className='size-3 fill-current' strokeWidth={0} />
-                </span>
-            </div>
-            {t.result ? (
-                <div className='grid gap-[5px]'>
-                    {t.result.map((r, i) => (
-                        <div
-                            key={i}
-                            className={cn(
-                                'text-muted-foreground flex items-baseline justify-between',
-                                compact ? 'text-[11px]' : 'text-xs',
-                            )}>
-                            <span>{r[0]}</span>
-                            <b className={cn('font-heading text-success', compact ? 'text-[13px]' : 'text-[15px]')}>
-                                {r[1]}
-                            </b>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <p
-                    className={cn(
-                        'text-card-foreground m-0',
-                        compact ? 'text-[11.5px] leading-[1.42]' : 'text-[12.5px] leading-normal',
-                    )}>
-                    &ldquo;{t.quote}&rdquo;
-                </p>
-            )}
-            {t.shot && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                    src={`/images/reviews/${t.shot}`}
-                    alt='LinkedIn analytics screenshot'
-                    loading='lazy'
-                    className={cn(
-                        'border-border mt-2 block w-full rounded-md border bg-white',
-                        compact && 'max-h-[116px] rounded-md object-cover object-top',
-                    )}
-                />
-            )}
         </div>
     )
 }

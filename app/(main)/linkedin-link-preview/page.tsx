@@ -6,13 +6,11 @@ import { type FAQPage, type SoftwareApplication, type WithContext } from 'schema
 
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
-import { SOCIAL_PROOF } from '@/config/social-proof'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AnimateIn } from '@/components/ui/animate-in'
 import { Button } from '@/components/ui/button'
 import { DotBackground } from '@/components/ui/dot-background'
 import { CtaSection } from '@/components/home/cta-section'
-import { StarRating } from '@/components/home/star-rating'
 import { LinkPreviewTool } from '@/components/link-preview/link-preview-tool'
 
 const description =
@@ -83,15 +81,6 @@ function LinkPreviewHero() {
                         Paste a URL to see how your link card will look on LinkedIn, on desktop and mobile. Then check
                         your Open Graph tags and fix any issues before you share.
                     </p>
-                </AnimateIn>
-
-                <AnimateIn delay={0.3}>
-                    <div className='bg-secondary mb-8 flex items-center gap-2 rounded-full px-4 py-2'>
-                        <StarRating />
-                        <span className='text-muted-foreground text-xs font-medium sm:text-sm'>
-                            Trusted by thousands of LinkedIn creators
-                        </span>
-                    </div>
                 </AnimateIn>
 
                 <AnimateIn delay={0.4}>
@@ -230,13 +219,7 @@ export default function LinkPreviewPage() {
             'price': '0',
             'priceCurrency': 'USD',
         },
-        'aggregateRating': {
-            '@type': 'AggregateRating',
-            'ratingValue': SOCIAL_PROOF.rating,
-            'bestRating': '5',
-            'worstRating': '1',
-            'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
-        },
+
         'featureList': [
             'URL Open Graph and Twitter card preview',
             'Desktop and mobile LinkedIn link card preview',

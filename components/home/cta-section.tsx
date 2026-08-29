@@ -3,11 +3,9 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
 import { Routes } from '@/config/routes'
-import { SOCIAL_PROOF } from '@/config/social-proof'
 
 import { AnimateIn } from '../ui/animate-in'
 import { Button } from '../ui/button'
-import { StarRating } from './star-rating'
 
 export function CtaSection() {
     return (
@@ -32,11 +30,11 @@ export function CtaSection() {
                                 Your next post is one line away
                             </p>
                             <h2 className='font-heading mx-auto mb-4 max-w-[640px] text-[clamp(32px,4.6vw,48px)] leading-[1.04] font-bold tracking-[-0.03em]'>
-                                Supercharge your LinkedIn presence.
+                                Write your next LinkedIn post.
                             </h2>
                             <p className='mx-auto mb-7 max-w-[480px] text-[17px] leading-[1.55] text-[oklch(0.92_0.01_200_/_0.85)]'>
-                                See why thousands of professionals use our tool to create engaging posts that stand out.
-                                Free forever - no account needed to start.
+                                Use the free editor to format your text and preview it before you publish. No account
+                                needed.
                             </p>
                             <div className='inline-flex flex-wrap justify-center gap-3'>
                                 <span className='gradient-border'>
@@ -54,15 +52,6 @@ export function CtaSection() {
                                     className='h-[50px] border-white/25 bg-white/10 px-6 text-base text-[oklch(0.98_0.01_90)] hover:bg-white/20 hover:text-white'>
                                     <Link href={Routes.Blog}>Read our guides</Link>
                                 </Button>
-                            </div>
-                            <div className='mt-7 flex items-center justify-center gap-2.5'>
-                                <span className='text-[13.5px] font-medium text-[oklch(0.92_0.01_200_/_0.9)]'>
-                                    {SOCIAL_PROOF.rating}/5
-                                </span>
-                                <StarRating />
-                                <span className='text-[13.5px] text-[oklch(0.92_0.01_200_/_0.7)]'>
-                                    from {SOCIAL_PROOF.count} reviews
-                                </span>
                             </div>
                         </div>
                     </div>

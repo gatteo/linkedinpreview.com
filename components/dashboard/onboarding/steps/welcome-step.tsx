@@ -1,10 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckIcon, ClockIcon, SparklesIcon, StarIcon } from 'lucide-react'
+import { CheckIcon, ClockIcon, SparklesIcon } from 'lucide-react'
 
 import { ENTRY_WELCOME } from '@/config/entry-sources'
-import { SOCIAL_PROOF } from '@/config/social-proof'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 import { useObExperiment } from '@/hooks/use-ob-experiment'
 import { Button } from '@/components/ui/button'
@@ -60,10 +59,6 @@ export function WelcomeStep() {
                         Your draft is saved
                     </HeroPill>
                 )}
-                <HeroPill>
-                    <StarIcon className='size-[13px] fill-[var(--orange-300)] text-[var(--orange-300)]' />
-                    <b className='font-bold'>{SOCIAL_PROOF.rating}</b>&nbsp;from {SOCIAL_PROOF.count} professionals
-                </HeroPill>
                 <HeroPill>
                     <SparklesIcon className='size-3.5 text-[var(--orange-300)]' />
                     Personalized strategy
