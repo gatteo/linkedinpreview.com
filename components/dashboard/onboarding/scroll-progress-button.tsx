@@ -22,11 +22,16 @@ import { findScrollParent } from './use-scroll-gate'
 export function ScrollProgressButton({
     atEnd,
     rectRef,
+    step,
     onClick,
     children,
 }: {
     atEnd: boolean
     rectRef: React.RefObject<SVGRectElement | null>
+    /** Which gated screen this button sits on. Stamped on the blocked event:
+     *  the button is shared, and without it reveal-gate clicks are
+     *  indistinguishable from blocked purchase intent on the paywall. */
+    step: 'reveal' | 'paywall'
     onClick: () => void
     children: React.ReactNode
 }) {
@@ -55,7 +60,7 @@ export function ScrollProgressButton({
                     }
                     // Not read yet: take them to the offer rather than swallowing
                     // the click, and record that the gate blocked a purchase intent.
-                    track('onb_paywall_gate_blocked')
+                    track('onb_paywall_gate_blocked', { step })
                     const scroller = findScrollParent(wrapRef.current)
                     scroller?.scrollTo({ top: scroller.scrollHeight, behavior: 'smooth' })
                 }}>
