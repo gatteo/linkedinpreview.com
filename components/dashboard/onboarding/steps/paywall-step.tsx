@@ -33,21 +33,9 @@ import { OnboardingCheckout } from './checkout'
 // ---------------------------------------------------------------------------
 // 15 · Paywall - one long, scrollable offer: the ready checklist, modeled
 // growth numbers, the pillar posts we actually generated, the feature bento,
-// social proof, and the pricing block (real PRICING + embedded Stripe
-// checkout). A quiet decline path keeps the free plan honest.
+// and the pricing block (real PRICING + embedded Stripe checkout). A quiet
+// decline path keeps the free plan honest.
 // ---------------------------------------------------------------------------
-
-// Decorative social proof for the pillar-post mockups: seeded per card so each
-// shows different (stable) counts instead of the preview's fixed defaults.
-function seededSocialCounts(seed: string) {
-    let h = 0
-    for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0
-    const next = (n: number) => {
-        h = (h * 1103515245 + 12345) | 0
-        return Math.abs(h) % n
-    }
-    return { others: 140 + next(720), comments: 12 + next(54), reposts: 3 + next(19) }
-}
 
 export function PaywallStep() {
     const { answers, finishOffer, role, setUninterruptible } = useOnboarding()
@@ -232,7 +220,6 @@ export function PaywallStep() {
                         {answers.postIdeas.map((idea) => {
                             const pillar =
                                 OB_IDEA_PILLARS.find((p) => p.category === idea.category) ?? OB_IDEA_PILLARS[0]
-                            const social = seededSocialCounts(idea.category + (answers.profile.name || ''))
                             return (
                                 <div
                                     key={idea.category}
@@ -255,7 +242,6 @@ export function PaywallStep() {
                                                 avatarUrl: answers.profile.avatarUrl,
                                             }}
                                             interactiveMore={false}
-                                            social={social}
                                             className='rounded-none border-none shadow-none'
                                         />
                                     </ScreenSizeProvider>

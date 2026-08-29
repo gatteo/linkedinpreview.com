@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import type { Media } from '../tool'
 import { ActionButtons } from './action-buttons'
 import { ContentSection } from './content-section'
-import { Reactions, type PostSocialCounts } from './reactions'
+import { Reactions } from './reactions'
 import { UserInfo, type PreviewAuthor } from './user-info'
 
 interface PostCardProps {
@@ -16,8 +16,6 @@ interface PostCardProps {
     clampContent?: boolean
     /** When false, the clamped "...more" is a static sneak peek, not expandable. */
     interactiveMore?: boolean
-    /** Decorative social-proof counts; defaults match the classic preview. */
-    social?: PostSocialCounts
     className?: string
 }
 
@@ -28,7 +26,6 @@ export const PostCard: React.FC<PostCardProps> = ({
     promptBranding,
     clampContent = true,
     interactiveMore = true,
-    social,
     className,
 }) => {
     return (
@@ -64,7 +61,7 @@ export const PostCard: React.FC<PostCardProps> = ({
                 </div>
             )}
             <div className='py-2 pr-4 pl-4'>
-                <Reactions social={social} />
+                <Reactions />
                 <hr className='mt-3 border-neutral-200' />
                 <ActionButtons />
             </div>

@@ -6,12 +6,10 @@ import { type FAQPage, type SoftwareApplication, type WithContext } from 'schema
 
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
-import { SOCIAL_PROOF } from '@/config/social-proof'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AnimateIn } from '@/components/ui/animate-in'
 import { Button } from '@/components/ui/button'
 import { DotBackground } from '@/components/ui/dot-background'
-import { StarRating } from '@/components/home/star-rating'
 import { Icon, Icons } from '@/components/icon'
 import { Tool } from '@/components/tool/tool'
 
@@ -156,15 +154,6 @@ function VorschauHero() {
                         Der kostenlose Editor, um deinen LinkedIn Beitrag zu formatieren und die Vorschau für Mobil und
                         Desktop zu sehen - bevor du ihn veröffentlichst.
                     </p>
-                </AnimateIn>
-
-                <AnimateIn delay={0.3}>
-                    <div className='bg-secondary mb-8 flex items-center gap-2 rounded-full px-4 py-2'>
-                        <StarRating />
-                        <span className='text-muted-foreground text-xs font-medium sm:text-sm'>
-                            Von tausenden LinkedIn-Creators genutzt
-                        </span>
-                    </div>
                 </AnimateIn>
 
                 <AnimateIn delay={0.4}>
@@ -387,14 +376,6 @@ function VorschauCta() {
                             </Link>
                         </Button>
                     </AnimateIn>
-
-                    <AnimateIn delay={0.3}>
-                        <div className='mt-6 flex items-center gap-2'>
-                            <span className='text-muted-foreground text-sm font-medium'>{SOCIAL_PROOF.rating}/5</span>
-                            <StarRating />
-                            <span className='text-muted-foreground text-sm'>aus {SOCIAL_PROOF.count} Bewertungen</span>
-                        </div>
-                    </AnimateIn>
                 </div>
             </DotBackground>
         </section>
@@ -417,13 +398,7 @@ export default function LinkedInVorschauPage() {
             'price': '0',
             'priceCurrency': 'EUR',
         },
-        'aggregateRating': {
-            '@type': 'AggregateRating',
-            'ratingValue': SOCIAL_PROOF.rating,
-            'bestRating': '5',
-            'worstRating': '1',
-            'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
-        },
+
         'featureList': [
             'Fett-, Kursiv-, Unterstreichungs- und Durchstreichungsformatierung',
             'Aufzählungen und nummerierte Listen',
