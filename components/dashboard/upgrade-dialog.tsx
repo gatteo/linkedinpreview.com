@@ -59,7 +59,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                         <div className='bg-success-soft border-success text-success grid size-14 place-items-center rounded-full border'>
                             <CheckIcon className='size-7' strokeWidth={2.5} />
                         </div>
-                        <DialogTitle>{selected === 'lifetime' ? 'Founder Pass unlocked' : "You're on Pro"}</DialogTitle>
+                        <DialogTitle>{selected === 'lifetime' ? 'Lifetime unlocked' : "You're on Pro"}</DialogTitle>
                         <DialogDescription className='max-w-[38ch]'>
                             Payment confirmed - your higher limits and power features are active now.
                             {selected === 'lifetime' ? ' No renewals, ever.' : ' Manage it anytime in Settings.'}

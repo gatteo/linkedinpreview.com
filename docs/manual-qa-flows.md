@@ -197,4 +197,4 @@ Expected outcome: theme changes apply immediately; disconnect clears the connect
 - Creation wizard "Audio / video (coming soon)" upload option is intentionally disabled.
 - Sidebar "Inspiration" item shows a "Soon" badge and is disabled.
 - `/dash-example` is leftover demo scaffolding with fake data. It should be deleted before go-live and is not a feature to test.
-- `config/pricing.ts` founding-window date, refund days, and competitor price range are placeholders to confirm before public launch.
+- `config/pricing.ts` money-back days and competitor price range require source verification before public claims. The expired founding-window date and its scarcity claims were removed on 2026-08-29; any future urgency must map to a real enforced window.
