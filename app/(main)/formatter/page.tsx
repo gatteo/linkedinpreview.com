@@ -6,6 +6,7 @@ import { type FAQPage, type SoftwareApplication, type WithContext } from 'schema
 
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { AnimateIn } from '@/components/ui/animate-in'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { CtaSection } from '@/components/home/cta-section'
 import { Features } from '@/components/home/features'
 import { HowToUse } from '@/components/home/how-to-use'
 import { Reason } from '@/components/home/reason'
+import { StarRating } from '@/components/home/star-rating'
 import { Tool } from '@/components/tool/tool'
 
 export const metadata: Metadata = {
@@ -86,6 +88,15 @@ function FormatterHero() {
                         The free LinkedIn post editor for bold, italic, underline, and lists. Format your post, then
                         preview it on mobile and desktop before you publish.
                     </p>
+                </AnimateIn>
+
+                <AnimateIn delay={0.3}>
+                    <div className='bg-secondary mb-8 flex items-center gap-2 rounded-full px-4 py-2'>
+                        <StarRating />
+                        <span className='text-muted-foreground text-xs font-medium sm:text-sm'>
+                            Trusted by thousands of LinkedIn creators
+                        </span>
+                    </div>
                 </AnimateIn>
 
                 <AnimateIn delay={0.4}>
@@ -225,7 +236,13 @@ export default function FormatterPage() {
             'price': '0',
             'priceCurrency': 'USD',
         },
-
+        'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': SOCIAL_PROOF.rating,
+            'bestRating': '5',
+            'worstRating': '1',
+            'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
+        },
         'featureList': [
             'Bold, italic, underline, strikethrough text formatting',
             'Bullet point and numbered lists',

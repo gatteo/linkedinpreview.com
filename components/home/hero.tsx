@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUpRight, Github } from 'lucide-react'
 
 import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { ExternalLinks } from '@/config/urls'
 
 import { Icons } from '../icon'
@@ -11,6 +12,7 @@ import { AnimateIn } from '../ui/animate-in'
 import { Button } from '../ui/button'
 import { HeroPostPreview } from './hero-post-preview'
 import { IllustrationTile } from './illustration-tile'
+import { StarRating } from './star-rating'
 
 export function Hero() {
     return (
@@ -78,6 +80,16 @@ export function Hero() {
                             <span>No signup</span>
                             <span className='opacity-45'>·</span>
                             <span>Open source</span>
+                        </div>
+                    </AnimateIn>
+
+                    <AnimateIn delay={0.24}>
+                        <div className='inline-flex items-center gap-2.5'>
+                            <StarRating />
+                            <div className='text-muted-foreground text-[13px]'>
+                                <b className='text-foreground'>{SOCIAL_PROOF.rating}</b> from {SOCIAL_PROOF.count}{' '}
+                                reviews
+                            </div>
                         </div>
                     </AnimateIn>
                 </div>

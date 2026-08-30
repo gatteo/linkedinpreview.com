@@ -4,6 +4,7 @@ import { type Organization, type SoftwareApplication, type WebSite, type WithCon
 
 import { Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { SOCIAL_PROOF } from '@/config/social-proof'
 import { CtaSection } from '@/components/home/cta-section'
 import { DashboardShowcase } from '@/components/home/dashboard-showcase'
 import { EmbedSection } from '@/components/home/embed-section'
@@ -73,7 +74,13 @@ export default function Page() {
             'price': '0',
             'priceCurrency': 'USD',
         },
-
+        'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': SOCIAL_PROOF.rating,
+            'bestRating': '5',
+            'worstRating': '1',
+            'ratingCount': Number(SOCIAL_PROOF.count.replace(/,/g, '')),
+        },
         'featureList': [
             'Real-time LinkedIn post preview',
             'Mobile and desktop preview',
