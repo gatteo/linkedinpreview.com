@@ -24,8 +24,7 @@ import { postTextToDoc, track } from '../ai'
 import { GrowthCard, smoothPath } from '../charts'
 import { useOnboarding } from '../context'
 import { iconFor } from '../icons'
-import { Eyebrow, firstName, GhostLink, H1 } from '../primitives'
-import { ScrollProgressButton } from '../scroll-progress-button'
+import { CTA, Eyebrow, firstName, GhostLink, H1 } from '../primitives'
 import { takeCheckoutPending } from '../types'
 import { useScrollGate } from '../use-scroll-gate'
 import { OnboardingCheckout } from './checkout'
@@ -64,19 +63,15 @@ export function PaywallStep() {
         return () => setUninterruptible(false)
     }, [setUninterruptible])
 
-    // Gate the purchase button on scrolling the whole offer, mirroring the audit
-    // page. Progress is fed to the button's border imperatively (no re-render).
     const rootRef = React.useRef<HTMLDivElement>(null)
-    const rectRef = React.useRef<SVGRectElement>(null)
     // How far the offer is actually read. Without this a user who never scrolls
     // is indistinguishable from one who read the price and declined, which made
     // the largest paywall cohort (viewers who leave with no event at all)
     // impossible to explain. Milestones fire once each, in order.
     const depthRef = React.useRef(0)
-    const { atEnd } = useScrollGate(rootRef, {
+    useScrollGate(rootRef, {
         endThreshold: 48,
         onProgress: (p) => {
-            if (rectRef.current) rectRef.current.style.strokeDashoffset = String(1 - p)
             const milestone = p >= 1 ? 100 : Math.floor(p * 4) * 25
             if (milestone > depthRef.current) {
                 depthRef.current = milestone
@@ -341,21 +336,11 @@ export function PaywallStep() {
                 </div>
             </PwSection>
 
-            {/* Purchase CTA: gated on scrolling the full offer, border traces depth.
-                Full-bleeds past the wrapper padding so the fade spans the whole column */}
+            {/* Purchase CTA full-bleeds past the wrapper padding so the fade spans the whole column. */}
             <div
                 className='sticky bottom-0 z-10 -mx-[clamp(20px,4vw,40px)] mt-2 flex flex-col items-center gap-2 px-[clamp(20px,4vw,40px)] pt-10 pb-1'
                 style={{ background: 'linear-gradient(to bottom, transparent, var(--card) 42%)' }}>
-                <ScrollProgressButton rectRef={rectRef} atEnd={atEnd} onClick={startCheckout}>
-                    {atEnd ? (selected === 'lifetime' ? 'Get lifetime' : 'Start monthly') : 'Activate my plan'}
-                </ScrollProgressButton>
-                <span
-                    className={cn(
-                        'text-muted-foreground text-[11.5px] transition-opacity duration-300',
-                        atEnd ? 'opacity-0' : 'opacity-100',
-                    )}>
-                    Scroll through your plan to activate
-                </span>
+                <CTA onClick={startCheckout}>{selected === 'lifetime' ? 'Get lifetime' : 'Start monthly'}</CTA>
             </div>
         </div>
     )
