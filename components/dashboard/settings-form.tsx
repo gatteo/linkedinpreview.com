@@ -296,7 +296,7 @@ function BillingCard() {
                             {isLoading
                                 ? 'Loading…'
                                 : plan === 'lifetime'
-                                  ? 'Lifetime'
+                                  ? 'Lifetime - Founder Pass'
                                   : plan === 'pro'
                                     ? `Pro - ${PRICING.monthly.display}/mo`
                                     : 'Free plan'}

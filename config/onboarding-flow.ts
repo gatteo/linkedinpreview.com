@@ -800,3 +800,17 @@ export function languageCodePair(identity: FastIdentity | undefined | null): str
     if (codes.length < 2) return null
     return `${codes[1]}/${codes[0]}`
 }
+
+// --- Offer scarcity ----------------------------------------------------------
+
+export const OB_TICKET = {
+    badge: 'Lifetime Founder Pass',
+    /** Pass counter shown on the golden ticket. */
+    passNumber: '#2,848',
+    passTotal: '/ 3,000',
+    spotsStart: 152,
+    spotsFloor: 118,
+    spotsPct: '94.9%',
+    /** The post-founding price the countdown warns about. */
+    nextPrice: '$69',
+}
