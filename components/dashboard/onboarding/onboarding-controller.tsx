@@ -47,8 +47,8 @@ const BRANDING_LANGUAGE_BY_CODE: Record<string, string> = {
 
 export function OnboardingController() {
     const { isReady, userId, supabase, email: authEmail } = useAuth()
-    const { branding, isLoading: brandingLoading, updateBranding } = useBranding()
-    const { strategy, isLoading: strategyLoading, updateStrategy } = useStrategy()
+    const { branding, isLoading: brandingLoading, loadFailed: brandingLoadFailed, updateBranding } = useBranding()
+    const { strategy, isLoading: strategyLoading, loadFailed: strategyLoadFailed, updateStrategy } = useStrategy()
     const router = useRouter()
 
     const [open, setOpen] = React.useState(false)
@@ -63,9 +63,16 @@ export function OnboardingController() {
     const firstDraftPromiseRef = React.useRef<Promise<{ id: string } | null> | null>(null)
 
     const ready = isReady && !brandingLoading && !strategyLoading
+    // Both gates below read ABSENCE (no onboardedAt, no strategy.completedAt, empty
+    // role) as "never onboarded". A failed read produces exactly that shape from the
+    // defaults, so deciding on it re-runs the whole flow for someone who already
+    // finished it - and the debounced session save then rewrites their completed
+    // row's resume_at back to 'welcome'. When we cannot read the gate, do nothing:
+    // decidedRef stays false, so a later successful read still gets its turn.
+    const gateUnreadable = brandingLoadFailed || strategyLoadFailed
 
     React.useEffect(() => {
-        if (!ready || decidedRef.current) return
+        if (!ready || gateUnreadable || decidedRef.current) return
 
         const saved = readOnboarding()
         const params = new URLSearchParams(window.location.search)
@@ -162,7 +169,7 @@ export function OnboardingController() {
         // Genuinely new - open the flow.
         decidedRef.current = true
         setOpen(true)
-    }, [ready, branding, strategy, updateBranding, router])
+    }, [ready, gateUnreadable, branding, strategy, updateBranding, router])
 
     // Dev-only debug menu drives the live modal (open/close) via a window event bus.
     React.useEffect(() => {
@@ -211,6 +218,10 @@ export function OnboardingController() {
         (answers: OnboardingAnswers, step: StepId) => {
             persistOnboarding(answers, step)
             if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
+            // Once the completion write has gone out, every further resume_at is
+            // stale by construction. Does not close the in-flight window (a request
+            // already sent cannot be recalled) - see #74.
+            if (finishedRef.current) return
             sessionTimerRef.current = setTimeout(() => saveSession(answers, { resume_at: step }), 1500)
         },
         [saveSession],
