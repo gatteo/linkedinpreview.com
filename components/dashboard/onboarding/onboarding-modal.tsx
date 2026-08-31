@@ -2,13 +2,11 @@
 
 import * as React from 'react'
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion'
-import { XIcon } from 'lucide-react'
 
 import type { ResolvedEntrySource } from '@/config/entry-sources'
 import { OB_STEP_META, sectionFor } from '@/config/onboarding-flow'
 import { slideStep } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { useObExperiment } from '@/hooks/use-ob-experiment'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 
 import { track } from './ai'
@@ -60,8 +58,6 @@ type OnboardingModalProps = {
     onConnectLinkedin: (answers: OnboardingAnswers) => void
     onBindEmail: (email: string) => Promise<{ ok: boolean; taken?: boolean }>
     userEmail?: string | null
-    /** Closing without finishing (X, Escape, outside click) - resumable next visit. */
-    onDismiss: () => void
 }
 
 export function OnboardingModal({
@@ -76,7 +72,6 @@ export function OnboardingModal({
     onConnectLinkedin,
     onBindEmail,
     userEmail,
-    onDismiss,
 }: OnboardingModalProps) {
     const [answers, setAnswers] = React.useState(initialAnswers)
     const [index, setIndex] = React.useState(() => indexOf(startStepId))
@@ -132,31 +127,6 @@ export function OnboardingModal({
         onComplete()
     }, [converted, onComplete])
 
-    // Closing without finishing (X, Escape, outside click) - distinct from
-    // `complete`: it never marks the account onboarded, so the controller's
-    // existing resume gate reopens the flow at this step on the next visit.
-    // Every answer up to this point is already incrementally persisted (the
-    // effect below), so there is nothing extra to save here.
-    const dismiss = React.useCallback(() => {
-        track('onb_flow_dismissed', { step })
-        onDismiss()
-    }, [step, onDismiss])
-
-    // Experiment: is the dismissible modal (control, shipped 2026-07-31) worth
-    // its exits, or does the locked flow convert better? In the locked variant
-    // no exit affordance renders and Radix dismissal is suppressed - so
-    // `onb_flow_dismissed` only ever fires for the control variant.
-    const { dismissible } = useObExperiment('onb-modal-exit')
-
-    // A ref, not state: read at the moment of an Escape/outside-click/X event,
-    // never needs to trigger a render. Steps with an uninterruptible overlay
-    // (the buildplan commitment popup, an open/in-flight Stripe checkout) set
-    // this so a stray dismissal can't close the whole flow mid-choice/mid-payment.
-    const uninterruptibleRef = React.useRef(false)
-    const setUninterruptible = React.useCallback((value: boolean) => {
-        uninterruptibleRef.current = value
-    }, [])
-
     // Incremental persistence: stash answers + current step after each change so a
     // refresh or the LinkedIn OAuth round-trip rehydrates without losing progress
     // or re-spending AI calls. The terminal 'confirm' step is already persisted/cleared.
@@ -192,7 +162,6 @@ export function OnboardingModal({
             userEmail,
             linkedinError,
             converted,
-            setUninterruptible,
             arrivalSource,
         }),
         [
@@ -209,7 +178,6 @@ export function OnboardingModal({
             userEmail,
             linkedinError,
             converted,
-            setUninterruptible,
             arrivalSource,
         ],
     )
@@ -219,18 +187,18 @@ export function OnboardingModal({
     const connected = index > indexOf('fetching') && !!answers.profile.name
 
     return (
-        <Dialog open={open} onOpenChange={(next) => !next && dismissible && dismiss()}>
+        <Dialog open={open}>
             <DialogContent
+                // The flow has no exit short of finishing: the onb-modal-exit
+                // experiment (2026-08-01..08-19, docs/experiments/log.md) settled
+                // that the locked modal beats the dismissible one, so Radix
+                // dismissal is suppressed and no close affordance renders.
+                // Progress is never lost - answers persist incrementally and the
+                // resume gate reopens the flow at the saved step on the next visit.
                 showCloseButton={false}
-                onEscapeKeyDown={(e) => {
-                    if (uninterruptibleRef.current || !dismissible) e.preventDefault()
-                }}
-                onPointerDownOutside={(e) => {
-                    if (uninterruptibleRef.current || !dismissible) e.preventDefault()
-                }}
-                onInteractOutside={(e) => {
-                    if (uninterruptibleRef.current || !dismissible) e.preventDefault()
-                }}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onInteractOutside={(e) => e.preventDefault()}
                 className='flex h-[min(790px,90svh)] w-[min(1160px,92vw)] max-w-[min(1160px,92vw)] flex-col gap-0 overflow-hidden rounded-[20px] border-none p-0 shadow-[inset_0_1px_0_0_oklch(1_0_0/0.6),0_0_0_1px_var(--border),0_40px_90px_-24px_oklch(0.12_0.03_222/_0.62),0_12px_30px_-12px_oklch(0.12_0.03_222/_0.5)] sm:max-w-[min(1160px,92vw)]'>
                 <MotionConfig reducedMotion='user'>
                     {step === 'confirm' && converted && <Confetti />}
@@ -240,18 +208,6 @@ export function OnboardingModal({
                     <DialogDescription className='sr-only'>
                         Connect your profile, answer a few questions, and get a personalized LinkedIn strategy.
                     </DialogDescription>
-
-                    {dismissible && (
-                        <button
-                            type='button'
-                            onClick={() => {
-                                if (!uninterruptibleRef.current) dismiss()
-                            }}
-                            aria-label='Close'
-                            className='bg-background/90 text-muted-foreground hover:text-foreground absolute top-3 right-3 z-30 flex size-8 items-center justify-center rounded-full shadow-sm ring-1 ring-black/5 backdrop-blur transition-colors'>
-                            <XIcon className='size-4' />
-                        </button>
-                    )}
 
                     <OnboardingProvider value={ctxValue}>
                         {meta.layout === 'hero' ? (

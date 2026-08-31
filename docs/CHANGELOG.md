@@ -4,6 +4,20 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-08-19 - Experiment concluded: `onb-modal-exit` ships the locked flow
+
+- **The onboarding modal is locked again - this time as a measured decision.** The 2026-08-01
+  experiment (GH #55) asked whether the dismissible modal shipped for GH #46 was worth its exits.
+  It was not: paywall reach per exposed user was 23.3% (47/202) locked vs 7.6% (14/185) control
+  (z=4.23), completion 13.4% vs 2.7% (z=3.80), no guardrail harm. `locked` is baked into
+  `onboarding-modal.tsx` (Radix dismissal suppressed, no close affordance), the registry entry is
+  deleted, and `docs/experiments/log.md` records the numbers.
+- **`onb_flow_dismissed` no longer fires** (historical event, dictionary updated). The
+  `setUninterruptible` context API and the controller's dismiss path are removed - with no
+  dismissal there is nothing to suppress. The `useObExperiment` control-fallback race that
+  produced 2 contaminating locked-arm dismissals dies with the flag read.
+- **Human follow-up after merge:** archive the `onb-modal-exit` flag in PostHog.
+
 ## 2026-08-06 - Chore: retire the orphaned hero CTA and its flag
 
 - **Deleted `components/home/hero-cta.tsx`.** `HeroCTA` rendered a "Get Started" / "Learn more"

@@ -45,10 +45,6 @@ export type OnboardingContextValue = {
     /** Resolved role (defaults to creator/generalist) and its content cell. */
     role: Role
     roleContent: RoleContent
-    /** Suppresses Escape/outside-click/X dismissal while a step is showing an
-     *  overlay that must not be interrupted (the commitment popup, an
-     *  in-flight/open Stripe checkout) - normal dismissal resumes once cleared. */
-    setUninterruptible: (value: boolean) => void
 }
 
 const OnboardingContext = React.createContext<OnboardingContextValue | null>(null)

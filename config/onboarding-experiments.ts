@@ -15,15 +15,6 @@
 // ---------------------------------------------------------------------------
 
 export const OB_EXPERIMENTS = {
-    // Does locking the flow (no X / Escape / outside-click) beat the
-    // dismissible modal shipped 2026-07-31? Control = current production
-    // (dismissible). The in-flow skips and the paywall's free-plan decline are
-    // NOT part of this experiment - only the modal exit is gated.
-    'onb-modal-exit': {
-        control: { dismissible: true },
-        locked: { dismissible: false },
-    },
-
     // Permanent plumbing check: the welcome hero reads through the experiment
     // path with only a control variant, so the flag wiring is exercised (and
     // the "10x" claim is one registry entry away from its first real test).
