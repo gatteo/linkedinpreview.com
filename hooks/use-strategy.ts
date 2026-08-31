@@ -11,6 +11,9 @@ export function useStrategy() {
     const { isReady, userId, supabase } = useAuth()
     const [strategy, setStrategy] = React.useState<StrategyData>(DEFAULT_STRATEGY)
     const [isLoading, setIsLoading] = React.useState(true)
+    // See use-branding: a failed read is otherwise indistinguishable from an
+    // empty strategy, which is what the onboarding gate reads to decide.
+    const [loadFailed, setLoadFailed] = React.useState(false)
 
     React.useEffect(() => {
         if (!isReady || !userId) return
@@ -21,12 +24,16 @@ export function useStrategy() {
             .then((data) => {
                 if (!cancelled) {
                     setStrategy(data)
+                    setLoadFailed(false)
                     setIsLoading(false)
                 }
             })
             .catch(() => {
                 toast.error('Failed to load strategy')
-                if (!cancelled) setIsLoading(false)
+                if (!cancelled) {
+                    setLoadFailed(true)
+                    setIsLoading(false)
+                }
             })
 
         return () => {
@@ -49,5 +56,5 @@ export function useStrategy() {
         [supabase, userId],
     )
 
-    return { strategy, isLoading, updateStrategy }
+    return { strategy, isLoading, loadFailed, updateStrategy }
 }
