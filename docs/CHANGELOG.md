@@ -4,18 +4,6 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
-## 2026-08-29 - Compliance: remove unsupported social proof
-
-- Removed the unsupported shared rating/review config, public rating UI, and `aggregateRating` JSON-LD from the
-  homepage, formatter, generator, link-preview, and German-preview surfaces.
-- Removed the placeholder onboarding testimonial wall and unverified audience/review counters. The flow retains its
-  existing step and CTA with factual plan-copy instead.
-- Removed fictional engagement totals from post-preview cards, leaving the visual reaction treatment without a
-  fabricated person, reactions, comments, or reposts.
-- Added `tests/social-proof-claims.test.mjs`, a source-level contract that scans executable and published-content
-  sources for rating, review-count, aggregate-rating, audience-count, testimonial, or fictional engagement claims
-  that return without an auditable source.
-
 ## 2026-08-06 - Chore: retire the orphaned hero CTA and its flag
 
 - **Deleted `components/home/hero-cta.tsx`.** `HeroCTA` rendered a "Get Started" / "Learn more"

@@ -91,14 +91,14 @@ onboarding|upgrade`. The initiating surface resumes from the query params on ret
 
 Either way the plan is set authoritatively by the webhook.
 
-## Social-proof policy
+## Must replace before public launch (placeholders)
 
-Public ratings, review counts, customer testimonials, outcome metrics, and audience counts require a current,
-auditable source plus customer consent where relevant. The unsupported `SOCIAL_PROOF` rating config, aggregate-rating
-schema, public review UI, and onboarding proof/testimonial wall were removed on 2026-08-29. Do not restore them
-without that source.
+Per the spec's guardrail (§1.5) and inventory (§9), these ship as clearly-flagged placeholders:
 
-- The offer exposes only the live plan prices and plan terms. Its expired founding-window setting, scarcity UI, unverified refund guarantee, competitor-price comparison, and unverified proof wall were removed on 2026-08-29. Do not reintroduce any such claim without a current, auditable source and, for urgency, a real enforced window.
+- All proof stats + testimonials in `config/onboarding-personalization.ts` (`ROLE_CONTENT[*].proof`,
+  flagged `// PLACEHOLDER`).
+- `config/pricing.ts`: `FOUNDING_WINDOW_END`, `MONEY_BACK_DAYS`, `COMPETITOR_PRICE_RANGE` - confirm a
+  real, enforced founding window and refund policy before quoting them publicly.
 - 7 per-role fallback first-post templates (`FALLBACK_POSTS`) - solid but worth a copy pass.
 
 ## Entitlement recovery work in progress
