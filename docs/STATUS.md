@@ -30,8 +30,9 @@ verified against LinkedIn. See "Wave 4 setup required before it works" below.
 - **Public site + SEO** - landing page with JSON-LD, blog (Contentlayer/MDX), RSS, compare pages,
   sitemap/robots/OG/canonical, dashboard+embed `noindex`. (001, 002, 003, 005, 006)
 - **Core editor** - TipTap rich text with Unicode output, live preview, preview size toggle, feed
-  preview, image/video upload, copy-to-clipboard, draft-sharing URL, embeddable widget, homepage
-  tool. (020, 021, 022, 023, 024, 025, 026, 027, 028)
+  preview, image/video upload, copy-to-clipboard, optional consented post-copy email capture,
+  draft-sharing URL, embeddable widget, homepage tool. (020, 021, 022, 023, 024, 025, 026, 027,
+  028, 232)
 - **Content scoring** - readability, sentence flow, hashtags, emoji, length status, line count
   (dashboard analyze panel). (050, 051, 053, 054, 055, 056)
 - **AI** - chat, generation (hooks + posts), quick actions, analysis (stored), suggestions, hook
