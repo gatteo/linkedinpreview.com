@@ -4,6 +4,11 @@
 > change adds a line here (see [process/development-workflow.md](process/development-workflow.md)).
 > This is the engineering changelog; the user-facing changelog lives in the app at `/changelog`.
 
+## 2026-09-03 - Growth: optional post-copy email capture
+
+- Added a dismissible, explicit-consent email-capture surface that appears only after a successful full-post copy. Copy remains free and non-blocking. The authenticated server route stores no raw email in analytics, records server-owned consent audit fields, deduplicates normalized emails atomically, and sends no email.
+- Added the RLS-protected `leads` schema plus an atomic, trusted-IP-hashed five-per-day database throttle. Anonymous and authenticated clients have no direct table or RPC privileges; only the server service role may write after route validation. PR #85 passed the local, preview and production smoke gates.
+
 ## 2026-08-06 - Chore: retire the orphaned hero CTA and its flag
 
 - **Deleted `components/home/hero-cta.tsx`.** `HeroCTA` rendered a "Get Started" / "Learn more"

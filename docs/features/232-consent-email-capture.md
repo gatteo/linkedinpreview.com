@@ -1,6 +1,6 @@
 # 232 - Consent-based post-copy email capture
 
-> Status: PARTIAL · Area: Public | Editor · Last verified: 2026-09-03
+> Status: SHIPPED · Area: Public | Editor · Last verified: 2026-09-03
 
 ## What
 
@@ -12,11 +12,11 @@
 
 ## Acceptance (binary, testable)
 
-- [x] 232-AC-1 A capture surface appears only after successful full-post copy and can be dismissed. _(verified: `components/tool/editor-panel.tsx`; `tests/email-capture-exp6.test.mjs`)_
-- [x] 232-AC-2 Submission requires a valid email, an explicit unchecked-by-default consent control, and an authenticated anonymous session. _(verified: `components/tool/email-capture.tsx`; `hooks/use-anonymous-auth.ts`; `tests/email-capture-exp6.test.mjs`)_
-- [x] 232-AC-3 The server route validates input, uses server-derived caller and audit fields, and emits no email or PostHog PII. _(verified: `app/api/leads/route.ts`; `app/api/leads/route.schema.ts`; `tests/email-capture-exp6.test.mjs`)_
-- [x] 232-AC-4 The database has atomic normalized-email dedupe and denies direct anonymous/authenticated client access. _(verified: `supabase/migrations/031_leads.sql`; `tests/email-capture-exp6.test.mjs`)_
-- [ ] 232-AC-5 The complete surface is previewed and production-smoke-tested through the deployment protocol. _(gap: pending branch push, database migration and smoke test)_
+- [x] 232-AC-1 A capture surface appears only after successful full-post copy and can be dismissed. _(verified: `components/tool/editor-panel.tsx:145,277-282,622`; `tests/email-capture-exp6.test.mjs`)_
+- [x] 232-AC-2 Submission requires a valid email, an explicit unchecked-by-default consent control, and an authenticated anonymous session. _(verified: `components/tool/email-capture.tsx:15-75`; `hooks/use-anonymous-auth.ts:22-50`; `tests/email-capture-exp6.test.mjs`)_
+- [x] 232-AC-3 The server route validates input, uses server-derived caller and audit fields, and emits no email or PostHog PII. _(verified: `app/api/leads/route.ts:11-20,34-76`; `app/api/leads/route.schema.ts:3-6`; `tests/email-capture-exp6.test.mjs`)_
+- [x] 232-AC-4 The database has atomic normalized-email dedupe and denies direct anonymous/authenticated client access. _(verified: `supabase/migrations/031_leads.sql:1-22,26-81`; live database verification 2026-09-03; `tests/email-capture-exp6.test.mjs`)_
+- [x] 232-AC-5 The complete surface is previewed and production-smoke-tested through the deployment protocol. _(verified: PR #85 Vercel/GitHub checks passed; production `/`, `/blog`, `/dashboard`, `/privacy` returned HTTP 200; `/api/leads` returned 403 for absent/HTTP Origin and 401 for HTTPS unauthenticated request)_
 
 ## Implementation
 
@@ -35,4 +35,4 @@
 ## Open questions / known gaps
 
 - Do not send captured contacts any email until a separate experiment and permitted sending path are implemented.
-- The feature remains PARTIAL until preview and production smoke tests verify the deployed route and free-copy behavior.
+- Browser interaction automation is blocked by macOS remote-debugging permission. Static contract tests, local production route exercise, Vercel preview checks and production HTTP route smoke provide the verified fallback.

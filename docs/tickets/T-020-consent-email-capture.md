@@ -1,7 +1,7 @@
 # T-020 - Consent-based post-copy email capture
 
-> Status: in-review
-> Touches: [232-consent-email-capture](../features/232-consent-email-capture.md) · Opened: 2026-09-03
+> Status: done
+> Touches: [232-consent-email-capture](../features/232-consent-email-capture.md) · Opened: 2026-09-03 · Closed: 2026-09-03
 
 ## Goal
 
@@ -22,7 +22,7 @@
 - [x] T-020-AC-1 The capture surface is rendered only from the successful full-copy side-effect path, never from failed or partial copy. _(verified: `tests/email-capture-exp6.test.mjs`)_
 - [x] T-020-AC-2 A valid submission requires explicit consent, a successful anonymous session, and durable server success before it emits the non-PII `lead_captured` event. _(verified: `tests/email-capture-exp6.test.mjs`)_
 - [x] T-020-AC-3 The route derives the caller and consent audit fields server-side, while RLS and revoked client grants prohibit direct client access. _(verified: `tests/email-capture-exp6.test.mjs`)_
-- [ ] T-020-AC-4 The additive migration and route are live-verified without blocking the free tool. _(gap: pending preview and production change protocol)_
+- [x] T-020-AC-4 The additive migration and route are live-verified without blocking the free tool. _(verified: live RLS/function grants; PR #85 Vercel/GitHub checks; production HTTP smoke on 2026-09-03)_
 
 ## On completion
 
