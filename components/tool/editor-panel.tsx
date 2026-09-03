@@ -19,6 +19,7 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
+import { EmailCapture } from '@/components/tool/email-capture'
 import { FontStyle } from '@/components/tool/extensions/font-style'
 
 import { Icons } from '../icon'
@@ -141,6 +142,7 @@ export function EditorPanel({
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
+    const [showLeadCapture, setShowLeadCapture] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
     const { ensureSession } = useAnonymousAuth()
 
@@ -275,6 +277,7 @@ export function EditorPanel({
             toast.success('Text copied to clipboard')
             notifyCopy(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
+            setShowLeadCapture(true)
             analyzePost(json, text) // fire-and-forget
         },
         [notifyCopy, currentMedia, analyzePost],
@@ -616,6 +619,7 @@ export function EditorPanel({
                         </Tooltip>
                     </div>
                 </div>
+                {showLeadCapture && <EmailCapture onDismiss={() => setShowLeadCapture(false)} />}
             </div>
 
             <AIGenerateSheet

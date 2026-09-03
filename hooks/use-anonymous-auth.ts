@@ -20,23 +20,29 @@ export function useAnonymousAuth() {
 
     // Idempotent - returns immediately if already authed
     const ensureSession = useCallback(async () => {
-        if (isReady) return
+        if (isReady) return true
 
-        const {
-            data: { session },
-        } = await supabaseRef.current.auth.getSession()
-        if (session) {
+        try {
+            const {
+                data: { session },
+            } = await supabaseRef.current.auth.getSession()
+            if (session) {
+                setIsReady(true)
+                return true
+            }
+
+            const { data, error } = await supabaseRef.current.auth.signInAnonymously()
+            if (error || !data.session) {
+                posthog.captureException(new Error(`Anonymous auth failed: ${error?.message ?? 'No session returned'}`))
+                return false
+            }
+
             setIsReady(true)
-            return
+            return true
+        } catch {
+            posthog.captureException(new Error('Anonymous auth failed'))
+            return false
         }
-
-        const { error } = await supabaseRef.current.auth.signInAnonymously()
-        if (error) {
-            posthog.captureException(new Error(`Anonymous auth failed: ${error.message}`))
-            return
-        }
-
-        setIsReady(true)
     }, [isReady])
 
     return { isAuthReady: isReady, ensureSession }
