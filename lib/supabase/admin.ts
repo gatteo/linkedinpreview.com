@@ -3,11 +3,11 @@ import { createClient as createSupabaseClient, type SupabaseClient } from '@supa
 import { env } from '@/env.mjs'
 
 /**
- * Service-role Supabase client. Bypasses RLS, so it is used ONLY by trusted
- * server contexts that have no user session - currently the cron publisher, which
- * must read due scheduled posts and tokens across all users.
+ * Service-role Supabase client. Bypasses RLS, so it is used only by trusted
+ * server contexts: the cron publisher and authenticated server routes that perform
+ * a narrowly scoped, server-validated cross-user write such as lead capture.
  *
- * Never import this from client code or a route reachable without the CRON_SECRET.
+ * Never import this from client code or a route reachable without authentication.
  */
 export function createAdminClient(): SupabaseClient {
     if (!env.SUPABASE_SERVICE_ROLE_KEY) {

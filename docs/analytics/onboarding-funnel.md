@@ -152,6 +152,7 @@ The free-tool events are captured before the dashboard onboarding controller, so
 | `tool_pro_cta_click`      | `source: tool_nudge\|tool_footer`           | A free-tool CTA that opens the dashboard is clicked, including the persistent post-copy footer CTA. |
 | `pricing_view`            | `source: upgrade_dialog`, `reason?`         | An unpaid user sees the dashboard upgrade dialog's plan cards.                                      |
 | `upgrade_click`           | `source: upgrade_dialog`, `plan`, `reason?` | A plan button in the dashboard upgrade dialog is clicked, before checkout starts.                   |
+| `lead_captured`           | `source: free_tool_post_copy`               | A voluntary, explicitly consented post-copy email was durably stored for a new normalized address.  |
 | `affiliate_click`         | `partner`, `placement`, `destination`       | A future affiliate destination is clicked.                                                          |
 
 ### Offer & checkout
