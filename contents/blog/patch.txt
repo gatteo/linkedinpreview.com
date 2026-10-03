@@ -1,0 +1,25 @@
+--- linkedin-vs-twitter-for-b2b-2026.mdx.orig
++++ linkedin-vs-twitter-for-b2b-2026.mdx
+@@ -47,6 +47,21 @@
+ 
+ ### The Volume Game
+ Because X content is short-form and the feed moves incredibly fast, you can (and should) post multiple times a day. This high-frequency approach allows you to test many different hooks and ideas quickly.
++
++## Content Formats and ROI
++
++When you compare the two platforms on content types and return on investment, the differences become stark.
++
++### Content Formats
++Twitter is primarily text, images, and short video. Its constraints force you to be punchy. LinkedIn, on the other hand, supports a massive variety of formats. You can publish rich text, embedded PDFs ([carousel posts](/blog/linkedin-carousel-post)), long-form newsletters, and detailed case studies. This flexibility gives B2B marketers the ability to share deep, nuanced expertise.
++
++### Cost and ROI
++Twitter/X requires a premium subscription to access basic features like long-form posts or editing, and the organic algorithm can be notoriously fickle for business accounts unless they invest heavily in ads. 
++
++LinkedIn remains largely free for organic reach. While LinkedIn Ads are significantly more expensive than Twitter Ads, the organic ROI on LinkedIn is unmatched. A single viral LinkedIn post can generate qualified sales calls for weeks, whereas a viral tweet often results in fleeting impressions and low-quality website traffic.
++
++## The Importance of Personal Branding
++
++On both platforms, company pages struggle. The modern B2B buyer wants to buy from people, not faceless logos. Whether you choose LinkedIn or Twitter, you must lead with founder and employee advocacy. The difference is that LinkedIn's algorithm actively rewards [personal branding](/blog/linkedin-personal-branding) and professional storytelling, while Twitter rewards hot takes and rapid banter.
+ 
+ ## The Verdict: Which is Better for B2B?
+ 

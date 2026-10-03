@@ -24,8 +24,15 @@ select * from public.record_stripe_entitlement(
     1
 );
 
-insert into public.billing_recovery_challenges (id, email_hmac, email_hmac_key_version, verified_at, expires_at)
-values ('10000000-0000-0000-0000-000000000001', 'email-hmac-1', 1, now(), now() + interval '10 minutes');
+insert into public.billing_recovery_challenges (id, email_hmac, email_hmac_key_version, target_user_id, verified_at, expires_at)
+values (
+    '10000000-0000-0000-0000-000000000001',
+    'email-hmac-1',
+    1,
+    '00000000-0000-0000-0000-0000000000b2',
+    now(),
+    now() + interval '10 minutes'
+);
 
 select public.claim_entitlement(
     (select id from public.billing_entitlements where stripe_checkout_session_id = 'cs_test_1'),

@@ -4,6 +4,8 @@ export interface CanonicalCheckoutSession {
     id: string
     payment_status: string | null
     mode: string | null
+    amount_total: number | null
+    currency: string | null
     client_reference_id: string | null
     metadata: Record<string, string> | null
     customer: string | { id: string } | null
@@ -48,12 +50,24 @@ interface EntitlementIngressArgs {
     emailHmac: { key: string; keyVersion: number }
 }
 
-export interface EntitlementIngressResult {
+interface EntitlementIngressSuccess {
     handled: true
+    outcome: 'granted' | 'existing_session'
     userId: string
     plan: 'pro' | 'lifetime'
     captureConversion: boolean
+    checkoutSessionId: string
+    amountTotal: number | null
+    currency: string | null
 }
+
+interface EntitlementIngressDuplicate {
+    handled: true
+    outcome: 'duplicate_event'
+    captureConversion: false
+}
+
+export type EntitlementIngressResult = EntitlementIngressSuccess | EntitlementIngressDuplicate
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -107,12 +121,19 @@ export async function recordSignedCheckoutEntitlement({
     emailHmac,
 }: EntitlementIngressArgs): Promise<EntitlementIngressResult> {
     const event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-    if (event.type !== 'checkout.session.completed') {
+    if (event.type !== 'checkout.session.completed' && event.type !== 'checkout.session.async_payment_succeeded') {
         throw new Error(`Unsupported Stripe event: ${event.type}`)
     }
 
     const session = await stripe.checkout.sessions.retrieve(event.data.object.id, { expand: ['line_items.data.price'] })
     if (session.payment_status !== 'paid') throw new Error('Checkout session is not paid')
+    if (
+        typeof session.amount_total !== 'number' ||
+        !Number.isSafeInteger(session.amount_total) ||
+        session.amount_total <= 0
+    ) {
+        throw new Error('Checkout session must have a positive amount total')
+    }
 
     const userId = userIdFor(session)
     const plan = planFor(session, priceIds)
@@ -142,12 +163,25 @@ export async function recordSignedCheckoutEntitlement({
 
     if (error) throw error
     const outcome = data?.[0]
-    if (!outcome?.owner_user_id || outcome.plan !== plan) throw new Error('Entitlement RPC returned an invalid result')
+    if (outcome?.outcome === 'duplicate_event' && outcome.capture_conversion === false) {
+        return { handled: true, outcome: 'duplicate_event', captureConversion: false }
+    }
+    if (
+        !outcome?.owner_user_id ||
+        outcome.plan !== plan ||
+        (outcome.outcome !== 'granted' && outcome.outcome !== 'existing_session')
+    ) {
+        throw new Error('Entitlement RPC returned an invalid result')
+    }
 
     return {
         handled: true,
+        outcome: outcome.outcome,
         userId: outcome.owner_user_id,
         plan,
         captureConversion: outcome.capture_conversion,
+        checkoutSessionId: session.id,
+        amountTotal: session.amount_total,
+        currency: session.currency,
     }
 }

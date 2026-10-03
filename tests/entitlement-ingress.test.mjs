@@ -42,6 +42,8 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
                             id,
                             payment_status: 'paid',
                             mode: 'payment',
+                            amount_total: 3999,
+                            currency: 'usd',
                             client_reference_id: USER_ID,
                             metadata: { user_id: USER_ID, plan: 'monthly' },
                             customer: 'cus_test_lifetime',
@@ -65,7 +67,16 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
         emailHmac: { key: EMAIL_HMAC_KEY, keyVersion: 1 },
     })
 
-    assert.deepEqual(result, { handled: true, userId: USER_ID, plan: 'lifetime', captureConversion: true })
+    assert.deepEqual(result, {
+        handled: true,
+        outcome: 'granted',
+        userId: USER_ID,
+        plan: 'lifetime',
+        captureConversion: true,
+        checkoutSessionId: 'cs_test_lifetime',
+        amountTotal: 3999,
+        currency: 'usd',
+    })
     assert.equal(rpcCalls.length, 1)
     assert.deepEqual(rpcCalls[0], {
         name: 'record_stripe_entitlement',
@@ -85,4 +96,128 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
             p_checkout_email_hmac_key_version: 1,
         },
     })
+})
+
+test('records a signed paid asynchronous checkout using canonical Stripe session data', async () => {
+    const stripe = new Stripe('webhook-signature-test-key')
+    const payload = JSON.stringify({
+        id: 'evt_test_async_lifetime',
+        object: 'event',
+        type: 'checkout.session.async_payment_succeeded',
+        created: 1_725_000_001,
+        livemode: false,
+        data: { object: { id: 'cs_test_async_lifetime', object: 'checkout.session' } },
+    })
+    const signature = stripe.webhooks.generateTestHeaderString({ payload, secret: WEBHOOK_SECRET })
+    const rpcCalls = []
+
+    const result = await recordSignedCheckoutEntitlement({
+        body: payload,
+        signature,
+        webhookSecret: WEBHOOK_SECRET,
+        stripe: {
+            webhooks: stripe.webhooks,
+            checkout: {
+                sessions: {
+                    retrieve: async (id, options) => {
+                        assert.equal(id, 'cs_test_async_lifetime')
+                        assert.deepEqual(options, { expand: ['line_items.data.price'] })
+                        return {
+                            id,
+                            payment_status: 'paid',
+                            mode: 'payment',
+                            amount_total: 3999,
+                            currency: 'usd',
+                            client_reference_id: USER_ID,
+                            metadata: { user_id: USER_ID },
+                            customer: 'cus_test_async_lifetime',
+                            payment_intent: 'pi_test_async_lifetime',
+                            subscription: null,
+                            customer_details: { email: 'buyer@example.com' },
+                            line_items: { data: [{ price: { id: 'price_test_lifetime' } }] },
+                        }
+                    },
+                },
+            },
+        },
+        recordEntitlement: async (args) => {
+            rpcCalls.push(args)
+            return {
+                data: [{ outcome: 'granted', owner_user_id: USER_ID, plan: 'lifetime', capture_conversion: true }],
+                error: null,
+            }
+        },
+        priceIds: { monthly: 'price_test_monthly', lifetime: 'price_test_lifetime' },
+        emailHmac: { key: EMAIL_HMAC_KEY, keyVersion: 1 },
+    })
+
+    assert.equal(result.outcome, 'granted')
+    assert.equal(result.checkoutSessionId, 'cs_test_async_lifetime')
+    assert.deepEqual(rpcCalls, [
+        {
+            p_event_id: 'evt_test_async_lifetime',
+            p_event_type: 'checkout.session.async_payment_succeeded',
+            p_stripe_created_at: '2024-08-30T06:40:01.000Z',
+            p_payload_digest: createHash('sha256').update(payload).digest('hex'),
+            p_checkout_session_id: 'cs_test_async_lifetime',
+            p_origin_user_id: USER_ID,
+            p_plan: 'lifetime',
+            p_status: 'active',
+            p_payment_intent_id: 'pi_test_async_lifetime',
+            p_subscription_id: null,
+            p_customer_id: 'cus_test_async_lifetime',
+            p_checkout_email_hmac: createHmac('sha256', EMAIL_HMAC_KEY).update('buyer@example.com').digest('hex'),
+            p_checkout_email_hmac_key_version: 1,
+        },
+    ])
+})
+
+test('rejects a zero-total paid checkout without writing an entitlement', async () => {
+    const stripe = new Stripe('webhook-signature-test-key')
+    const { payload, signature } = signedCheckoutEvent(stripe, 'evt_test_zero_total', 'cs_test_zero_total')
+    let recordCalls = 0
+
+    await assert.rejects(
+        () =>
+            recordSignedCheckoutEntitlement({
+                body: payload,
+                signature,
+                webhookSecret: WEBHOOK_SECRET,
+                stripe: {
+                    webhooks: stripe.webhooks,
+                    checkout: {
+                        sessions: {
+                            retrieve: async (id) => ({
+                                id,
+                                payment_status: 'paid',
+                                mode: 'payment',
+                                amount_total: 0,
+                                currency: 'usd',
+                                client_reference_id: USER_ID,
+                                metadata: { user_id: USER_ID },
+                                customer: 'cus_test_zero_total',
+                                payment_intent: 'pi_test_zero_total',
+                                subscription: null,
+                                customer_details: { email: 'buyer@example.com' },
+                                line_items: { data: [{ price: { id: 'price_test_lifetime' } }] },
+                            }),
+                        },
+                    },
+                },
+                recordEntitlement: async () => {
+                    recordCalls += 1
+                    return {
+                        data: [
+                            { outcome: 'granted', owner_user_id: USER_ID, plan: 'lifetime', capture_conversion: true },
+                        ],
+                        error: null,
+                    }
+                },
+                priceIds: { monthly: 'price_test_monthly', lifetime: 'price_test_lifetime' },
+                emailHmac: { key: EMAIL_HMAC_KEY, keyVersion: 1 },
+            }),
+        /positive amount total/,
+    )
+
+    assert.equal(recordCalls, 0)
 })
