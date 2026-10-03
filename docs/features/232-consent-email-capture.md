@@ -17,7 +17,7 @@
 - [x] 232-AC-1 The post-copy editor no longer imports, renders, or triggers the capture surface, while `post_copied` and background analysis remain in the successful copy path. _(verified: `components/tool/editor-panel.tsx`; `tests/email-capture-exp6.test.mjs`)_
 - [x] 232-AC-2 `POST /api/leads` returns `410 Gone` without parsing a request, authenticating a user, or calling Supabase. _(verified: `app/api/leads/route.ts`; `tests/email-capture-exp6.test.mjs`)_
 - [x] 232-AC-3 Existing lead rows and database protections are retained without a destructive migration. _(verified: unchanged `supabase/migrations/031_leads.sql`; `tests/email-capture-exp6.test.mjs`)_
-- [ ] 232-AC-4 The rollback is preview-smoke-tested through the deployment protocol.
+- [x] 232-AC-4 The rollback is preview-smoke-tested through the deployment protocol. _(verified: PR #87 preview loaded `/`, `/blog`, and `/dashboard`; copy completed without the capture surface; `POST /api/leads` returned `410 Gone`)_
 
 ## Implementation
 
