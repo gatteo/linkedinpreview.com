@@ -40,7 +40,7 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
                         assert.deepEqual(options, { expand: ['line_items.data.price'] })
                         return {
                             id,
-                            created: 1_725_000_000,
+                            created: 1_724_999_900,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -84,7 +84,7 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
         args: {
             p_event_id: 'evt_test_lifetime',
             p_event_type: 'checkout.session.completed',
-            p_stripe_created_at: '2024-08-30T06:40:00.000Z',
+            p_stripe_created_at: '2024-08-30T06:38:20.000Z',
             p_payload_digest: createHash('sha256').update(payload).digest('hex'),
             p_checkout_session_id: 'cs_test_lifetime',
             p_origin_user_id: USER_ID,
@@ -95,6 +95,7 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
             p_customer_id: 'cus_test_lifetime',
             p_checkout_email_hmac: createHmac('sha256', EMAIL_HMAC_KEY).update('buyer@example.com').digest('hex'),
             p_checkout_email_hmac_key_version: 1,
+            p_event_created_at: '2024-08-30T06:40:00.000Z',
         },
     })
 })
@@ -125,7 +126,7 @@ test('records a signed paid asynchronous checkout using canonical Stripe session
                         assert.deepEqual(options, { expand: ['line_items.data.price'] })
                         return {
                             id,
-                            created: 1_725_000_001,
+                            created: 1_724_999_901,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -159,7 +160,7 @@ test('records a signed paid asynchronous checkout using canonical Stripe session
         {
             p_event_id: 'evt_test_async_lifetime',
             p_event_type: 'checkout.session.async_payment_succeeded',
-            p_stripe_created_at: '2024-08-30T06:40:01.000Z',
+            p_stripe_created_at: '2024-08-30T06:38:21.000Z',
             p_payload_digest: createHash('sha256').update(payload).digest('hex'),
             p_checkout_session_id: 'cs_test_async_lifetime',
             p_origin_user_id: USER_ID,
@@ -170,6 +171,7 @@ test('records a signed paid asynchronous checkout using canonical Stripe session
             p_customer_id: 'cus_test_async_lifetime',
             p_checkout_email_hmac: createHmac('sha256', EMAIL_HMAC_KEY).update('buyer@example.com').digest('hex'),
             p_checkout_email_hmac_key_version: 1,
+            p_event_created_at: '2024-08-30T06:40:01.000Z',
         },
     ])
 })

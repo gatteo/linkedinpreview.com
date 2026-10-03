@@ -43,13 +43,8 @@ as $$
               where e.origin_user_id = b.user_id
                 and e.status <> 'active'
                 and e.plan = b.plan
-                and (
-                    (b.stripe_subscription_id is not null
-                        and e.stripe_subscription_id = b.stripe_subscription_id)
-                    or (b.stripe_subscription_id is null
-                        and b.stripe_customer_id is not null
-                        and e.stripe_customer_id = b.stripe_customer_id)
-                )
+                and b.stripe_subscription_id is not null
+                and e.stripe_subscription_id = b.stripe_subscription_id
           )
     ), selected as (
         select c.plan, c.stripe_customer_id, c.stripe_subscription_id

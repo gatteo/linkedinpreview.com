@@ -1,4 +1,4 @@
--- Run only against an isolated disposable PostgreSQL database with migrations 018 and 027 applied.
+-- Run only against an isolated disposable PostgreSQL database with migrations 018 and 032 applied.
 -- It proves the T5 replay invariant without touching the production Supabase project.
 
 begin;
@@ -11,7 +11,7 @@ insert into auth.users (id, email_confirmed_at) values
 select * from public.record_stripe_entitlement(
     'evt_test_1',
     'checkout.session.completed',
-    now(),
+    timestamptz '2026-09-03 13:30:00+00',
     'digest-1',
     'cs_test_1',
     '00000000-0000-0000-0000-0000000000a1',
@@ -21,7 +21,8 @@ select * from public.record_stripe_entitlement(
     null,
     'cus_test_1',
     'email-hmac-1',
-    1
+    1,
+    timestamptz '2026-09-03 13:31:00+00'
 );
 
 insert into public.billing_recovery_challenges (id, email_hmac, email_hmac_key_version, target_user_id, verified_at, expires_at)
@@ -62,12 +63,12 @@ select * from public.record_stripe_entitlement(
 
 -- Exact and distinct Stripe event redelivery must never restore owner A.
 select * from public.record_stripe_entitlement(
-    'evt_test_1', 'checkout.session.completed', now(), 'digest-1', 'cs_test_1',
+    'evt_test_1', 'checkout.session.completed', timestamptz '2026-09-03 13:30:00+00', 'digest-1', 'cs_test_1',
     '00000000-0000-0000-0000-0000000000a1', 'lifetime', 'active', 'pi_test_1', null,
     'cus_test_1', 'email-hmac-1', 1
 );
 select * from public.record_stripe_entitlement(
-    'evt_test_2', 'checkout.session.completed', now(), 'digest-2', 'cs_test_1',
+    'evt_test_2', 'checkout.session.completed', timestamptz '2026-09-03 13:30:00+00', 'digest-2', 'cs_test_1',
     '00000000-0000-0000-0000-0000000000a1', 'lifetime', 'active', 'pi_test_1', null,
     'cus_test_1', 'email-hmac-1', 1
 );
@@ -120,6 +121,8 @@ declare
     v_entitlements integer;
     v_events integer;
     v_capture_events integer;
+    v_checkout_created_at timestamptz;
+    v_event_created_at timestamptz;
     v_anon_can_execute boolean;
     v_service_can_execute boolean;
 begin
@@ -131,8 +134,12 @@ begin
     select count(*) into v_entitlements from public.billing_entitlements;
     select count(*) into v_events from public.stripe_webhook_events;
     select count(*) into v_capture_events from public.stripe_webhook_events where outcome = 'granted';
-    select has_function_privilege('anon', 'public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer)', 'execute') into v_anon_can_execute;
-    select has_function_privilege('service_role', 'public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer)', 'execute') into v_service_can_execute;
+    select stripe_created_at into v_checkout_created_at
+    from public.billing_entitlements where stripe_checkout_session_id = 'cs_test_1';
+    select stripe_created_at into v_event_created_at
+    from public.stripe_webhook_events where stripe_event_id = 'evt_test_1';
+    select has_function_privilege('anon', 'public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer, timestamptz)', 'execute') into v_anon_can_execute;
+    select has_function_privilege('service_role', 'public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer, timestamptz)', 'execute') into v_service_can_execute;
 
     if v_owner <> '00000000-0000-0000-0000-0000000000b2'::uuid
        or v_a_plan <> 'free'
@@ -142,6 +149,8 @@ begin
        or v_entitlements <> 2
        or v_events <> 3
        or v_capture_events <> 2
+       or v_checkout_created_at <> timestamptz '2026-09-03 13:30:00+00'
+       or v_event_created_at <> timestamptz '2026-09-03 13:31:00+00'
        or v_anon_can_execute
        or not v_service_can_execute then
         raise exception 'replay invariant or RPC privilege failed: owner %, A %, B %, assignments %, entitlements %, events %, grants %, anon %, service %',

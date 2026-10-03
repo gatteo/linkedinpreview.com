@@ -107,7 +107,8 @@ The retained pieces are:
   idempotent historical importer. Application roles cannot read or execute these operator paths.
 - `034_monotonic_dual_read_authorization.sql`: an authenticated-caller reader where either an active
   immutable entitlement or a paid legacy `billing` row grants access. Lifetime outranks Pro, and an
-  inactive ledger record suppresses only the matching legacy subscription or one-time payment identity.
+  inactive ledger record suppresses only the matching legacy subscription identity. Legacy lifetime
+  access remains monotonic until reconciliation provides an exact payment identity.
 - Pure TypeScript seams for canonical signed Checkout ingestion, subscription lifecycle handling, and an
   authenticated recovery claim. They are testable but intentionally disconnected from live routes.
 - Deterministic Node tests and disposable PostgreSQL 16 integration tests, available through

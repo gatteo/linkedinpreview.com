@@ -60,7 +60,7 @@ create table public.stripe_webhook_events (
 
 create or replace function public.prevent_stripe_webhook_event_change()
 returns trigger
-language plpgsql set search_path = public as $$
+language plpgsql set search_path = pg_catalog, public as $$
 begin
     if tg_op = 'DELETE'
        or old.outcome <> 'unresolved'
@@ -69,6 +69,7 @@ begin
        or new.stripe_created_at is distinct from old.stripe_created_at
        or new.payload_digest is distinct from old.payload_digest
        or new.created_at is distinct from old.created_at
+       or (old.entitlement_id is not null and new.entitlement_id is distinct from old.entitlement_id)
        or new.outcome = 'unresolved'
        or new.entitlement_id is null then
         raise exception 'Immutable Stripe webhook event cannot be changed';
@@ -388,7 +389,8 @@ create or replace function public.record_stripe_entitlement(
     p_subscription_id text default null,
     p_customer_id text default null,
     p_checkout_email_hmac text default null,
-    p_checkout_email_hmac_key_version integer default null
+    p_checkout_email_hmac_key_version integer default null,
+    p_event_created_at timestamptz default null
 )
 returns table (outcome text, owner_user_id uuid, plan text, capture_conversion boolean)
 language plpgsql security definer set search_path = public as $$
@@ -409,7 +411,7 @@ begin
     insert into public.stripe_webhook_events (
         stripe_event_id, event_type, stripe_created_at, payload_digest, outcome
     ) values (
-        p_event_id, p_event_type, p_stripe_created_at, p_payload_digest, 'unresolved'
+        p_event_id, p_event_type, coalesce(p_event_created_at, p_stripe_created_at), p_payload_digest, 'unresolved'
     ) on conflict (stripe_event_id) do nothing
     returning true into v_event_inserted;
 
@@ -736,7 +738,7 @@ revoke all on public.billing_entitlements, public.billing_entitlement_assignment
     public.stripe_webhook_events, public.billing_recovery_challenges,
     public.billing_legacy_monthly_import_approvals from public, anon, authenticated, service_role;
 revoke all on function public.recompute_billing_projection(uuid) from public, anon, authenticated;
-revoke all on function public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer)
+revoke all on function public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer, timestamptz)
     from public, anon, authenticated;
 revoke all on function public.record_stripe_subscription_lifecycle(text, text, timestamptz, text, text, text)
     from public, anon, authenticated;
@@ -744,7 +746,7 @@ revoke all on function public.import_approved_legacy_monthly_entitlement(text)
     from public, anon, authenticated;
 revoke all on function public.claim_entitlement(uuid, uuid, uuid) from public, anon, authenticated;
 grant execute on function public.recompute_billing_projection(uuid) to service_role;
-grant execute on function public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer)
+grant execute on function public.record_stripe_entitlement(text, text, timestamptz, text, text, uuid, text, text, text, text, text, text, integer, timestamptz)
     to service_role;
 grant execute on function public.record_stripe_subscription_lifecycle(text, text, timestamptz, text, text, text)
     to service_role;

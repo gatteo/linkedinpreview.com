@@ -163,6 +163,7 @@ export async function recordSignedCheckoutEntitlement({
         p_customer_id: customerId,
         p_checkout_email_hmac: emailHmacFor(session, emailHmac),
         p_checkout_email_hmac_key_version: emailHmac.keyVersion,
+        p_event_created_at: new Date(event.created * 1000).toISOString(),
     })
 
     if (error) throw error
