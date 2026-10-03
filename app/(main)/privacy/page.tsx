@@ -46,7 +46,7 @@ export default function PrivacyPage() {
                         Privacy Policy
                     </h1>
                     <p className='text-muted-foreground mx-auto max-w-[540px] text-center text-lg leading-7'>
-                        Last updated: September 3, 2026
+                        Last updated: October 3, 2026
                     </p>
                 </div>
             </section>
@@ -89,9 +89,9 @@ export default function PrivacyPage() {
 
                         <h3>Email (optional)</h3>
                         <p>
-                            You can attach an email address to your account so you do not lose access. You can also
-                            voluntarily opt in after copying a post to receive occasional product updates and offers. We
-                            record that opt-in with its source, version, and timestamp. We do not send marketing email
+                            You can attach an email address to your account so you do not lose access. We previously
+                            offered a voluntary post-copy opt-in for occasional product updates and offers. Existing
+                            opt-in records retain their source, version, and timestamp. We do not send marketing email
                             without your consent.
                         </p>
 
