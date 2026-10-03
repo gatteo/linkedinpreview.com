@@ -58,6 +58,29 @@ create table public.stripe_webhook_events (
     created_at         timestamptz not null default now()
 );
 
+create or replace function public.prevent_stripe_webhook_event_change()
+returns trigger
+language plpgsql set search_path = public as $$
+begin
+    if tg_op = 'DELETE'
+       or old.outcome <> 'unresolved'
+       or new.stripe_event_id is distinct from old.stripe_event_id
+       or new.event_type is distinct from old.event_type
+       or new.stripe_created_at is distinct from old.stripe_created_at
+       or new.payload_digest is distinct from old.payload_digest
+       or new.created_at is distinct from old.created_at
+       or new.outcome = 'unresolved'
+       or new.entitlement_id is null then
+        raise exception 'Immutable Stripe webhook event cannot be changed';
+    end if;
+    return new;
+end;
+$$;
+
+create trigger prevent_stripe_webhook_event_change
+before update or delete on public.stripe_webhook_events
+for each row execute function public.prevent_stripe_webhook_event_change();
+
 create table public.billing_recovery_challenges (
     id                         uuid primary key default gen_random_uuid(),
     email_hmac                 text not null,
@@ -412,6 +435,21 @@ begin
         ) returning entitlement.id, entitlement.owner_user_id into v_entitlement_id, v_owner_user_id;
         v_created := true;
         perform public.recompute_billing_projection(p_origin_user_id);
+    elsif not exists (
+        select 1
+        from public.billing_entitlements e
+        where e.id = v_entitlement_id
+          and e.stripe_checkout_session_id is not distinct from p_checkout_session_id
+          and e.stripe_payment_intent_id is not distinct from p_payment_intent_id
+          and e.stripe_subscription_id is not distinct from p_subscription_id
+          and e.stripe_customer_id is not distinct from p_customer_id
+          and e.origin_user_id is not distinct from p_origin_user_id
+          and e.plan is not distinct from p_plan
+          and e.checkout_email_hmac is not distinct from p_checkout_email_hmac
+          and e.checkout_email_hmac_key_version is not distinct from p_checkout_email_hmac_key_version
+          and e.stripe_created_at is not distinct from p_stripe_created_at
+    ) then
+        raise exception 'Checkout entitlement identity conflict';
     end if;
 
     update public.stripe_webhook_events

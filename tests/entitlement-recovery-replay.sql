@@ -72,6 +72,44 @@ select * from public.record_stripe_entitlement(
     'cus_test_1', 'email-hmac-1', 1
 );
 
+-- A second signed event for the same Checkout Session must match every canonical
+-- immutable identity field. A collision cannot be acknowledged as a replay.
+do $$
+begin
+    begin
+        perform public.record_stripe_entitlement(
+            'evt_test_identity_conflict', 'checkout.session.completed', now(), 'digest-conflict', 'cs_test_1',
+            '00000000-0000-0000-0000-0000000000a1', 'lifetime', 'active', 'pi_test_1', null,
+            'cus_wrong', 'email-hmac-1', 1
+        );
+        raise exception 'mismatched Checkout identity unexpectedly replayed';
+    exception when others then
+        if sqlerrm <> 'Checkout entitlement identity conflict' then
+            raise;
+        end if;
+    end;
+
+    begin
+        update public.stripe_webhook_events
+        set payload_digest = 'forged-digest'
+        where stripe_event_id = 'evt_test_1';
+        raise exception 'finalized Stripe event unexpectedly changed';
+    exception when others then
+        if sqlerrm <> 'Immutable Stripe webhook event cannot be changed' then
+            raise;
+        end if;
+    end;
+
+    begin
+        delete from public.stripe_webhook_events where stripe_event_id = 'evt_test_1';
+        raise exception 'finalized Stripe event unexpectedly deleted';
+    exception when others then
+        if sqlerrm <> 'Immutable Stripe webhook event cannot be changed' then
+            raise;
+        end if;
+    end;
+end $$;
+
 do $$
 declare
     v_owner uuid;

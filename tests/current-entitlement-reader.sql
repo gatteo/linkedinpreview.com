@@ -11,7 +11,8 @@ insert into auth.users (id, email_confirmed_at) values
     ('00000000-0000-0000-0000-0000000000e5', now()),
     ('00000000-0000-0000-0000-0000000000f6', now()),
     ('00000000-0000-0000-0000-0000000000a7', now()),
-    ('00000000-0000-0000-0000-0000000000a8', now());
+    ('00000000-0000-0000-0000-0000000000a8', now()),
+    ('00000000-0000-0000-0000-0000000000a9', now());
 
 -- User A represents an unresolved/manual-exception-equivalent historical paid
 -- account. During a ledger transition it must retain legacy paid access.
@@ -87,6 +88,20 @@ update public.billing_entitlements
 set status = 'disputed'
 where stripe_checkout_session_id = 'cs_reader_a8';
 
+-- User A9 has a matching legacy lifetime record and refunded immutable
+-- entitlement. The customer identity is the only shared Stripe identity for a
+-- one-time purchase, so it must suppress the stale legacy fallback.
+insert into public.billing (user_id, plan, plan_source, stripe_customer_id, stripe_subscription_id) values
+    ('00000000-0000-0000-0000-0000000000a9', 'lifetime', 'stripe_lifetime', 'cus_reader_a9', null);
+select * from public.record_stripe_entitlement(
+    'evt_reader_a9', 'checkout.session.completed', timestamptz '2026-09-03 13:32:00+00',
+    'digest-reader-a9', 'cs_reader_a9', '00000000-0000-0000-0000-0000000000a9',
+    'lifetime', 'active', 'pi_reader_a9', null, 'cus_reader_a9', 'email-reader-a9', 1
+);
+update public.billing_entitlements
+set status = 'refunded'
+where stripe_checkout_session_id = 'cs_reader_a9';
+
 -- Same-plan ties must have stable ordering. User E has no mutable billing row.
 insert into public.billing_entitlements (
     id, stripe_checkout_session_id, stripe_subscription_id, stripe_customer_id,
@@ -103,9 +118,9 @@ insert into public.billing_entitlements (
         timestamptz '2026-09-03 04:05:00+00', timestamptz '2026-09-03 04:05:00+00'
     );
 
--- The function reads the authenticated caller from auth.uid(). A mutable billing
--- row must not change what that caller is authorized to use. Every call returns
--- exactly one minimal record, including a free default when no active ledger row exists.
+-- The function reads the authenticated caller from auth.uid(). Every call returns
+-- exactly one minimal record, including a free default when neither the active
+-- ledger nor the monotonic legacy fallback authorizes paid access.
 set local role authenticated;
 
 set local "request.jwt.claim.sub" = '00000000-0000-0000-0000-0000000000a1';
@@ -218,6 +233,23 @@ begin
     from public.current_authorized_entitlement();
     if v_count <> 1 or v_plan <> 'free' or v_customer is not null or v_subscription is not null then
         raise exception 'same-identity disputed ledger must revoke legacy access: %, %, %, %',
+            v_count, v_plan, v_customer, v_subscription;
+    end if;
+end $$;
+
+set local "request.jwt.claim.sub" = '00000000-0000-0000-0000-0000000000a9';
+do $$
+declare
+    v_count integer;
+    v_plan text;
+    v_customer text;
+    v_subscription text;
+begin
+    select count(*), max(plan), max(stripe_customer_id), max(stripe_subscription_id)
+    into v_count, v_plan, v_customer, v_subscription
+    from public.current_authorized_entitlement();
+    if v_count <> 1 or v_plan <> 'free' or v_customer is not null or v_subscription is not null then
+        raise exception 'same-identity refunded lifetime ledger must revoke legacy access: %, %, %, %',
             v_count, v_plan, v_customer, v_subscription;
     end if;
 end $$;

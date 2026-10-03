@@ -52,7 +52,7 @@ PSQL=("$PG_BIN/psql" -p "$PORT" -d "$DB_NAME" -v ON_ERROR_STOP=1)
 
 "${PSQL[@]}" -c "
     select * from public.record_stripe_entitlement(
-        'evt_concurrent_1', 'checkout.session.completed', now(), 'digest-1', 'cs_concurrent_1',
+        'evt_concurrent_1', 'checkout.session.completed', timestamptz '2026-09-03 12:00:00+00', 'digest-1', 'cs_concurrent_1',
         '00000000-0000-0000-0000-0000000000a1', 'lifetime', 'active', 'pi_concurrent_1', null,
         'cus_concurrent_1', 'email-hmac-concurrent', 1
     );
@@ -61,7 +61,7 @@ first_pid=$!
 
 "${PSQL[@]}" -c "
     select * from public.record_stripe_entitlement(
-        'evt_concurrent_2', 'checkout.session.completed', now(), 'digest-2', 'cs_concurrent_1',
+        'evt_concurrent_2', 'checkout.session.completed', timestamptz '2026-09-03 12:00:00+00', 'digest-2', 'cs_concurrent_1',
         '00000000-0000-0000-0000-0000000000a1', 'lifetime', 'active', 'pi_concurrent_1', null,
         'cus_concurrent_1', 'email-hmac-concurrent', 1
     );

@@ -2,6 +2,7 @@ import { createHash, createHmac } from 'node:crypto'
 
 export interface CanonicalCheckoutSession {
     id: string
+    created: number
     payment_status: string | null
     mode: string | null
     amount_total: number | null
@@ -127,6 +128,9 @@ export async function recordSignedCheckoutEntitlement({
 
     const session = await stripe.checkout.sessions.retrieve(event.data.object.id, { expand: ['line_items.data.price'] })
     if (session.payment_status !== 'paid') throw new Error('Checkout session is not paid')
+    if (!Number.isSafeInteger(session.created) || session.created <= 0) {
+        throw new Error('Checkout session is missing a canonical creation timestamp')
+    }
     if (
         typeof session.amount_total !== 'number' ||
         !Number.isSafeInteger(session.amount_total) ||
@@ -148,7 +152,7 @@ export async function recordSignedCheckoutEntitlement({
     const { data, error } = await recordEntitlement({
         p_event_id: event.id,
         p_event_type: event.type,
-        p_stripe_created_at: new Date(event.created * 1000).toISOString(),
+        p_stripe_created_at: new Date(session.created * 1000).toISOString(),
         p_payload_digest: createHash('sha256').update(body).digest('hex'),
         p_checkout_session_id: session.id,
         p_origin_user_id: userId,

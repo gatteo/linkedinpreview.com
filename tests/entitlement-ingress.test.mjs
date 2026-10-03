@@ -40,6 +40,7 @@ test('records a signed paid lifetime checkout using canonical Stripe session dat
                         assert.deepEqual(options, { expand: ['line_items.data.price'] })
                         return {
                             id,
+                            created: 1_725_000_000,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -124,6 +125,7 @@ test('records a signed paid asynchronous checkout using canonical Stripe session
                         assert.deepEqual(options, { expand: ['line_items.data.price'] })
                         return {
                             id,
+                            created: 1_725_000_001,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -189,6 +191,7 @@ test('rejects a zero-total paid checkout without writing an entitlement', async 
                         sessions: {
                             retrieve: async (id) => ({
                                 id,
+                                created: 1_725_000_000,
                                 payment_status: 'paid',
                                 mode: 'payment',
                                 amount_total: 0,

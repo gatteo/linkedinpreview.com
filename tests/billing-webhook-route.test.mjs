@@ -124,6 +124,7 @@ test('records one signed paid lifetime checkout through the immutable ledger', a
                             assert.deepEqual(options, { expand: ['line_items.data.price'] })
                             return {
                                 id,
+                                created: 1_725_000_000,
                                 payment_status: 'paid',
                                 mode: 'payment',
                                 amount_total: 3999,
@@ -206,6 +207,7 @@ test('records one signed paid asynchronous checkout through the immutable ledger
                     sessions: {
                         retrieve: async (id) => ({
                             id,
+                            created: 1_725_000_001,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -276,6 +278,7 @@ test('acknowledges a fulfilled checkout when analytics capture fails', async () 
                     sessions: {
                         retrieve: async (id) => ({
                             id,
+                            created: 1_725_000_000,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -333,6 +336,7 @@ test('acknowledges a signed duplicate Stripe event without another conversion ca
                     sessions: {
                         retrieve: async (id) => ({
                             id,
+                            created: 1_725_000_000,
                             payment_status: 'paid',
                             mode: 'payment',
                             amount_total: 3999,
@@ -383,6 +387,7 @@ test('records one signed paid monthly checkout through the immutable ledger', as
                     sessions: {
                         retrieve: async (id) => ({
                             id,
+                            created: 1_725_000_000,
                             payment_status: 'paid',
                             mode: 'subscription',
                             amount_total: 1199,
