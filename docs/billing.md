@@ -91,54 +91,6 @@ onboarding|upgrade`. The initiating surface resumes from the query params on ret
 
 Either way the plan is set authoritatively by the webhook.
 
-## Entitlement recovery salvage
-
-This repository contains a dormant entitlement-recovery core. None of migrations `032` through `034`
-has been applied, the production webhook still writes the legacy `public.billing` projection, and all
-product authorization still reads that legacy projection. This slice adds no route, environment variable,
-backfill, approval record, webhook subscription, or production configuration.
-
-The retained pieces are:
-
-- `032_entitlement_recovery.sql`: immutable Checkout-session entitlements, append-only ownership
-  assignments and Stripe event observations, service-role-only grant, lifecycle, approved-import, and
-  recovery RPCs, plus the existing `billing` projection recomputation.
-- `033_historical_entitlement_reconciliation.sql`: sealed, append-only approval manifests and an
-  idempotent historical importer. Application roles cannot read or execute these operator paths.
-- `034_monotonic_dual_read_authorization.sql`: an authenticated-caller reader where either an active
-  immutable entitlement or a paid legacy `billing` row grants access. Lifetime outranks Pro, and an
-  inactive ledger record suppresses only the matching legacy subscription identity. Legacy lifetime
-  access remains monotonic until reconciliation provides an exact payment identity.
-- Pure TypeScript seams for canonical signed Checkout ingestion, subscription lifecycle handling, and an
-  authenticated recovery claim. They are testable but intentionally disconnected from live routes.
-- Deterministic Node tests and disposable PostgreSQL 16 integration tests, available through
-  `pnpm test:entitlement`.
-
-The backup's ledger-only `028_current_entitlement_reader.sql` was intentionally omitted. A temporary
-ledger-only reader could return `free` for a paid legacy account before reconciliation. The salvage keeps
-only the monotonic dual-read definition, renumbered after current migration `031_leads.sql`. The live
-webhook and recovery route wiring were also omitted because no server-owned challenge issuance flow or
-email-HMAC key configuration exists yet.
-
-### Additive rollout and cutover gates
-
-1. Review the SQL and test corpus. Applying a migration is a separate production-data change and is not
-   part of this PR.
-2. If approved later, apply `032`, `033`, and `034` in order without seeding approvals or switching a
-   consumer. Existing `billing` rows and the live authorization path remain untouched.
-3. Generate a fresh read-only reconciliation at one cutoff. A human must account for every paid legacy
-   account and paid Stripe Checkout Session, explicitly retaining ambiguous accounts as manual exceptions.
-4. Seal and import only the reviewed approval set. Require zero unexpected paid-to-free, duplicate-grant,
-   former-owner-regrant, and identity-conflict results across the complete population.
-5. Wire the webhook in a separate reversible PR, then observe dual writes. Wire product authorization to
-   the monotonic dual reader only in another PR after the zero-difference gate passes.
-6. Add recovery challenge issuance and verification before exposing the claim handler through a route.
-
-Before any consumer cutover, rollback is non-destructive: revert the code PR or stop before the next gate;
-unused additive tables and functions may remain in place. After a future consumer cutover, revert only the
-consumer commit so reads return to `public.billing`. Do not drop ledger tables or delete evidence as a
-rollback mechanism.
-
 ## Must replace before public launch (placeholders)
 
 Per the spec's guardrail (§1.5) and inventory (§9), these ship as clearly-flagged placeholders:
