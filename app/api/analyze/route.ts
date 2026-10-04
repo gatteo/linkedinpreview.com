@@ -14,7 +14,32 @@ import { analysisSchema, bodySchema } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type AnalyzeRouteDependencies = {
+    assertSameOrigin: typeof assertSameOrigin
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: AnalyzeRouteDependencies = {
+    assertSameOrigin,
+    createClient,
+    checkRateLimit,
+    createOpenAI,
+    generateObject,
+}
+
+export async function handleAnalyzeRequest(
+    request: Request,
+    {
+        assertSameOrigin,
+        createClient,
+        checkRateLimit,
+        createOpenAI,
+        generateObject,
+    }: AnalyzeRouteDependencies = productionDependencies,
+) {
     const originBlock = assertSameOrigin(request)
     if (originBlock) return originBlock
 
@@ -115,4 +140,8 @@ export async function POST(request: Request) {
     }
 
     return Response.json({ success: true, analysis: object })
+}
+
+export function POST(request: Request) {
+    return handleAnalyzeRequest(request)
 }

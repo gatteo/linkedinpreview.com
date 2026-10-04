@@ -12,7 +12,29 @@ import { bodySchema, positioningSchema } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type PositioningRouteDependencies = {
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: PositioningRouteDependencies = {
+    createClient,
+    checkRateLimit,
+    createOpenAI,
+    generateObject,
+}
+
+export async function handlePositioningRequest(
+    request: Request,
+    {
+        createClient,
+        checkRateLimit,
+        createOpenAI,
+        generateObject,
+    }: PositioningRouteDependencies = productionDependencies,
+) {
     let body: unknown
     try {
         body = await request.json()
@@ -78,4 +100,8 @@ export async function POST(request: Request) {
             { status: 500 },
         )
     }
+}
+
+export function POST(request: Request) {
+    return handlePositioningRequest(request)
 }

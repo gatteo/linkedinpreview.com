@@ -13,7 +13,19 @@ import { bodySchema, schemaMap } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type GenerateRouteDependencies = {
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: GenerateRouteDependencies = { createClient, checkRateLimit, createOpenAI, generateObject }
+
+export async function handleGenerateRequest(
+    request: Request,
+    { createClient, checkRateLimit, createOpenAI, generateObject }: GenerateRouteDependencies = productionDependencies,
+) {
     let body: unknown
     try {
         body = await request.json()
@@ -103,4 +115,8 @@ export async function POST(request: Request) {
             { status: 500 },
         )
     }
+}
+
+export function POST(request: Request) {
+    return handleGenerateRequest(request)
 }

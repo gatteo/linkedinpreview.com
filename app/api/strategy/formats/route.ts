@@ -12,7 +12,19 @@ import { bodySchema, formatsSchema } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type FormatsRouteDependencies = {
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: FormatsRouteDependencies = { createClient, checkRateLimit, createOpenAI, generateObject }
+
+export async function handleFormatsRequest(
+    request: Request,
+    { createClient, checkRateLimit, createOpenAI, generateObject }: FormatsRouteDependencies = productionDependencies,
+) {
     let body: unknown
     try {
         body = await request.json()
@@ -78,4 +90,8 @@ export async function POST(request: Request) {
             { status: 500 },
         )
     }
+}
+
+export function POST(request: Request) {
+    return handleFormatsRequest(request)
 }
