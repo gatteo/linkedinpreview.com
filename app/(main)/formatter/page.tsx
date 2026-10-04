@@ -85,8 +85,8 @@ function FormatterHero() {
 
                 <AnimateIn delay={0.2}>
                     <p className='text-muted-foreground mx-auto mb-8 max-w-[560px] text-center text-lg leading-7 md:text-xl md:leading-8'>
-                        The free LinkedIn post editor for bold, italic, underline, and lists. Format your post, then
-                        preview it on mobile and desktop before you publish.
+                        The free LinkedIn post formatting tool for Unicode bold, italic, underline, and lists. Format
+                        your post, then preview it on mobile and desktop before you publish.
                     </p>
                 </AnimateIn>
 
