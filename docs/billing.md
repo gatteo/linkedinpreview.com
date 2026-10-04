@@ -95,8 +95,8 @@ Either way the plan is set authoritatively by the webhook.
 
 This repository contains a dormant entitlement-recovery core. None of migrations `032` through `034`
 has been applied, the production webhook still writes the legacy `public.billing` projection, and all
-product authorization still reads that legacy projection. This slice adds no route, environment variable,
-backfill, approval record, webhook subscription, or production configuration.
+product authorization still reads that legacy projection. This slice adds no production-enabled recovery
+route, environment variable, backfill, approval record, webhook subscription, or production configuration.
 
 The retained pieces are:
 
@@ -142,6 +142,22 @@ rollback mechanism.
 
 The exact stop points, readbacks, minimum remaining challenge/webhook/reader seams, and non-destructive
 rollback sequence are in [entitlement-recovery-cutover-runbook.md](entitlement-recovery-cutover-runbook.md).
+
+### Gated synthetic recovery preview
+
+Vercel preview deployments and local development expose a synthetic recovery rehearsal at
+`/entitlement-recovery-preview`. The page and corresponding `POST /api/billing/recovery/preview` route
+return `404` in production. They import no Stripe or Supabase client and perform no external read or write.
+
+The committed fixture codes model all 15 verified paid records, the grandfathered non-revenue lifetime
+exception, the stale test-mode Pro row, and an unknown purchase. Verified paid fixtures simulate a restore;
+the grandfathered fixture stays on legacy fallback without a paid import; stale and unknown fixtures receive
+no grant. Every response includes `writesPerformed: false`.
+
+Client analytics emit `entitlement_recovery_attempted` for each submit and
+`entitlement_recovery_succeeded` only for a verified paid synthetic restore. Properties contain only the
+preview surface, `synthetic_preview` mode, and the restored plan. Recovery codes, emails, user IDs, and
+other PII are not sent to PostHog.
 
 ## Must replace before public launch (placeholders)
 

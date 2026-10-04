@@ -14,7 +14,7 @@
         "type-check": "tsc --noEmit",
         "db:migrate": "bash scripts/db-migrate.sh",
         "format": "prettier --write .",
-        "test:entitlement-unit": "node --experimental-strip-types --test tests/entitlement-recovery-core.test.mjs tests/entitlement-ingress.test.mjs tests/billing-recovery-claim-route.test.mjs tests/billing-webhook-route.test.mjs tests/entitlement-cutover-dry-run.test.mjs",
+        "test:entitlement-unit": "node --experimental-strip-types --test tests/entitlement-recovery-core.test.mjs tests/entitlement-ingress.test.mjs tests/billing-recovery-claim-route.test.mjs tests/billing-webhook-route.test.mjs tests/entitlement-cutover-dry-run.test.mjs tests/entitlement-recovery-preview.test.mjs",
         "test:entitlement-cutover-dry-run": "node --experimental-strip-types scripts/run-entitlement-cutover-dry-run.mjs",
         "test:entitlement-recovery": "bash scripts/test-entitlement-recovery.sh",
         "test:entitlement-concurrency": "bash scripts/test-entitlement-recovery-concurrency.sh",
