@@ -18,9 +18,9 @@ import { Reason } from '@/components/home/reason'
 import { Tool } from '@/components/tool/tool'
 
 export const metadata: Metadata = {
-    title: { absolute: 'LinkedIn Post Preview Tool - Free Formatter & Editor' },
+    title: { absolute: 'LinkedIn Post Editor & Preview Tool - Free, No Signup' },
     description:
-        'Free LinkedIn post formatter and editor with a live preview. Add bold, italic, underline, and lists, then check mobile and desktop before publishing. No signup.',
+        'Free LinkedIn post editor with a live mobile and desktop preview. Write, edit, and check your post before you copy it. No signup.',
     alternates: {
         canonical: site.url,
         languages: {
@@ -63,12 +63,12 @@ export default function Page() {
     const softwareSchema: WithContext<SoftwareApplication> = {
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        'name': 'LinkedIn Post Preview Tool',
+        'name': 'LinkedIn Post Editor and Preview Tool',
         'applicationCategory': 'BusinessApplication',
         'operatingSystem': 'Web Browser',
         'url': `${site.url}/#tool`,
         'description':
-            'Free LinkedIn post preview tool. Free online tool to write, format, and preview LinkedIn posts with bold, italic, underline text and lists. See how Linkedin posts will look on mobile and desktop before publishing. Improve engagement and professionalism.',
+            'Free LinkedIn post editor with a live preview. Write and refine your post, check the mobile and desktop layout, and copy it when it is ready.',
         'offers': {
             '@type': 'Offer',
             'price': '0',
