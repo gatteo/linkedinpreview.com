@@ -4,6 +4,7 @@ import { generateObject } from 'ai'
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
 import { STRATEGY_FORMATS_SYSTEM_PROMPT, strategyFormatsUserPrompt } from '@/config/prompts'
+import { isAIProviderRateLimit } from '@/lib/ai-provider-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -61,7 +62,17 @@ export async function POST(request: Request) {
         })
 
         return Response.json(object)
-    } catch {
+    } catch (err) {
+        if (isAIProviderRateLimit(err)) {
+            return Response.json(
+                {
+                    error: 'AI generation is temporarily unavailable. Please try again later.',
+                    code: AI_ERROR_CODES.PROVIDER_RATE_LIMITED,
+                },
+                { status: 429 },
+            )
+        }
+
         return Response.json(
             { error: 'Failed to generate format suggestions', code: AI_ERROR_CODES.GENERATION_FAILED },
             { status: 500 },

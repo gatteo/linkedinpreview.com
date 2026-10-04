@@ -4,6 +4,7 @@ import { generateObject } from 'ai'
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
 import { GENERATE_PROMPTS, generateConstraints } from '@/config/prompts'
+import { isAIProviderRateLimit } from '@/lib/ai-provider-error'
 import { countWords } from '@/lib/content-scoring'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
@@ -86,6 +87,16 @@ export async function POST(request: Request) {
 
         return Response.json(object)
     } catch (err) {
+        if (isAIProviderRateLimit(err)) {
+            return Response.json(
+                {
+                    error: 'AI generation is temporarily unavailable. Please try again later.',
+                    code: AI_ERROR_CODES.PROVIDER_RATE_LIMITED,
+                },
+                { status: 429 },
+            )
+        }
+
         console.error('[/api/generate] action:', action, err instanceof Error ? err.message : err)
         return Response.json(
             { error: 'Failed to generate content', code: AI_ERROR_CODES.GENERATION_FAILED },

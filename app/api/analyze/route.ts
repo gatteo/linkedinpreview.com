@@ -6,6 +6,7 @@ import { env } from '@/env.mjs'
 import { AI_ERROR_CODES, DEFAULT_LLM_MODEL } from '@/config/ai'
 import { ANALYZE_SYSTEM_PROMPT, analyzeUserPrompt } from '@/config/prompts'
 import { assertSameOrigin } from '@/lib/ai-guard'
+import { isAIProviderRateLimit } from '@/lib/ai-provider-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -66,6 +67,16 @@ export async function POST(request: Request) {
         })
         object = result.object
     } catch (err) {
+        if (isAIProviderRateLimit(err)) {
+            return Response.json(
+                {
+                    error: 'AI analysis is temporarily unavailable. Please try again later.',
+                    code: AI_ERROR_CODES.PROVIDER_RATE_LIMITED,
+                },
+                { status: 429 },
+            )
+        }
+
         console.error('AI analysis failed:', err)
         return Response.json(
             { error: 'Failed to analyze post', code: AI_ERROR_CODES.GENERATION_FAILED },
