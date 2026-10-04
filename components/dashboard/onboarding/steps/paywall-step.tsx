@@ -69,7 +69,7 @@ export function PaywallStep() {
     const wedge = answers.topics[0] || answers.insights?.currentTopics[0] || ''
     const langPair = languageCodePair(answers.identity)
 
-    const [selected, setSelected] = React.useState<CheckoutPlan>('lifetime')
+    const [selected, setSelected] = React.useState<CheckoutPlan>('monthly')
     const [checkout, setCheckout] = React.useState(false)
     const [checkoutError, setCheckoutError] = React.useState(false)
 
@@ -105,6 +105,7 @@ export function PaywallStep() {
 
     React.useEffect(() => {
         track('onb_paywall_view', { ideas: answers.postIdeas?.length ?? 0 })
+        track('onb_offer_variant_view', { variant: 'monthly_first' })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -362,20 +363,11 @@ export function PaywallStep() {
                         Checkout is not available right now. You can continue on the free plan and upgrade later.
                     </p>
                 )}
-                <GoldenTicket
-                    selected={selected === 'lifetime'}
-                    onSelect={() => setSelected('lifetime')}
-                    name={answers.profile.name}
-                    avatarUrl={answers.profile.avatarUrl}
-                />
-                <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
-                    or
-                </div>
                 <button
                     type='button'
                     onClick={() => setSelected('monthly')}
                     className={cn(
-                        'flex w-full cursor-pointer items-center gap-3.5 rounded-[13px] border px-4 py-[15px] text-left transition-colors',
+                        'mt-4 flex w-full cursor-pointer items-center gap-3.5 rounded-[13px] border px-4 py-[15px] text-left transition-colors',
                         selected === 'monthly'
                             ? 'border-primary bg-[color-mix(in_oklch,var(--primary)_7%,var(--card))] shadow-[0_0_0_1px_var(--primary)]'
                             : 'bg-secondary border-border hover:border-primary/50',
@@ -389,7 +381,12 @@ export function PaywallStep() {
                         )}
                     />
                     <span className='min-w-0'>
-                        <b className='font-heading text-[15px] font-semibold'>Monthly</b>
+                        <span className='flex items-center gap-2'>
+                            <b className='font-heading text-[15px] font-semibold'>Monthly</b>
+                            <span className='bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[10px] font-bold tracking-[0.04em] uppercase'>
+                                Most popular
+                            </span>
+                        </span>
                         <span className='text-muted-foreground mt-0.5 block text-xs'>
                             Billed monthly. Cancel anytime.
                         </span>
@@ -399,6 +396,15 @@ export function PaywallStep() {
                         <span className='text-muted-foreground ml-[3px] text-xs'>/mo</span>
                     </span>
                 </button>
+                <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
+                    or
+                </div>
+                <GoldenTicket
+                    selected={selected === 'lifetime'}
+                    onSelect={() => setSelected('lifetime')}
+                    name={answers.profile.name}
+                    avatarUrl={answers.profile.avatarUrl}
+                />
 
                 <div className='text-muted-foreground mt-4 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
                     <span className='inline-flex items-center gap-1.5'>
