@@ -9,6 +9,6 @@ test('dashboard nudge uses the clear free-plan EXP-1 variant without changing it
     assert.match(source, /Get a free audit and a personalized 90-day posting plan\. This draft comes with you\./)
     assert.match(source, /label: 'Create a free plan'/)
     assert.match(source, /const NUDGE_MIN_CHARS = 160/)
-    assert.match(source, /duration: 12000/)
+    assert.match(source, /duration: 30000/)
     assert.match(source, /onClick: \(\) => handleOpenDashboard\('tool_nudge'\)/)
 })
