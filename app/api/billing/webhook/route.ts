@@ -108,6 +108,9 @@ export async function POST(request: Request) {
                             plan: s.mode === 'payment' ? 'lifetime' : 'monthly',
                             amount_total: s.amount_total,
                             currency: s.currency,
+                            entry_source: s.metadata?.entry_source ?? 'direct',
+                            exposure_id: s.metadata?.exposure_id ?? null,
+                            activation_version: s.metadata?.activation_version ?? null,
                         }),
                     )
                 }

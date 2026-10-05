@@ -3,6 +3,7 @@ import type Stripe from 'stripe'
 import { ENTRY_PARAM } from '@/config/entry-sources'
 import { CHECKOUT_UI } from '@/config/pricing'
 import { devMissingEnv } from '@/lib/dev/missing-env'
+import { DRAFT_FIRST_VERSION } from '@/lib/draft-first'
 import { getStripe, isStripeConfigured, missingStripeEnv, priceIdFor } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
     if (!parsed.success) {
         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
     }
-    const { plan, source } = parsed.data
+    const { plan, source, entrySource, exposureId } = parsed.data
 
     const supabase = await createClient()
     const {
@@ -53,7 +54,12 @@ export async function POST(request: Request) {
             mode: plan === 'monthly' ? 'subscription' : 'payment',
             line_items: [{ price: priceId, quantity: 1 }],
             client_reference_id: user.id,
-            metadata: { user_id: user.id, plan },
+            metadata: {
+                user_id: user.id,
+                plan,
+                entry_source: entrySource,
+                ...(exposureId ? { exposure_id: exposureId, activation_version: DRAFT_FIRST_VERSION } : {}),
+            },
             // Without this Stripe renders no promotion-code field at all, so any
             // coupon we issue is unredeemable.
             allow_promotion_codes: true,
@@ -64,8 +70,9 @@ export async function POST(request: Request) {
             // where the initiating surface (source) resumes via the query params.
             const origin = new URL(request.url).origin
             params.ui_mode = 'hosted_page'
-            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return&session_id={CHECKOUT_SESSION_ID}`
-            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return`
+            const attribution = `&entry_source=${entrySource}${exposureId ? `&activation=${exposureId}` : ''}`
+            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
+            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
         } else {
             // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
             // 'embedded_page' (the old 'embedded' is gone). This is the mode that

@@ -7,6 +7,7 @@ import { Group, Panel } from 'react-resizable-panels'
 import { toast } from 'sonner'
 
 import { assembleBrandingContext, brandingRulesForGenerate } from '@/lib/ai-branding'
+import { readDraftFirst, requestPlanning, writeDraftFirst, type DraftFirstState } from '@/lib/draft-first'
 import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { encodeDraft } from '@/lib/draft-url'
 import { extractPlainText, hasTextContent } from '@/lib/editor-utils'
@@ -14,12 +15,16 @@ import { cn } from '@/lib/utils'
 import { useBranding } from '@/hooks/use-branding'
 import { useCurrentDraft } from '@/hooks/use-current-draft'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
+import { usePlan } from '@/hooks/use-plan'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AIActions } from '@/components/dashboard/ai-actions'
+import { useAuth } from '@/components/dashboard/auth-provider'
 import { LabelPicker } from '@/components/dashboard/label-picker'
+import { track } from '@/components/dashboard/onboarding/ai'
 import { PublishControls } from '@/components/dashboard/publish-controls'
 import { StatusPicker } from '@/components/dashboard/status-picker'
+import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
 import { EditorLoading } from '@/components/tool/editor-loading'
 import { PreviewPanel } from '@/components/tool/preview/preview-panel'
 import { ResizeHandle } from '@/components/tool/resize-handle'
@@ -94,7 +99,13 @@ export function DashboardEditor() {
         applyPublished,
     } = useCurrentDraft()
     const { branding } = useBranding()
-    const [content, setContent] = React.useState<any>(null)
+    const { userId } = useAuth()
+    const { isPaid } = usePlan()
+    const { openUpgrade } = useUpgradePrompt()
+    const [currentContent, setCurrentContent] = React.useState<{ id: string | null; doc: any } | null>(null)
+    const content = currentContent?.id === draftId ? currentContent?.doc : null
+    const [activation, setActivation] = React.useState<DraftFirstState | null>(null)
+    const initialEditorDocRef = React.useRef<{ id: string | null; serialized: string } | null>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
     const [rightTab, setRightTab] = React.useState<RightTab>('preview')
@@ -103,13 +114,38 @@ export function DashboardEditor() {
 
     // Sync initial media from loaded draft
     React.useEffect(() => {
-        if (initialMedia) setMedia(initialMedia)
-    }, [initialMedia])
+        setMedia(initialMedia)
+    }, [draftId, initialMedia])
 
-    const handleContentChange = (json: any) => {
-        setContent(json)
-        saveContent(json)
-    }
+    React.useEffect(() => {
+        setActivation(readDraftFirst(userId))
+    }, [userId, draftId])
+
+    const recordUse = React.useCallback(
+        (action: 'edit' | 'copy') => {
+            const choice = readDraftFirst(userId)
+            if (!userId || choice?.draftId !== draftId || choice.used) return
+            track('draft_first_used', { action })
+            const used = { ...choice, used: true }
+            writeDraftFirst(userId, used)
+            setActivation(used)
+        },
+        [userId, draftId],
+    )
+
+    const handleContentChange = React.useCallback(
+        (json: any) => {
+            setCurrentContent({ id: draftId, doc: json })
+            const serialized = JSON.stringify(json)
+            if (initialEditorDocRef.current?.id !== draftId) {
+                initialEditorDocRef.current = { id: draftId, serialized }
+            } else if (extractPlainText(json) && serialized !== initialEditorDocRef.current.serialized) {
+                recordUse('edit')
+            }
+            saveContent(json)
+        },
+        [draftId, recordUse, saveContent],
+    )
 
     const handleMediaChange = (newMedia: Media | null) => {
         setMedia(newMedia)
@@ -156,7 +192,13 @@ export function DashboardEditor() {
         if (!text) return
         await navigator.clipboard.writeText(text)
         toast.success('Copied to clipboard')
-    }, [contentText])
+        recordUse('copy')
+    }, [contentText, recordUse])
+
+    const importedReady = activation?.draftId === draftId && !!contentText
+    React.useEffect(() => {
+        if (importedReady && !isPaid) track('draft_first_pro_action_view', { action: 'higher_ai_limits' })
+    }, [importedReady, isPaid])
 
     if (isLoading) {
         return (
@@ -177,7 +219,7 @@ export function DashboardEditor() {
     const editorPanel = (
         <div className='flex min-h-0 flex-1 flex-col'>
             <EditorPanel
-                initialContent={initialContent}
+                initialContent={content ?? initialContent}
                 onChange={handleContentChange}
                 onMediaChange={handleMediaChange}
                 onShare={handleShare}
@@ -243,6 +285,20 @@ export function DashboardEditor() {
                     onPublished={applyPublished}
                 />
             </PageHeader>
+
+            {importedReady && (
+                <div className='border-border bg-secondary flex shrink-0 flex-wrap items-center gap-2 border-b px-4 py-2 text-xs'>
+                    <span className='text-muted-foreground'>Your draft is ready. Planning is optional.</span>
+                    <Button variant='ghost' size='sm' onClick={requestPlanning}>
+                        Create my LinkedIn plan
+                    </Button>
+                    {!isPaid && (
+                        <Button variant='outline' size='sm' onClick={() => openUpgrade('imported_draft')}>
+                            Get higher AI limits with Pro
+                        </Button>
+                    )}
+                </div>
+            )}
 
             <div className='bg-background flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden'>
                 {/* Mobile tab bar */}

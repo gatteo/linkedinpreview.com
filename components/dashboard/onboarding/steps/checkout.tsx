@@ -8,8 +8,9 @@ import { Loader2Icon } from 'lucide-react'
 import { env } from '@/env.mjs'
 import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
 import { reportMissingEnv } from '@/lib/dev/report-missing-env'
+import { draftFirstProperties } from '@/lib/draft-first'
 
-import { track } from '../ai'
+import { getEntrySource, track } from '../ai'
 import { markCheckoutPending } from '../types'
 
 // Load Stripe.js once. Null when the publishable key is not configured yet, so
@@ -57,7 +58,12 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
         fetch('/api/billing/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ plan, source }),
+            body: JSON.stringify({
+                plan,
+                source,
+                entrySource: getEntrySource(),
+                exposureId: draftFirstProperties().exposure_id,
+            }),
         })
             .then(async (res) => {
                 if (!res.ok) {

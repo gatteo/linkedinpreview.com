@@ -2,10 +2,13 @@
 
 import * as React from 'react'
 
+import { parseEntrySource } from '@/config/entry-sources'
 import type { CheckoutPlan } from '@/config/pricing'
+import { readDraftFirst } from '@/lib/draft-first'
 import { usePlan } from '@/hooks/use-plan'
+import { useAuth } from '@/components/dashboard/auth-provider'
 
-import { track } from './onboarding/ai'
+import { setEntrySource, track } from './onboarding/ai'
 import { UpgradeDialog } from './upgrade-dialog'
 
 // ---------------------------------------------------------------------------
@@ -27,6 +30,7 @@ export function useUpgradePrompt(): UpgradeContextValue {
 }
 
 export function UpgradeProvider({ children }: { children: React.ReactNode }) {
+    const { isReady, userId } = useAuth()
     const { refresh } = usePlan()
     const [open, setOpen] = React.useState(false)
     const [reason, setReason] = React.useState<string | undefined>(undefined)
@@ -42,9 +46,13 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
     // query params (the embedded flow completes in-dialog via onComplete).
     // Success reopens the dialog straight in its confirmation state.
     React.useEffect(() => {
+        if (!isReady) return
         const params = new URLSearchParams(window.location.search)
         const status = params.get('checkout')
         if (!status || params.get('source') !== 'upgrade') return
+        const choice = readDraftFirst(userId)
+        const original = parseEntrySource(params.get('entry_source'))
+        setEntrySource(choice?.entrySource ?? original)
         const plan: CheckoutPlan = params.get('plan') === 'monthly' ? 'monthly' : 'lifetime'
         params.delete('checkout')
         params.delete('plan')
@@ -53,13 +61,13 @@ export function UpgradeProvider({ children }: { children: React.ReactNode }) {
         const qs = params.toString()
         window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''))
         if (status === 'success') {
-            track('upgrade_success', { plan, reason: 'hosted_return' })
+            track('upgrade_success', { plan, reason: 'hosted_return', entry_source: choice?.entrySource ?? original })
             refresh()
             setCompletedPlan(plan)
             setOpen(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [isReady, userId])
 
     const value = React.useMemo(() => ({ openUpgrade }), [openUpgrade])
 

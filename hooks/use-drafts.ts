@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { toast } from 'sonner'
 
-import { type DraftKind, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
+import { type DraftContent, type DraftKind, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
 import {
     createDraft as createDraftApi,
     createImportedPublishedPost,
@@ -51,9 +51,19 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
     }, [isReady, userId, supabase, kind])
 
     const createDraft = React.useCallback(
-        async (initialContent?: any, createOpts?: { label?: string | null }): Promise<DraftManifestEntry> => {
+        async (
+            initialContent?: any,
+            createOpts?: { label?: string | null; media?: DraftContent['media'] },
+        ): Promise<DraftManifestEntry> => {
             if (!userId) throw new Error('Not authenticated')
-            const entry = await createDraftApi(supabase, userId, initialContent, createOpts?.label ?? null, kind)
+            const entry = await createDraftApi(
+                supabase,
+                userId,
+                initialContent,
+                createOpts?.label ?? null,
+                kind,
+                createOpts?.media,
+            )
             setDrafts((prev) => [entry, ...prev])
             return entry
         },

@@ -80,7 +80,9 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                 <DialogDescription>
                     {isPaid
                         ? 'You already have Pro access. Thanks for supporting LinkedInPreview.'
-                        : "You've used today's free AI. Upgrade to keep creating without the daily cap."}
+                        : reason === 'imported_draft'
+                          ? 'Keep refining your draft with higher daily AI limits and the existing Pro toolkit.'
+                          : "You've used today's free AI. Upgrade to keep creating without the daily cap."}
                 </DialogDescription>
 
                 {isPaid ? null : selected && !error ? (
