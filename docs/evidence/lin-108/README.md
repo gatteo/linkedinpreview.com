@@ -1,5 +1,7 @@
 # LIN-108 exact-code-head preview evidence
 
+Current rereview evidence: [LIN-117 navigation-save correction](./revision9af3-review.md), code head 9af3c7f2f15b955fe738cb09ee7674a0ba4e5187 at https://linkedinpreview-m4zvdmr48-gatteos.vercel.app. The 823a7ae evidence below is historical: Sentinel returned CHANGES for navigation-save meaningful-use accounting. No head is approved until Sentinel independently reviews the correction.
+
 PR: https://github.com/gatteo/linkedinpreview.com/pull/104
 Branch: feat/lin-108-draft-first
 Verified code head: 823a7ae070cb252015b8fd135f265344100f7268
