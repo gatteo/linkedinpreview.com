@@ -376,6 +376,7 @@ test('actual editor counts meaningful use after hydration and preserves edits ac
     const copy = elements(render()).find((node) => node.type === 'button' && node.props.children?.[1] === 'Copy Text')
     await copy.props.onClick()
     assert.deepEqual(copies, ['Synthetic edited draft'])
+    editor().props.onCopyText()
     assert.equal(events.filter(([event]) => event === 'draft_first_used').length, 1)
     draft = { ...draft, draftId: 'two', initialContent: doc }
     assert.deepEqual(json(editor().props.initialContent), doc)

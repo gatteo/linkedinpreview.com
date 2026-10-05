@@ -220,6 +220,8 @@ export function DashboardEditor() {
         <div className='flex min-h-0 flex-1 flex-col'>
             <EditorPanel
                 initialContent={content ?? initialContent}
+                initialMedia={media}
+                onCopyText={() => recordUse('copy')}
                 onChange={handleContentChange}
                 onMediaChange={handleMediaChange}
                 onShare={handleShare}
