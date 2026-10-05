@@ -237,7 +237,11 @@ async function currentDraft(url, opts = {}) {
                     }
                 },
                 deleteDraft: async (...args) => writes.push(['delete', ...args]),
-                updateDraft: async (...args) => writes.push(['update', ...args]),
+                updateDraft: async (...args) => {
+                    writes.push(['update', ...args])
+                    await opts.waitForSave?.()
+                    if (opts.saveFail) throw Error('save')
+                },
             },
             '@/hooks/use-drafts': {
                 useDrafts: () => ({
@@ -251,24 +255,25 @@ async function currentDraft(url, opts = {}) {
                     },
                     updateDraft: async (...args) => {
                         writes.push(['update', ...args])
+                        await opts.waitForSave?.()
                         return !opts.saveFail
                     },
                     purgeEmptyDrafts() {},
                 }),
             },
             '@/components/dashboard/auth-provider': {
-                useAuth: () => ({ isReady: true, userId: 'synthetic-user', supabase: {} }),
+                useAuth: () => ({ isReady: true, userId: opts.user?.id ?? 'synthetic-user', supabase: {} }),
             },
             '@/components/dashboard/onboarding/ai': { setEntrySource() {}, track: (...args) => events.push(args) },
         },
-        { window },
+        { window, ...opts.globals },
     )
     const render = () => h.render(currentHook.useCurrentDraft)
     render()
     draftsLoading = false
     render()
     await new Promise((resolve) => setTimeout(resolve, 30))
-    return { render, h, flow, writes, redirects, events, errors }
+    return { render, h, flow, writes, redirects, events, errors, window }
 }
 
 test('actual import hook deduplicates overlapping loads and preserves nested text, media and attribution', async () => {
@@ -495,5 +500,129 @@ test('meaningful edit requires confirmed persistence, failed saves and hydration
         assert.equal(uses[0][1].action, 'saved_edit')
         assert.equal(!!state.flow.readDraftFirst('synthetic-user').used, !saveFail)
         state.h.unmount()
+    }
+})
+
+const useEvents = (state) => state.events.filter(([event]) => event === 'draft_meaningful_use')
+
+async function leaveDraft(state, path) {
+    if (path === 'unmount') {
+        state.h.unmount()
+    } else {
+        state.window.history.replaceState({}, '', '/dashboard/editor?draft=other')
+        state.render()
+    }
+    await tick()
+}
+
+test('navigation saves record only confirmed meaningful edits, excluding failure and hydration', async (t) => {
+    for (const path of ['unmount', 'switch']) {
+        for (const meaningful of [true, false]) {
+            for (const saveFail of [true, false]) {
+                await t.test(`${path}: meaningful=${meaningful}, failure=${saveFail}`, async () => {
+                    let resolveSave
+                    const pending = new Promise((resolve) => (resolveSave = resolve))
+                    const state = await currentDraft(importUrl, { saveFail, waitForSave: () => pending })
+                    state.render().saveContent({ ...doc, attrs: { edited: true } }, meaningful)
+                    state.render()
+                    await leaveDraft(state, path)
+                    assert.equal(state.writes.filter(([kind]) => kind === 'update').length, 1)
+                    assert.equal(useEvents(state).length, 0, 'not successful until persistence resolves')
+                    resolveSave()
+                    await tick()
+                    const uses = useEvents(state)
+                    assert.equal(uses.length, meaningful ? 1 : 0)
+                    if (meaningful) assert.equal(uses[0][1].outcome, saveFail ? 'failure' : 'success')
+                    assert.equal(!!state.flow.readDraftFirst('synthetic-user').used, meaningful && !saveFail)
+                    if (path === 'switch') {
+                        const next = state.render()
+                        assert.equal(next.draftId, 'other')
+                        next.saveContent(doc)
+                        await next.flush()
+                        assert.equal(useEvents(state).length, meaningful ? 1 : 0, 'new draft hydration is excluded')
+                        state.h.unmount()
+                    }
+                })
+            }
+        }
+    }
+})
+
+test('navigation successes deduplicate against earlier save or copy and remain draft scoped', async (t) => {
+    for (const path of ['unmount', 'switch']) {
+        for (const earlier of ['save', 'copy', 'different_draft']) {
+            await t.test(`${path} after ${earlier}`, async () => {
+                const state = await currentDraft(importUrl)
+                const hook = state.render()
+                if (earlier === 'save') {
+                    hook.saveContent(doc, true)
+                    await hook.flush()
+                } else if (earlier === 'copy') {
+                    const choice = state.flow.readDraftFirst('synthetic-user')
+                    state.flow.writeDraftFirst('synthetic-user', { ...choice, used: true })
+                } else {
+                    const choice = state.flow.readDraftFirst('synthetic-user')
+                    state.flow.writeDraftFirst('synthetic-user', { ...choice, draftId: 'other' })
+                }
+                hook.saveContent({ ...doc, attrs: { edited: true } }, true)
+                state.render()
+                await leaveDraft(state, path)
+                assert.equal(useEvents(state).length, earlier === 'save' ? 1 : 0)
+                if (path === 'switch') state.h.unmount()
+            })
+        }
+    }
+})
+
+test('save accounting snapshots meaningful intent before asynchronous hydration changes', async () => {
+    let resolveSave
+    const pending = new Promise((resolve) => (resolveSave = resolve))
+    const state = await currentDraft(importUrl, { waitForSave: () => pending })
+    const hook = state.render()
+    hook.saveContent(doc, true)
+    const saving = hook.flush()
+    hook.saveContent(doc, false)
+    resolveSave()
+    await saving
+    assert.equal(useEvents(state).length, 1)
+    assert.equal(useEvents(state)[0][1].outcome, 'success')
+    state.render()
+    state.h.unmount()
+    await tick()
+    assert.equal(useEvents(state).length, 1)
+})
+
+test('debounced persistence uses the same success/failure accounting and captures account scope', async (t) => {
+    for (const saveFail of [true, false]) {
+        await t.test(`failure=${saveFail}`, async () => {
+            let timer
+            let resolveSave
+            const pending = new Promise((resolve) => (resolveSave = resolve))
+            const user = { id: 'synthetic-user' }
+            const state = await currentDraft(importUrl, {
+                user,
+                saveFail,
+                waitForSave: () => pending,
+                globals: {
+                    setTimeout: (fn) => (timer = fn),
+                    clearTimeout: () => (timer = undefined),
+                },
+            })
+            state.render().saveContent(doc, true)
+            timer()
+            assert.equal(useEvents(state).length, 0)
+            user.id = 'different-user'
+            state.render()
+            const choice = state.flow.readDraftFirst('synthetic-user')
+            state.flow.writeDraftFirst(user.id, { ...choice })
+            resolveSave()
+            await tick()
+            assert.equal(useEvents(state).length, 1)
+            assert.equal(useEvents(state)[0][1].outcome, saveFail ? 'failure' : 'success')
+            assert.equal(!!state.flow.readDraftFirst('synthetic-user').used, !saveFail)
+            assert.equal(!!state.flow.readDraftFirst(user.id).used, false)
+            state.h.unmount()
+            await tick()
+        })
     }
 })

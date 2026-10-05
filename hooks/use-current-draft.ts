@@ -106,6 +106,37 @@ export function useCurrentDraft() {
     // touches drafts created earlier and never a blank another tab just created.
     const sessionStartRef = React.useRef<string>(new Date().toISOString())
 
+    const recordSavedEdit = React.useCallback(
+        (id: string, saved: boolean, meaningful: boolean) => {
+            const choice = readDraftFirst(userId)
+            if (!userId || choice?.draftId !== id || choice.used || !meaningful) return
+            track('draft_meaningful_use', {
+                action: 'saved_edit',
+                outcome: saved ? 'success' : 'failure',
+                draft_id: id,
+                ...(saved ? {} : { error_code: 'save_failed' }),
+            })
+            if (saved) writeDraftFirst(userId, { ...choice, used: true })
+        },
+        [userId],
+    )
+
+    const persistContent = React.useCallback(
+        async (id: string, content: any, meaningful: boolean, onUnmount = false) => {
+            let saved = false
+            try {
+                if (onUnmount) {
+                    await updateDraftApi(supabase, id, { content })
+                    saved = true
+                } else {
+                    saved = await updateDraftHook(id, { content })
+                }
+            } catch {}
+            recordSavedEdit(id, saved, meaningful)
+        },
+        [supabase, updateDraftHook, recordSavedEdit],
+    )
+
     // Load draft when auth is ready and URL params change
     React.useEffect(() => {
         if (!isReady) return
@@ -122,9 +153,10 @@ export function useCurrentDraft() {
             // so cleanup reasons only about the draft we're about to load.
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
             if (state.draftId && latestContentRef.current !== undefined) {
-                await updateDraftHook(state.draftId, { content: latestContentRef.current })
+                await persistContent(state.draftId, latestContentRef.current, meaningfulEditRef.current)
             }
             latestContentRef.current = undefined
+            meaningfulEditRef.current = false
             latestMediaRef.current = undefined
             loadedEmptyRef.current = false
 
@@ -292,7 +324,7 @@ export function useCurrentDraft() {
             if (loadedEmptyRef.current && !typedText && !addedMedia) {
                 void deleteDraftApi(supabase, id).catch(() => {})
             } else if (typed !== undefined) {
-                void updateDraftApi(supabase, id, { content: typed }).catch(() => {})
+                void persistContent(id, typed, meaningfulEditRef.current, true)
             }
         }
     })
@@ -307,33 +339,17 @@ export function useCurrentDraft() {
     /**
      * Save content with 2s debounce. Call on every editor change event.
      */
-    const recordSavedEdit = React.useCallback(
-        (id: string, saved: boolean) => {
-            const choice = readDraftFirst(userId)
-            if (!userId || choice?.draftId !== id || choice.used || !meaningfulEditRef.current) return
-            track('draft_meaningful_use', {
-                action: 'saved_edit',
-                outcome: saved ? 'success' : 'failure',
-                draft_id: id,
-                ...(saved ? {} : { error_code: 'save_failed' }),
-            })
-            if (saved) writeDraftFirst(userId, { ...choice, used: true })
-        },
-        [userId],
-    )
-
     const saveContent = React.useCallback(
         (content: any, meaningful = false) => {
             if (!state.draftId) return
             latestContentRef.current = content
             meaningfulEditRef.current = meaningful
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-            saveTimerRef.current = setTimeout(async () => {
-                const saved = await updateDraftHook(state.draftId!, { content })
-                recordSavedEdit(state.draftId!, saved)
+            saveTimerRef.current = setTimeout(() => {
+                void persistContent(state.draftId!, content, meaningful)
             }, SAVE_DELAY_MS)
         },
-        [state.draftId, updateDraftHook, recordSavedEdit],
+        [state.draftId, persistContent],
     )
 
     /**
@@ -344,10 +360,9 @@ export function useCurrentDraft() {
         if (!state.draftId) return
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
         if (latestContentRef.current !== undefined) {
-            const saved = await updateDraftHook(state.draftId, { content: latestContentRef.current })
-            recordSavedEdit(state.draftId, saved)
+            await persistContent(state.draftId, latestContentRef.current, meaningfulEditRef.current)
         }
-    }, [state.draftId, updateDraftHook, recordSavedEdit])
+    }, [state.draftId, persistContent])
 
     /**
      * Save media immediately (no debounce - media changes are infrequent).
