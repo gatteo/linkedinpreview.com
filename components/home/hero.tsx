@@ -40,7 +40,7 @@ export function Hero() {
                             36px stops fitting below ~344px. text-balance keeps the free-flowing words from
                             wrapping around that unit into a one-word orphan line. */}
                         <h1 className='font-heading mb-5 text-[clamp(36px,6vw,62px)] leading-[1.02] font-bold tracking-[-0.03em] text-balance max-[350px]:text-[32px]'>
-                            Write and preview your{' '}
+                            Format and preview your{' '}
                             <span className='inline-flex items-center gap-2 whitespace-nowrap sm:gap-2.5'>
                                 <Icons.linkedinLogo
                                     aria-hidden='true'
@@ -53,7 +53,7 @@ export function Hero() {
 
                     <AnimateIn delay={0.12}>
                         <p className='text-muted-foreground mb-7 max-w-[480px] text-[19px] leading-[1.55]'>
-                            A free tool to write, edit, and preview your LinkedIn posts before you publish - improve
+                            A free tool to write, format, and preview your LinkedIn posts before you publish - improve
                             your presence and engagement. No signup, no paywall.
                         </p>
                     </AnimateIn>

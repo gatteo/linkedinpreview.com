@@ -6,6 +6,7 @@ import { env } from '@/env.mjs'
 import { AI_ERROR_CODES, DEFAULT_LLM_MODEL } from '@/config/ai'
 import { ANALYZE_SYSTEM_PROMPT, analyzeUserPrompt } from '@/config/prompts'
 import { assertSameOrigin } from '@/lib/ai-guard'
+import { isAIProviderRateLimit } from '@/lib/ai-provider-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -13,7 +14,32 @@ import { analysisSchema, bodySchema } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type AnalyzeRouteDependencies = {
+    assertSameOrigin: typeof assertSameOrigin
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: AnalyzeRouteDependencies = {
+    assertSameOrigin,
+    createClient,
+    checkRateLimit,
+    createOpenAI,
+    generateObject,
+}
+
+export async function handleAnalyzeRequest(
+    request: Request,
+    {
+        assertSameOrigin,
+        createClient,
+        checkRateLimit,
+        createOpenAI,
+        generateObject,
+    }: AnalyzeRouteDependencies = productionDependencies,
+) {
     const originBlock = assertSameOrigin(request)
     if (originBlock) return originBlock
 
@@ -66,6 +92,16 @@ export async function POST(request: Request) {
         })
         object = result.object
     } catch (err) {
+        if (isAIProviderRateLimit(err)) {
+            return Response.json(
+                {
+                    error: 'AI analysis is temporarily unavailable. Please try again later.',
+                    code: AI_ERROR_CODES.PROVIDER_RATE_LIMITED,
+                },
+                { status: 429 },
+            )
+        }
+
         console.error('AI analysis failed:', err)
         return Response.json(
             { error: 'Failed to analyze post', code: AI_ERROR_CODES.GENERATION_FAILED },
@@ -104,4 +140,8 @@ export async function POST(request: Request) {
     }
 
     return Response.json({ success: true, analysis: object })
+}
+
+export function POST(request: Request) {
+    return handleAnalyzeRequest(request)
 }
