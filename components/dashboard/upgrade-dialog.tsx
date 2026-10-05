@@ -3,7 +3,13 @@
 import * as React from 'react'
 import { ArrowLeftIcon, CheckIcon } from 'lucide-react'
 
-import { AI_METERED_NOTE, COMPETITOR_PRICE_RANGE, MONEY_BACK_DAYS, PRICING, type CheckoutPlan } from '@/config/pricing'
+import {
+    AI_METERED_NOTE,
+    COMPETITOR_PRICE_RANGE,
+    PRICING,
+    purchasePolicyCopy,
+    type CheckoutPlan,
+} from '@/config/pricing'
 import { usePlan } from '@/hooks/use-plan'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -92,6 +98,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                             <ArrowLeftIcon className='size-4' />
                             Back to plans
                         </button>
+                        <p className='text-muted-foreground text-center text-xs'>{purchasePolicyCopy(selected)}</p>
                         <OnboardingCheckout
                             plan={selected}
                             source='upgrade'
@@ -117,6 +124,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                                     <span className='text-muted-foreground text-sm font-normal'>once</span>
                                 </span>
                                 <p className='text-muted-foreground text-xs'>{AI_METERED_NOTE}.</p>
+                                <p className='text-muted-foreground text-xs'>{purchasePolicyCopy('lifetime')}</p>
                                 <Button onClick={() => choose('lifetime')} className='mt-auto w-full'>
                                     Get lifetime
                                 </Button>
@@ -128,6 +136,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                                     <span className='text-muted-foreground text-sm font-normal'>/mo</span>
                                 </span>
                                 <p className='text-muted-foreground text-xs'>Cancel anytime.</p>
+                                <p className='text-muted-foreground text-xs'>{purchasePolicyCopy('monthly')}</p>
                                 <Button
                                     variant='secondary'
                                     onClick={() => choose('monthly')}
@@ -137,11 +146,7 @@ export function UpgradeDialog({ open, onOpenChange, reason, completedPlan }: Upg
                             </div>
                         </div>
                         <ul className='text-foreground/80 flex flex-col gap-1.5 text-sm'>
-                            {[
-                                'Higher daily AI limits',
-                                'Carousels, calendar & analytics',
-                                `${MONEY_BACK_DAYS}-day money-back`,
-                            ].map((item) => (
+                            {['Higher daily AI limits', 'Carousels, calendar & analytics'].map((item) => (
                                 <li key={item} className='flex items-center gap-2'>
                                     <CheckIcon className='text-primary size-4 shrink-0' />
                                     {item}
