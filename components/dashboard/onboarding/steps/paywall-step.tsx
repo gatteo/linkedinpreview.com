@@ -26,8 +26,10 @@ import {
     type CheckoutPlan,
 } from '@/config/pricing'
 import { SOCIAL_PROOF } from '@/config/social-proof'
+import { enrollMonthlyOffer, monthlyOfferProperties, type MonthlyEnrollment } from '@/lib/monthly-offer'
 import { cn } from '@/lib/utils'
 import { usePlan } from '@/hooks/use-plan'
+import { useAuth } from '@/components/dashboard/auth-provider'
 import { PostCard } from '@/components/tool/preview/post-card'
 import { ScreenSizeProvider } from '@/components/tool/preview/preview-size-context'
 
@@ -60,6 +62,28 @@ function seededSocialCounts(seed: string) {
 }
 
 export function PaywallStep() {
+    const { userId, isReady, isAnonymous } = useAuth()
+    const { isLoading, isPaid, billingResolved } = usePlan()
+    const [assignment, setAssignment] = React.useState<{ userId: string | null; enrollment: MonthlyEnrollment } | null>(
+        null,
+    )
+    React.useEffect(() => {
+        if (!isReady || isLoading) return
+        setAssignment({
+            userId,
+            enrollment: enrollMonthlyOffer({
+                userId,
+                isAnonymous,
+                billingState: billingResolved ? (isPaid ? 'paid' : 'free') : 'unknown',
+                capture: track,
+            }),
+        })
+    }, [userId, isReady, isAnonymous, isLoading, isPaid, billingResolved])
+    if (!assignment || assignment.userId !== userId) return <div role='status'>Loading your plan...</div>
+    return <MonthlyOffer key={assignment.enrollment.enrollmentId} enrollment={assignment.enrollment} />
+}
+
+export function MonthlyOffer({ enrollment }: { enrollment: MonthlyEnrollment }) {
     const { answers, finishOffer, role, setUninterruptible } = useOnboarding()
     const { refresh } = usePlan()
     const fn = firstName(answers.profile.name)
@@ -104,8 +128,8 @@ export function PaywallStep() {
     })
 
     React.useEffect(() => {
-        track('onb_paywall_view', { ideas: answers.postIdeas?.length ?? 0 })
-        track('onb_offer_variant_view', { variant: 'monthly_first' })
+        track('onb_paywall_view', { ...monthlyOfferProperties(enrollment), ideas: answers.postIdeas?.length ?? 0 })
+        track('onb_offer_variant_view', { ...monthlyOfferProperties(enrollment), variant: 'monthly_first' })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -383,9 +407,6 @@ export function PaywallStep() {
                     <span className='min-w-0'>
                         <span className='flex items-center gap-2'>
                             <b className='font-heading text-[15px] font-semibold'>Monthly</b>
-                            <span className='bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[10px] font-bold tracking-[0.04em] uppercase'>
-                                Most popular
-                            </span>
                         </span>
                         <span className='text-muted-foreground mt-0.5 block text-xs'>
                             Billed monthly. Cancel anytime.

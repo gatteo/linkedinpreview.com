@@ -19,7 +19,7 @@ test('paywall purchase CTA starts plan selection without a scroll gate', () => {
 
 test('EXP-9 renders and attributes the registered monthly-first offer', () => {
     assert.match(paywallSource, /useState<CheckoutPlan>\('monthly'\)/)
-    assert.match(paywallSource, /track\('onb_offer_variant_view', \{ variant: 'monthly_first' \}\)/)
+    assert.match(paywallSource, /variant: 'monthly_first'/)
 
     const monthlyIndex = paywallSource.indexOf("onClick={() => setSelected('monthly')}")
     const lifetimeIndex = paywallSource.indexOf('<GoldenTicket')
@@ -28,7 +28,7 @@ test('EXP-9 renders and attributes the registered monthly-first offer', () => {
     assert.ok(monthlyIndex < lifetimeIndex)
 
     const monthlyCard = paywallSource.slice(monthlyIndex, lifetimeIndex)
-    assert.match(monthlyCard, />\s*Most popular\s*</)
+    assert.doesNotMatch(monthlyCard, /Most popular/)
     assert.match(monthlyCard, />Monthly</)
     assert.match(monthlyCard, /Billed monthly\. Cancel anytime\./)
     assert.match(monthlyCard, /PRICING\.monthly\.display/)

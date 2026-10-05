@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     if (!parsed.success) {
         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
     }
-    const { plan, source } = parsed.data
+    const { plan, source, monthlyOffer } = parsed.data
 
     const supabase = await createClient()
     const {
@@ -53,7 +53,23 @@ export async function POST(request: Request) {
             mode: plan === 'monthly' ? 'subscription' : 'payment',
             line_items: [{ price: priceId, quantity: 1 }],
             client_reference_id: user.id,
-            metadata: { user_id: user.id, plan },
+            metadata: {
+                user_id: user.id,
+                plan,
+                ...(monthlyOffer
+                    ? {
+                          enrollment_id: monthlyOffer.enrollmentId,
+                          cohort_id: monthlyOffer.cohortId,
+                          assigned_variant: monthlyOffer.assignedVariant,
+                          eligibility_at: monthlyOffer.eligibilityAt,
+                          assignment_version: monthlyOffer.offerVersion,
+                          offer_version: monthlyOffer.offerVersion,
+                          entry_source: monthlyOffer.entrySource,
+                          billing_state_at_assignment: monthlyOffer.billingState,
+                          release_sha: monthlyOffer.releaseSha,
+                      }
+                    : {}),
+            },
             // Without this Stripe renders no promotion-code field at all, so any
             // coupon we issue is unredeemable.
             allow_promotion_codes: true,
@@ -64,8 +80,11 @@ export async function POST(request: Request) {
             // where the initiating surface (source) resumes via the query params.
             const origin = new URL(request.url).origin
             params.ui_mode = 'hosted_page'
-            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return&session_id={CHECKOUT_SESSION_ID}`
-            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return`
+            const attribution = monthlyOffer
+                ? `&entry_source=${monthlyOffer.entrySource}&offer_enrollment=${monthlyOffer.enrollmentId}`
+                : ''
+            params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
+            params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
         } else {
             // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
             // 'embedded_page' (the old 'embedded' is gone). This is the mode that
@@ -77,9 +96,9 @@ export async function POST(request: Request) {
         if (user.email) params.customer_email = user.email
 
         if (plan === 'monthly') {
-            params.subscription_data = { metadata: { user_id: user.id } }
+            params.subscription_data = { metadata: { ...params.metadata, user_id: user.id } }
         } else {
-            params.payment_intent_data = { metadata: { user_id: user.id } }
+            params.payment_intent_data = { metadata: { ...params.metadata, user_id: user.id } }
         }
 
         const session = await getStripe().checkout.sessions.create(params)

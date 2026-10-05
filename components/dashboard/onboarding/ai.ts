@@ -20,6 +20,7 @@ import type {
 import { OB_FUNNEL_VERSION } from '@/config/analytics'
 import type { ResolvedEntrySource } from '@/config/entry-sources'
 import type { Role } from '@/config/onboarding-personalization'
+import { monthlyOfferProperties, rememberOfferEntry } from '@/lib/monthly-offer'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
 
@@ -299,8 +300,14 @@ let entrySource: ResolvedEntrySource = 'direct'
 
 export function setEntrySource(source: ResolvedEntrySource) {
     entrySource = source
+    rememberOfferEntry(source)
 }
 
 export function track(event: string, props?: Record<string, unknown>) {
-    posthog?.capture(event, { funnel_version: OB_FUNNEL_VERSION, entry_source: entrySource, ...props })
+    posthog?.capture(event, {
+        funnel_version: OB_FUNNEL_VERSION,
+        entry_source: entrySource,
+        ...monthlyOfferProperties(),
+        ...props,
+    })
 }
