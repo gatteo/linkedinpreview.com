@@ -1,32 +1,50 @@
-# LIN-108 preview evidence and remaining handoff
+# LIN-108 exact-code-head preview evidence
 
 PR: https://github.com/gatteo/linkedinpreview.com/pull/104
 Branch: feat/lin-108-draft-first
-Current code head: cc61ce50f1248296c427cad1d97e8315ac396e43
-Ready code preview: https://linkedinpreview-7hjb33bjw-gatteos.vercel.app
+Verified code head: 823a7ae070cb252015b8fd135f265344100f7268
+Ready code preview: https://linkedinpreview-9chuq59mn-gatteos.vercel.app
 
 ## Executed release checks
 
-52/52 Node tests passed, including executable actual public handoff, controller, import hook, editor, checkout and webhook paths with explicit synthetic offline adapters. Final code type-check, lint, clean build passed under Node 22.23.1. Lint retained 0 errors and 2 established TanStack warnings. Build generated 209 Contentlayer documents and 263/263 Next routes. Known Contentlayer post-generation exit-code TypeError remains before successful Next completion.
+54/54 Node tests passed, including executable public handoff, controller precedence, actual import hook, editor, checkout and webhook paths with explicit synthetic offline adapters. Added regression coverage confirms the pre-auth eligibility clock survives account binding and repeated handoff without resetting, meaningful edits require confirmed persistence, failed saves cannot count success, and Session/subscription/payment-intent metadata retain the bounded cohort and server-authenticated identity.
 
-The update-docs skill was invoked but unavailable; documentation was updated manually.
+Type-check, lint, clean/build and git diff --check passed under Node 22. Lint retained 0 errors and 2 established TanStack warnings. Build generated 209 Contentlayer documents and 263/263 Next routes. Known Contentlayer post-generation exit-code TypeError remains before successful Next completion. update-docs was invoked but unavailable; documentation was updated manually.
 
-## Browser evidence, earlier code head only
+Exact code-head GitHub CI gates passed: https://github.com/gatteo/linkedinpreview.com/actions/runs/37373419341. Vercel and Vercel Preview Comments passed. Any later evidence-only commit requires its own check disposition before merge; do not confuse code-head CI with evidence-head checks.
 
-Screenshots here were captured on ready earlier code head a8d23d7b4e5a367cd2d1151729eb36123741afcc at https://linkedinpreview-1bqqsax98-gatteos.vercel.app. They are not final-head clearance.
+## Final-code-head browser acceptance
 
-Desktop: free-tool typing propagated to preview. A real pointer Copy Text click returned the expected toast, and the native Clipboard API read back the exact synthetic text after browser permissions were granted. Intentional footer handoff created one synthetic fixture draft, resolved to its editor URL and showed usable text before any planning modal. Header copy succeeded. Reload retained draft text and deferral. The existing Pro dialog opened with imported-draft-specific reason text, unchanged prices/hierarchy and no checkout request.
+20/20 recorded checks passed on the exact code preview. Raw results: [final823a7-smoke.json](./final823a7-smoke.json). These checks used explicit synthetic fetch/WebSocket adapters, asserted fixture presence before interactions, and left the browser at about:blank afterward. Editor text insertion used the browser editing command and clipboard buttons were activated through their DOM handlers. Clipboard verification read the native browser Clipboard API with focus and permissions granted; clipboard was not mocked.
 
-400px mobile: draft text rendered without a planning modal or horizontal document overflow. Typed text survived Preview/Editor tab remount and reload. Optional planning opened and then resumed after reload. No browser error was observed on those dashboard checks. The pre-existing oversized header status/format controls put the header Copy Text outside the mobile viewport; the editor's own Copy Text is the accessible mobile path. The final code adds meaningful-use instrumentation to that existing path and initial media restoration, but those changes still require final-head browser exercise.
+Desktop: free typing updated preview and native copy succeeded. Intentional footer handoff carried synthetic text and generated PNG, rendered usable text/media before a planning modal, persisted an edited draft through the synthetic storage adapter, recorded saved-use state only after save success, copied successfully, reloaded without planning and retained media/text. Existing higher-AI-limits Pro action opened the relevant existing dialog, preserved $11.99 monthly/$39.99 lifetime and current offer hierarchy, and did not create checkout.
 
-## Isolation and limits
+400px mobile: edited text and media remained in Preview; no page-level horizontal overflow; Editor/Preview remount retained latest text; native copy and reload retained the draft and deferral. Optional planning explicitly opened and resumed after reload. Blog and dashboard routes rendered. No window/unhandled-rejection errors were observed in the final dashboard and route checks.
 
-Browser smoke used tests/fixtures/draft-first-browser.js injected before page scripts. Authentication, Supabase REST, product APIs, provider calls and checkout were intercepted with explicit synthetic adapters before dispatch. This verifies rendered application/client behavior, not real auth, database persistence, processor integration, provider recovery or production health. No LinkedIn connection, publish, scheduling or external LinkedIn action was taken. Tests never entered card details or created a live checkout.
+Screenshots from the final isolated run:
 
-## Remaining required work
+- [Free tool](./final823a7-home.png)
+- [Desktop imported draft](./final823a7-desktop-import.png)
+- [Desktop saved edit](./final823a7-desktop-edit.png)
+- [Existing Pro offer](./final823a7-pro.png)
+- [Mobile preview with media](./final823a7-mobile-preview.png)
+- [Mobile editor](./final823a7-mobile-editor.png)
+- [Explicit optional planning](./final823a7-mobile-planning.png)
 
-The final preview is READY at cc61ce5, but its initial browser attempt encountered a not-yet-mounted editor after navigation. No final-head interaction passed or failed on product behavior from that attempt. Forge must wait for the actual editor, rerun desktop/mobile free copy and imported text/media/use/reload/optional planning/Pro offer checks, render /blog and /dashboard, attach final-head screenshots and confirm final GitHub gates before creating the independent Sentinel review child. Do not merge or launch on this evidence alone.
+The pre-existing oversized dashboard header controls remain; mobile acceptance uses the editor's accessible Copy Text. OAuth/checkout success/cancel, saved planning, settings and completed/legacy precedence, malformed imports, missing media and failed creation are covered by executable actual-module Node tests, not live provider/processor calls. Synthetic adapters verify rendered/client behavior, not production auth, database durability, paid settlement, provider recovery or production health. Sentinel independently verifies these boundaries.
 
-LIN-102 remains preserved in separate PR #103 with Sentinel LIN-106. Monthly-first PR #96 remains separate. Vera owns preregistration and Atlas coordinates release windows.
+## Containment failure in an earlier final-head attempt
 
-Rollback before merge: close PR #104. After any Atlas squash merge: git revert <Atlas-squash-sha> through review, retaining all drafts/payment evidence and existing entitlements.
+Before the final isolated run, a preload installed in an earlier browser tool call was absent after a later navigation. That attempt reached the shared backend and produced an unintended anonymous preview guest 4d7988e6-b31c-4c23-8bc5-60e8e8d944df and synthetic draft 2ea41cda-a7fc-480e-9801-0b7c00d608b7. These are the observed record IDs, not an exhaustive backend audit. This was immediately reported to Atlas on LIN-108 in comment 9f34f474-8550-4bf3-9b6b-bbaf2c243c46. No backend cleanup or customer-record modification was performed. Atlas owns test-record disposition and any further containment follow-up. No checkout, card entry, publish, schedule, connection or LinkedIn action was taken.
+
+The screenshots linked above were overwritten with the later asserted-isolated run. Do not claim the entire wake made no backend writes. For reproduction, install preload in the SAME browser_exec as full navigation, assert fixture presence before every interaction, and leave no live preview page between calls. Browser clipboard additionally requires focus and permissions. A selector quoting error interrupted the first route assertion after all 18 editor checks passed; the two route checks were executed separately and appended to the raw artifact, producing the verified 20-check total.
+
+## Earlier-head evidence
+
+Other historical screenshots in this directory came from a8d23d7b4e5a367cd2d1151729eb36123741afcc at https://linkedinpreview-1bqqsax98-gatteos.vercel.app. They are not final-head clearance. The cc61ce5 preview was superseded by the contract corrections in 823a7ae.
+
+## Scope and handoff
+
+Latest board scope controls: article-entry adapter is separate LIN-115 backlog work; original formatter helper remains rejected. Neither is implemented here. Monthly-first PR #96 and lifetime-policy PR #103 remain separate; no offer redesign or price change. Apply accepted LIN-109 / EXP-9 revision 2 / EXP-10 registration with no artificial launch delay, explicit overlap/confounding and no summed cohort paid starts. Actual release SHAs/times, production health, unknown-billing resolution and processor-paid reconciliation remain release/scorecard gates, not preview claims.
+
+Independent Sentinel review is mandatory; Atlas alone owns merge and production release. Rollback before merge: close PR #104. After any Atlas squash merge: git revert <Atlas-squash-sha> through review, retaining all drafts/payment evidence and existing entitlements. No production merge/config/migration change was performed.

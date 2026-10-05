@@ -1,0 +1,107 @@
+{
+    "codeSha": "823a7ae070cb252015b8fd135f265344100f7268",
+    "preview": "https://linkedinpreview-9chuq59mn-gatteos.vercel.app",
+    "adapter": "explicit synthetic fetch/WebSocket fixture asserted before interaction",
+    "checks": [
+        {
+            "name": "free typing to preview",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "free native clipboard",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "isolated handoff",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "usable imported text without modal",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "imported media rendered",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "saved desktop edit",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "saved meaningful use",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "dashboard native clipboard",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "existing Pro offer and no checkout",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "desktop reload content media deferral",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "mobile preview media current edit",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "mobile horizontal overflow absent",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "mobile tab remount current text",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "mobile native clipboard",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "mobile reload draft deferral",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "explicit optional planning",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "saved planning reload resume",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "no runtime errors",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "blog renders",
+            "pass": true,
+            "value": true
+        },
+        {
+            "name": "dashboard renders",
+            "pass": true,
+            "value": true
+        }
+    ]
+}
