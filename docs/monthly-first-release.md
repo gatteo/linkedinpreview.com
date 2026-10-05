@@ -16,7 +16,7 @@ At implementation PR #103 remains open at `793dc9d72001be4563e3dff0400fd055ba7e5
 2. Forge checks out #96's existing branch, merges fresh `origin/main` without force-push, preserving monthly ordering,
    default selection, eligibility gate and all other live conversion elements.
 3. Retain #103's `purchasePolicyCopy` import and `{purchasePolicyCopy(selected)}` in the selected-plan reassurance.
-   Retain `ShieldIcon` for monthly and `ClockIcon` for lifetime as #103 specifies. Keep its terms, upgrade-dialog scoped
+   Retain #103's existing reassurance icon. Keep its terms, upgrade-dialog scoped
    card/checkout copy and config helper verbatim. Do not restore blanket lifetime guarantee.
 4. Adapt #103's component regression harness to invoke `MonthlyOffer({ enrollment })` rather than the eligibility wrapper,
    and mock `@/lib/monthly-offer` plus `@/components/dashboard/auth-provider`. The wrapper's ordering has its own test.
