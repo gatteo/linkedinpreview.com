@@ -89,6 +89,7 @@ export function useCurrentDraft() {
 
     const saveTimerRef = React.useRef<ReturnType<typeof setTimeout>>(null)
     const latestContentRef = React.useRef<any>(undefined)
+    const meaningfulEditRef = React.useRef(false)
     // Tracks media set during this session (undefined = untouched since load).
     const latestMediaRef = React.useRef<CurrentDraftState['initialMedia'] | undefined>(undefined)
     // True only when the active draft loaded/created successfully AND was empty,
@@ -146,7 +147,7 @@ export function useCurrentDraft() {
                     const choice = readDraftFirst(userId)
                     if (choice && userId) {
                         writeDraftFirst(userId, { ...choice, draftId: draft.id, used: false })
-                        track('draft_first_import_succeeded', { has_media: !!media })
+                        track('draft_import_result', { outcome: 'success', draft_id: draft.id, has_media: !!media })
                     }
                     router.replace(withEntry(`/dashboard/editor?draft=${draft.id}`, entryParam))
                     setState({
@@ -161,7 +162,7 @@ export function useCurrentDraft() {
                 } catch {
                     if (callId !== loadCallRef.current) return
                     importRef.current = null
-                    track('draft_first_import_failed')
+                    track('draft_import_result', { outcome: 'failure', error_code: 'decode_media_or_create' })
                     toast.error(
                         'Could not import this draft. Your original is safe in the free tool. Please try again.',
                     )
@@ -306,16 +307,33 @@ export function useCurrentDraft() {
     /**
      * Save content with 2s debounce. Call on every editor change event.
      */
+    const recordSavedEdit = React.useCallback(
+        (id: string, saved: boolean) => {
+            const choice = readDraftFirst(userId)
+            if (!userId || choice?.draftId !== id || choice.used || !meaningfulEditRef.current) return
+            track('draft_meaningful_use', {
+                action: 'saved_edit',
+                outcome: saved ? 'success' : 'failure',
+                draft_id: id,
+                ...(saved ? {} : { error_code: 'save_failed' }),
+            })
+            if (saved) writeDraftFirst(userId, { ...choice, used: true })
+        },
+        [userId],
+    )
+
     const saveContent = React.useCallback(
-        (content: any) => {
+        (content: any, meaningful = false) => {
             if (!state.draftId) return
             latestContentRef.current = content
+            meaningfulEditRef.current = meaningful
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-            saveTimerRef.current = setTimeout(() => {
-                updateDraftHook(state.draftId!, { content })
+            saveTimerRef.current = setTimeout(async () => {
+                const saved = await updateDraftHook(state.draftId!, { content })
+                recordSavedEdit(state.draftId!, saved)
             }, SAVE_DELAY_MS)
         },
-        [state.draftId, updateDraftHook],
+        [state.draftId, updateDraftHook, recordSavedEdit],
     )
 
     /**
@@ -326,9 +344,10 @@ export function useCurrentDraft() {
         if (!state.draftId) return
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
         if (latestContentRef.current !== undefined) {
-            await updateDraftHook(state.draftId, { content: latestContentRef.current })
+            const saved = await updateDraftHook(state.draftId, { content: latestContentRef.current })
+            recordSavedEdit(state.draftId, saved)
         }
-    }, [state.draftId, updateDraftHook])
+    }, [state.draftId, updateDraftHook, recordSavedEdit])
 
     /**
      * Save media immediately (no debounce - media changes are infrequent).

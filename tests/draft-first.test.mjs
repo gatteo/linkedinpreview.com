@@ -24,8 +24,8 @@ const exposure = '11111111-1111-4111-8111-111111111111'
 const importUrl = `https://preview.invalid/dashboard/editor?import=${encoded}&from=tool_footer&activation=${exposure}`
 const json = (value) => JSON.parse(JSON.stringify(value))
 
-async function activation(window, localStorage = storage()) {
-    return loadTS('lib/draft-first.ts', { '@/config/entry-sources': entry }, { window, localStorage })
+async function activation(window, localStorage = storage(), sessionStorage = storage()) {
+    return loadTS('lib/draft-first.ts', { '@/config/entry-sources': entry }, { window, localStorage, sessionStorage })
 }
 
 async function controller(url, opts = {}) {
@@ -249,7 +249,10 @@ async function currentDraft(url, opts = {}) {
                         await tick()
                         return { id: 'synthetic-draft', label: null, status: 'draft' }
                     },
-                    updateDraft: async (...args) => writes.push(['update', ...args]),
+                    updateDraft: async (...args) => {
+                        writes.push(['update', ...args])
+                        return !opts.saveFail
+                    },
                     purgeEmptyDrafts() {},
                 }),
             },
@@ -274,7 +277,10 @@ test('actual import hook deduplicates overlapping loads and preserves nested tex
     assert.equal(state.writes.filter(([kind]) => kind === 'create').length, 1)
     assert.deepEqual(json(state.render().initialContent), doc)
     assert.deepEqual(json(state.render().initialMedia), media)
-    assert.equal(state.events.filter(([event]) => event === 'draft_first_import_succeeded').length, 1)
+    assert.equal(
+        state.events.filter(([event, props]) => event === 'draft_import_result' && props.outcome === 'success').length,
+        1,
+    )
     assert.match(state.redirects[0], /from=tool_footer/)
     assert.match(state.redirects[0], new RegExp(exposure))
     assert.doesNotMatch(state.redirects[0], /[?&](import|m)=/)
@@ -288,7 +294,11 @@ test('malformed imports and missing media never create a blank or overwrite exis
         assert.equal(state.writes.length, 0)
         assert.equal(state.redirects.length, 0)
         assert.equal(state.render().draftId, null)
-        assert.equal(state.events.filter(([event]) => event === 'draft_first_import_failed').length, 1)
+        assert.equal(
+            state.events.filter(([event, props]) => event === 'draft_import_result' && props.outcome === 'failure')
+                .length,
+            1,
+        )
         state.h.unmount()
         assert.equal(state.writes.length, 0)
     }
@@ -296,7 +306,10 @@ test('malformed imports and missing media never create a blank or overwrite exis
 
 test('failed create/load cannot count successful import or trigger empty-draft deletion', async () => {
     const failed = await currentDraft(importUrl, { createFail: true })
-    assert.equal(failed.events.filter(([event]) => event === 'draft_first_import_succeeded').length, 0)
+    assert.equal(
+        failed.events.filter(([event, props]) => event === 'draft_import_result' && props.outcome === 'success').length,
+        0,
+    )
     failed.h.unmount()
     assert.equal(failed.writes.filter(([kind]) => kind === 'delete').length, 0)
     const load = await currentDraft('https://preview.invalid/dashboard/editor?draft=existing', { fetchFail: true })
@@ -363,21 +376,21 @@ test('actual editor counts meaningful use after hydration and preserves edits ac
     const normalized = { ...doc, attrs: {} }
     editor().props.onChange(normalized)
     render()
-    assert.equal(events.filter(([event]) => event === 'draft_first_used').length, 0)
+    assert.equal(events.filter(([event]) => event === 'draft_meaningful_use').length, 0)
     const edited = {
         type: 'doc',
         content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Synthetic edited draft' }] }],
     }
     editor().props.onChange(edited)
     render()
-    assert.equal(events.filter(([event]) => event === 'draft_first_used').length, 1)
+    assert.equal(events.filter(([event]) => event === 'draft_meaningful_use').length, 0)
     desktop = false
     assert.deepEqual(json(editor().props.initialContent), edited)
     const copy = elements(render()).find((node) => node.type === 'button' && node.props.children?.[1] === 'Copy Text')
     await copy.props.onClick()
     assert.deepEqual(copies, ['Synthetic edited draft'])
     editor().props.onCopyText()
-    assert.equal(events.filter(([event]) => event === 'draft_first_used').length, 1)
+    assert.equal(events.filter(([event]) => event === 'draft_meaningful_use').length, 1)
     draft = { ...draft, draftId: 'two', initialContent: doc }
     assert.deepEqual(json(editor().props.initialContent), doc)
 })
@@ -399,7 +412,7 @@ test('actual free-tool handoff records eligibility before encoding, carries medi
             'sonner': { toast: Object.assign(() => {}, { error: (message) => timeline.push(message) }) },
             '@/config/entry-sources': entry,
             '@/config/routes': { Routes: { Dashboard: '/dashboard' } },
-            '@/lib/draft-first': { ACTIVATION_PARAM: 'activation', DRAFT_FIRST_VERSION: 'imported_draft_v1' },
+            '@/lib/draft-first': await activation(window),
             '@/lib/draft-media': { putDraftMedia: async () => 'synthetic-media', pruneDraftMedia() {} },
             '@/lib/draft-url': {
                 decodeDraft: async () => null,
@@ -445,4 +458,42 @@ test('actual free-tool handoff records eligibility before encoding, carries medi
     await plan.props.onClick()
     assert.equal(window.location.searchParams.get('planning'), '1')
     assert.equal(timeline.filter((event) => event === 'draft_first_eligible').length, 1)
+})
+
+test('pre-auth eligibility clock and enrollment survive binding and never reset on another attempt', async () => {
+    const window = browser(importUrl)
+    const local = storage()
+    const session = storage()
+    const before = await activation(window, local, session)
+    const pending = before.prepareDraftFirst('tool_footer', exposure)
+    const after = await activation(window, local, session)
+    const bound = after.deferPlanning('synthetic-user', new URLSearchParams(window.location.search))
+    assert.equal(bound.eligibilityAt, pending.eligibilityAt)
+    assert.equal(after.draftFirstProperties(bound).enrollment_id, exposure)
+    const again = after.deferPlanning(
+        'synthetic-user',
+        new URLSearchParams('from=tool_nudge&activation=22222222-2222-4222-8222-222222222222'),
+    )
+    assert.equal(again.eligibilityAt, pending.eligibilityAt)
+    assert.equal(again.exposureId, exposure)
+    assert.equal(again.entrySource, 'tool_footer')
+})
+
+test('meaningful edit requires confirmed persistence, failed saves and hydration cannot count success', async () => {
+    for (const saveFail of [true, false]) {
+        const state = await currentDraft(importUrl, { saveFail })
+        const hook = state.render()
+        hook.saveContent(doc)
+        await hook.flush()
+        assert.equal(state.events.filter(([event]) => event === 'draft_meaningful_use').length, 0)
+        hook.saveContent({ ...doc, attrs: { edited: true } }, true)
+        assert.equal(state.events.filter(([event]) => event === 'draft_meaningful_use').length, 0)
+        await hook.flush()
+        const uses = state.events.filter(([event]) => event === 'draft_meaningful_use')
+        assert.equal(uses.length, 1)
+        assert.equal(uses[0][1].outcome, saveFail ? 'failure' : 'success')
+        assert.equal(uses[0][1].action, 'saved_edit')
+        assert.equal(!!state.flow.readDraftFirst('synthetic-user').used, !saveFail)
+        state.h.unmount()
+    }
 })

@@ -206,7 +206,7 @@ export function OnboardingController() {
             decidedRef.current = true
             finishedRef.current = false
             setMountSeq((seq) => seq + 1)
-            track('draft_first_planning_requested')
+            track('draft_planning_resumed', { reason: 'explicit_editor_action' })
             setOpen(true)
         }
         window.addEventListener('lp-request-planning', request)

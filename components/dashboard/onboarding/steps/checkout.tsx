@@ -63,6 +63,10 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                 source,
                 entrySource: getEntrySource(),
                 exposureId: draftFirstProperties().exposure_id,
+                eligibilityAt: draftFirstProperties().eligibility_at ?? undefined,
+                cohortId: draftFirstProperties().cohort_id,
+                assignedVariant: draftFirstProperties().assigned_variant,
+                offerVersion: draftFirstProperties().offer_version,
             }),
         })
             .then(async (res) => {
@@ -71,11 +75,11 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                     reportMissingEnv('Stripe checkout', data.missing)
                     throw new Error('checkout-unavailable')
                 }
-                const data = (await res.json()) as { clientSecret?: string; url?: string }
+                const data = (await res.json()) as { clientSecret?: string; url?: string; sessionId?: string }
                 if (cancelled) return
                 if (CHECKOUT_UI === 'hosted') {
                     if (!data.url) throw new Error('no-checkout-url')
-                    track('onb_checkout_opened', { plan, ui: 'hosted' })
+                    track('onb_checkout_opened', { plan, ui: 'hosted', session_id: data.sessionId })
                     // The redirect ends this page - mark settled so the unmount
                     // is not counted as an abandon (cancel returns are tracked
                     // by the surface handling the ?checkout=cancelled param).
@@ -88,7 +92,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                 }
                 if (!data.clientSecret) throw new Error('no-client-secret')
                 openedRef.current = true
-                track('onb_checkout_opened', { plan, ui: 'embedded' })
+                track('onb_checkout_opened', { plan, ui: 'embedded', session_id: data.sessionId })
                 setClientSecret(data.clientSecret)
             })
             .catch(() => {

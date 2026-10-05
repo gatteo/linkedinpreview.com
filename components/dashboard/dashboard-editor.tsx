@@ -121,30 +121,28 @@ export function DashboardEditor() {
         setActivation(readDraftFirst(userId))
     }, [userId, draftId])
 
-    const recordUse = React.useCallback(
-        (action: 'edit' | 'copy') => {
-            const choice = readDraftFirst(userId)
-            if (!userId || choice?.draftId !== draftId || choice.used) return
-            track('draft_first_used', { action })
-            const used = { ...choice, used: true }
-            writeDraftFirst(userId, used)
-            setActivation(used)
-        },
-        [userId, draftId],
-    )
+    const recordUse = React.useCallback(() => {
+        const choice = readDraftFirst(userId)
+        if (!userId || choice?.draftId !== draftId || choice.used) return
+        track('draft_meaningful_use', { action: 'copied', outcome: 'success', draft_id: draftId })
+        const used = { ...choice, used: true }
+        writeDraftFirst(userId, used)
+        setActivation(used)
+    }, [userId, draftId])
 
     const handleContentChange = React.useCallback(
         (json: any) => {
             setCurrentContent({ id: draftId, doc: json })
             const serialized = JSON.stringify(json)
+            let meaningful = false
             if (initialEditorDocRef.current?.id !== draftId) {
                 initialEditorDocRef.current = { id: draftId, serialized }
             } else if (extractPlainText(json) && serialized !== initialEditorDocRef.current.serialized) {
-                recordUse('edit')
+                meaningful = true
             }
-            saveContent(json)
+            saveContent(json, meaningful)
         },
-        [draftId, recordUse, saveContent],
+        [draftId, saveContent],
     )
 
     const handleMediaChange = (newMedia: Media | null) => {
@@ -192,7 +190,7 @@ export function DashboardEditor() {
         if (!text) return
         await navigator.clipboard.writeText(text)
         toast.success('Copied to clipboard')
-        recordUse('copy')
+        recordUse()
     }, [contentText, recordUse])
 
     const importedReady = activation?.draftId === draftId && !!contentText
@@ -221,7 +219,7 @@ export function DashboardEditor() {
             <EditorPanel
                 initialContent={content ?? initialContent}
                 initialMedia={media}
-                onCopyText={() => recordUse('copy')}
+                onCopyText={recordUse}
                 onChange={handleContentChange}
                 onMediaChange={handleMediaChange}
                 onShare={handleShare}

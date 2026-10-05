@@ -26,7 +26,8 @@ export async function POST(request: Request) {
     if (!parsed.success) {
         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
     }
-    const { plan, source, entrySource, exposureId } = parsed.data
+    const { plan, source, entrySource, exposureId, eligibilityAt, cohortId, assignedVariant, offerVersion } =
+        parsed.data
 
     const supabase = await createClient()
     const {
@@ -59,6 +60,16 @@ export async function POST(request: Request) {
                 plan,
                 entry_source: entrySource,
                 ...(exposureId ? { exposure_id: exposureId, activation_version: DRAFT_FIRST_VERSION } : {}),
+                ...(exposureId && cohortId
+                    ? {
+                          enrollment_id: exposureId,
+                          cohort_id: cohortId,
+                          assigned_variant: assignedVariant ?? 'draft_first',
+                          assignment_version: DRAFT_FIRST_VERSION,
+                          ...(eligibilityAt ? { eligibility_at: eligibilityAt } : {}),
+                          offer_version: offerVersion ?? 'existing_offer',
+                      }
+                    : {}),
             },
             // Without this Stripe renders no promotion-code field at all, so any
             // coupon we issue is unredeemable.
@@ -84,9 +95,9 @@ export async function POST(request: Request) {
         if (user.email) params.customer_email = user.email
 
         if (plan === 'monthly') {
-            params.subscription_data = { metadata: { user_id: user.id } }
+            params.subscription_data = { metadata: { ...params.metadata, user_id: user.id } }
         } else {
-            params.payment_intent_data = { metadata: { user_id: user.id } }
+            params.payment_intent_data = { metadata: { ...params.metadata, user_id: user.id } }
         }
 
         const session = await getStripe().checkout.sessions.create(params)

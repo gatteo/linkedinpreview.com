@@ -69,7 +69,18 @@ test('hosted and embedded checkout retain first entry in processor metadata for 
         for (const plan of ['monthly', 'lifetime']) {
             const c = await checkout(ui)
             assert.equal(
-                (await c.post({ plan, source: 'upgrade', entrySource: 'tool_footer', exposureId })).status,
+                (
+                    await c.post({
+                        plan,
+                        source: 'upgrade',
+                        entrySource: 'tool_footer',
+                        exposureId,
+                        cohortId: 'exp10_draft_first_v1',
+                        assignedVariant: 'draft_first',
+                        eligibilityAt: '2026-10-05T20:00:00.000Z',
+                        offerVersion: 'existing_offer',
+                    })
+                ).status,
                 200,
             )
             const params = c.created[0]
@@ -77,6 +88,13 @@ test('hosted and embedded checkout retain first entry in processor metadata for 
             assert.equal(params.metadata.entry_source, 'tool_footer')
             assert.equal(params.metadata.activation_version, 'imported_draft_v1')
             assert.equal(params.client_reference_id, 'synthetic-user')
+            const processor =
+                plan === 'monthly' ? params.subscription_data.metadata : params.payment_intent_data.metadata
+            assert.equal(processor.user_id, 'synthetic-user')
+            assert.equal(processor.enrollment_id, exposureId)
+            assert.equal(processor.cohort_id, 'exp10_draft_first_v1')
+            assert.equal(processor.eligibility_at, '2026-10-05T20:00:00.000Z')
+            assert.equal(processor.entry_source, 'tool_footer')
             assert.equal(params.mode, plan === 'monthly' ? 'subscription' : 'payment')
             if (ui === 'hosted') {
                 for (const href of [params.success_url, params.cancel_url]) {

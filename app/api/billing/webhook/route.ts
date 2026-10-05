@@ -111,6 +111,16 @@ export async function POST(request: Request) {
                             entry_source: s.metadata?.entry_source ?? 'direct',
                             exposure_id: s.metadata?.exposure_id ?? null,
                             activation_version: s.metadata?.activation_version ?? null,
+                            enrollment_id: s.metadata?.enrollment_id ?? null,
+                            cohort_id: s.metadata?.cohort_id ?? null,
+                            eligibility_at: s.metadata?.eligibility_at ?? null,
+                            assigned_variant: s.metadata?.assigned_variant ?? null,
+                            offer_version: s.metadata?.offer_version ?? null,
+                            stripe_event_id: event.id,
+                            session_id: s.id,
+                            subscription_id: typeof s.subscription === 'string' ? s.subscription : s.subscription?.id,
+                            livemode: event.livemode,
+                            payment_status: s.payment_status,
                         }),
                     )
                 }

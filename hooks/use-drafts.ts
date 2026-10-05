@@ -131,8 +131,10 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
             }
             try {
                 await updateDraftApi(supabase, id, updates)
+                return true
             } catch {
                 toast.error('Failed to save draft')
+                return false
             }
         },
         [supabase],

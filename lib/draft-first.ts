@@ -11,8 +11,22 @@ export type DraftFirstState = {
     version: typeof DRAFT_FIRST_VERSION
     entrySource: ResolvedEntrySource
     exposureId: string
+    eligibilityAt?: string
     draftId?: string
     used?: boolean
+}
+
+export function prepareDraftFirst(entrySource: ResolvedEntrySource, exposureId: string): DraftFirstState {
+    const state: DraftFirstState = {
+        version: DRAFT_FIRST_VERSION,
+        entrySource,
+        exposureId,
+        eligibilityAt: new Date().toISOString(),
+    }
+    try {
+        sessionStorage.setItem(KEY + exposureId, JSON.stringify(state))
+    } catch {}
+    return state
 }
 
 export function intentionalDraftImport(pathname: string, params: URLSearchParams): boolean {
@@ -96,13 +110,32 @@ export function deferPlanning(userId: string, params: URLSearchParams): DraftFir
         entrySource: parseEntrySource(params.get('from')),
         exposureId,
     }
+    try {
+        const raw = sessionStorage.getItem(KEY + exposureId)
+        const pending = raw ? JSON.parse(raw) : null
+        if (pending?.exposureId === exposureId && pending.version === DRAFT_FIRST_VERSION) {
+            state.eligibilityAt = pending.eligibilityAt
+            state.entrySource = parseEntrySource(pending.entrySource)
+        }
+    } catch {}
     writeDraftFirst(userId, state)
     return state
 }
 
 export function draftFirstProperties(state = readDraftFirst(activeUser)): Record<string, unknown> {
     return state
-        ? { activation_version: state.version, exposure_id: state.exposureId, entry_source: state.entrySource }
+        ? {
+              activation_version: state.version,
+              exposure_id: state.exposureId,
+              schema_version: 1,
+              enrollment_id: state.exposureId,
+              cohort_id: 'exp10_draft_first_v1',
+              assigned_variant: 'draft_first',
+              assignment_version: state.version,
+              eligibility_at: state.eligibilityAt ?? null,
+              offer_version: 'existing_offer',
+              entry_source: state.entrySource,
+          }
         : {}
 }
 

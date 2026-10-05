@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 
 import { withEntrySource, type EntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
-import { ACTIVATION_PARAM, DRAFT_FIRST_VERSION } from '@/lib/draft-first'
+import { ACTIVATION_PARAM, draftFirstProperties, prepareDraftFirst } from '@/lib/draft-first'
 import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { extractPlainText } from '@/lib/editor-utils'
@@ -228,9 +228,11 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
             const exposureId = crypto.randomUUID()
             if (!planning) {
                 posthog?.capture('draft_first_eligible', {
-                    activation_version: DRAFT_FIRST_VERSION,
-                    exposure_id: exposureId,
-                    entry_source: source,
+                    ...draftFirstProperties(prepareDraftFirst(source, exposureId)),
+                    identity_state: 'pending_auth',
+                    billing_state_at_assignment: 'unknown',
+                    arrival_source: source,
+                    gate_reason: 'intentional_handoff',
                 })
             }
             const encoded = await encodeDraft(content)
