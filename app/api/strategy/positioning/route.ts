@@ -4,6 +4,7 @@ import { generateObject } from 'ai'
 import { env } from '@/env.mjs'
 import { AI_ERROR_CODES } from '@/config/ai'
 import { POSITIONING_SYSTEM_PROMPT, positioningUserPrompt } from '@/config/prompts'
+import { isAIProviderRateLimit } from '@/lib/ai-provider-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
@@ -11,7 +12,29 @@ import { bodySchema, positioningSchema } from './route.schema'
 
 export const maxDuration = 30
 
-export async function POST(request: Request) {
+type PositioningRouteDependencies = {
+    createClient: typeof createClient
+    checkRateLimit: typeof checkRateLimit
+    createOpenAI: typeof createOpenAI
+    generateObject: typeof generateObject
+}
+
+const productionDependencies: PositioningRouteDependencies = {
+    createClient,
+    checkRateLimit,
+    createOpenAI,
+    generateObject,
+}
+
+export async function handlePositioningRequest(
+    request: Request,
+    {
+        createClient,
+        checkRateLimit,
+        createOpenAI,
+        generateObject,
+    }: PositioningRouteDependencies = productionDependencies,
+) {
     let body: unknown
     try {
         body = await request.json()
@@ -61,10 +84,24 @@ export async function POST(request: Request) {
         })
 
         return Response.json(object)
-    } catch {
+    } catch (err) {
+        if (isAIProviderRateLimit(err)) {
+            return Response.json(
+                {
+                    error: 'AI generation is temporarily unavailable. Please try again later.',
+                    code: AI_ERROR_CODES.PROVIDER_RATE_LIMITED,
+                },
+                { status: 429 },
+            )
+        }
+
         return Response.json(
             { error: 'Failed to generate positioning statement', code: AI_ERROR_CODES.GENERATION_FAILED },
             { status: 500 },
         )
     }
+}
+
+export function POST(request: Request) {
+    return handlePositioningRequest(request)
 }
