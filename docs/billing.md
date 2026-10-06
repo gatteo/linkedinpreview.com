@@ -22,6 +22,25 @@ building -> recap -> offer -> done`) that replaces the old setup-only wizard. Al
   menu carries a positive plan **Badge** (Free / Pro / Lifetime) plus an Upgrade (free) or Manage plan
   (paid) item, so paid state is shown, not just the absence of the upsell.
 
+## Prospective purchase refund copy (LIN-102)
+
+From publication of the October 5, 2026 terms update, new lifetime purchases are non-refundable,
+with all sales final under the operator's policy. Access remains for the lifetime of the product,
+with unchanged AI fair-use limits. The 7-day money-back guarantee applies only to the first monthly
+Pro payment. Earlier purchases are not retroactively governed by this update; mandatory consumer
+rights and liability provisions remain intact. Prices, cancellation and billing execution are unchanged.
+
+`purchasePolicyCopy(plan)` in `config/pricing.ts` drives the selected onboarding policy and the upgrade
+dialog's individual plan cards and selected checkout view. `node --test tests/purchase-policy.test.mjs`
+executes the actual terms and both offer components with synthetic hooks and no external dependencies.
+No new analytics event or experiment is introduced by this owner-directed policy correction.
+
+Pending PRs, especially monthly-first EXP-9 PR #96 and post-copy EXP-7 PR #92, must be updated against
+the policy-corrected main and re-run these tests, full checks and plan-specific preview smoke before
+later review/merge. Their prior approvals do not cover the new policy. Neither experiment is launched
+by this correction, and existing free-tool health and launch gates remain in force. Atlas alone owns
+merge/production verification; revert the isolated future squash SHA through review on regression.
+
 ## Data model
 
 `public.billing` (migration `018_billing.sql`), one row per user, **written only by the Stripe webhook
