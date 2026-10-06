@@ -27,7 +27,7 @@ function load(path, mocks = {}) {
         module: loadedModule,
         URLSearchParams,
         require(name) {
-            if (name === 'react') return React
+            if (name === 'react') return mocks.react ?? React
             if (name === 'react/jsx-runtime') return jsxRuntime
             assert.ok(name in mocks, `Missing article CTA mock: ${name}`)
             return mocks[name]
@@ -45,7 +45,8 @@ const urls = load('utils/urls.ts', {
 let pathname = '/'
 let mounts = 0
 const events = []
-function SyntheticTool() {
+function SyntheticTool({ layout }) {
+    assert.equal(layout, 'tabs')
     React.useEffect(() => {
         mounts++
     }, [])
@@ -181,4 +182,56 @@ test('nonmatching cards retain primary label, fallback and navigation without lo
     assert.equal(mounts, 0)
     assert.equal(document.querySelectorAll('[data-article-tool]').length, 0)
     await React.act(async () => root.unmount())
+})
+
+test('actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested', () => {
+    const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Synthetic draft' }] }] }
+    for (const props of [{}, { variant: 'embed' }, { layout: 'tabs' }]) {
+        let index = 0
+        const states = [doc, null, 'editor', doc, null, false]
+        const hooks = {
+            ...React,
+            useState: () => [states[index++], () => {}],
+            useRef: (current) => ({ current }),
+            useCallback: (fn) => fn,
+            useEffect: () => {},
+        }
+        const { Tool } = load('components/tool/tool.tsx', {
+            'react': hooks,
+            'next/dynamic': () => () => React.createElement('div', { 'data-editor-seam': true }),
+            'next/link': passthrough,
+            'lucide-react': { ArrowUpRight: () => null, Eye: () => null, PenLine: () => null },
+            'posthog-js': { capture() {} },
+            'react-resizable-panels': {
+                Group: ({ children }) => React.createElement('div', { 'data-group': true }, children),
+                Panel: passthrough,
+            },
+            'sonner': { toast() {} },
+            '@/config/entry-sources': { withEntrySource: (path) => path },
+            '@/config/routes': { Routes: { DashboardEditor: () => '/dashboard/editor' } },
+            '@/lib/draft-media': { pruneDraftMedia() {}, putDraftMedia() {} },
+            '@/lib/draft-url': { decodeDraft() {}, encodeDraft() {} },
+            '@/lib/editor-utils': { extractPlainText: () => 'Synthetic draft' },
+            '@/lib/utils': { cn: (...classes) => classes.filter(Boolean).join(' ') },
+            '@/hooks/use-draft-persistence': { useDraftPersistence: () => ({ flush() {} }) },
+            '@/hooks/use-is-desktop': { useIsDesktop: () => true },
+            '@/components/ui/button': { Button: passthrough },
+            './editor-loading': { EditorLoading: () => null },
+            './preview/preview-panel': {
+                PreviewPanel: () => React.createElement('div', { 'data-preview-seam': true }),
+            },
+            './resize-handle': { ResizeHandle: () => null },
+        })
+        const html = renderToStaticMarkup(React.createElement(Tool, props))
+        if (props.layout === 'tabs') {
+            assert.ok(!html.includes('data-group'))
+            assert.ok(html.includes('Editor') && html.includes('Preview'))
+            assert.equal((html.match(/data-editor-seam/g) ?? []).length, 1)
+            assert.equal((html.match(/data-preview-seam/g) ?? []).length, 1)
+            assert.ok(html.includes('invisible absolute inset-0'))
+        } else {
+            assert.ok(html.includes('data-group'))
+        }
+        assert.equal(html.includes('Create my LinkedIn plan'), props.variant !== 'embed')
+    }
 })

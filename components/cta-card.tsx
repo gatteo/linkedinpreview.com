@@ -147,7 +147,7 @@ export function CtaCard({
                     aria-label={entry.buttonText}
                     data-article-tool={entry.pathname}
                     className='min-w-0 outline-none [&>section>div]:border-0 [&>section>div]:py-6 [&>section>div]:sm:px-4'>
-                    <ArticleTool />
+                    <ArticleTool layout='tabs' />
                 </div>
             )}
         </Card>
