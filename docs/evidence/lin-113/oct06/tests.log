@@ -1,0 +1,407 @@
+TAP version 13
+# Subtest: detects direct and retried upstream 429 failures
+ok 1 - detects direct and retried upstream 429 failures
+  ---
+  duration_ms: 0.429167
+  type: 'test'
+  ...
+# Subtest: does not reclassify provider auth or unknown failures
+ok 2 - does not reclassify provider auth or unknown failures
+  ---
+  duration_ms: 0.062166
+  type: 'test'
+  ...
+# Subtest: affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+    # Subtest: generate: direct provider 429
+    ok 1 - generate: direct provider 429
+      ---
+      duration_ms: 2.329292
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 429
+    ok 2 - generate: retry-wrapped provider 429
+      ---
+      duration_ms: 0.40525
+      type: 'test'
+      ...
+    # Subtest: generate: direct provider 401
+    ok 3 - generate: direct provider 401
+      ---
+      duration_ms: 0.990084
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 401
+    ok 4 - generate: retry-wrapped provider 401
+      ---
+      duration_ms: 0.362875
+      type: 'test'
+      ...
+    # Subtest: generate: generic failure
+    ok 5 - generate: generic failure
+      ---
+      duration_ms: 0.77525
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 429
+    ok 6 - strategy/formats: direct provider 429
+      ---
+      duration_ms: 0.728
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 429
+    ok 7 - strategy/formats: retry-wrapped provider 429
+      ---
+      duration_ms: 0.3645
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 401
+    ok 8 - strategy/formats: direct provider 401
+      ---
+      duration_ms: 0.312167
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 401
+    ok 9 - strategy/formats: retry-wrapped provider 401
+      ---
+      duration_ms: 0.462167
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: generic failure
+    ok 10 - strategy/formats: generic failure
+      ---
+      duration_ms: 0.197625
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 429
+    ok 11 - strategy/positioning: direct provider 429
+      ---
+      duration_ms: 0.820584
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 429
+    ok 12 - strategy/positioning: retry-wrapped provider 429
+      ---
+      duration_ms: 0.566625
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 401
+    ok 13 - strategy/positioning: direct provider 401
+      ---
+      duration_ms: 0.667084
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 401
+    ok 14 - strategy/positioning: retry-wrapped provider 401
+      ---
+      duration_ms: 0.226459
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: generic failure
+    ok 15 - strategy/positioning: generic failure
+      ---
+      duration_ms: 0.14275
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 429
+    ok 16 - analyze: direct provider 429
+      ---
+      duration_ms: 0.5535
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 429
+    ok 17 - analyze: retry-wrapped provider 429
+      ---
+      duration_ms: 0.236209
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 401
+    ok 18 - analyze: direct provider 401
+      ---
+      duration_ms: 0.117792
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 401
+    ok 19 - analyze: retry-wrapped provider 401
+      ---
+      duration_ms: 0.111875
+      type: 'test'
+      ...
+    # Subtest: analyze: generic failure
+    ok 20 - analyze: generic failure
+      ---
+      duration_ms: 0.144834
+      type: 'test'
+      ...
+    1..20
+ok 3 - affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+  ---
+  duration_ms: 150.106583
+  type: 'test'
+  ...
+# Subtest: affected routes retain the executable handler seam and supplemental provider mapping
+ok 4 - affected routes retain the executable handler seam and supplemental provider mapping
+  ---
+  duration_ms: 9.263292
+  type: 'test'
+  ...
+# Subtest: billing free read explicitly scopes and validates expected user
+ok 5 - billing free read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.609542
+  type: 'test'
+  ...
+# Subtest: billing pro read explicitly scopes and validates expected user
+ok 6 - billing pro read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.05675
+  type: 'test'
+  ...
+# Subtest: billing lifetime read explicitly scopes and validates expected user
+ok 7 - billing lifetime read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.051
+  type: 'test'
+  ...
+# Subtest: wrong-account and ownerless rows reject instead of verified billing
+ok 8 - wrong-account and ownerless rows reject instead of verified billing
+  ---
+  duration_ms: 0.897125
+  type: 'test'
+  ...
+# Subtest: own absent row stays free; read errors remain failures
+ok 9 - own absent row stays free; read errors remain failures
+  ---
+  duration_ms: 0.115625
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback removes the capture surface without changing the full-post copy path
+ok 10 - EXP-6 rollback removes the capture surface without changing the full-post copy path
+  ---
+  duration_ms: 2.934417
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+ok 11 - EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+  ---
+  duration_ms: 1.498375
+  type: 'test'
+  ...
+# Subtest: EXP-6 migration makes email dedupe atomic and denies direct client access
+ok 12 - EXP-6 migration makes email dedupe atomic and denies direct client access
+  ---
+  duration_ms: 2.339417
+  type: 'test'
+  ...
+# Subtest: free-tool dashboard CTAs record the canonical entry events
+ok 13 - free-tool dashboard CTAs record the canonical entry events
+  ---
+  duration_ms: 4.467
+  type: 'test'
+  ...
+# Subtest: upgrade dialog records canonical pricing and purchase-intent events
+ok 14 - upgrade dialog records canonical pricing and purchase-intent events
+  ---
+  duration_ms: 1.146125
+  type: 'test'
+  ...
+# Subtest: event dictionary documents every canonical revenue event
+ok 15 - event dictionary documents every canonical revenue event
+  ---
+  duration_ms: 1.870333
+  type: 'test'
+  ...
+# Subtest: homepage metadata states the free formatter and editor use case
+ok 16 - homepage metadata states the free formatter and editor use case
+  ---
+  duration_ms: 0.486125
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> pro account assignment
+ok 17 - actual provider + offer gate isolate free -> pro account assignment
+  ---
+  duration_ms: 189.07425
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate pro -> free account assignment
+ok 18 - actual provider + offer gate isolate pro -> free account assignment
+  ---
+  duration_ms: 93.008208
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> lifetime account assignment
+ok 19 - actual provider + offer gate isolate free -> lifetime account assignment
+  ---
+  duration_ms: 52.412583
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate lifetime -> free account assignment
+ok 20 - actual provider + offer gate isolate lifetime -> free account assignment
+  ---
+  duration_ms: 35.262292
+  type: 'test'
+  ...
+# Subtest: initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+ok 21 - initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+  ---
+  duration_ms: 28.845584
+  type: 'test'
+  ...
+# Subtest: paid-to-other-account read failure never inherits paid or verified-free assignment
+ok 22 - paid-to-other-account read failure never inherits paid or verified-free assignment
+  ---
+  duration_ms: 29.780291
+  type: 'test'
+  ...
+# Subtest: rapid identity changes ignore late read success/error and stale realtime callbacks
+ok 23 - rapid identity changes ignore late read success/error and stale realtime callbacks
+  ---
+  duration_ms: 27.955625
+  type: 'test'
+  ...
+# Subtest: unready and failed anonymous auth do not inherit previous identity billing
+ok 24 - unready and failed anonymous auth do not inherit previous identity billing
+  ---
+  duration_ms: 28.45625
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 25 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 118.479917
+  type: 'test'
+  ...
+# Subtest: eligibility persists before capture, dedupes remounts and retains original source and clock
+ok 26 - eligibility persists before capture, dedupes remounts and retains original source and clock
+  ---
+  duration_ms: 58.6965
+  type: 'test'
+  ...
+# Subtest: unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+ok 27 - unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+  ---
+  duration_ms: 21.449416
+  type: 'test'
+  ...
+# Subtest: pre-auth enrollment bridges once to identified account without resetting eligibility
+ok 28 - pre-auth enrollment bridges once to identified account without resetting eligibility
+  ---
+  duration_ms: 7.925208
+  type: 'test'
+  ...
+# Subtest: actual paywall gate commits eligibility before mounting the treatment
+ok 29 - actual paywall gate commits eligibility before mounting the treatment
+  ---
+  duration_ms: 92.91925
+  type: 'test'
+  ...
+# Subtest: actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+ok 30 - actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+  ---
+  duration_ms: 53.183833
+  type: 'test'
+  ...
+# Subtest: schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+ok 31 - schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+  ---
+  duration_ms: 14.878875
+  type: 'test'
+  ...
+# Subtest: actual checkout client sends enrollment and records returned processor session, not paid success
+ok 32 - actual checkout client sends enrollment and records returned processor session, not paid success
+  ---
+  duration_ms: 7.542208
+  type: 'test'
+  ...
+# Subtest: dashboard nudge uses the clear free-plan EXP-1 variant without changing its mechanics
+ok 33 - dashboard nudge uses the clear free-plan EXP-1 variant without changing its mechanics
+  ---
+  duration_ms: 3.895
+  type: 'test'
+  ...
+# Subtest: paywall purchase CTA starts plan selection without a scroll gate
+ok 34 - paywall purchase CTA starts plan selection without a scroll gate
+  ---
+  duration_ms: 0.475875
+  type: 'test'
+  ...
+# Subtest: EXP-9 renders and attributes the registered monthly-first offer
+ok 35 - EXP-9 renders and attributes the registered monthly-first offer
+  ---
+  duration_ms: 0.721
+  type: 'test'
+  ...
+# Subtest: display policy keeps prices and the monthly window unchanged
+ok 36 - display policy keeps prices and the monthly window unchanged
+  ---
+  duration_ms: 0.31
+  type: 'test'
+  ...
+# Subtest: rendered terms scope prospective lifetime policy and retain mandatory rights
+ok 37 - rendered terms scope prospective lifetime policy and retain mandatory rights
+  ---
+  duration_ms: 29.192666
+  type: 'test'
+  ...
+# Subtest: onboarding monthly selection renders only its refund policy
+ok 38 - onboarding monthly selection renders only its refund policy
+  ---
+  duration_ms: 79.451875
+  type: 'test'
+  ...
+# Subtest: upgrade monthly checkout selection renders only its refund policy
+ok 39 - upgrade monthly checkout selection renders only its refund policy
+  ---
+  duration_ms: 15.405458
+  type: 'test'
+  ...
+# Subtest: onboarding lifetime selection renders only its refund policy
+ok 40 - onboarding lifetime selection renders only its refund policy
+  ---
+  duration_ms: 58.924
+  type: 'test'
+  ...
+# Subtest: upgrade lifetime checkout selection renders only its refund policy
+ok 41 - upgrade lifetime checkout selection renders only its refund policy
+  ---
+  duration_ms: 12.838458
+  type: 'test'
+  ...
+# Subtest: upgrade plan picker and checkout-error fallback show scoped policy on each card
+ok 42 - upgrade plan picker and checkout-error fallback show scoped policy on each card
+  ---
+  duration_ms: 17.671667
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves root path
+ok 43 - UtmUrl preserves root path
+  ---
+  duration_ms: 0.358625
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters
+ok 44 - UtmUrl preserves existing query parameters
+  ---
+  duration_ms: 0.049625
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves fragment
+ok 45 - UtmUrl preserves fragment
+  ---
+  duration_ms: 0.039916
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters and fragment
+ok 46 - UtmUrl preserves existing query parameters and fragment
+  ---
+  duration_ms: 0.039167
+  type: 'test'
+  ...
+1..46
+# tests 66
+# suites 0
+# pass 66
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 735.989583

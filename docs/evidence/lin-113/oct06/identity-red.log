@@ -1,0 +1,187 @@
+TAP version 13
+# Subtest: actual provider + offer gate isolate free -> pro account assignment
+not ok 1 - actual provider + offer gate isolate free -> pro account assignment
+  ---
+  duration_ms: 109.916667
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:64:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    new identity must not inherit settled loading state
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:72:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: actual provider + offer gate isolate pro -> free account assignment
+not ok 2 - actual provider + offer gate isolate pro -> free account assignment
+  ---
+  duration_ms: 52.85225
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:64:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    new identity must not inherit settled loading state
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:72:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual provider + offer gate isolate free -> lifetime account assignment
+not ok 3 - actual provider + offer gate isolate free -> lifetime account assignment
+  ---
+  duration_ms: 36.853125
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:64:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    new identity must not inherit settled loading state
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:72:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual provider + offer gate isolate lifetime -> free account assignment
+not ok 4 - actual provider + offer gate isolate lifetime -> free account assignment
+  ---
+  duration_ms: 33.926792
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:64:5'
+  failureType: 'testCodeFailure'
+  error: |-
+    new identity must not inherit settled loading state
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:72:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+ok 5 - initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+  ---
+  duration_ms: 28.13475
+  type: 'test'
+  ...
+# Subtest: paid-to-other-account read failure never inherits paid or verified-free assignment
+not ok 6 - paid-to-other-account read failure never inherits paid or verified-free assignment
+  ---
+  duration_ms: 29.27175
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:111:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + {
+    +   billingState: 'paid',
+    +   deviceClass: 'desktop',
+    +   eligibilityAt: '2026-10-06T05:33:03.156Z',
+    +   enrollmentId: '2737fc93-540e-4f41-9c83-65cb61272010',
+    +   entrySource: 'direct',
+    +   identityState: 'authenticated',
+    +   releaseSha: 'unavailable'
+    + }
+    - null
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ~
+  actual:
+    enrollmentId: '2737fc93-540e-4f41-9c83-65cb61272010'
+    eligibilityAt: '2026-10-06T05:33:03.156Z'
+    entrySource: 'direct'
+    billingState: 'paid'
+    identityState: 'authenticated'
+    releaseSha: 'unavailable'
+    deviceClass: 'desktop'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:116:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: rapid identity changes ignore late read success/error and stale realtime callbacks
+not ok 7 - rapid identity changes ignore late read success/error and stale realtime callbacks
+  ---
+  duration_ms: 26.8065
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'lifetime' !== 'free'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'free'
+  actual: 'lifetime'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:137:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: unready and failed anonymous auth do not inherit previous identity billing
+not ok 8 - unready and failed anonymous auth do not inherit previous identity billing
+  ---
+  duration_ms: 26.876833
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:147:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer-billing-identity.test.mjs:151:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 1
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 502.409875
