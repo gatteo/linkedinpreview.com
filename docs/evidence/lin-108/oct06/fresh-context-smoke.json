@@ -1,0 +1,910 @@
+[
+    {
+        "name": "isolation_/_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "4631CB82B4E7C8A3C41D51ADFA609AFD",
+            "target": "89A518A6F930B3917137A387BA9CAAAB",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "desktop_free_typing_native_copy",
+        "detail": {
+            "clipboard": "LIN-108 fresh integrated desktop draft."
+        }
+    },
+    {
+        "name": "desktop_import_before_planning",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "c32f3ce9-7ca4-4ffd-a599-ad2f3a858a82",
+                "eligibilityAt": "2026-10-06T07:49:41.330Z",
+                "draftId": "d7fa001a-d8dc-4007-9b1b-4e7982d2802f",
+                "used": false
+            },
+            "content": "LIN-108 fresh integrated desktop draft."
+        }
+    },
+    {
+        "name": "desktop_pending_navigation_save",
+        "detail": {
+            "elapsed_ms": 343.90000000596046,
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "c32f3ce9-7ca4-4ffd-a599-ad2f3a858a82",
+                "eligibilityAt": "2026-10-06T07:49:41.330Z",
+                "draftId": "d7fa001a-d8dc-4007-9b1b-4e7982d2802f",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard/editor?draft=d7fa001a-d8dc-4007-9b1b-4e7982d2802f_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "25673A282404A51C1352D69147DC39A8",
+            "target": "F6144DEC5879112C0BC80A357A351E29",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "desktop_reload_persistence_deferral",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "c32f3ce9-7ca4-4ffd-a599-ad2f3a858a82",
+                "eligibilityAt": "2026-10-06T07:49:41.330Z",
+                "draftId": "d7fa001a-d8dc-4007-9b1b-4e7982d2802f",
+                "used": true
+            }
+        }
+    },
+    {
+        "name": "desktop_existing_pro_picker_terms",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBEST VALUE\nLifetime\n$39.99 once\n\nAI generation stays on a generous monthly limit.\n\nLifetime purchases are non-refundable\n\nGet lifetime\nMonthly\n$11.99/mo\n\nCancel anytime.\n\n7-day money-back guarantee\n\nStart monthly\nHigher daily AI limits\nCarousels, calendar & analytics\n\nOthers charge $39-199/mo.\n\nMaybe later\nClose"
+        }
+    },
+    {
+        "name": "desktop_lifetime_policy_attribution",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBack to plans\n\nLifetime purchases are non-refundable\n\nTaking you to the secure Stripe checkout...\n\nClose",
+            "payload": {
+                "plan": "lifetime",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "c32f3ce9-7ca4-4ffd-a599-ad2f3a858a82",
+                "eligibilityAt": "2026-10-06T07:49:41.330Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            }
+        }
+    },
+    {
+        "name": "desktop_monthly_policy_attribution",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBack to plans\n\n7-day money-back guarantee\n\nTaking you to the secure Stripe checkout...\n\nClose",
+            "payload": {
+                "plan": "monthly",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "c32f3ce9-7ca4-4ffd-a599-ad2f3a858a82",
+                "eligibilityAt": "2026-10-06T07:49:41.330Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            }
+        }
+    },
+    {
+        "name": "desktop_optional_planning",
+        "detail": {
+            "text": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nYour draft is saved. Now the plan behind it.\n\nI\u2019ll audit your LinkedIn, learn your goals, and build the strategy that makes posts like this one land, plus the full toolkit to write them.\n\nLet\u2019s start\nYour draft is saved\n4.8\n\u00a0from 3,342 professionals\nPersonalized strategy\nAbout 3 minutes",
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "05025C3AE7CF1E4D72CEEE754262E414",
+            "target": "33581E4BDE74E0F7CBAB98208117641D",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "mobile_free_native_copy",
+        "detail": {
+            "clipboard": "LIN-108 fresh integrated mobile draft with media."
+        }
+    },
+    {
+        "name": "mobile_import_media_before_planning",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": false
+            },
+            "media_type": "image",
+            "width": 400
+        }
+    },
+    {
+        "name": "mobile_preview_media",
+        "detail": {
+            "image": "data:image/png;base64,iVBORw0KGgoAA",
+            "width": 400
+        }
+    },
+    {
+        "name": "mobile_pending_navigation_save",
+        "detail": {
+            "elapsed_ms": 1017.1999999880791,
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "media_preserved": true,
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard/editor?draft=fb06b619-b6fa-46f4-8efd-2d58a3d38268_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "60B7828B645B3AD652182F5B6A3B259B",
+            "target": "FF95B9F679D7EF8A059FA33B6DF6E70F",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "mobile_reload_persistence_deferral",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "media_type": "image"
+        }
+    },
+    {
+        "name": "mobile_reload_native_copy",
+        "detail": {
+            "clipboard": "LIN-108 fresh integrated mobile saved edit."
+        }
+    },
+    {
+        "name": "mobile_existing_pro_picker_terms",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBEST VALUE\nLifetime\n$39.99 once\n\nAI generation stays on a generous monthly limit.\n\nLifetime purchases are non-refundable\n\nGet lifetime\nMonthly\n$11.99/mo\n\nCancel anytime.\n\n7-day money-back guarantee\n\nStart monthly\nHigher daily AI limits\nCarousels, calendar & analytics\n\nOthers charge $39-199/mo.\n\nMaybe later\nClose",
+            "width": 400
+        }
+    },
+    {
+        "name": "mobile_lifetime_policy_attribution",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBack to plans\n\nLifetime purchases are non-refundable\n\nTaking you to the secure Stripe checkout...\n\nClose",
+            "payload": {
+                "plan": "lifetime",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            }
+        }
+    },
+    {
+        "name": "mobile_monthly_policy_attribution",
+        "detail": {
+            "text": "Go unlimited\n\nKeep refining your draft with higher daily AI limits and the existing Pro toolkit.\n\nBack to plans\n\n7-day money-back guarantee\n\nTaking you to the secure Stripe checkout...\n\nClose",
+            "payload": {
+                "plan": "monthly",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            }
+        }
+    },
+    {
+        "name": "mobile_optional_planning",
+        "detail": {
+            "text": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nYour draft is saved. Now the plan behind it.\n\nI\u2019ll audit your LinkedIn, learn your goals, and build the strategy that makes posts like this one land, plus the full toolkit to write them.\n\nLet\u2019s start\nYour draft is saved\n4.8\n\u00a0from 3,342 professionals\nPersonalized strategy\nAbout 3 minutes",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?checkout=cancelled&plan=monthly&source=upgrade&from=billing_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "8C47FCD51B0FD45908B896E327D51BE1",
+            "target": "037472FE4F2225A7D882646A19D5D774",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_upgrade_return_cancelled",
+        "detail": {
+            "dialog": null,
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?checkout=success&plan=monthly&source=upgrade&from=billing_r_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "FC7437D40375703F987983185F98FE59",
+            "target": "8221EA735790839217248F8135F840A0",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_upgrade_return_success",
+        "detail": {
+            "dialog": "You're on Pro\n\nPayment confirmed - your higher limits and power features are active now. Manage it anytime in Settings.\n\nStart creating\nClose",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/blog_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "74D7209DA2FD39824C54F38BCF56B853",
+            "target": "CFE91EA8B88423FEA9C250BBB0521EC0",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_blog_render",
+        "detail": {
+            "h1": "Tips & guides to write great LinkedIn posts",
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?checkout=cancelled&plan=monthly&source=upgrade&from=billing_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "C5A7800AAEBC9E4A45FA4453B4CCBD02",
+            "target": "CCD4108940DB3EC5834115BDCF0FC3FA",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_upgrade_return_cancelled",
+        "detail": {
+            "dialog": null,
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?checkout=success&plan=monthly&source=upgrade&from=billing_r_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "7A0FCC024B20D855BB9965239221314C",
+            "target": "95AA9F814A5E50349009B1AC2DB48CE5",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_upgrade_return_success",
+        "detail": {
+            "dialog": "You're on Pro\n\nPayment confirmed - your higher limits and power features are active now. Manage it anytime in Settings.\n\nStart creating\nClose",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/blog_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "2980C033A0CBB3496B1CE8A6033014AB",
+            "target": "6252E0AE7DB10A87024065F02A5418A9",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_blog_render",
+        "detail": {
+            "h1": "Tips & guides to write great LinkedIn posts",
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?from=billing_return_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "9C161858931607AA108F6A5046426B79",
+            "target": "7D1037E627CCFFA6E96E2AE84FC2E26F",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_saved_planning_lifetime_policy",
+        "detail": {
+            "tail": " rest.\u201d\n\nSusan Nothnagel\nConsultant \u00b7 7.7k followers\n\n\u201cA retainer client came in from a post I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\nLifetime purchases are non-refundable\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nGet lifetime",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "1440_saved_planning_monthly_policy",
+        "detail": {
+            "tail": "st I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\n7-day money-back guarantee\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nStart monthly"
+        }
+    },
+    {
+        "name": "isolation_/dashboard?linkedin=denied&from=billing_return_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "7EF53CDF79A3CEDAA421E07C63221BBB",
+            "target": "5315C69162FDE3C3BCF951A00F856423",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_oauth_denied_precedence",
+        "detail": {
+            "text": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 1 / 4 - CONNECT\nFirst, let\u2019s audit your LinkedIn.\n\nI\u2019ll read your profile and recent posts to show you what\u2019s working, what\u2019s missing, and the plan that fixes it - built on your real data, not a template.\n\nConnect LinkedIn\n\nNo problem - paste your profile URL below instead.\n\nOR PASTE YOUR PROFILE URL\nUse profile URL\nSkip for now - I\u2019ll build your plan from a few quick questions\nWe never post anything without you pressing publish. Only you can see this data.",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/terms_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "429B6195531FF0DBFB224BB5F15815AA",
+            "target": "D9E734324A81CAD828C76FEF306A797E",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "1440_terms_current_policy",
+        "detail": {
+            "prospective": true,
+            "grandfathering": true,
+            "mandatory_rights": true,
+            "width": 1440,
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/dashboard?from=billing_return_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "FB4FCCCC37F480BBFF6B07406BBBEA91",
+            "target": "65C75AC79CE9799AEC19601D2397D56F",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_saved_planning_lifetime_policy",
+        "detail": {
+            "tail": " rest.\u201d\n\nSusan Nothnagel\nConsultant \u00b7 7.7k followers\n\n\u201cA retainer client came in from a post I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\nLifetime purchases are non-refundable\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nGet lifetime",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "400_saved_planning_monthly_policy",
+        "detail": {
+            "tail": "st I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\n7-day money-back guarantee\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nStart monthly"
+        }
+    },
+    {
+        "name": "isolation_/dashboard?linkedin=denied&from=billing_return_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "129EF059BA3ED94E089675B7BD1E4741",
+            "target": "CEADB0F1AEAAEE10CF68B8982866ED9C",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_oauth_denied_precedence",
+        "detail": {
+            "text": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 1 / 4 - CONNECT\nFirst, let\u2019s audit your LinkedIn.\n\nI\u2019ll read your profile and recent posts to show you what\u2019s working, what\u2019s missing, and the plan that fixes it - built on your real data, not a template.\n\nConnect LinkedIn\n\nNo problem - paste your profile URL below instead.\n\nOR PASTE YOUR PROFILE URL\nUse profile URL\nSkip for now - I\u2019ll build your plan from a few quick questions\nWe never post anything without you pressing publish. Only you can see this data.",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "ca35dffd-25ab-46c5-9a63-91bb2a88c3ba",
+                "eligibilityAt": "2026-10-06T07:50:19.686Z",
+                "draftId": "fb06b619-b6fa-46f4-8efd-2d58a3d38268",
+                "used": true
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/terms_400",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "CF4C647D063AC6484405E20F61B1680A",
+            "target": "CD66B303793F6A2C58ADF3F224E51FEF",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "400_terms_current_policy",
+        "detail": {
+            "prospective": true,
+            "grandfathering": true,
+            "mandatory_rights": true,
+            "width": 400,
+            "errors": []
+        }
+    },
+    {
+        "name": "isolation_/_1440",
+        "detail": {
+            "marker": true,
+            "fetch": true,
+            "ws": true,
+            "beacon": true,
+            "xhr": true,
+            "fresh_browser_context": "BE1ADBCD5C916E31FE4A02381255A68C",
+            "target": "40C091D7ACE50787E624525E1D176D06",
+            "blocked_urls": [
+                "*supabase*",
+                "*linkedin.com*",
+                "*stripe.com*",
+                "*stripe.network*",
+                "*openai.com*",
+                "*anthropic.com*",
+                "*posthog*",
+                "*featurebase*",
+                "*tally*",
+                "*/api/*",
+                "*/ingest*"
+            ]
+        }
+    },
+    {
+        "name": "containment_intercepted_dashboard_io",
+        "detail": {
+            "assertions": {
+                "marker": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "requests": [
+                {
+                    "path": "/v1/organization/by-id/6a59ce40db775d4fca119bd4",
+                    "method": "GET",
+                    "blocked": true
+                },
+                {
+                    "path": "/v1/organization/by-id/6a59ce40db775d4fca119bd4",
+                    "method": "GET",
+                    "blocked": true
+                },
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ],
+            "errors": [],
+            "clipboard_unmodified": true
+        }
+    }
+]
