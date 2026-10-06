@@ -1,4 +1,8 @@
-# LIN-113 current-head verification
+# LIN-113 historical October 5 verification
+
+This evidence is for the pre-terms head and was returned CHANGES by Sentinel LIN-118 for the account-switch billing race.
+It is not current release approval. Actual terms integration and identity-bound billing correction are documented in
+`docs/monthly-first-release.md`; October 6 verification is recorded separately in this directory.
 
 PR: https://github.com/gatteo/linkedinpreview.com/pull/96
 Branch: feat/exp9-monthly-first-offer

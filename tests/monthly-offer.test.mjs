@@ -104,7 +104,9 @@ test('actual paywall gate commits eligibility before mounting the treatment', as
         '@/config/social-proof': {},
         '@/lib/monthly-offer': a,
         '@/lib/utils': {},
-        '@/hooks/use-plan': { usePlan: () => ({ isLoading, isPaid: false, billingResolved: true }) },
+        '@/hooks/use-plan': {
+            usePlan: () => ({ isLoading, isPaid: false, billingResolved: true, billingUserId: userId }),
+        },
         '@/components/dashboard/auth-provider': { useAuth: () => ({ userId, isReady: true, isAnonymous: true }) },
         '@/components/tool/preview/post-card': {},
         '@/components/tool/preview/preview-size-context': {},

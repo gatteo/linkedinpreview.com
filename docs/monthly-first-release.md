@@ -7,7 +7,27 @@ Treatment is ONLY monthly default plus ordering of the existing $11.99 monthly a
 unshipped monthly badge is omitted by Atlas direction. All LIVE proof, testimonials, urgency, lifetime GoldenTicket,
 guarantee, prices, free tool and entitlements remain. No strategy approval loop, outreach, provider probe or config change.
 
-## Prospective terms integration, not a silent policy merge
+## Actual terms integration and identity-bound billing (October 6)
+
+Atlas merged accepted terms PR #103 as `ecd42c84ee7a2d44c7166fed35d1f8ea749af4d8` on main.
+Forge integrated that actual main into the existing #96 branch with normal merge
+`68a4fb659d07f4c1694e162b51bbe0bdbfef9fc0`. Current selected-plan reassurance uses
+`purchasePolicyCopy(selected)`, with main's terms, upgrade copy and prices retained. The formerly prospective
+policy-test harness adaptation is now applied to the actual branch. Earlier prospective evidence remains historical.
+
+Sentinel LIN-118 returned CHANGES for stale account billing during identity switch. Billing state now stores its
+owning userId atomically with loading/resolution/data. On the very first render of a new or unready identity,
+the context exposes pending/unresolved default state instead of the previous account's billing. Paywall enrollment
+requires billingUserId to match current auth userId and a settled read. Own failed reads enroll unknown, never verified free.
+Old request responses and removed-account Realtime callbacks cannot overwrite the current identity. Current Realtime
+entitlement updates and refresh behavior remain. Valid original enrollment/eligibility clocks are not rewritten.
+
+Actual-provider-plus-gate regressions cover free/monthly/lifetime account switches, initial pending/error, failed
+new-account reads, rapid switches, stale success/error/Realtime callbacks, current Realtime and failed anonymous auth.
+The matrix first reproduced seven failures before correction. Independent NEW exact-head review is required;
+LIN-118 is not approval. Real LIN-87 health and Atlas-only LIN-61 merge remain separate gates.
+
+## Historical prospective terms integration (October 5)
 
 At implementation PR #103 remains open at `793dc9d72001be4563e3dff0400fd055ba7e558d`. Its code is
 `49ae352de3699c32c7babd86ea3a2c651627bf0b`. This PR does NOT include its policy change. Exact order:
@@ -24,13 +44,13 @@ At implementation PR #103 remains open at `793dc9d72001be4563e3dff0400fd055ba7e5
    smoke and exact-new-head Sentinel review. Prospective local integration is evidence only, not a production release.
 6. Sentinel's real LIN-87 clearance is still required. Atlas alone merges through original LIN-61 and locks release time/SHA.
 
-No merge of #96 is permitted while the terms integration above is outstanding. A review of current #96 must explicitly
-state the prospective terms limitation, not claim current plan-specific production policy.
+This October 5 prospective integration order is now superseded by the actual integration above. It did not authorize
+production merge or current-head approval.
 
 ## Separate draft-first release
 
-Preserve #104 at `2a93eef3a706d5f4f9ac24d3826da4b185d05ed3`, code `823a7ae070cb252015b8fd135f265344100f7268`.
-Draft-first is independently reviewed under LIN-117, not silently merged here. It may ship as soon as independently ready;
+Preserve #104 at `0c898da6ffc96fd88915562198bec8972e741ec1`, code `9af3c7f2f15b955fe738cb09ee7674a0ba4e5187`.
+Draft-first's corrected review is LIN-119, not silently merged here. It may ship as soon as independently ready;
 no artificial seven-day wait. Shared files require deliberate integration after either release:
 
 - Checkout schema keeps #104's flat exp10 fields AND #96's bounded optional `monthlyOffer` object. Never widen enum/UUID

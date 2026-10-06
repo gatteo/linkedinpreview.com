@@ -63,12 +63,12 @@ function seededSocialCounts(seed: string) {
 
 export function PaywallStep() {
     const { userId, isReady, isAnonymous } = useAuth()
-    const { isLoading, isPaid, billingResolved } = usePlan()
+    const { isLoading, isPaid, billingResolved, billingUserId } = usePlan()
     const [assignment, setAssignment] = React.useState<{ userId: string | null; enrollment: MonthlyEnrollment } | null>(
         null,
     )
     React.useEffect(() => {
-        if (!isReady || isLoading) return
+        if (!isReady || isLoading || billingUserId !== userId) return
         setAssignment({
             userId,
             enrollment: enrollMonthlyOffer({
@@ -78,7 +78,7 @@ export function PaywallStep() {
                 capture: track,
             }),
         })
-    }, [userId, isReady, isAnonymous, isLoading, isPaid, billingResolved])
+    }, [userId, isReady, isAnonymous, isLoading, isPaid, billingResolved, billingUserId])
     if (!assignment || assignment.userId !== userId) return <div role='status'>Loading your plan...</div>
     return <MonthlyOffer key={assignment.enrollment.enrollmentId} enrollment={assignment.enrollment} />
 }

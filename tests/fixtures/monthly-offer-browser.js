@@ -1,5 +1,6 @@
 ;(() => {
     const originalFetch = window.fetch.bind(window)
+    window.__fixtureOriginalClipboard = navigator.clipboard
     const USER_ID = '11111111-1111-4111-8111-111111111111'
     const user = {
         id: USER_ID,
@@ -110,4 +111,5 @@
             this.readyState = 3
         }
     }
+    window.__fixtureInstalled = 'lin113-contained-v2'
 })()

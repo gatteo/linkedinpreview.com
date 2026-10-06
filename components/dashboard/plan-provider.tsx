@@ -31,6 +31,7 @@ type PlanContextValue = {
     isPaid: boolean
     isLoading: boolean
     billingResolved: boolean
+    billingUserId: string | null
     /** The full billing row (renewal date, Stripe ids) for the settings surface. */
     billing: BillingData
     refresh: () => void
@@ -41,6 +42,7 @@ const PlanContext = React.createContext<PlanContextValue>({
     isPaid: false,
     isLoading: false,
     billingResolved: false,
+    billingUserId: null,
     billing: DEFAULT_BILLING,
     refresh: () => {},
 })
@@ -51,36 +53,41 @@ export function usePlan(): PlanContextValue {
 
 export function PlanProvider({ children }: { children: React.ReactNode }) {
     const { isReady, userId, supabase } = useAuth()
-    const [billing, setBilling] = React.useState<BillingData>(DEFAULT_BILLING)
-    const [isLoading, setIsLoading] = React.useState(true)
-    const [billingResolved, setBillingResolved] = React.useState(false)
+    const [state, setState] = React.useState<{
+        userId: string | null
+        billing: BillingData
+        isLoading: boolean
+        billingResolved: boolean
+    }>({ userId: null, billing: DEFAULT_BILLING, isLoading: true, billingResolved: false })
     const [nonce, setNonce] = React.useState(0)
 
     React.useEffect(() => {
         if (!isReady) return
-        setBillingResolved(false)
+
         // Anonymous bootstrap failed (no session id): resolve to the free default
         // so consumers gating on isLoading don't hang on "Loading..." forever.
         if (!userId) {
-            setBilling(DEFAULT_BILLING)
-            setIsLoading(false)
+            setState({ userId, billing: DEFAULT_BILLING, isLoading: false, billingResolved: false })
             return
         }
 
         let cancelled = false
-        setIsLoading(true)
+        setState((current) => ({
+            userId,
+            billing: current.userId === userId ? current.billing : DEFAULT_BILLING,
+            isLoading: true,
+            billingResolved: false,
+        }))
         fetchBilling(supabase)
             .then((data) => {
                 if (!cancelled) {
-                    setBilling(data)
-                    setBillingResolved(true)
-                    setIsLoading(false)
+                    setState({ userId, billing: data, isLoading: false, billingResolved: true })
                 }
             })
             .catch((err) => {
                 // Billing read failure stays silent - the user just remains on 'free'.
                 console.error('Failed to load billing', err)
-                if (!cancelled) setIsLoading(false)
+                if (!cancelled) setState((current) => ({ ...current, isLoading: false }))
             })
 
         return () => {
@@ -93,6 +100,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
     // in refresh() stays as a fallback for when Realtime is unavailable.
     React.useEffect(() => {
         if (!isReady || !userId) return
+        let cancelled = false
 
         const channel = supabase
             .channel(`billing:${userId}`)
@@ -101,12 +109,16 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
                 { event: '*', schema: 'public', table: 'billing', filter: `user_id=eq.${userId}` },
                 (payload) => {
                     const row = payload.new as Record<string, unknown> | null
-                    if (row && Object.keys(row).length > 0) setBilling(mapBillingRow(row))
+                    if (cancelled || !row || !Object.keys(row).length || (row.user_id && row.user_id !== userId)) return
+                    setState((current) =>
+                        current.userId === userId ? { ...current, billing: mapBillingRow(row) } : current,
+                    )
                 },
             )
             .subscribe()
 
         return () => {
+            cancelled = true
             supabase.removeChannel(channel)
         }
     }, [isReady, userId, supabase])
@@ -118,10 +130,19 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
         setTimeout(() => setNonce((n) => n + 1), 6000)
     }, [])
 
-    const value = React.useMemo<PlanContextValue>(
-        () => ({ plan: billing.plan, isPaid: isPaidPlan(billing.plan), isLoading, billingResolved, billing, refresh }),
-        [billing, isLoading, billingResolved, refresh],
-    )
+    const value = React.useMemo<PlanContextValue>(() => {
+        const currentIdentity = isReady && state.userId === userId
+        const billing = currentIdentity ? state.billing : DEFAULT_BILLING
+        return {
+            plan: billing.plan,
+            isPaid: isPaidPlan(billing.plan),
+            isLoading: !currentIdentity || state.isLoading,
+            billingResolved: currentIdentity && state.billingResolved,
+            billingUserId: currentIdentity ? state.userId : null,
+            billing,
+            refresh,
+        }
+    }, [state, userId, isReady, refresh])
 
     return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>
 }

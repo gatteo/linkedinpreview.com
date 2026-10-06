@@ -77,7 +77,7 @@ function upgrade(selected, error = false) {
 }
 
 function paywall(selected) {
-    const { PaywallStep } = loadComponent('components/dashboard/onboarding/steps/paywall-step.tsx', {
+    const { MonthlyOffer } = loadComponent('components/dashboard/onboarding/steps/paywall-step.tsx', {
         'react': hooks([selected, false, false]),
         'framer-motion': { motion: { b: passthrough } },
         'lucide-react': icons,
@@ -97,6 +97,8 @@ function paywall(selected) {
         '@/config/pricing': pricing,
         '@/config/social-proof': { SOCIAL_PROOF: { rating: 'Synthetic rating', count: 'Synthetic count' } },
         '@/lib/utils': { cn: (...classes) => classes.filter(Boolean).join(' ') },
+        '@/lib/monthly-offer': { monthlyOfferProperties: () => ({}) },
+        '@/components/dashboard/auth-provider': { useAuth: () => ({}) },
         '@/hooks/use-plan': { usePlan: () => ({ refresh() {} }) },
         '@/components/tool/preview/post-card': { PostCard: emptyComponent },
         '@/components/tool/preview/preview-size-context': { ScreenSizeProvider: passthrough },
@@ -116,7 +118,7 @@ function paywall(selected) {
         '../use-scroll-gate': { useScrollGate() {} },
         './checkout': { OnboardingCheckout: emptyComponent },
     })
-    return PaywallStep()
+    return MonthlyOffer({ enrollment: {} })
 }
 
 test('display policy keeps prices and the monthly window unchanged', () => {
