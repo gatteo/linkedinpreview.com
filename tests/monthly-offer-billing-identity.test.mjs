@@ -46,8 +46,8 @@ async function harness() {
             'react/jsx-runtime': providerHooks.jsx,
             '@/lib/billing': billing,
             '@/lib/supabase/billing': {
-                fetchBilling: () =>
-                    new Promise((resolve, reject) => requests.push({ userId: auth.userId, resolve, reject })),
+                fetchBilling: (_client, expectedUserId) =>
+                    new Promise((resolve, reject) => requests.push({ userId: expectedUserId, resolve, reject })),
             },
             '@/components/dashboard/auth-provider': { useAuth: () => auth },
         },
@@ -115,6 +115,7 @@ for (const [first, second] of [
         const previous = h.monthly.readMonthlyEnrollment('first')
         h.switch('second')
         const pending = h.render()
+        assert.equal(h.requests[1].userId, 'second', 'billing read explicitly scopes current auth identity')
         assert.equal(pending.plan.isLoading, true, 'new identity must not inherit settled loading state')
         assert.equal(pending.plan.billingResolved, false)
         assert.equal(pending.gate.type, 'div')

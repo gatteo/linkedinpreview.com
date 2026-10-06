@@ -19,6 +19,7 @@ Sentinel LIN-118 returned CHANGES for stale account billing during identity swit
 owning userId atomically with loading/resolution/data. On the very first render of a new or unready identity,
 the context exposes pending/unresolved default state instead of the previous account's billing. Paywall enrollment
 requires billingUserId to match current auth userId and a settled read. Own failed reads enroll unknown, never verified free.
+Billing reads explicitly filter the expected user_id under existing RLS and reject a mismatched returned row.
 Old request responses and removed-account Realtime callbacks cannot overwrite the current identity. Current Realtime
 entitlement updates and refresh behavior remain. Valid original enrollment/eligibility clocks are not rewritten.
 

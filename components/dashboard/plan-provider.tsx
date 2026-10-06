@@ -78,7 +78,7 @@ export function PlanProvider({ children }: { children: React.ReactNode }) {
             isLoading: true,
             billingResolved: false,
         }))
-        fetchBilling(supabase)
+        fetchBilling(supabase, userId)
             .then((data) => {
                 if (!cancelled) {
                     setState({ userId, billing: data, isLoading: false, billingResolved: true })
