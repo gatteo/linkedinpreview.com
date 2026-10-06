@@ -1,6 +1,6 @@
 # LIN-115 preview verification pack
 
-Code tested: `4eb36eaed0d77af192985d9d75f1e37147c5baa0`, branched from fresh `72a9e4cabf85c9fa417f46d892e50ab7da264c00` main. PR: https://github.com/gatteo/linkedinpreview.com/pull/105.
+Code tested: `4eb36eaed0d77af192985d9d75f1e37147c5baa0`, branched from fresh `ecd42c84ee7a2d44c7166fed35d1f8ea749af4d8` main, independently confirmed with `git merge-base HEAD origin/main` and commit history. PR: https://github.com/gatteo/linkedinpreview.com/pull/105.
 
 Ready code preview: https://linkedinpreview-butqkctem-gatteos.vercel.app (`dpl_3bxRvRvgBbze6PtaQXD1npK254PM`). Metadata independently read back as READY, staging/preview, exact code SHA. Production is not deployed or authorized.
 
