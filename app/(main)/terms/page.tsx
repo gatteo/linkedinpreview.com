@@ -46,7 +46,7 @@ export default function TermsPage() {
                         Terms of Service
                     </h1>
                     <p className='text-muted-foreground mx-auto max-w-[540px] text-center text-lg leading-7'>
-                        Last updated: July 17, 2026
+                        Last updated: October 5, 2026
                     </p>
                 </div>
             </section>
@@ -89,13 +89,21 @@ export default function TermsPage() {
                             </li>
                             <li>
                                 <strong>Lifetime</strong>: a one-time payment of $39.99 for access to the paid features
-                                for the lifetime of the product. AI features remain subject to fair-use limits.
+                                for the lifetime of the product. AI features remain subject to fair-use limits. Under
+                                the operator&apos;s policy, lifetime purchases are non-refundable and all sales are
+                                final.
                             </li>
                         </ul>
                         <p>
-                            <strong>7-day money-back guarantee</strong>: if you are not happy with a purchase, contact
-                            us within 7 days of your first payment and we will refund it in full. Prices may change for
-                            new purchases; active subscriptions are notified in advance of any price change.
+                            <strong>7-day money-back guarantee for Monthly Pro</strong>: if you are not happy with your
+                            first monthly Pro payment, contact us within 7 days of that payment and we will refund it in
+                            full. This guarantee does not apply to lifetime purchases. Prices may change for new
+                            purchases; active subscriptions are notified in advance of any price change.
+                        </p>
+                        <p>
+                            The refund policy above applies to new purchases made from publication of this update on
+                            October 5, 2026. It does not retroactively change the terms applicable to earlier purchases.
+                            Your mandatory consumer rights remain unaffected.
                         </p>
 
                         <h2>4. Your content</h2>

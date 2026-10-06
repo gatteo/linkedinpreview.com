@@ -47,8 +47,12 @@ export function foundingDaysLeft(now: Date = new Date()): number {
     return Math.max(0, Math.ceil(ms / 86_400_000))
 }
 
-/** Money-back guarantee window, in days. */
+/** Money-back guarantee for the first monthly Pro payment, in days. */
 export const MONEY_BACK_DAYS = 7
+
+export function purchasePolicyCopy(plan: CheckoutPlan): string {
+    return plan === 'monthly' ? `${MONEY_BACK_DAYS}-day money-back guarantee` : 'Lifetime purchases are non-refundable'
+}
 
 /** Competitor pricing range shown for comparison. */
 export const COMPETITOR_PRICE_RANGE = '$39-199/mo'

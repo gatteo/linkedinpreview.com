@@ -21,8 +21,8 @@ import { rolePlural } from '@/config/onboarding-personalization'
 import {
     FOUNDING_WINDOW_END,
     isFoundingWindowOpen,
-    MONEY_BACK_DAYS,
     PRICING,
+    purchasePolicyCopy,
     type CheckoutPlan,
 } from '@/config/pricing'
 import { SOCIAL_PROOF } from '@/config/social-proof'
@@ -403,7 +403,7 @@ export function PaywallStep() {
                 <div className='text-muted-foreground mt-4 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
                     <span className='inline-flex items-center gap-1.5'>
                         <ShieldIcon className='text-success size-[15px]' />
-                        <b className='text-foreground font-semibold'>{MONEY_BACK_DAYS}-day money-back guarantee</b>
+                        <b className='text-foreground font-semibold'>{purchasePolicyCopy(selected)}</b>
                     </span>
                     <span className='bg-border-strong size-1 rounded-full' />
                     <span className='inline-flex items-center gap-1.5'>
