@@ -355,9 +355,14 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                 // needs no re-measure on the way back.
                 <div className='relative flex min-h-0 flex-1'>
                     <div
+                        aria-hidden={layout === 'tabs' && mobileTab !== 'editor' ? true : undefined}
+                        inert={layout === 'tabs' && mobileTab !== 'editor'}
                         className={cn(
                             'flex flex-col',
                             mobileTab === 'editor' ? 'min-w-0 flex-1' : 'invisible absolute inset-0',
+                            layout === 'tabs' &&
+                                mobileTab !== 'editor' &&
+                                'pointer-events-none opacity-0 [&_button]:transition-none',
                         )}>
                         <EditorPanel
                             initialContent={seedDoc}
@@ -370,9 +375,14 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                         />
                     </div>
                     <div
+                        aria-hidden={layout === 'tabs' && mobileTab !== 'preview' ? true : undefined}
+                        inert={layout === 'tabs' && mobileTab !== 'preview'}
                         className={cn(
                             'flex flex-col',
                             mobileTab === 'preview' ? 'w-full flex-1' : 'invisible absolute inset-0',
+                            layout === 'tabs' &&
+                                mobileTab !== 'preview' &&
+                                'pointer-events-none opacity-0 [&_button]:transition-none',
                         )}>
                         <PreviewPanel
                             content={content}

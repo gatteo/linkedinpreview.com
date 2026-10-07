@@ -186,9 +186,16 @@ test('nonmatching cards retain primary label, fallback and navigation without lo
 
 test('actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested', () => {
     const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Synthetic draft' }] }] }
-    for (const props of [{}, { variant: 'embed' }, { layout: 'tabs' }]) {
+    for (const props of [
+        {},
+        { variant: 'embed' },
+        { desktop: false },
+        { variant: 'embed', desktop: false },
+        { layout: 'tabs' },
+        { layout: 'tabs', tab: 'preview' },
+    ]) {
         let index = 0
-        const states = [doc, null, 'editor', doc, null, false]
+        const states = [doc, null, props.tab ?? 'editor', doc, null, false]
         const hooks = {
             ...React,
             useState: () => [states[index++], () => {}],
@@ -221,7 +228,7 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             '@/lib/editor-utils': { extractPlainText: () => 'Synthetic draft' },
             '@/lib/utils': { cn: (...classes) => classes.filter(Boolean).join(' ') },
             '@/hooks/use-draft-persistence': { useDraftPersistence: () => ({ flush() {} }) },
-            '@/hooks/use-is-desktop': { useIsDesktop: () => true },
+            '@/hooks/use-is-desktop': { useIsDesktop: () => props.desktop !== false },
             '@/components/ui/button': { Button: passthrough },
             './editor-loading': { EditorLoading: () => null },
             './preview/preview-panel': {
@@ -230,14 +237,31 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             './resize-handle': { ResizeHandle: () => null },
         })
         const html = renderToStaticMarkup(React.createElement(Tool, props))
-        if (props.layout === 'tabs') {
+        if (props.layout === 'tabs' || props.desktop === false) {
             assert.ok(!html.includes('data-group'))
             assert.ok(html.includes('Editor') && html.includes('Preview'))
             assert.equal((html.match(/data-editor-seam/g) ?? []).length, 1)
             assert.equal((html.match(/data-preview-seam/g) ?? []).length, 1)
             assert.ok(html.includes('invisible absolute inset-0'))
+            if (props.layout === 'tabs') {
+                const { document } = parseHTML(html)
+                const inactive = document.querySelector('[aria-hidden="true"]')
+                assert.ok(inactive.hasAttribute('inert'))
+                assert.ok(inactive.className.includes('opacity-0'))
+                assert.ok(inactive.className.includes('pointer-events-none'))
+                assert.ok(inactive.className.includes('[&_button]:transition-none'))
+                assert.ok(!inactive.className.includes('hidden absolute'))
+                assert.ok(
+                    inactive.querySelector(props.tab === 'preview' ? '[data-editor-seam]' : '[data-preview-seam]'),
+                )
+            }
         } else {
             assert.ok(html.includes('data-group'))
+        }
+        if (props.layout !== 'tabs') {
+            assert.ok(!html.includes('transition-none'))
+            assert.ok(!html.includes('aria-hidden="true"'))
+            assert.ok(!html.includes('inert=""'))
         }
         assert.equal(html.includes('Create my LinkedIn plan'), props.variant !== 'embed')
     }

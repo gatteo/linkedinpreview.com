@@ -6,6 +6,8 @@ Normal unmodified primary link activation opens one dynamically imported existin
 
 No protected MDX, blog metadata, homepage/formatter layout, pricing, proof, customer entitlement, auth, provider or billing implementation changes. Copy keeps its established successful clipboard event and optional background analysis semantics; this adapter does not create an automatic provider request. Existing contribution cost is unverified, not zero-assumed.
 
+In the explicitly requested `tabs` layout, inactive panel wrappers are immediately transparent, pointer-inert and excluded from accessibility interaction. Descendant button transitions are disabled only while their panel is inactive, preventing inherited visibility transitions from briefly drawing toolbar controls over Preview. Both panels remain mounted and laid out for preview measurement; the global Button and default homepage/embed layout are unchanged. Immediate-switch browser verification is required in addition to settled screenshots.
+
 ## Measurement and release boundary
 
 Reuse production pageviews for eligible exact-path arrivals before treatment, `cta_card_clicked` once per activation and successful `post_copied`. Keep all failures/bounces in the denominator. Original card URL remains the fallback, so a click is not claimed as navigation. Existing content-carrying footer/nudge supplies `tool_footer`/`tool_nudge`; do not replace it with a new blog source. Article context is recoverable only through the existing event/person history, with unmatched attribution explicit.
