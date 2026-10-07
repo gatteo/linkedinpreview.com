@@ -1,0 +1,234 @@
+[
+    {
+        "name": "desktop_treatment_copy",
+        "detail": {
+            "label": "Explore Pro & create my plan",
+            "href": "/dashboard?from=navbar",
+            "variant": "pro",
+            "sha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa",
+            "width": 1440
+        }
+    },
+    {
+        "name": "variant_control",
+        "detail": {
+            "label": "Create my LinkedIn plan",
+            "variant": "control",
+            "href": "/dashboard?from=navbar",
+            "width": 1440,
+            "record": {
+                "testId": "EXP-11",
+                "enrollmentId": "04660946-9d0a-4840-8433-df38c649399b",
+                "eligibilityAt": "2026-10-07T09:56:08.865Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "assigned",
+                "releaseSha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa"
+            }
+        }
+    },
+    {
+        "name": "complete_variant_control",
+        "detail": {
+            "label": "Create my LinkedIn plan",
+            "variant": "control",
+            "href": "/dashboard?from=navbar",
+            "width": 1440,
+            "record": {
+                "testId": "EXP-11",
+                "enrollmentId": "b31b92ff-f55b-4555-8e85-048eff1d716c",
+                "eligibilityAt": "2026-10-07T09:57:29.849Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "assigned",
+                "releaseSha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa"
+            }
+        }
+    },
+    {
+        "name": "complete_pointer_keyboard_control",
+        "detail": {
+            "held_native_intents": ["/dashboard?from=navbar", "/dashboard?from=navbar"],
+            "uncaught": []
+        }
+    },
+    {
+        "name": "complete_variant_treatment",
+        "detail": {
+            "label": "Explore Pro & create my plan",
+            "variant": "pro",
+            "href": "/dashboard?from=navbar",
+            "width": 1440,
+            "record": {
+                "testId": "EXP-11",
+                "enrollmentId": "f81d5630-49d2-4071-9522-5aa237d077ec",
+                "eligibilityAt": "2026-10-07T09:57:32.639Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "pro",
+                "assignmentStatus": "assigned",
+                "releaseSha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa"
+            }
+        }
+    },
+    {
+        "name": "complete_treatment_remount",
+        "detail": {
+            "id": "f81d5630-49d2-4071-9522-5aa237d077ec",
+            "label": "Explore Pro & create my plan"
+        }
+    },
+    {
+        "name": "complete_treatment_refresh_frozen",
+        "detail": {
+            "id": "f81d5630-49d2-4071-9522-5aa237d077ec",
+            "flag_now": "control",
+            "label": "Explore Pro & create my plan"
+        }
+    },
+    {
+        "name": "complete_pointer_keyboard_treatment",
+        "detail": {
+            "held_native_intents": ["/dashboard?from=navbar", "/dashboard?from=navbar"],
+            "uncaught": []
+        }
+    },
+    {
+        "name": "complete_variant_unknown",
+        "detail": {
+            "label": "Create my LinkedIn plan",
+            "variant": "control",
+            "href": "/dashboard?from=navbar",
+            "width": 1440,
+            "record": {
+                "testId": "EXP-11",
+                "enrollmentId": "837ced41-9625-4787-9997-bc0fe7097817",
+                "eligibilityAt": "2026-10-07T09:57:35.786Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "flag_unavailable",
+                "releaseSha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa"
+            }
+        }
+    },
+    {
+        "name": "complete_pointer_keyboard_unknown",
+        "detail": {
+            "held_native_intents": ["/dashboard?from=navbar", "/dashboard?from=navbar"],
+            "uncaught": []
+        }
+    },
+    {
+        "name": "complete_variant_loading",
+        "detail": {
+            "label": "Create my LinkedIn plan",
+            "variant": "control",
+            "href": "/dashboard?from=navbar",
+            "width": 1440,
+            "record": {
+                "testId": "EXP-11",
+                "enrollmentId": "3a5c25bb-8580-4261-9c4b-2db914c0db56",
+                "eligibilityAt": "2026-10-07T09:57:37.318Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "flag_unavailable",
+                "releaseSha": "eab94d76d244086ddefa3e6d3ab3bf3233bcd2fa"
+            }
+        }
+    },
+    {
+        "name": "complete_pointer_keyboard_loading",
+        "detail": {
+            "held_native_intents": ["/dashboard?from=navbar", "/dashboard?from=navbar"],
+            "uncaught": []
+        }
+    },
+    {
+        "name": "free_typing_preview_1440",
+        "detail": {
+            "text": "Synthetic LIN-151 free copy at 1440.",
+            "leaf_matches": 2
+        }
+    },
+    {
+        "name": "native_clipboard_1440",
+        "detail": {
+            "expected": "Synthetic LIN-151 free copy at 1440.",
+            "actual": "Synthetic LIN-151 free copy at 1440.",
+            "native_not_replaced": true
+        }
+    },
+    {
+        "name": "free_tool_uncaught_1440",
+        "detail": []
+    },
+    {
+        "name": "mobile_menu_unchanged",
+        "detail": {
+            "href": "/dashboard?from=mobile_nav_cta",
+            "label": "Create my LinkedIn plan",
+            "enrolled": false
+        }
+    },
+    {
+        "name": "free_typing_preview_390",
+        "detail": {
+            "text": "Synthetic LIN-151 free copy at 390.",
+            "leaf_matches": 2
+        }
+    },
+    {
+        "name": "native_clipboard_390",
+        "detail": {
+            "expected": "Synthetic LIN-151 free copy at 390.",
+            "actual": "Synthetic LIN-151 free copy at 390.",
+            "native_not_replaced": true
+        }
+    },
+    {
+        "name": "free_tool_uncaught_390",
+        "detail": []
+    },
+    {
+        "name": "remote_disabled_overrides_sticky_treatment",
+        "detail": {
+            "label": "Create my LinkedIn plan",
+            "rendered": "control",
+            "assigned": "pro"
+        }
+    },
+    {
+        "name": "route_blog",
+        "detail": {
+            "path": "/blog",
+            "heading": "Tips & guides to write great LinkedIn posts",
+            "enrolled": false,
+            "cta": "Create my LinkedIn plan",
+            "errors": []
+        }
+    },
+    {
+        "name": "route_dashboard",
+        "detail": {
+            "path": "/dashboard",
+            "heading": "Posts",
+            "enrolled": false,
+            "errors": []
+        }
+    },
+    {
+        "name": "route_embed",
+        "detail": {
+            "path": "/embed",
+            "enrolled": false,
+            "errors": []
+        }
+    },
+    {
+        "name": "mobile_preview_visible",
+        "detail": {
+            "text": "Synthetic LIN-151 visible mobile preview.",
+            "visible": true,
+            "enrolled": false
+        }
+    }
+]

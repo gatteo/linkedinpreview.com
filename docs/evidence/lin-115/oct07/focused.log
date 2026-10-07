@@ -1,0 +1,266 @@
+TAP version 13
+# Subtest: exact pathname/title allowlist excludes other routes and later cards
+ok 1 - exact pathname/title allowlist excludes other routes and later cards
+  ---
+  duration_ms: 1.917416
+  type: 'test'
+  ...
+# Subtest: /blog/where-are-linkedin-drafts-saved: server fallback, keyboard open, single persistent tool and existing event
+ok 2 - /blog/where-are-linkedin-drafts-saved: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 22.883
+  type: 'test'
+  ...
+# Subtest: /blog/linkedin-post-length-guide-2026: server fallback, keyboard open, single persistent tool and existing event
+ok 3 - /blog/linkedin-post-length-guide-2026: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 5.164083
+  type: 'test'
+  ...
+# Subtest: /blog/how-to-write-open-to-work-linkedin-post: server fallback, keyboard open, single persistent tool and existing event
+ok 4 - /blog/how-to-write-open-to-work-linkedin-post: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 4.330875
+  type: 'test'
+  ...
+# Subtest: /blog/how-to-draft-linkedin-posts: server fallback, keyboard open, single persistent tool and existing event
+ok 5 - /blog/how-to-draft-linkedin-posts: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 2.333458
+  type: 'test'
+  ...
+# React does not recognize the `asChild` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `aschild` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `defaultSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `defaultsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `minSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `minsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `maxSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `maxsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# Subtest: nonmatching cards retain primary label, fallback and navigation without loading Tool
+ok 6 - nonmatching cards retain primary label, fallback and navigation without loading Tool
+  ---
+  duration_ms: 0.935875
+  type: 'test'
+  ...
+# Subtest: actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested
+ok 7 - actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested
+  ---
+  duration_ms: 64.90025
+  type: 'test'
+  ...
+# Subtest: header control: eligibility precedes flag read and failures remain control
+ok 8 - header control: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 45.532083
+  type: 'test'
+  ...
+# Subtest: header pro: eligibility precedes flag read and failures remain control
+ok 9 - header pro: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 13.319041
+  type: 'test'
+  ...
+# Subtest: header undefined: eligibility precedes flag read and failures remain control
+ok 10 - header undefined: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 9.502792
+  type: 'test'
+  ...
+# Subtest: header false: eligibility precedes flag read and failures remain control
+ok 11 - header false: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 10.613875
+  type: 'test'
+  ...
+# Subtest: header true: eligibility precedes flag read and failures remain control
+ok 12 - header true: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 9.978334
+  type: 'test'
+  ...
+# Subtest: header unknown: eligibility precedes flag read and failures remain control
+ok 13 - header unknown: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 6.925167
+  type: 'test'
+  ...
+# Subtest: header toString: eligibility precedes flag read and failures remain control
+ok 14 - header toString: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 9.433291
+  type: 'test'
+  ...
+# Subtest: header __proto__: eligibility precedes flag read and failures remain control
+ok 15 - header __proto__: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 8.109834
+  type: 'test'
+  ...
+# Subtest: assignment and enrollment ID survive refresh, remount and anonymous-to-known navigation
+ok 16 - assignment and enrollment ID survive refresh, remount and anonymous-to-known navigation
+  ---
+  duration_ms: 18.521792
+  type: 'test'
+  ...
+# Subtest: disabled or unloaded remote flag renders control even with a persisted treatment
+ok 17 - disabled or unloaded remote flag renders control even with a persisted treatment
+  ---
+  duration_ms: 13.503625
+  type: 'test'
+  ...
+# Subtest: loading fallback never changes assignment on remount when a treatment loads later
+ok 18 - loading fallback never changes assignment on remount when a treatment loads later
+  ---
+  duration_ms: 13.620708
+  type: 'test'
+  ...
+# Subtest: unavailable storage getItem retains eligible denominator and safe control
+ok 19 - unavailable storage getItem retains eligible denominator and safe control
+  ---
+  duration_ms: 5.039708
+  type: 'test'
+  ...
+# Subtest: unavailable storage setItem retains eligible denominator and safe control
+ok 20 - unavailable storage setItem retains eligible denominator and safe control
+  ---
+  duration_ms: 5.805917
+  type: 'test'
+  ...
+# Subtest: flag getter failure and malformed persisted state cannot expose treatment
+ok 21 - flag getter failure and malformed persisted state cannot expose treatment
+  ---
+  duration_ms: 4.936625
+  type: 'test'
+  ...
+# Subtest: a preceding daily-lane enrollment excludes this test before flags or eligibility
+ok 22 - a preceding daily-lane enrollment excludes this test before flags or eligibility
+  ---
+  duration_ms: 4.642333
+  type: 'test'
+  ...
+# Subtest: analytics exception cannot break the CTA or expose treatment
+ok 23 - analytics exception cannot break the CTA or expose treatment
+  ---
+  duration_ms: 5.867375
+  type: 'test'
+  ...
+# Subtest: event properties contain no draft, profile, email, payment or auth data
+ok 24 - event properties contain no draft, profile, email, payment or auth data
+  ---
+  duration_ms: 4.411208
+  type: 'test'
+  ...
+# Subtest: only the desktop homepage header CTA changes; mobile and free tool are not experiment slots
+ok 25 - only the desktop homepage header CTA changes; mobile and free tool are not experiment slots
+  ---
+  duration_ms: 0.873083
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //true/pro
+ok 26 - actual React header callbacks: //true/pro
+  ---
+  duration_ms: 83.715833
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //true/undefined
+ok 27 - actual React header callbacks: //true/undefined
+  ---
+  duration_ms: 27.335917
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //false/pro
+ok 28 - actual React header callbacks: //false/pro
+  ---
+  duration_ms: 22.500834
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: /blog/true/pro
+ok 29 - actual React header callbacks: /blog/true/pro
+  ---
+  duration_ms: 15.072875
+  type: 'test'
+  ...
+# Subtest: flag control safely returns current control
+ok 30 - flag control safely returns current control
+  ---
+  duration_ms: 37.085541
+  type: 'test'
+  ...
+# Subtest: flag undefined safely returns current control
+ok 31 - flag undefined safely returns current control
+  ---
+  duration_ms: 5.928459
+  type: 'test'
+  ...
+# Subtest: flag null safely returns current control
+ok 32 - flag null safely returns current control
+  ---
+  duration_ms: 5.25225
+  type: 'test'
+  ...
+# Subtest: flag true safely returns current control
+ok 33 - flag true safely returns current control
+  ---
+  duration_ms: 4.144333
+  type: 'test'
+  ...
+# Subtest: flag false safely returns current control
+ok 34 - flag false safely returns current control
+  ---
+  duration_ms: 4.931208
+  type: 'test'
+  ...
+# Subtest: flag unknown safely returns current control
+ok 35 - flag unknown safely returns current control
+  ---
+  duration_ms: 2.651791
+  type: 'test'
+  ...
+# Subtest: flag toString safely returns current control
+ok 36 - flag toString safely returns current control
+  ---
+  duration_ms: 3.531166
+  type: 'test'
+  ...
+# Subtest: flag __proto__ safely returns current control
+ok 37 - flag __proto__ safely returns current control
+  ---
+  duration_ms: 3.490125
+  type: 'test'
+  ...
+# Subtest: known treatment is resolved once without changing after delayed flag updates
+ok 38 - known treatment is resolved once without changing after delayed flag updates
+  ---
+  duration_ms: 9.920125
+  type: 'test'
+  ...
+# Subtest: loading assignment stays control when treatment arrives later
+ok 39 - loading assignment stays control when treatment arrives later
+  ---
+  duration_ms: 5.369292
+  type: 'test'
+  ...
+# Subtest: uninitialized PostHog keeps control
+ok 40 - uninitialized PostHog keeps control
+  ---
+  duration_ms: 4.226625
+  type: 'test'
+  ...
+# Subtest: failed flag read keeps control instead of breaking the product
+ok 41 - failed flag read keeps control instead of breaking the product
+  ---
+  duration_ms: 2.690125
+  type: 'test'
+  ...
+# Subtest: persisted header treatment uses the existing registry without a second flag read
+ok 42 - persisted header treatment uses the existing registry without a second flag read
+  ---
+  duration_ms: 5.295333
+  type: 'test'
+  ...
+1..42
+# tests 42
+# suites 0
+# pass 42
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 516.153292
