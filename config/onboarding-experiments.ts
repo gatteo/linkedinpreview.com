@@ -11,10 +11,17 @@
 // - Flag naming: onb-<step>-<what>.
 // - Honesty invariants and pricing are never experiment surfaces.
 // - When an experiment concludes, bake the winner into the component/config and
-//   delete the entry - this registry only holds LIVE experiments.
+//   delete the entry. Staged experiments are explicitly marked as not launched.
 // ---------------------------------------------------------------------------
 
+const HEADER_ENTRY_VARIANTS: Record<'control' | 'pro', { label: string }> = {
+    control: { label: 'Create my LinkedIn plan' },
+    pro: { label: 'Explore Pro & create my plan' },
+}
+
 export const OB_EXPERIMENTS = {
+    // EXP-11 is registered, not launched. Atlas owns remote activation/readback.
+    'onb-header-pro-entry': HEADER_ENTRY_VARIANTS,
     // Does locking the flow (no X / Escape / outside-click) beat the
     // dismissible modal shipped 2026-07-31? Control = current production
     // (dismissible). The in-flow skips and the paywall's free-plan decline are
