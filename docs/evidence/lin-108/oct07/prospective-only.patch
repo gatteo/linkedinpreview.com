@@ -1,0 +1,192 @@
+diff --git a/app/api/billing/checkout/route.schema.ts b/app/api/billing/checkout/route.schema.ts
+index 78f67e8..cd72426 100644
+--- a/app/api/billing/checkout/route.schema.ts
++++ b/app/api/billing/checkout/route.schema.ts
+@@ -2,6 +2,17 @@ import { z } from 'zod'
+ 
+ import { ENTRY_SOURCES } from '@/config/entry-sources'
+ 
++const monthlyOfferSchema = z.object({
++    enrollmentId: z.string().uuid(),
++    cohortId: z.literal('exp9_monthly_first_v2'),
++    assignedVariant: z.literal('monthly_first'),
++    eligibilityAt: z.string().datetime(),
++    offerVersion: z.literal('monthly_first_v2'),
++    entrySource: z.enum([...ENTRY_SOURCES, 'direct']),
++    billingState: z.enum(['free', 'paid', 'unknown']),
++    releaseSha: z.union([z.string().regex(/^[0-9a-f]{40}$/), z.literal('unavailable')]),
++})
++
+ export const bodySchema = z.object({
+     plan: z.enum(['monthly', 'lifetime']),
+     // Which surface started the purchase - drives the hosted-checkout return
+@@ -13,4 +24,5 @@ export const bodySchema = z.object({
+     cohortId: z.literal('exp10_draft_first_v1').optional(),
+     assignedVariant: z.literal('draft_first').optional(),
+     offerVersion: z.literal('existing_offer').optional(),
++    monthlyOffer: monthlyOfferSchema.optional(),
+ })
+diff --git a/app/api/billing/checkout/route.ts b/app/api/billing/checkout/route.ts
+index b8b6615..d356506 100644
+--- a/app/api/billing/checkout/route.ts
++++ b/app/api/billing/checkout/route.ts
+@@ -26,8 +26,17 @@ export async function POST(request: Request) {
+     if (!parsed.success) {
+         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
+     }
+-    const { plan, source, entrySource, exposureId, eligibilityAt, cohortId, assignedVariant, offerVersion } =
+-        parsed.data
++    const {
++        plan,
++        source,
++        entrySource,
++        exposureId,
++        eligibilityAt,
++        cohortId,
++        assignedVariant,
++        offerVersion,
++        monthlyOffer,
++    } = parsed.data
+ 
+     const supabase = await createClient()
+     const {
+@@ -70,6 +79,31 @@ export async function POST(request: Request) {
+                           offer_version: offerVersion ?? 'existing_offer',
+                       }
+                     : {}),
++                ...(exposureId && cohortId
++                    ? {
++                          draft_enrollment_id: exposureId,
++                          draft_cohort_id: cohortId,
++                          draft_assigned_variant: assignedVariant ?? 'draft_first',
++                          draft_assignment_version: DRAFT_FIRST_VERSION,
++                          ...(eligibilityAt ? { draft_eligibility_at: eligibilityAt } : {}),
++                          draft_offer_version: offerVersion ?? 'existing_offer',
++                          draft_entry_source: entrySource,
++                      }
++                    : {}),
++                ...(monthlyOffer
++                    ? {
++                          enrollment_id: monthlyOffer.enrollmentId,
++                          cohort_id: monthlyOffer.cohortId,
++                          assigned_variant: monthlyOffer.assignedVariant,
++                          eligibility_at: monthlyOffer.eligibilityAt,
++                          assignment_version: monthlyOffer.offerVersion,
++                          offer_version: monthlyOffer.offerVersion,
++                          entry_source: exposureId ? entrySource : monthlyOffer.entrySource,
++                          monthly_entry_source: monthlyOffer.entrySource,
++                          billing_state_at_assignment: monthlyOffer.billingState,
++                          release_sha: monthlyOffer.releaseSha,
++                      }
++                    : {}),
+             },
+             // Without this Stripe renders no promotion-code field at all, so any
+             // coupon we issue is unredeemable.
+@@ -81,7 +115,7 @@ export async function POST(request: Request) {
+             // where the initiating surface (source) resumes via the query params.
+             const origin = new URL(request.url).origin
+             params.ui_mode = 'hosted_page'
+-            const attribution = `&entry_source=${entrySource}${exposureId ? `&activation=${exposureId}` : ''}`
++            const attribution = `&entry_source=${exposureId ? entrySource : (monthlyOffer?.entrySource ?? entrySource)}${exposureId ? `&activation=${exposureId}` : ''}${monthlyOffer ? `&offer_enrollment=${monthlyOffer.enrollmentId}` : ''}`
+             params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
+             params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
+         } else {
+diff --git a/app/api/billing/webhook/route.ts b/app/api/billing/webhook/route.ts
+index 9325491..329db4b 100644
+--- a/app/api/billing/webhook/route.ts
++++ b/app/api/billing/webhook/route.ts
+@@ -115,12 +115,24 @@ export async function POST(request: Request) {
+                             cohort_id: s.metadata?.cohort_id ?? null,
+                             eligibility_at: s.metadata?.eligibility_at ?? null,
+                             assigned_variant: s.metadata?.assigned_variant ?? null,
++                            assignment_version: s.metadata?.assignment_version ?? null,
+                             offer_version: s.metadata?.offer_version ?? null,
++                            billing_state_at_assignment: s.metadata?.billing_state_at_assignment ?? null,
++                            release_sha: s.metadata?.release_sha ?? null,
++                            draft_enrollment_id: s.metadata?.draft_enrollment_id ?? null,
++                            draft_cohort_id: s.metadata?.draft_cohort_id ?? null,
++                            draft_eligibility_at: s.metadata?.draft_eligibility_at ?? null,
++                            draft_assigned_variant: s.metadata?.draft_assigned_variant ?? null,
++                            draft_assignment_version: s.metadata?.draft_assignment_version ?? null,
++                            draft_offer_version: s.metadata?.draft_offer_version ?? null,
++                            draft_entry_source: s.metadata?.draft_entry_source ?? null,
++                            monthly_entry_source: s.metadata?.monthly_entry_source ?? null,
+                             stripe_event_id: event.id,
+                             session_id: s.id,
+                             subscription_id: typeof s.subscription === 'string' ? s.subscription : s.subscription?.id,
+                             livemode: event.livemode,
+                             payment_status: s.payment_status,
++                            recurring_outcome: 'requires_processor_reconciliation',
+                         }),
+                     )
+                 }
+diff --git a/components/dashboard/onboarding/ai.ts b/components/dashboard/onboarding/ai.ts
+index 7edd51b..cd01290 100644
+--- a/components/dashboard/onboarding/ai.ts
++++ b/components/dashboard/onboarding/ai.ts
+@@ -21,6 +21,7 @@ import { OB_FUNNEL_VERSION } from '@/config/analytics'
+ import type { ResolvedEntrySource } from '@/config/entry-sources'
+ import type { Role } from '@/config/onboarding-personalization'
+ import { draftFirstProperties } from '@/lib/draft-first'
++import { monthlyOfferProperties, rememberOfferEntry } from '@/lib/monthly-offer'
+ import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
+ import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
+ 
+@@ -300,6 +301,7 @@ let entrySource: ResolvedEntrySource = 'direct'
+ 
+ export function setEntrySource(source: ResolvedEntrySource) {
+     entrySource = source
++    rememberOfferEntry(source)
+ }
+ 
+ export function getEntrySource(): ResolvedEntrySource {
+@@ -311,6 +313,11 @@ export function track(event: string, props?: Record<string, unknown>) {
+         funnel_version: OB_FUNNEL_VERSION,
+         ...draftFirstProperties(),
+         entry_source: entrySource,
++        ...monthlyOfferProperties(),
++        draft_enrollment_id: draftFirstProperties().enrollment_id,
++        draft_cohort_id: draftFirstProperties().cohort_id,
++        draft_eligibility_at: draftFirstProperties().eligibility_at,
++        draft_entry_source: draftFirstProperties().entry_source,
+         ...props,
+     })
+ }
+diff --git a/components/dashboard/onboarding/steps/checkout.tsx b/components/dashboard/onboarding/steps/checkout.tsx
+index 3a3888c..29ef9b1 100644
+--- a/components/dashboard/onboarding/steps/checkout.tsx
++++ b/components/dashboard/onboarding/steps/checkout.tsx
+@@ -9,6 +9,8 @@ import { env } from '@/env.mjs'
+ import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
+ import { reportMissingEnv } from '@/lib/dev/report-missing-env'
+ import { draftFirstProperties } from '@/lib/draft-first'
++import { monthlyCheckoutAttribution } from '@/lib/monthly-offer'
++import { useAuth } from '@/components/dashboard/auth-provider'
+ 
+ import { getEntrySource, track } from '../ai'
+ import { markCheckoutPending } from '../types'
+@@ -30,6 +32,7 @@ type OnboardingCheckoutProps = {
+ }
+ 
+ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onError }: OnboardingCheckoutProps) {
++    const { userId } = useAuth()
+     const [clientSecret, setClientSecret] = React.useState<string | null>(null)
+     const onCompleteRef = React.useRef(onComplete)
+     const onErrorRef = React.useRef(onError)
+@@ -67,6 +70,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
+                 cohortId: draftFirstProperties().cohort_id,
+                 assignedVariant: draftFirstProperties().assigned_variant,
+                 offerVersion: draftFirstProperties().offer_version,
++                monthlyOffer: monthlyCheckoutAttribution(userId),
+             }),
+         })
+             .then(async (res) => {
+@@ -105,7 +109,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
+         return () => {
+             cancelled = true
+         }
+-    }, [plan, source])
++    }, [plan, source, userId])
+ 
+     // Unmounting an opened checkout without completing = the user backed out of
+     // the payment form (plan switch, decline, or navigation).

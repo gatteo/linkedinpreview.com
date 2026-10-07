@@ -1,0 +1,7 @@
+{
+    "storage": {
+        "lp-consent": "accepted",
+        "lp-daily-test-enrollment-v1": "{\"testId\":\"EXP-11\",\"enrollmentId\":\"a006504f-e50d-4e59-87bd-293be1134c30\",\"eligibilityAt\":\"2026-10-07T13:20:03.703Z\",\"assignmentVersion\":\"exp11_header_v1\",\"variant\":\"control\",\"assignmentStatus\":\"flag_unavailable\",\"releaseSha\":\"14e3226c3cf127382734140893db43946c29fb6d\"}"
+    },
+    "href": "/dashboard/editor?import=q1YqqSxIVbJSSslPVtJRSs7PK0nNK1Gyiq6GSRQkFiWmFyUWZGCXLkmtKFHSgVBWSj6efrqGBhYK_skl-UmpRQrmCiAtiZl5qSkKKanF2SX5BQopRYlpJXpKtbG1sbUA&activation=1d052073-ff35-4c6f-9001-d230066bb569&from=tool_footer"
+}

@@ -1,0 +1,7 @@
+{
+    "lp-consent": "accepted",
+    "lp-draft-first:11111111-1111-4111-8111-111111111111": "{\"version\":\"imported_draft_v1\",\"entrySource\":\"tool_footer\",\"exposureId\":\"30b7b74d-52a7-428f-a12e-b1d842c83f90\",\"eligibilityAt\":\"2026-10-07T13:21:46.219Z\",\"draftId\":\"9c51eb85-e08e-408b-9557-a12b9ecde870\",\"used\":true}",
+    "lp-daily-test-enrollment-v1": "{\"testId\":\"EXP-11\",\"enrollmentId\":\"c0233057-7007-4752-bab9-cc1cb413f684\",\"eligibilityAt\":\"2026-10-07T13:21:45.008Z\",\"assignmentVersion\":\"exp11_header_v1\",\"variant\":\"control\",\"assignmentStatus\":\"flag_unavailable\",\"releaseSha\":\"14e3226c3cf127382734140893db43946c29fb6d\"}",
+    "lin108-fixture-drafts": "[{\"id\":\"9c51eb85-e08e-408b-9557-a12b9ecde870\",\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"title\":\"LIN-108 integrated desktop edit saved on navigation.\",\"kind\":\"post\",\"content\":{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"LIN-108 integrated desktop edit saved on navigation.\"}]}]},\"media\":null,\"status\":\"draft\",\"label\":null,\"word_count\":7,\"char_count\":52,\"created_at\":\"2026-10-07T13:21:47.705Z\",\"updated_at\":\"2026-10-07T13:21:48.981Z\",\"scheduled_at\":null,\"published_at\":null,\"linkedin_post_url\":null,\"publish_error\":null}]",
+    "lp-migrated-to-supabase": "1"
+}

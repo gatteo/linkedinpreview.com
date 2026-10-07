@@ -1,0 +1,6 @@
+{
+    "lp-consent": "accepted",
+    "lp-draft-first:11111111-1111-4111-8111-111111111111": "{\"version\":\"imported_draft_v1\",\"entrySource\":\"tool_footer\",\"exposureId\":\"2b7d3c82-7a4f-444a-a551-c940c86bb6f0\",\"eligibilityAt\":\"2026-10-07T13:23:09.676Z\",\"draftId\":\"0e1a6d43-bee3-4227-905a-ccdd541e51bf\",\"used\":true}",
+    "lin108-fixture-drafts": "[{\"id\":\"0e1a6d43-bee3-4227-905a-ccdd541e51bf\",\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"title\":\"LIN-108 mobile edited and saved before debounce.\",\"kind\":\"post\",\"content\":{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"LIN-108 mobile edited and saved before debounce.\"}]}]},\"media\":null,\"status\":\"draft\",\"label\":null,\"word_count\":7,\"char_count\":48,\"created_at\":\"2026-10-07T13:25:03.878Z\",\"updated_at\":\"2026-10-07T13:25:04.619Z\",\"scheduled_at\":null,\"published_at\":null,\"linkedin_post_url\":null,\"publish_error\":null}]",
+    "lp-migrated-to-supabase": "1"
+}

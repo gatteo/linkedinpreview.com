@@ -1,0 +1,331 @@
+TAP version 13
+# Subtest: actual checkout validates attribution and leaves old callers, auth and prices intact
+ok 1 - actual checkout validates attribution and leaves old callers, auth and prices intact
+  ---
+  duration_ms: 32.511042
+  type: 'test'
+  ...
+# Subtest: hosted and embedded checkout retain first entry in processor metadata for both plans
+ok 2 - hosted and embedded checkout retain first entry in processor metadata for both plans
+  ---
+  duration_ms: 43.714292
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 3 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 47.275333
+  type: 'test'
+  ...
+# Subtest: actual controller defers imports without onboarding completion and survives reload/navigation
+ok 4 - actual controller defers imports without onboarding completion and survives reload/navigation
+  ---
+  duration_ms: 160.181458
+  type: 'test'
+  ...
+# Subtest: optional planning request opens the real controller and preserves saved answers
+ok 5 - optional planning request opens the real controller and preserves saved answers
+  ---
+  duration_ms: 18.019125
+  type: 'test'
+  ...
+# Subtest: explicit planning URL and existing planning placements override deferral
+ok 6 - explicit planning URL and existing planning placements override deferral
+  ---
+  duration_ms: 67.506208
+  type: 'test'
+  ...
+# Subtest: gate preserves saved planning, OAuth and checkout return precedence
+ok 7 - gate preserves saved planning, OAuth and checkout return precedence
+  ---
+  duration_ms: 93.169667
+  type: 'test'
+  ...
+# Subtest: controller snapshots returns before another consumer strips the URL
+ok 8 - controller snapshots returns before another consumer strips the URL
+  ---
+  duration_ms: 12.013333
+  type: 'test'
+  ...
+# Subtest: completed users stay completed; legacy backfill remains distinct from deferral
+ok 9 - completed users stay completed; legacy backfill remains distinct from deferral
+  ---
+  duration_ms: 22.557708
+  type: 'test'
+  ...
+# Subtest: account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+ok 10 - account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+  ---
+  duration_ms: 6.792833
+  type: 'test'
+  ...
+# Subtest: actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+ok 11 - actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+  ---
+  duration_ms: 60.415834
+  type: 'test'
+  ...
+# Subtest: malformed imports and missing media never create a blank or overwrite existing drafts
+ok 12 - malformed imports and missing media never create a blank or overwrite existing drafts
+  ---
+  duration_ms: 100.853709
+  type: 'test'
+  ...
+# Subtest: failed create/load cannot count successful import or trigger empty-draft deletion
+ok 13 - failed create/load cannot count successful import or trigger empty-draft deletion
+  ---
+  duration_ms: 102.132542
+  type: 'test'
+  ...
+# Subtest: actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+ok 14 - actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+  ---
+  duration_ms: 21.312375
+  type: 'test'
+  ...
+# Subtest: actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+ok 15 - actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+  ---
+  duration_ms: 16.402
+  type: 'test'
+  ...
+# Subtest: pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+ok 16 - pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+  ---
+  duration_ms: 6.009458
+  type: 'test'
+  ...
+# Subtest: meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+ok 17 - meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+  ---
+  duration_ms: 101.980625
+  type: 'test'
+  ...
+# Subtest: navigation saves record only confirmed meaningful edits, excluding failure and hydration
+    # Subtest: unmount: meaningful=true, failure=true
+    ok 1 - unmount: meaningful=true, failure=true
+      ---
+      duration_ms: 51.841875
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=true, failure=false
+    ok 2 - unmount: meaningful=true, failure=false
+      ---
+      duration_ms: 51.3425
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=true
+    ok 3 - unmount: meaningful=false, failure=true
+      ---
+      duration_ms: 50.435584
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=false
+    ok 4 - unmount: meaningful=false, failure=false
+      ---
+      duration_ms: 49.179167
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=true
+    ok 5 - switch: meaningful=true, failure=true
+      ---
+      duration_ms: 47.925958
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=false
+    ok 6 - switch: meaningful=true, failure=false
+      ---
+      duration_ms: 47.918833
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=true
+    ok 7 - switch: meaningful=false, failure=true
+      ---
+      duration_ms: 49.020666
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=false
+    ok 8 - switch: meaningful=false, failure=false
+      ---
+      duration_ms: 50.466666
+      type: 'test'
+      ...
+    1..8
+ok 18 - navigation saves record only confirmed meaningful edits, excluding failure and hydration
+  ---
+  duration_ms: 398.686625
+  type: 'test'
+  ...
+# Subtest: navigation successes deduplicate against earlier save or copy and remain draft scoped
+    # Subtest: unmount after save
+    ok 1 - unmount after save
+      ---
+      duration_ms: 49.79825
+      type: 'test'
+      ...
+    # Subtest: unmount after copy
+    ok 2 - unmount after copy
+      ---
+      duration_ms: 47.578334
+      type: 'test'
+      ...
+    # Subtest: unmount after different_draft
+    ok 3 - unmount after different_draft
+      ---
+      duration_ms: 48.615959
+      type: 'test'
+      ...
+    # Subtest: switch after save
+    ok 4 - switch after save
+      ---
+      duration_ms: 47.087625
+      type: 'test'
+      ...
+    # Subtest: switch after copy
+    ok 5 - switch after copy
+      ---
+      duration_ms: 49.38125
+      type: 'test'
+      ...
+    # Subtest: switch after different_draft
+    ok 6 - switch after different_draft
+      ---
+      duration_ms: 48.444
+      type: 'test'
+      ...
+    1..6
+ok 19 - navigation successes deduplicate against earlier save or copy and remain draft scoped
+  ---
+  duration_ms: 291.428
+  type: 'test'
+  ...
+# Subtest: save accounting snapshots meaningful intent before asynchronous hydration changes
+ok 20 - save accounting snapshots meaningful intent before asynchronous hydration changes
+  ---
+  duration_ms: 57.111792
+  type: 'test'
+  ...
+# Subtest: debounced persistence uses the same success/failure accounting and captures account scope
+    # Subtest: failure=true
+    ok 1 - failure=true
+      ---
+      duration_ms: 52.016917
+      type: 'test'
+      ...
+    # Subtest: failure=false
+    ok 2 - failure=false
+      ---
+      duration_ms: 52.84875
+      type: 'test'
+      ...
+    1..2
+ok 21 - debounced persistence uses the same success/failure accounting and captures account scope
+  ---
+  duration_ms: 105.086
+  type: 'test'
+  ...
+# Subtest: draft import preserves undefined header assignment and separate eligibility
+ok 22 - draft import preserves undefined header assignment and separate eligibility
+  ---
+  duration_ms: 46.884292
+  type: 'test'
+  ...
+# Subtest: draft import preserves control header assignment and separate eligibility
+ok 23 - draft import preserves control header assignment and separate eligibility
+  ---
+  duration_ms: 32.65925
+  type: 'test'
+  ...
+# Subtest: draft import preserves pro header assignment and separate eligibility
+ok 24 - draft import preserves pro header assignment and separate eligibility
+  ---
+  duration_ms: 34.168791
+  type: 'test'
+  ...
+# Subtest: flag control safely returns current control
+ok 25 - flag control safely returns current control
+  ---
+  duration_ms: 34.770375
+  type: 'test'
+  ...
+# Subtest: flag undefined safely returns current control
+ok 26 - flag undefined safely returns current control
+  ---
+  duration_ms: 6.204875
+  type: 'test'
+  ...
+# Subtest: flag null safely returns current control
+ok 27 - flag null safely returns current control
+  ---
+  duration_ms: 7.272708
+  type: 'test'
+  ...
+# Subtest: flag true safely returns current control
+ok 28 - flag true safely returns current control
+  ---
+  duration_ms: 4.499542
+  type: 'test'
+  ...
+# Subtest: flag false safely returns current control
+ok 29 - flag false safely returns current control
+  ---
+  duration_ms: 6.056667
+  type: 'test'
+  ...
+# Subtest: flag unknown safely returns current control
+ok 30 - flag unknown safely returns current control
+  ---
+  duration_ms: 2.794292
+  type: 'test'
+  ...
+# Subtest: flag toString safely returns current control
+ok 31 - flag toString safely returns current control
+  ---
+  duration_ms: 3.305334
+  type: 'test'
+  ...
+# Subtest: flag __proto__ safely returns current control
+ok 32 - flag __proto__ safely returns current control
+  ---
+  duration_ms: 3.16975
+  type: 'test'
+  ...
+# Subtest: known treatment is resolved once without changing after delayed flag updates
+ok 33 - known treatment is resolved once without changing after delayed flag updates
+  ---
+  duration_ms: 8.005042
+  type: 'test'
+  ...
+# Subtest: loading assignment stays control when treatment arrives later
+ok 34 - loading assignment stays control when treatment arrives later
+  ---
+  duration_ms: 8.217792
+  type: 'test'
+  ...
+# Subtest: uninitialized PostHog keeps control
+ok 35 - uninitialized PostHog keeps control
+  ---
+  duration_ms: 7.372
+  type: 'test'
+  ...
+# Subtest: failed flag read keeps control instead of breaking the product
+ok 36 - failed flag read keeps control instead of breaking the product
+  ---
+  duration_ms: 6.574417
+  type: 'test'
+  ...
+# Subtest: persisted header treatment uses the existing registry without a second flag read
+ok 37 - persisted header treatment uses the existing registry without a second flag read
+  ---
+  duration_ms: 10.174959
+  type: 'test'
+  ...
+1..37
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1871.355209
