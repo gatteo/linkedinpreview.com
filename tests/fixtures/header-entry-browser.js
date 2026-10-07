@@ -4,6 +4,7 @@
     const originalFetch = window.fetch.bind(window)
     window.__dailyEvents = []
     window.__dailyFlagReads = []
+    window.__transportBodies = []
     window.__contained = true
     window.__fixtureErrors ??= []
     window.addEventListener('error', (event) => window.__fixtureErrors.push(event.message))
@@ -52,6 +53,13 @@
     window.fetch = async (input, init = {}) => {
         const url = new URL(typeof input === 'string' ? input : input.url, location.href)
         if (url.origin === location.origin && url.pathname.startsWith('/ingest')) {
+            if (init.body) {
+                const body = init.body instanceof Blob ? await init.body.arrayBuffer() : init.body
+                window.__transportBodies.push({
+                    path: url.pathname,
+                    body: typeof body === 'string' ? body : Array.from(new Uint8Array(body)),
+                })
+            }
             if (url.pathname.includes('flags') || url.pathname.includes('decide')) {
                 return new Response(stringify({ featureFlags: flags(), featureFlagPayloads: {} }), {
                     headers: { 'Content-Type': 'application/json' },
@@ -85,8 +93,26 @@
     navigator.sendBeacon = () => false
     navigator.sendBeacon.__isolated = true
     window.XMLHttpRequest = class {
-        open() {
-            throw new Error('Synthetic XHR blocked')
+        readyState = 0
+        status = 200
+        responseText = '{}'
+        open(method, url) {
+            this.method = method
+            this.url = url
+            this.readyState = 1
+        }
+        setRequestHeader() {}
+        getAllResponseHeaders() {
+            return ''
+        }
+        send(body) {
+            window.__transportBodies.push({
+                path: new URL(this.url, location.href).pathname,
+                body: typeof body === 'string' ? body : Array.from(new Uint8Array(body || [])),
+            })
+            this.readyState = 4
+            this.onreadystatechange?.()
+            this.onload?.()
         }
     }
     window.XMLHttpRequest.__isolated = true
