@@ -28,6 +28,28 @@ new-account reads, rapid switches, stale success/error/Realtime callbacks, curre
 The matrix first reproduced seven failures before correction. Independent NEW exact-head review is required;
 LIN-118 is not approval. Real LIN-87 health and Atlas-only LIN-61 merge remain separate gates.
 
+## Current-main integration (October 7)
+
+Integrated actual main `86011f3beb217cf5902a740a9b6cc5bd7033244a` into the SAME PR #96 with a normal
+merge, without force-push. Its five commits after the accepted terms basis contain content #101/#106/#107/#108
+and the staged control-only header #109. No new offer variant or EXP-11 remote activation is part of this slice.
+
+The shared `use-ob-experiment` merge retains safe control for unavailable/throwing/unknown flags, own-key lookup,
+and once-per-mount assignment for existing modal/welcome consumers. Header's separate persisted assignment retains
+frozen controls, including when a flag loads later. Monthly eligibility does not read or modify the daily-lane key.
+Focused integration regressions exercise both enrollment libraries against the same storage, separate IDs/clocks,
+original navbar source through billing return, and monthly checkout attribution without resetting header control.
+
+`docs/analytics/onboarding-funnel.md` merged both release sections without conflict. EXP-9 eligibility remains the
+denominator, not rendered offer views. EXP-11 remains registered/unlaunched; header prelaunch controls are not paid
+outcomes or monthly eligibles. Header browser super-properties are not included in processor metadata, so any later
+header-to-paid attribution requires independently reconciled identity/event evidence, not an invented processor join.
+
+LIN-122 approval is historical for its old head/basis. This integrated artifact requires fresh full gates, contained
+desktop/mobile smoke and NEW independent exact-head Sentinel acceptance. Existing LIN-87 October 8 second-day
+health endpoint and Atlas-only LIN-61 merge remain; no third day, EXP-7, flag setup or maturity dependency is added.
+Separate #104/#105 work and evidence are preserved, not merged here. Evidence: `docs/evidence/lin-113/oct07/`.
+
 ## Historical prospective terms integration (October 5)
 
 At implementation PR #103 remains open at `793dc9d72001be4563e3dff0400fd055ba7e558d`. Its code is
