@@ -13,11 +13,20 @@ import { OB_EXPERIMENTS, type ObExperimentKey } from '@/config/onboarding-experi
  * only counts exposures it logged via this read). Captured events carry
  * $feature/<key> automatically - no extra analysis plumbing needed.
  */
-export function useObExperiment<K extends ObExperimentKey>(key: K): (typeof OB_EXPERIMENTS)[K]['control'] {
-    const [variant] = React.useState<string>(() => {
+export function readObExperimentVariant(key: ObExperimentKey): string | undefined {
+    try {
         const value = posthog?.getFeatureFlag?.(key)
-        return typeof value === 'string' ? value : 'control'
-    })
+        return typeof value === 'string' ? value : undefined
+    } catch {
+        return undefined
+    }
+}
+
+export function useObExperiment<K extends ObExperimentKey>(
+    key: K,
+    assignedVariant?: string,
+): (typeof OB_EXPERIMENTS)[K]['control'] {
+    const [variant] = React.useState<string>(() => assignedVariant ?? readObExperimentVariant(key) ?? 'control')
     const variants = OB_EXPERIMENTS[key] as Record<string, (typeof OB_EXPERIMENTS)[K]['control']>
-    return variants[variant] ?? variants.control
+    return Object.hasOwn(variants, variant) ? variants[variant] : variants.control
 }
