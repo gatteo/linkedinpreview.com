@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { withEntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
 import { cn } from '@/lib/utils'
+import { HeaderPlanCta } from '@/components/header/header-plan-cta'
 
-import { TrackClick } from '../tracking/track-click'
 import { Button } from '../ui/button'
 import { MobileNav } from './mobile-nav'
 import { Navbar } from './navbar'
@@ -60,15 +59,7 @@ export function Header() {
                                 <Button asChild variant='ghost' size='lg' className='hidden md:flex'>
                                     <Link href={Routes.Tool}>Start writing</Link>
                                 </Button>
-                                <TrackClick
-                                    event='cta_button_clicked'
-                                    properties={{ button_name: 'create_plan', source: 'navbar' }}>
-                                    <Button asChild size='lg' className='hidden md:flex'>
-                                        <Link href={withEntrySource(Routes.Dashboard, 'navbar')}>
-                                            Create my LinkedIn plan
-                                        </Link>
-                                    </Button>
-                                </TrackClick>
+                                <HeaderPlanCta />
                                 <MobileNav />
                             </div>
                         </div>

@@ -1,0 +1,146 @@
+[
+    {
+        "context": "DA5FCF83B540E24F4AB3F643F2AC8168",
+        "target": "E9B8F40DFF629131BE708873DA99C1A3",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "E697F6ADEBF41CBEEB469DB3BEF51A5D",
+        "target": "3AB959D60979DC3235459848C85613BB",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "46DA71913ADD869ED26A3A05562790FC",
+        "target": "92C31014756F0AD3C5DBE717362775B7",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "FC50684F4A8BD07C1E8193E7946A6523",
+        "target": "46A928421F3D046BEA197E89F0075BD8",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "2E6EA5F144E5C0AF46E4D20643E6C50F",
+        "target": "A26DBF49320F729A7FBF358843B7992D",
+        "path": "/",
+        "width": 1440,
+        "flag": "control",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "7B6CE77E42FF95233510E4B263C96A00",
+        "target": "BCA335BCE7C58A1B026FE5798E9BCDE9",
+        "path": "/",
+        "width": 1440,
+        "flag": "control",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "07DA20A7B665EBA0C97D44B19DA4E155",
+        "target": "92DE94BC88DADE7430A2CCFA6E61C2E5",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "90AA9AC7CF312ECE381CEBCF6D953C51",
+        "target": "2721B99278DE7EC59BDB0F6E43011660",
+        "path": "/",
+        "width": 1440,
+        "flag": "unknown",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "B8C31465A28A05F2D9572CCDC8F1F2B4",
+        "target": "3B7639D4EC7222E75E28A1BA859B781C",
+        "path": "/",
+        "width": 1440,
+        "flag": null,
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "C59F6A9CE1832DFF929AF89F3F9CAF7F",
+        "target": "712AD3CB740DDDC5DB690D8C0D6A19F8",
+        "path": "/",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "BD4F94C1B4AC5C2573821A1ACEBB1807",
+        "target": "DB9147D42A8ACEF73320582014E08ADD",
+        "path": "/",
+        "width": 390,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "43B93469DDF13EAEBE25C09BAB922125",
+        "target": "A9AC3BD6E05B158BA5AC5E8BF5911FE7",
+        "path": "/",
+        "width": 1440,
+        "flag": false,
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "A28BA445F17A4AA3FBA31C2C7AF7D841",
+        "target": "0E2593B83F2D89FD4FFADA33682FA954",
+        "path": "/blog",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "39888B909560796BDC7F19DFE904854C",
+        "target": "3C197FA2E9E1900E7068D9467B8F97C5",
+        "path": "/dashboard",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "5DDB3B4C73916A47EF0907B53422B0C7",
+        "target": "5E5BAD037A0C63E161D865C5474CDDE3",
+        "path": "/embed",
+        "width": 1440,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    },
+    {
+        "context": "118EC145A4C33800B5A5A793469ADEE4",
+        "target": "E8D627FF8087E8FBDEA69E22DB4727E6",
+        "path": "/",
+        "width": 390,
+        "flag": "pro",
+        "closed": true,
+        "preview": "https://linkedinpreview-ojtfcb824-gatteos.vercel.app"
+    }
+]

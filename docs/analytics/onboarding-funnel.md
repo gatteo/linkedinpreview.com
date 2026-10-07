@@ -259,3 +259,46 @@ These fire whether or not the tab stays open - they are the error/latency truth.
   don't assume the `kind` on `onb_reveal_view` is how the session ended.
 - Session replay is toggled in the PostHog project settings (inputs are masked via
   `session_recording.maskAllInputs`); mark extra-sensitive blocks with `.ph-no-capture`.
+
+## EXP-11 desktop homepage header entry (registered, not launched)
+
+The `onb-header-pro-entry` flag only changes the desktop homepage navbar CTA from
+`Create my LinkedIn plan` to `Explore Pro & create my plan`. Its href, `from=navbar`,
+button size, free `Start writing` link, mobile menu, other routes and editor/copy are unchanged.
+See [the implementation contract](header-entry-exp11.md) for launch gates and analysis limitations.
+
+- `daily_test_eligible`: homepage at `min-width: 768px`, before flag read and treatment render.
+  First eligibility has `variant=pending`; join assignment by `enrollment_id`, never drop flag/render failures.
+  Resumed visits have `resumed=true`, with the same first `eligibility_at` and assignment.
+- `daily_test_assigned`: after the attempted flag read/persistence and before treatment render,
+  including resolved safe-control failure status. Join this to pre-render eligibility, not only exposures.
+- `daily_test_exposed`: the rendered CTA, with original `variant` and actual `rendered_variant` separately.
+  Disabled/failed flag reads force rendered control even for a persisted treatment assignment.
+- `daily_test_action`: native pointer or keyboard activation of the same dashboard link.
+  Existing `cta_button_clicked{button_name:create_plan,source:navbar}` is retained.
+- All four carry `test_id=EXP-11`, `enrollment_id`, `assignment_version=exp11_header_v1`,
+  `eligibility_at`, `assignment_status`, `entry_source=navbar`, `release_sha`,
+  `billing_state_at_assignment=unknown`, and `downstream_release_cohort=not_resolved_at_header`.
+  No draft, profile, email, auth or payment content is captured.
+- Browser super-properties `daily_test_id`, `daily_test_enrollment_id`, `daily_test_variant`,
+  `daily_test_assignment_version` carry this assignment into subsequent client events and identification.
+  They are not processor-paid proof or a billing-state lookup.
+
+Deduplicate by enrollment and reconciled PostHog person, retain fallback controls in the denominator,
+report fallback/unknown identities separately, and filter exact production host and Atlas's actual launch clock.
+Preview, prelaunch and historical route/click counts are not live randomized outcomes. Join actual EXP-9/10
+release clocks and existing modal variant from PostHog feature properties; never infer overlap from an unknown
+header field, claim all eligibles are unpaid, or sum correlated paid outcomes.
+
+### Draft-first/current-header integration
+
+EXP-11 browser enrollment (`lp-daily-test-enrollment-v1`) and EXP-10 account deferral
+(`lp-draft-first:<user_id>`, with pre-auth session exposure) remain independent stores.
+Header `daily_test_enrollment_id` and first `eligibility_at` must not replace the draft's
+`exposure_id`/`enrollment_id` or pre-auth clock. A disabled/unavailable header flag renders
+control without rewriting a frozen assignment. Neither enrollment authorizes paid access.
+Draft import/use/checkout events retain the original tool source and EXP-10 envelope;
+header identity and overlap require the existing person/event join, not inferred equality.
+PR #96 monthly enrollment remains separate and unmerged at this integration. Its paid
+identity-owned provider and monthly attribution changes must be reconciled against actual
+main after Atlas's monthly squash, not bundled into PR #104 or treated as already live.
