@@ -1,0 +1,32 @@
+$ eslint .
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/dashboard/posts-table.tsx
+  256:19  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/dashboard/posts-table.tsx:256:19
+  254 |     const columns = React.useMemo(() => createColumns(onDuplicate, onDelete), [onDuplicate, onDelete])
+  255 |
+> 256 |     const table = useReactTable({
+      |                   ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  257 |         data,
+  258 |         columns,
+  259 |         state: { sorting, columnVisibility, rowSelection, columnFilters },  react-hooks/incompatible-library
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/shadcn-demo/data-table.tsx
+  315:19  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/shadcn-demo/data-table.tsx:315:19
+  313 |     const dataIds = React.useMemo<UniqueIdentifier[]>(() => data?.map(({ id }) => id) || [], [data])
+  314 |
+> 315 |     const table = useReactTable({
+      |                   ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  316 |         data,
+  317 |         columns,
+  318 |         state: {  react-hooks/incompatible-library
+
+✖ 2 problems (0 errors, 2 warnings)
+

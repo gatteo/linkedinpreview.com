@@ -1,0 +1,1362 @@
+[
+    {
+        "name": "final_0_1440_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Work on my recovered draft",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_0_1440_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_0_1440_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 0 1440"
+        }
+    },
+    {
+        "name": "final_0_1440_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 0 1440",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_0_1440_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 0 1440",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_0_1440_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 0 1440"
+        }
+    },
+    {
+        "name": "final_0_1440_failed_clipboard",
+        "detail": {
+            "syntheticFailureToast": true,
+            "noNewAnalysis": true,
+            "originalClipboardRetained": true
+        }
+    },
+    {
+        "name": "final_0_1440_content_carrying_footer",
+        "detail": {
+            "path": "/dashboard/editor",
+            "source": "tool_footer",
+            "hasEncodedImport": true,
+            "navigationHeld": true
+        }
+    },
+    {
+        "name": "final_0_1440_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-ABD5ECE98367369CEF6175F4BF804200",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_0_390_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Work on my recovered draft",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_0_390_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_0_390_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 0 390"
+        }
+    },
+    {
+        "name": "final_0_390_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 0 390",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_0_390_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 0 390",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_0_390_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 0 390"
+        }
+    },
+    {
+        "name": "final_0_390_failed_clipboard",
+        "detail": {
+            "syntheticFailureToast": true,
+            "noNewAnalysis": true,
+            "originalClipboardRetained": true
+        }
+    },
+    {
+        "name": "final_0_390_content_carrying_footer",
+        "detail": {
+            "path": "/dashboard/editor",
+            "source": "tool_footer",
+            "hasEncodedImport": true,
+            "navigationHeld": true
+        }
+    },
+    {
+        "name": "final_0_390_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-CE4901980D67C704309D0AB310B88138",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_1_1440_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Check my draft length",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_1_1440_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_1_1440_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 1 1440"
+        }
+    },
+    {
+        "name": "final_1_1440_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 1 1440",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_1_1440_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 1 1440",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_1_1440_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 1 1440"
+        }
+    },
+    {
+        "name": "final_1_1440_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-6556C811F22089B23870E8BECD70E68A",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_1_390_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Check my draft length",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_1_390_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_1_390_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 1 390"
+        }
+    },
+    {
+        "name": "final_1_390_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 1 390",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_1_390_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 1 390",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_1_390_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 1 390"
+        }
+    },
+    {
+        "name": "final_1_390_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-5452970E8A522BB0201B36916ACADC32",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_2_1440_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Edit my announcement",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_2_1440_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_2_1440_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 2 1440"
+        }
+    },
+    {
+        "name": "final_2_1440_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 2 1440",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_2_1440_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 2 1440",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_2_1440_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 2 1440"
+        }
+    },
+    {
+        "name": "final_2_1440_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-26BE1E40E06D3C4028DB5FD7C60F42CC",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_2_390_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Edit my announcement",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_2_390_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_2_390_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 2 390"
+        }
+    },
+    {
+        "name": "final_2_390_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 2 390",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_2_390_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 2 390",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_2_390_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 2 390"
+        }
+    },
+    {
+        "name": "final_2_390_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-881C17385293E1D1411F56750D3678ED",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_3_1440_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Draft and preview here",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_3_1440_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_3_1440_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 3 1440"
+        }
+    },
+    {
+        "name": "final_3_1440_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 3 1440",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_3_1440_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 3 1440",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_3_1440_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 3 1440"
+        }
+    },
+    {
+        "name": "final_3_1440_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-11BABBA15CEB59A0E83FCAC09161A700",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_3_390_lazy_fallback",
+        "detail": {
+            "href": "/?utm_source=linkedinpreview.com&utm_medium=blog&utm_content=card_cta#tool",
+            "label": "Draft and preview here",
+            "editors": 0,
+            "regions": 0,
+            "requests": 0
+        }
+    },
+    {
+        "name": "final_3_390_modified_click_fallback",
+        "detail": {
+            "appPrevented": false,
+            "regions": 0
+        }
+    },
+    {
+        "name": "final_3_390_restored_single_tool",
+        "detail": {
+            "expanded": "true",
+            "editors": 1,
+            "regions": 1,
+            "overflow": false,
+            "text": "Synthetic stored draft LIN115 3 390"
+        }
+    },
+    {
+        "name": "final_3_390_typing_preview",
+        "detail": {
+            "text": "Synthetic edited draft LIN115 3 390",
+            "preview_visible": true
+        }
+    },
+    {
+        "name": "final_3_390_tab_reopen_retention",
+        "detail": {
+            "sameEditor": true,
+            "text": "Synthetic edited draft LIN115 3 390",
+            "regions": 1
+        }
+    },
+    {
+        "name": "final_3_390_native_clipboard",
+        "detail": {
+            "originalAPI": true,
+            "readback": "Synthetic edited draft LIN115 3 390"
+        }
+    },
+    {
+        "name": "final_3_390_runtime_containment",
+        "detail": {
+            "errors": [],
+            "markers": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "intercepted": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-6D926B0CA9C5F1B1550B57E90248F272",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_home_1440",
+        "detail": {
+            "text": "Synthetic homepage smoke 1440",
+            "preview": true,
+            "nativeCopy": true,
+            "errors": [],
+            "guard": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-8645313892143289CC1A9B0767B27347",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_route__formatter_1440",
+        "detail": {
+            "text": "LinkedInPreview\nFeatures\nHow it works\nOpen source\nFAQ\nStart writing\nCreate my LinkedIn plan\n\nFree - No signup required\n\nLinkedIn Post Formatter\n\nThe free LinkedIn post editor for bold, italic, underline, and lists. Format your post, then preview it on mobile and desktop before you publish.\n\nTrusted by thousands of LinkedIn creators\nOpen Formatter\n\nTRY IT NOW\n\nWrite on the left, watch the feed on the right.\nOpen in full editor\nLoading editor \n\nYour Name\n\nYour headline\n\nNow\n\u2022\nStart writing and your post will appear here..\nYou can add images, link",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-4FEC4C6EE1B8EA7BF1BF412D28B0996A",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_route__blog_1440",
+        "detail": {
+            "text": "LinkedInPreview\nFeatures\nHow it works\nOpen source\nFAQ\nStart writing\nCreate my LinkedIn plan\n\nBLOG & GUIDES\n\nTips & guides to write great LinkedIn posts\n\nUseful tips and guides to write better LinkedIn posts, get more engagement, and grow your audience.\n\nGet Started with Our Free Tool\nHow to Write a LinkedIn Post After a Conference (With 4 Templates)\n\nLearn how to write a LinkedIn post after a conference with a simple recap framework and four templates that turn event n...\n\nOct 5, 2026\n\u00b7\nlinkedin post\nwriting tips\ncontent creation\nLinkedIn Dwell",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-4DDDA5B08B2A287ED5093F16D17FA7B4",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_route__terms_1440",
+        "detail": {
+            "text": "LinkedInPreview\nFeatures\nHow it works\nOpen source\nFAQ\nStart writing\nCreate my LinkedIn plan\nLegal\nTerms of Service\n\nLast updated: October 5, 2026\n\nThese terms are an agreement between you and Matteo Giardino, the operator of LinkedInPreview.com (\"the Service\"). By using the Service you agree to them. If you do not agree, please do not use the Service.\n\n1. The Service\n\nLinkedInPreview.com is a tool for writing, formatting, and previewing LinkedIn posts, with an optional dashboard that adds AI-assisted content creation, a personal branding profil",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-1C406A0DDED2840197E669373FB9CE95",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_home_390",
+        "detail": {
+            "text": "Synthetic homepage smoke 390",
+            "preview": true,
+            "nativeCopy": true,
+            "errors": [],
+            "guard": {
+                "fixture": "oct07-local-accepted-draft",
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-1776C10FC37A7261063FD064B5E2179F",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_route__formatter_390",
+        "detail": {
+            "text": "LinkedInPreview\n\nFree - No signup required\n\nLinkedIn Post Formatter\n\nThe free LinkedIn post editor for bold, italic, underline, and lists. Format your post, then preview it on mobile and desktop before you publish.\n\nTrusted by thousands of LinkedIn creators\nOpen Formatter\n\nTRY IT NOW\n\nWrite on the left, watch the feed on the right.\nOpen in full editor\nEditor\nPreview\nLoading editor \n\nHOW IT WORKS\n\nHow to use the LinkedIn Preview tool\n\nJust follow these simple steps to make your LinkedIn post look great.\n\nSTEP 1\n\nWrite or paste your content\n\nStar",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-39F614BAF42FAE18D5A7D023CBC11816",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_route__blog_390",
+        "detail": {
+            "text": "LinkedInPreview\n\nBLOG & GUIDES\n\nTips & guides to write great LinkedIn posts\n\nUseful tips and guides to write better LinkedIn posts, get more engagement, and grow your audience.\n\nGet Started with Our Free Tool\nHow to Write a LinkedIn Post After a Conference (With 4 Templates)\n\nLearn how to write a LinkedIn post after a conference with a simple recap framework and four templates that turn event n...\n\nOct 5, 2026\n\u00b7\nlinkedin post\nwriting tips\ncontent creation\nLinkedIn Dwell Time: What It Is and How to Increase It (2026)\n\nLearn what LinkedIn dwell t",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-65FD3732F8F5BC22B7AD3BB7F7CD6567",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_route__terms_390",
+        "detail": {
+            "text": "LinkedInPreview\nLegal\nTerms of Service\n\nLast updated: October 5, 2026\n\nThese terms are an agreement between you and Matteo Giardino, the operator of LinkedInPreview.com (\"the Service\"). By using the Service you agree to them. If you do not agree, please do not use the Service.\n\n1. The Service\n\nLinkedInPreview.com is a tool for writing, formatting, and previewing LinkedIn posts, with an optional dashboard that adds AI-assisted content creation, a personal branding profile, a content strategy and audit, scheduling, publishing, and analytics featu",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-1CC61B67C193BD65477B9A2CA3D189AC",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "errors-FA95BCC9489EDDE372708A9715C690DB",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "diagnostic_native_settled_input",
+        "detail": {
+            "text": "Synthetic native text retained",
+            "saved": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic native text retained\"}]}]}",
+            "same": true
+        }
+    },
+    {
+        "name": "diagnostic_native_uploaded",
+        "detail": {
+            "text": "Synthetic native text retained",
+            "saved": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic native text retained\"}]}]}",
+            "same": true
+        }
+    },
+    {
+        "name": "diagnostic_native_after_Preview",
+        "detail": {
+            "text": "",
+            "saved": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic native text retained\"}]}]}",
+            "same": true,
+            "tabs": [
+                {
+                    "text": "Editor",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+                },
+                {
+                    "text": "Preview",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors border-foreground text-foreground border-b-2"
+                }
+            ]
+        }
+    },
+    {
+        "name": "diagnostic_native_after_Editor",
+        "detail": {
+            "text": "Synthetic native text retained",
+            "saved": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic native text retained\"}]}]}",
+            "same": true,
+            "tabs": [
+                {
+                    "text": "Editor",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors border-foreground text-foreground border-b-2"
+                },
+                {
+                    "text": "Preview",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+                }
+            ]
+        }
+    },
+    {
+        "name": "diagnostic_native_after_Work on my recovered draft",
+        "detail": {
+            "text": "Synthetic native text retained",
+            "saved": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic native text retained\"}]}]}",
+            "same": true,
+            "tabs": [
+                {
+                    "text": "Editor",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors border-foreground text-foreground border-b-2"
+                },
+                {
+                    "text": "Preview",
+                    "classes": "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-DD8359194AF0CF964BED2554DE6AEA88",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "native_media_header_1440",
+        "detail": {
+            "editors": 1,
+            "text": "Synthetic native input and media 1440",
+            "same": true,
+            "image": true,
+            "header": {
+                "testId": "EXP-11",
+                "enrollmentId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                "eligibilityAt": "2026-10-01T00:00:00.000Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "flag_unavailable",
+                "releaseSha": "synthetic-prior-release"
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "errors-B1DB4FCBD11464D0BA5EEB078ADD5829",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "current_policy_1440",
+        "detail": {
+            "monthly": true,
+            "lifetime": true,
+            "monthlyOnly": true,
+            "lifetimeFinal": true,
+            "prior": true,
+            "date": true,
+            "rights": true
+        }
+    },
+    {
+        "name": "errors-F48ED5D51267D087F778630809B1183E",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "errors-60117A0104C50EDD8C226B2287083725",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/onboarding_sessions",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "native_media_header_390",
+        "detail": {
+            "editors": 1,
+            "text": "Synthetic native input and media 390",
+            "same": true,
+            "image": true,
+            "header": {
+                "testId": "EXP-11",
+                "enrollmentId": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                "eligibilityAt": "2026-10-01T00:00:00.000Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "flag_unavailable",
+                "releaseSha": "synthetic-prior-release"
+            },
+            "errors": []
+        }
+    },
+    {
+        "name": "errors-4E6D8699DF4F36F37A2AC9621CEF8443",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "current_policy_390",
+        "detail": {
+            "monthly": true,
+            "lifetime": true,
+            "monthlyOnly": true,
+            "lifetimeFinal": true,
+            "prior": true,
+            "date": true,
+            "rights": true
+        }
+    },
+    {
+        "name": "errors-82AAB0B5E3A547B65D247AB6DAC5167F",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "final_route__dashboard_1440",
+        "detail": {
+            "text": "LinkedInPreview\nPosts\nNew\n\nNo drafts yet\n\nView all posts\nTools\nCarousel\nCalendar\nAnalytics\nInspiration\nSoon\nPersonalization\nBranding\nContent Strategy\n\nGetting started\n\n0 of 5 steps done\n\nWrite your first post\n\nSet up your branding\n\nTry AI suggestions\n\nPreview in realistic feed\n\nCopy and publish\n\nUpgrade\nSettings\nHelp & Feedback\nTheme\nin\nGuest session\nFree\nPosts\nNew Post\nAll\nDraft\nScheduled\nPublished\nAll formats\nNo posts yet\n\nCreate your first post to get started\n\nNew Post\nYour personalized LinkedIn audit\n\nConnect your profile, answer a few ques",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-6694127300AB7D721848D477483713AB",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "final_route__dashboard_390",
+        "detail": {
+            "text": "Toggle Sidebar\nPosts\nNew Post\nAll\nDraft\nScheduled\nPublished\nAll formats\nNo posts yet\n\nCreate your first post to get started\n\nNew Post\nYour personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nGrow 10\u00d7 on LinkedIn in 90 days.\n\nI\u2019ll audit your LinkedIn, learn your goals, and build a personalized strategy, all in about 3 minutes.\n\nLet\u2019s start\n4.8\n\u00a0from 3,342 professionals\nPersonalized strategy\nAbout 3 minutes",
+            "articleRegions": 0,
+            "errors": [],
+            "guard": true
+        }
+    },
+    {
+        "name": "errors-5C0950A6CCBC726E3603781C86337A03",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    }
+]

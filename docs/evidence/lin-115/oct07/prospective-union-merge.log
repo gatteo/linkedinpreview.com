@@ -1,0 +1,12 @@
+Auto-merging app/api/billing/checkout/route.schema.ts
+CONFLICT (content): Merge conflict in app/api/billing/checkout/route.schema.ts
+Auto-merging app/api/billing/checkout/route.ts
+CONFLICT (content): Merge conflict in app/api/billing/checkout/route.ts
+Auto-merging app/api/billing/webhook/route.ts
+CONFLICT (content): Merge conflict in app/api/billing/webhook/route.ts
+Auto-merging components/dashboard/onboarding/ai.ts
+CONFLICT (content): Merge conflict in components/dashboard/onboarding/ai.ts
+Auto-merging components/dashboard/onboarding/steps/checkout.tsx
+CONFLICT (content): Merge conflict in components/dashboard/onboarding/steps/checkout.tsx
+Auto-merging docs/analytics/onboarding-funnel.md
+Automatic merge failed; fix conflicts and then commit the result.

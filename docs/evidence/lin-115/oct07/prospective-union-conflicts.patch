@@ -1,0 +1,223 @@
+diff --cc app/api/billing/checkout/route.schema.ts
+index 78f67e8,b40bf9b..0000000
+--- a/app/api/billing/checkout/route.schema.ts
++++ b/app/api/billing/checkout/route.schema.ts
+@@@ -2,15 -2,21 +2,33 @@@ import { z } from 'zod
+  
+  import { ENTRY_SOURCES } from '@/config/entry-sources'
+  
+++<<<<<<< HEAD
+++=======
++ const monthlyOfferSchema = z.object({
++     enrollmentId: z.string().uuid(),
++     cohortId: z.literal('exp9_monthly_first_v2'),
++     assignedVariant: z.literal('monthly_first'),
++     eligibilityAt: z.string().datetime(),
++     offerVersion: z.literal('monthly_first_v2'),
++     entrySource: z.enum([...ENTRY_SOURCES, 'direct']),
++     billingState: z.enum(['free', 'paid', 'unknown']),
++     releaseSha: z.union([z.string().regex(/^[0-9a-f]{40}$/), z.literal('unavailable')]),
++ })
++ 
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+  export const bodySchema = z.object({
+      plan: z.enum(['monthly', 'lifetime']),
+      // Which surface started the purchase - drives the hosted-checkout return
+      // URL so the right surface resumes after the redirect.
+      source: z.enum(['onboarding', 'upgrade']).default('upgrade'),
+++<<<<<<< HEAD
+ +    entrySource: z.enum([...ENTRY_SOURCES, 'direct']).default('direct'),
+ +    exposureId: z.string().uuid().optional(),
+ +    eligibilityAt: z.string().datetime().optional(),
+ +    cohortId: z.literal('exp10_draft_first_v1').optional(),
+ +    assignedVariant: z.literal('draft_first').optional(),
+ +    offerVersion: z.literal('existing_offer').optional(),
+++=======
++     monthlyOffer: monthlyOfferSchema.optional(),
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+  })
+diff --cc app/api/billing/checkout/route.ts
+index b8b6615,99bede8..0000000
+--- a/app/api/billing/checkout/route.ts
++++ b/app/api/billing/checkout/route.ts
+@@@ -26,8 -25,7 +26,12 @@@ export async function POST(request: Req
+      if (!parsed.success) {
+          return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
+      }
+++<<<<<<< HEAD
+ +    const { plan, source, entrySource, exposureId, eligibilityAt, cohortId, assignedVariant, offerVersion } =
+ +        parsed.data
+++=======
++     const { plan, source, monthlyOffer } = parsed.data
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+  
+      const supabase = await createClient()
+      const {
+@@@ -58,16 -56,17 +62,30 @@@
+              metadata: {
+                  user_id: user.id,
+                  plan,
+++<<<<<<< HEAD
+ +                entry_source: entrySource,
+ +                ...(exposureId ? { exposure_id: exposureId, activation_version: DRAFT_FIRST_VERSION } : {}),
+ +                ...(exposureId && cohortId
+ +                    ? {
+ +                          enrollment_id: exposureId,
+ +                          cohort_id: cohortId,
+ +                          assigned_variant: assignedVariant ?? 'draft_first',
+ +                          assignment_version: DRAFT_FIRST_VERSION,
+ +                          ...(eligibilityAt ? { eligibility_at: eligibilityAt } : {}),
+ +                          offer_version: offerVersion ?? 'existing_offer',
+++=======
++                 ...(monthlyOffer
++                     ? {
++                           enrollment_id: monthlyOffer.enrollmentId,
++                           cohort_id: monthlyOffer.cohortId,
++                           assigned_variant: monthlyOffer.assignedVariant,
++                           eligibility_at: monthlyOffer.eligibilityAt,
++                           assignment_version: monthlyOffer.offerVersion,
++                           offer_version: monthlyOffer.offerVersion,
++                           entry_source: monthlyOffer.entrySource,
++                           billing_state_at_assignment: monthlyOffer.billingState,
++                           release_sha: monthlyOffer.releaseSha,
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+                        }
+                      : {}),
+              },
+@@@ -81,7 -80,9 +99,13 @@@
+              // where the initiating surface (source) resumes via the query params.
+              const origin = new URL(request.url).origin
+              params.ui_mode = 'hosted_page'
+++<<<<<<< HEAD
+ +            const attribution = `&entry_source=${entrySource}${exposureId ? `&activation=${exposureId}` : ''}`
+++=======
++             const attribution = monthlyOffer
++                 ? `&entry_source=${monthlyOffer.entrySource}&offer_enrollment=${monthlyOffer.enrollmentId}`
++                 : ''
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+              params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
+              params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
+          } else {
+diff --cc app/api/billing/webhook/route.ts
+index 9325491,a50f2f6..0000000
+--- a/app/api/billing/webhook/route.ts
++++ b/app/api/billing/webhook/route.ts
+@@@ -108,19 -108,21 +108,34 @@@ export async function POST(request: Req
+                              plan: s.mode === 'payment' ? 'lifetime' : 'monthly',
+                              amount_total: s.amount_total,
+                              currency: s.currency,
+++<<<<<<< HEAD
+ +                            entry_source: s.metadata?.entry_source ?? 'direct',
+ +                            exposure_id: s.metadata?.exposure_id ?? null,
+ +                            activation_version: s.metadata?.activation_version ?? null,
+++=======
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+                              enrollment_id: s.metadata?.enrollment_id ?? null,
+                              cohort_id: s.metadata?.cohort_id ?? null,
+                              eligibility_at: s.metadata?.eligibility_at ?? null,
+                              assigned_variant: s.metadata?.assigned_variant ?? null,
+++<<<<<<< HEAD
+ +                            offer_version: s.metadata?.offer_version ?? null,
+++=======
++                             assignment_version: s.metadata?.assignment_version ?? null,
++                             offer_version: s.metadata?.offer_version ?? null,
++                             entry_source: s.metadata?.entry_source ?? null,
++                             billing_state_at_assignment: s.metadata?.billing_state_at_assignment ?? null,
++                             release_sha: s.metadata?.release_sha ?? null,
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+                              stripe_event_id: event.id,
+                              session_id: s.id,
+                              subscription_id: typeof s.subscription === 'string' ? s.subscription : s.subscription?.id,
+                              livemode: event.livemode,
+                              payment_status: s.payment_status,
+++<<<<<<< HEAD
+++=======
++                             recurring_outcome: 'requires_processor_reconciliation',
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+                          }),
+                      )
+                  }
+diff --cc components/dashboard/onboarding/ai.ts
+index 7edd51b,3361ecb..0000000
+--- a/components/dashboard/onboarding/ai.ts
++++ b/components/dashboard/onboarding/ai.ts
+@@@ -20,7 -20,7 +20,11 @@@ import type 
+  import { OB_FUNNEL_VERSION } from '@/config/analytics'
+  import type { ResolvedEntrySource } from '@/config/entry-sources'
+  import type { Role } from '@/config/onboarding-personalization'
+++<<<<<<< HEAD
+ +import { draftFirstProperties } from '@/lib/draft-first'
+++=======
++ import { monthlyOfferProperties, rememberOfferEntry } from '@/lib/monthly-offer'
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+  import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
+  import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
+  
+@@@ -300,17 -300,14 +304,26 @@@ let entrySource: ResolvedEntrySource = 
+  
+  export function setEntrySource(source: ResolvedEntrySource) {
+      entrySource = source
++     rememberOfferEntry(source)
+  }
+  
+++<<<<<<< HEAD
+ +export function getEntrySource(): ResolvedEntrySource {
+ +    return entrySource
+ +}
+ +
+ +export function track(event: string, props?: Record<string, unknown>) {
+ +    posthog?.capture(event, {
+ +        funnel_version: OB_FUNNEL_VERSION,
+ +        ...draftFirstProperties(),
+ +        entry_source: entrySource,
+++=======
++ export function track(event: string, props?: Record<string, unknown>) {
++     posthog?.capture(event, {
++         funnel_version: OB_FUNNEL_VERSION,
++         entry_source: entrySource,
++         ...monthlyOfferProperties(),
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+          ...props,
+      })
+  }
+diff --cc components/dashboard/onboarding/steps/checkout.tsx
+index 3a3888c,4fb086d..0000000
+--- a/components/dashboard/onboarding/steps/checkout.tsx
++++ b/components/dashboard/onboarding/steps/checkout.tsx
+@@@ -8,9 -8,10 +8,14 @@@ import { Loader2Icon } from 'lucide-rea
+  import { env } from '@/env.mjs'
+  import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
+  import { reportMissingEnv } from '@/lib/dev/report-missing-env'
+++<<<<<<< HEAD
+ +import { draftFirstProperties } from '@/lib/draft-first'
+++=======
++ import { monthlyCheckoutAttribution } from '@/lib/monthly-offer'
++ import { useAuth } from '@/components/dashboard/auth-provider'
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+  
+ -import { track } from '../ai'
+ +import { getEntrySource, track } from '../ai'
+  import { markCheckoutPending } from '../types'
+  
+  // Load Stripe.js once. Null when the publishable key is not configured yet, so
+@@@ -58,16 -60,7 +64,20 @@@ export function OnboardingCheckout({ pl
+          fetch('/api/billing/checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+++<<<<<<< HEAD
+ +            body: JSON.stringify({
+ +                plan,
+ +                source,
+ +                entrySource: getEntrySource(),
+ +                exposureId: draftFirstProperties().exposure_id,
+ +                eligibilityAt: draftFirstProperties().eligibility_at ?? undefined,
+ +                cohortId: draftFirstProperties().cohort_id,
+ +                assignedVariant: draftFirstProperties().assigned_variant,
+ +                offerVersion: draftFirstProperties().offer_version,
+ +            }),
+++=======
++             body: JSON.stringify({ plan, source, monthlyOffer: monthlyCheckoutAttribution(userId) }),
+++>>>>>>> 7ca054ff18d2d9babee8358c27c9af552c2d51e0
+          })
+              .then(async (res) => {
+                  if (!res.ok) {

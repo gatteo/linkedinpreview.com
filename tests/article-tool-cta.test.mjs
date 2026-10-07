@@ -209,6 +209,13 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             'sonner': { toast() {} },
             '@/config/entry-sources': { withEntrySource: (path) => path },
             '@/config/routes': { Routes: { DashboardEditor: () => '/dashboard/editor' } },
+            // This layout-only render also runs in the detached accepted-draft preflight.
+            // Handoff callbacks must not run here; actual import tests cover them separately.
+            '@/lib/draft-first': {
+                ACTIVATION_PARAM: 'activation',
+                draftFirstProperties: () => assert.fail('Layout render invoked draft handoff'),
+                prepareDraftFirst: () => assert.fail('Layout render invoked draft handoff'),
+            },
             '@/lib/draft-media': { pruneDraftMedia() {}, putDraftMedia() {} },
             '@/lib/draft-url': { decodeDraft() {}, encodeDraft() {} },
             '@/lib/editor-utils': { extractPlainText: () => 'Synthetic draft' },

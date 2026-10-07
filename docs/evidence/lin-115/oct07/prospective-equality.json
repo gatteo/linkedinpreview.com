@@ -1,0 +1,62 @@
+[
+    {
+        "candidate": "adapter-monthly",
+        "path": "components/header/header-plan-cta.tsx",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-monthly",
+        "path": "components/header/header.tsx",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-monthly",
+        "path": "hooks/use-ob-experiment.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-monthly",
+        "path": "config/onboarding-experiments.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-monthly",
+        "path": "lib/header-entry-experiment.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft",
+        "path": "components/header/header-plan-cta.tsx",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft",
+        "path": "components/header/header.tsx",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft",
+        "path": "hooks/use-ob-experiment.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft",
+        "path": "config/onboarding-experiments.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft",
+        "path": "lib/header-entry-experiment.ts",
+        "main_equal": true
+    },
+    {
+        "candidate": "adapter-draft-union-conflicted",
+        "path": "config/article-tool-entries.ts",
+        "adapter_equal": true
+    },
+    {
+        "candidate": "adapter-draft-union-conflicted",
+        "path": "components/cta-card.tsx",
+        "adapter_equal": true
+    }
+]
