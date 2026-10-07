@@ -1,0 +1,354 @@
+{
+    "verifiedBehaviorChecks": 29,
+    "errorChecks": 10,
+    "diagnosticsExcluded": [
+        "desktop-free-input-preview-native-copy: clipboard verified but p-only preview selector was false, later exact DIV/feed check passed"
+    ],
+    "contextsClosed": 10,
+    "preview": "https://linkedinpreview-21i1b3kku-gatteos.vercel.app",
+    "codeHead": "6b975c502bbc51f3e0be67b160894c7df4c66e62",
+    "checks": [
+        {
+            "name": "desktop-header-control",
+            "detail": {
+                "text": "Create my LinkedIn plan",
+                "href": "/dashboard?from=navbar",
+                "variant": "control",
+                "enrollment": {
+                    "testId": "EXP-11",
+                    "enrollmentId": "467e496b-1915-4b00-8d82-6e543878c249",
+                    "eligibilityAt": "2026-10-07T11:08:42.318Z",
+                    "assignmentVersion": "exp11_header_v1",
+                    "variant": "control",
+                    "assignmentStatus": "flag_unavailable",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "desktop-live-feed-preview",
+            "detail": [
+                {
+                    "tag": "DIV",
+                    "text": "Forge LIN-113 October 7 integrated native clipboard check",
+                    "editor": false
+                }
+            ]
+        },
+        {
+            "name": "header-control-reload-frozen",
+            "detail": {
+                "same": true,
+                "enrollment": {
+                    "testId": "EXP-11",
+                    "enrollmentId": "467e496b-1915-4b00-8d82-6e543878c249",
+                    "eligibilityAt": "2026-10-07T11:08:42.318Z",
+                    "assignmentVersion": "exp11_header_v1",
+                    "variant": "control",
+                    "assignmentStatus": "flag_unavailable",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "header-native-pointer-preserved-target",
+            "detail": ["/dashboard?from=navbar"]
+        },
+        {
+            "name": "desktop-offer-monthly-default-policy-proof",
+            "detail": {
+                "monthlyFirst": true,
+                "prices": ["11.99", "39.99"],
+                "guarantee": true,
+                "liveProofUrgency": true
+            }
+        },
+        {
+            "name": "desktop-monthly-enrollment",
+            "detail": {
+                "enrollmentId": "94962234-f504-40fa-b18e-46abf39a7df5",
+                "eligibilityAt": "2026-10-07T11:10:23.252Z",
+                "entrySource": "navbar",
+                "billingState": "free",
+                "identityState": "anonymous",
+                "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62",
+                "deviceClass": "desktop"
+            }
+        },
+        {
+            "name": "desktop-monthly-checkout-intent",
+            "detail": {
+                "plan": "monthly",
+                "source": "onboarding",
+                "monthlyOffer": {
+                    "enrollmentId": "94962234-f504-40fa-b18e-46abf39a7df5",
+                    "cohortId": "exp9_monthly_first_v2",
+                    "assignedVariant": "monthly_first",
+                    "eligibilityAt": "2026-10-07T11:10:23.252Z",
+                    "offerVersion": "monthly_first_v2",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "desktop-contained-checkout-error-free-fallback",
+            "detail": {
+                "rendered": true
+            }
+        },
+        {
+            "name": "desktop-lifetime-selected-policy",
+            "detail": {
+                "nonRefundable": true,
+                "monthlyGuaranteeAbsent": true
+            }
+        },
+        {
+            "name": "desktop-lifetime-checkout-intent",
+            "detail": {
+                "plan": "lifetime",
+                "source": "onboarding",
+                "monthlyOffer": {
+                    "enrollmentId": "94962234-f504-40fa-b18e-46abf39a7df5",
+                    "cohortId": "exp9_monthly_first_v2",
+                    "assignedVariant": "monthly_first",
+                    "eligibilityAt": "2026-10-07T11:10:23.252Z",
+                    "offerVersion": "monthly_first_v2",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "desktop-free-confirmation",
+            "detail": {
+                "confirmed": true
+            }
+        },
+        {
+            "name": "desktop-dashboard-free-handoff",
+            "detail": {
+                "posts": true
+            }
+        },
+        {
+            "name": "mobile-offer-default-policy-no-overflow",
+            "detail": {
+                "monthlyFirst": true,
+                "guarantee": true,
+                "liveProof": true,
+                "noOverflow": true
+            }
+        },
+        {
+            "name": "mobile-monthly-enrollment",
+            "detail": {
+                "enrollmentId": "a878093f-9af1-4f6e-855b-26e69cc6ccfc",
+                "eligibilityAt": "2026-10-07T11:11:46.863Z",
+                "entrySource": "navbar",
+                "billingState": "free",
+                "identityState": "anonymous",
+                "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62",
+                "deviceClass": "mobile"
+            }
+        },
+        {
+            "name": "mobile-monthly-checkout-intent",
+            "detail": {
+                "plan": "monthly",
+                "source": "onboarding",
+                "monthlyOffer": {
+                    "enrollmentId": "a878093f-9af1-4f6e-855b-26e69cc6ccfc",
+                    "cohortId": "exp9_monthly_first_v2",
+                    "assignedVariant": "monthly_first",
+                    "eligibilityAt": "2026-10-07T11:11:46.863Z",
+                    "offerVersion": "monthly_first_v2",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "mobile-lifetime-policy",
+            "detail": {
+                "nonRefundable": true,
+                "monthlyGuaranteeAbsent": true
+            }
+        },
+        {
+            "name": "mobile-lifetime-checkout-intent",
+            "detail": {
+                "plan": "lifetime",
+                "source": "onboarding",
+                "monthlyOffer": {
+                    "enrollmentId": "a878093f-9af1-4f6e-855b-26e69cc6ccfc",
+                    "cohortId": "exp9_monthly_first_v2",
+                    "assignedVariant": "monthly_first",
+                    "eligibilityAt": "2026-10-07T11:11:46.863Z",
+                    "offerVersion": "monthly_first_v2",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                }
+            }
+        },
+        {
+            "name": "mobile-billing-return-keeps-source-clock",
+            "detail": {
+                "exactObjectPreserved": true,
+                "enrollment": {
+                    "enrollmentId": "a878093f-9af1-4f6e-855b-26e69cc6ccfc",
+                    "eligibilityAt": "2026-10-07T11:11:46.863Z",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "identityState": "anonymous",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62",
+                    "deviceClass": "mobile"
+                }
+            }
+        },
+        {
+            "name": "mobile-free-dashboard-handoff",
+            "detail": {
+                "posts": true
+            }
+        },
+        {
+            "name": "actual-header-to-monthly-separate-frozen-enrollments",
+            "detail": {
+                "header": {
+                    "testId": "EXP-11",
+                    "enrollmentId": "d654831c-77f6-47b5-ab49-7a04d95d3f68",
+                    "eligibilityAt": "2026-10-07T11:13:24.939Z",
+                    "assignmentVersion": "exp11_header_v1",
+                    "variant": "control",
+                    "assignmentStatus": "flag_unavailable",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+                },
+                "monthly": {
+                    "enrollmentId": "aa51e43c-de9a-459e-aee5-4df65a192268",
+                    "eligibilityAt": "2026-10-07T11:13:26.416Z",
+                    "entrySource": "navbar",
+                    "billingState": "free",
+                    "identityState": "anonymous",
+                    "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62",
+                    "deviceClass": "desktop"
+                },
+                "exactHeaderPreserved": true
+            }
+        },
+        {
+            "name": "desktop-billing-return-keeps-both-clocks",
+            "detail": {
+                "exactObjectsPreserved": true
+            }
+        },
+        {
+            "name": "terms-1440",
+            "detail": {
+                "h1": "Terms of Service",
+                "bothPolicies": true,
+                "noOverflow": true
+            }
+        },
+        {
+            "name": "terms-390",
+            "detail": {
+                "h1": "Terms of Service",
+                "bothPolicies": true,
+                "noOverflow": true
+            }
+        },
+        {
+            "name": "mobile-free-native-input-copy",
+            "detail": {
+                "clipboard": "Forge LIN-113 integrated mobile free tool"
+            }
+        },
+        {
+            "name": "mobile-live-feed-preview-no-overflow",
+            "detail": {
+                "exactText": "Forge LIN-113 integrated mobile free tool",
+                "noOverflow": true
+            }
+        },
+        {
+            "name": "mobile-menu-unmodified-no-header-enrollment",
+            "detail": {
+                "text": "Navigation menu\nLinkedInPreview\nUse Tool\nHow it works\nFeatures\nFAQ\nBlog & Guides\nChangelog\nDashboard\nGitHub\nCreate my LinkedIn plan\nStart writing\nFree\n\u00b7\nNo signup\n\u00b7\nOpen source",
+                "links": [
+                    {
+                        "text": "LinkedInPreview",
+                        "href": "/"
+                    },
+                    {
+                        "text": "Use Tool",
+                        "href": "/#tool"
+                    },
+                    {
+                        "text": "How it works",
+                        "href": "/#how-it-works"
+                    },
+                    {
+                        "text": "Features",
+                        "href": "/#all-features"
+                    },
+                    {
+                        "text": "FAQ",
+                        "href": "/#faqs"
+                    },
+                    {
+                        "text": "Blog & Guides",
+                        "href": "/blog"
+                    },
+                    {
+                        "text": "Changelog",
+                        "href": "/changelog"
+                    },
+                    {
+                        "text": "Dashboard",
+                        "href": "/dashboard?from=mobile_nav"
+                    },
+                    {
+                        "text": "GitHub",
+                        "href": "https://github.com/gatteo/linkedinpreview.com"
+                    },
+                    {
+                        "text": "Create my LinkedIn plan",
+                        "href": "/dashboard?from=mobile_nav_cta"
+                    },
+                    {
+                        "text": "Start writing",
+                        "href": "/#tool"
+                    }
+                ],
+                "daily": null
+            }
+        },
+        {
+            "name": "blog-render",
+            "detail": {
+                "h1": "Tips & guides to write great LinkedIn posts",
+                "articleLinks": 199
+            }
+        },
+        {
+            "name": "embed-native-input-copy",
+            "detail": {
+                "clipboard": "Forge LIN-113 embed preserved"
+            }
+        },
+        {
+            "name": "current-terms-grandfathering-consumer-rights",
+            "detail": {
+                "prospectiveDate": "October 5, 2026",
+                "earlierPurchasesPreserved": true,
+                "consumerRightsPreserved": true
+            }
+        }
+    ]
+}

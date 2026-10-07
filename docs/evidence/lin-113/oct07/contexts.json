@@ -1,0 +1,72 @@
+[
+    {
+        "context": "8F948561E9BCD6AAF4BD51379CC04C8F",
+        "target": "0CBB677ED2C5108C3BA17766A9CF3601",
+        "path": "/",
+        "width": 1440,
+        "closed": true
+    },
+    {
+        "context": "BE758EC3C3767A920920486DC5B0D93E",
+        "target": "E3844601B5A6131B1E35F76D8E853B31",
+        "path": "/dashboard?from=navbar",
+        "width": 1440,
+        "closed": true
+    },
+    {
+        "context": "31D44A45B1CE638739F4B0B0642919C8",
+        "target": "F8AE7303B575C99B8B88020A7131D246",
+        "path": "/dashboard?from=navbar",
+        "width": 390,
+        "closed": true
+    },
+    {
+        "context": "DC4C7C0B9C5119C0DF1D8BCDB3A2B69B",
+        "target": "7EEBAB136683E43F1A8ED71BAFBF518E",
+        "path": "/",
+        "width": 1440,
+        "closed": true
+    },
+    {
+        "context": "9C272BAC7FD05F12AC10F912E59D3494",
+        "target": "A4554852A975D9A713B37A41E9E72549",
+        "path": "/terms",
+        "width": 1440,
+        "closed": true
+    },
+    {
+        "context": "434CF0FDD94CEABDBD00A890C50545A1",
+        "target": "C6CF432535F1306E3C4D67B2C3906362",
+        "path": "/terms",
+        "width": 390,
+        "closed": true
+    },
+    {
+        "context": "528122EB0536D1D9B61CC4295F2301CA",
+        "target": "2AB2AC69644A0C10EB39DD9BAAC4519E",
+        "path": "/",
+        "width": 390,
+        "closed": true
+    },
+    {
+        "context": "3A6A52D1089AE7DC285176B5A8FE3F6C",
+        "target": "EC1CAF1B717ED672AB8F62F0F6A54542",
+        "path": "/blog",
+        "width": 1440,
+        "closed": true
+    },
+    {
+        "context": "2A2CEF66C13E99CF88BCE9D37F78536D",
+        "target": "59C3EE6961CC0423A89E74F7B1FD887B",
+        "path": "/embed",
+        "width": 390,
+        "closed": true
+    },
+    {
+        "context": "EAAFA83C0397271B2D142F8DDC56EDA0",
+        "target": "7118A02EE0D3DB0F31B5DEB137EA84F4",
+        "path": "/terms",
+        "width": 390,
+        "closed": true
+    }
+]
