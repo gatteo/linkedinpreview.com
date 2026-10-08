@@ -1,0 +1,9 @@
+{
+    "storage": { "lp-consent": "accepted" },
+    "session": {
+        "lp-draft-first:2b7d3c82-7a4f-444a-a551-c940c86bb6f0": "{\"version\":\"imported_draft_v1\",\"entrySource\":\"tool_footer\",\"exposureId\":\"2b7d3c82-7a4f-444a-a551-c940c86bb6f0\",\"eligibilityAt\":\"2026-10-07T13:23:09.676Z\"}",
+        "ph_phc_h6i1h6boHeEhfX715yGWfK0YeoEDioIzBzhRFIQfBJY_primary_window_exists": "true",
+        "ph_phc_h6i1h6boHeEhfX715yGWfK0YeoEDioIzBzhRFIQfBJY_posthog": "{\"distinct_id\":\"synthetic-exp11-browser\",\"$device_id\":\"synthetic-exp11-browser\",\"$enabled_feature_flags\":{},\"$feature_flag_details\":{}}"
+    },
+    "href": "/dashboard/editor?import=q1YqqSxIVbJSSslPVtJRSs7PK0nNK1Gyiq6GSRQkFiWmFyUWZGCXLkmtKFHSgVBWSj6efrqGBhYK_skl-UmpRQrmCrn5SZk5qQp5iSWZZakKyTmZBUn5iUUpekq1sbWxtQA&activation=2b7d3c82-7a4f-444a-a551-c940c86bb6f0&from=tool_footer"
+}

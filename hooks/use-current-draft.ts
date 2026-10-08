@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { ENTRY_PARAM } from '@/config/entry-sources'
-import { decodeDraft } from '@/lib/draft-url'
+import { deferPlanning, intentionalDraftImport, readDraftFirst, writeDraftFirst } from '@/lib/draft-first'
+import { importDraft } from '@/lib/draft-import'
 import { type DraftStatus } from '@/lib/drafts'
-import { hasTextContent } from '@/lib/editor-utils'
+import { extractPlainText } from '@/lib/editor-utils'
 import {
     deleteDraft as deleteDraftApi,
     fetchDraft,
@@ -16,6 +17,7 @@ import {
 } from '@/lib/supabase/drafts'
 import { useDrafts } from '@/hooks/use-drafts'
 import { useAuth } from '@/components/dashboard/auth-provider'
+import { setEntrySource, track } from '@/components/dashboard/onboarding/ai'
 
 const SAVE_DELAY_MS = 2000
 
@@ -44,8 +46,13 @@ const EMPTY: CurrentDraftState = {
 /** Re-attach the arrival's `?from=` to a URL this hook rewrites, so the redirect
  *  that resolves the draft does not destroy attribution the user arrived with. */
 function withEntry(href: string, entry: string | null): string {
-    if (!entry) return href
-    return `${href}${href.includes('?') ? '&' : '?'}${ENTRY_PARAM}=${encodeURIComponent(entry)}`
+    const url = new URL(href, window.location.origin)
+    const arrival = new URLSearchParams(window.location.search)
+    for (const [key, value] of arrival) {
+        if (!['import', 'm', 'draft'].includes(key)) url.searchParams.set(key, value)
+    }
+    if (entry) url.searchParams.set(ENTRY_PARAM, entry)
+    return `${url.pathname}${url.search}`
 }
 
 /**
@@ -69,7 +76,7 @@ export function useCurrentDraft() {
     // OnboardingController read it off window.location - so a tool handoff was
     // attributed `direct` and lost its entry-coherent welcome copy. Carry it.
     const entryParam = searchParams.get(ENTRY_PARAM)
-    const { isReady, supabase } = useAuth()
+    const { isReady, userId, supabase } = useAuth()
     const {
         drafts,
         isLoading,
@@ -82,6 +89,7 @@ export function useCurrentDraft() {
 
     const saveTimerRef = React.useRef<ReturnType<typeof setTimeout>>(null)
     const latestContentRef = React.useRef<any>(undefined)
+    const meaningfulEditRef = React.useRef(false)
     // Tracks media set during this session (undefined = untouched since load).
     const latestMediaRef = React.useRef<CurrentDraftState['initialMedia'] | undefined>(undefined)
     // True only when the active draft loaded/created successfully AND was empty,
@@ -90,9 +98,44 @@ export function useCurrentDraft() {
     const loadedEmptyRef = React.useRef(false)
     const loadedRef = React.useRef(false)
     const loadCallRef = React.useRef(0)
+    const importRef = React.useRef<{
+        key: string
+        promise: ReturnType<typeof importDraft<import('@/lib/drafts').DraftManifestEntry>>
+    } | null>(null)
     // Marks when this editor session started, so the empty-draft sweep only
     // touches drafts created earlier and never a blank another tab just created.
     const sessionStartRef = React.useRef<string>(new Date().toISOString())
+
+    const recordSavedEdit = React.useCallback(
+        (id: string, saved: boolean, meaningful: boolean) => {
+            const choice = readDraftFirst(userId)
+            if (!userId || choice?.draftId !== id || choice.used || !meaningful) return
+            track('draft_meaningful_use', {
+                action: 'saved_edit',
+                outcome: saved ? 'success' : 'failure',
+                draft_id: id,
+                ...(saved ? {} : { error_code: 'save_failed' }),
+            })
+            if (saved) writeDraftFirst(userId, { ...choice, used: true })
+        },
+        [userId],
+    )
+
+    const persistContent = React.useCallback(
+        async (id: string, content: any, meaningful: boolean, onUnmount = false) => {
+            let saved = false
+            try {
+                if (onUnmount) {
+                    await updateDraftApi(supabase, id, { content })
+                    saved = true
+                } else {
+                    saved = await updateDraftHook(id, { content })
+                }
+            } catch {}
+            recordSavedEdit(id, saved, meaningful)
+        },
+        [supabase, updateDraftHook, recordSavedEdit],
+    )
 
     // Load draft when auth is ready and URL params change
     React.useEffect(() => {
@@ -110,33 +153,51 @@ export function useCurrentDraft() {
             // so cleanup reasons only about the draft we're about to load.
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
             if (state.draftId && latestContentRef.current !== undefined) {
-                await updateDraftHook(state.draftId, { content: latestContentRef.current })
+                await persistContent(state.draftId, latestContentRef.current, meaningfulEditRef.current)
             }
             latestContentRef.current = undefined
+            meaningfulEditRef.current = false
             latestMediaRef.current = undefined
             loadedEmptyRef.current = false
 
             // Handle ?import= param (content carried from homepage editor)
             if (importParam) {
-                const decoded = await decodeDraft(importParam)
-                if (callId !== loadCallRef.current) return
+                const params = new URLSearchParams(window.location.search)
+                if (userId && intentionalDraftImport(window.location.pathname, params)) {
+                    const choice = deferPlanning(userId, params)
+                    setEntrySource(choice.entrySource)
+                }
                 try {
-                    const draft = await createDraftHook(decoded ?? undefined)
+                    const mediaKey = params.get('m')
+                    const key = `${userId}:${importParam}:${mediaKey}`
+                    if (importRef.current?.key !== key) {
+                        importRef.current = { key, promise: importDraft(importParam, mediaKey, createDraftHook) }
+                    }
+                    const { draft, content: decoded, media } = await importRef.current.promise
                     if (callId !== loadCallRef.current) return
-                    loadedEmptyRef.current = !hasTextContent(decoded)
+                    loadedEmptyRef.current = !extractPlainText(decoded) && !media
+                    const choice = readDraftFirst(userId)
+                    if (choice && userId) {
+                        writeDraftFirst(userId, { ...choice, draftId: draft.id, used: false })
+                        track('draft_import_result', { outcome: 'success', draft_id: draft.id, has_media: !!media })
+                    }
                     router.replace(withEntry(`/dashboard/editor?draft=${draft.id}`, entryParam))
                     setState({
                         ...EMPTY,
                         draftId: draft.id,
                         initialContent: decoded,
+                        initialMedia: media,
                         label: draft.label,
                         status: draft.status,
                         isLoading: false,
                     })
                 } catch {
                     if (callId !== loadCallRef.current) return
-                    toast.error('Failed to create draft')
-                    router.replace(withEntry('/dashboard', entryParam))
+                    importRef.current = null
+                    track('draft_import_result', { outcome: 'failure', error_code: 'decode_media_or_create' })
+                    toast.error(
+                        'Could not import this draft. Your original is safe in the free tool. Please try again.',
+                    )
                     setState({ ...EMPTY, initialContent: null, isLoading: false })
                 }
                 loadedRef.current = true
@@ -149,7 +210,7 @@ export function useCurrentDraft() {
                     const result = await fetchDraft(supabase, draftIdParam)
                     if (callId !== loadCallRef.current) return
                     if (result) {
-                        loadedEmptyRef.current = !hasTextContent(result.content.content) && !result.content.media
+                        loadedEmptyRef.current = !extractPlainText(result.content.content) && !result.content.media
                         setState({
                             ...EMPTY,
                             draftId: draftIdParam,
@@ -192,7 +253,7 @@ export function useCurrentDraft() {
                 try {
                     const result = await fetchDraft(supabase, mostRecent.id)
                     if (callId !== loadCallRef.current) return
-                    loadedEmptyRef.current = !hasTextContent(result?.content.content) && !result?.content.media
+                    loadedEmptyRef.current = !extractPlainText(result?.content.content) && !result?.content.media
                     setState({
                         ...EMPTY,
                         draftId: mostRecent.id,
@@ -258,12 +319,12 @@ export function useCurrentDraft() {
             const id = state.draftId
             if (!id) return
             const typed = latestContentRef.current
-            const typedText = typed !== undefined && hasTextContent(typed)
+            const typedText = typed !== undefined && !!extractPlainText(typed)
             const addedMedia = latestMediaRef.current !== undefined && !!latestMediaRef.current
             if (loadedEmptyRef.current && !typedText && !addedMedia) {
                 void deleteDraftApi(supabase, id).catch(() => {})
             } else if (typed !== undefined) {
-                void updateDraftApi(supabase, id, { content: typed }).catch(() => {})
+                void persistContent(id, typed, meaningfulEditRef.current, true)
             }
         }
     })
@@ -279,15 +340,16 @@ export function useCurrentDraft() {
      * Save content with 2s debounce. Call on every editor change event.
      */
     const saveContent = React.useCallback(
-        (content: any) => {
+        (content: any, meaningful = false) => {
             if (!state.draftId) return
             latestContentRef.current = content
+            meaningfulEditRef.current = meaningful
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
             saveTimerRef.current = setTimeout(() => {
-                updateDraftHook(state.draftId!, { content })
+                void persistContent(state.draftId!, content, meaningful)
             }, SAVE_DELAY_MS)
         },
-        [state.draftId, updateDraftHook],
+        [state.draftId, persistContent],
     )
 
     /**
@@ -298,9 +360,9 @@ export function useCurrentDraft() {
         if (!state.draftId) return
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
         if (latestContentRef.current !== undefined) {
-            await updateDraftHook(state.draftId, { content: latestContentRef.current })
+            await persistContent(state.draftId, latestContentRef.current, meaningfulEditRef.current)
         }
-    }, [state.draftId, updateDraftHook])
+    }, [state.draftId, persistContent])
 
     /**
      * Save media immediately (no debounce - media changes are infrequent).

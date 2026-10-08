@@ -7,6 +7,7 @@ import { ENTRY_PARAM, parseEntrySource, type ResolvedEntrySource } from '@/confi
 import { ONBOARDING_LINKEDIN_STATUSES } from '@/config/linkedin'
 import { ApiRoutes, Routes } from '@/config/routes'
 import { site } from '@/config/site'
+import { deferPlanning, intentionalDraftImport, planningGate, readDraftFirst } from '@/lib/draft-first'
 import { createDraft as createDraftApi } from '@/lib/supabase/drafts'
 import { upsertOnboardingSession } from '@/lib/supabase/onboarding-session'
 import { useBranding } from '@/hooks/use-branding'
@@ -59,16 +60,18 @@ export function OnboardingController() {
     const [linkedinError, setLinkedinError] = React.useState<string | null>(null)
     const [resumeAnswers, setResumeAnswers] = React.useState<OnboardingAnswers | null>(null)
     const decidedRef = React.useRef(false)
+    const arrivalRef = React.useRef<{ search: string; pathname: string } | null>(null)
     const finishedRef = React.useRef(false)
     const firstDraftPromiseRef = React.useRef<Promise<{ id: string } | null> | null>(null)
 
     const ready = isReady && !brandingLoading && !strategyLoading
 
     React.useEffect(() => {
+        arrivalRef.current ??= { search: window.location.search, pathname: window.location.pathname }
         if (!ready || decidedRef.current) return
 
         const saved = readOnboarding()
-        const params = new URLSearchParams(window.location.search)
+        const params = new URLSearchParams(arrivalRef.current.search)
         const linkedinStatus = params.get('linkedin')
 
         // Attribute the visit before any branch returns, so entry_source is on
@@ -80,7 +83,8 @@ export function OnboardingController() {
         // attribution (kept from the original entry on resume - drives events).
         const arrivalNow = parseEntrySource(params.get(ENTRY_PARAM))
         setArrival(arrivalNow)
-        const entry = saved?.answers.entrySource ?? arrivalNow
+        const deferred = readDraftFirst(userId)
+        const entry = saved?.answers.entrySource ?? deferred?.entrySource ?? arrivalNow
         setEntrySource(entry)
         setEntry(entry)
 
@@ -94,8 +98,21 @@ export function OnboardingController() {
             track('onb_oauth_result', { status: linkedinStatus, resumable: Boolean(saved) })
         }
 
-        // Already onboarded - never show again; clear any stale saved progress.
-        if (branding.meta.onboardedAt) {
+        const gate = planningGate({
+            completed: !!branding.meta.onboardedAt,
+            legacy: !!strategy.completedAt || branding.role !== '',
+            saved: !!saved,
+            linkedinStatus,
+            onboardingLinkedinStatus: !!linkedinStatus && ONBOARDING_LINKEDIN_STATUSES.includes(linkedinStatus),
+            upgradeReturn: params.get('source') === 'upgrade' && !!params.get('checkout'),
+            explicit:
+                params.get('planning') === '1' ||
+                ['navbar', 'mobile_nav_cta', 'plan_section', 'footer', 'hero_editor'].includes(arrivalNow),
+            imported: intentionalDraftImport(arrivalRef.current.pathname, params),
+            deferred: !!deferred,
+        })
+
+        if (gate === 'completed') {
             decidedRef.current = true
             if (saved) clearOnboarding()
             return
@@ -103,13 +120,13 @@ export function OnboardingController() {
 
         // A non-onboarding LinkedIn status (account switch/merge) is the settings
         // page's concern - don't open onboarding or strip its query param.
-        if (linkedinStatus && !ONBOARDING_LINKEDIN_STATUSES.includes(linkedinStatus)) {
+        if (gate === 'settings' || gate === 'upgrade_return') {
             decidedRef.current = true
             return
         }
 
         // Returning from the LinkedIn OAuth round-trip mid-onboarding.
-        if (saved && linkedinStatus) {
+        if (gate === 'oauth' && saved) {
             decidedRef.current = true
             const connected = linkedinStatus === 'connected'
             setResumeAnswers({
@@ -143,7 +160,7 @@ export function OnboardingController() {
         }
 
         // Incremental resume after an accidental refresh mid-flow.
-        if (saved) {
+        if (gate === 'resume' && saved) {
             decidedRef.current = true
             setResumeAnswers(saved.answers)
             setStartStepId(saved.resumeAt)
@@ -153,16 +170,48 @@ export function OnboardingController() {
 
         // Pre-existing user (has strategy/role but predates onboardedAt): backfill
         // the flag silently so we don't nag them.
-        if (strategy.completedAt || branding.role !== '') {
+        if (gate === 'legacy') {
             decidedRef.current = true
             updateBranding({ meta: { onboardedAt: new Date().toISOString() } })
             return
         }
 
-        // Genuinely new - open the flow.
+        if (gate === 'defer') {
+            decidedRef.current = true
+            if (userId) {
+                const choice = deferPlanning(userId, params)
+                setEntrySource(choice.entrySource)
+                setEntry(choice.entrySource)
+            }
+            return
+        }
+
+        // Genuinely new or explicitly requested planning.
+        if (params.get('planning') === '1') {
+            const url = new URL(window.location.href)
+            url.searchParams.delete('planning')
+            window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}`)
+        }
         decidedRef.current = true
         setOpen(true)
-    }, [ready, branding, strategy, updateBranding, router])
+    }, [ready, userId, branding, strategy, updateBranding, router])
+
+    React.useEffect(() => {
+        const request = () => {
+            if (!ready) return
+            const saved = readOnboarding()
+            setResumeAnswers(saved?.answers ?? null)
+            setStartStepId(saved?.resumeAt ?? 'welcome')
+            setLinkedinError(null)
+            decidedRef.current = true
+            finishedRef.current = false
+            setMountSeq((seq) => seq + 1)
+            track('draft_planning_resumed', { reason: 'explicit_editor_action' })
+            setOpen(true)
+        }
+        window.addEventListener('lp-request-planning', request)
+        return () => window.removeEventListener('lp-request-planning', request)
+    }, [ready])
 
     // Dev-only debug menu drives the live modal (open/close) via a window event bus.
     React.useEffect(() => {

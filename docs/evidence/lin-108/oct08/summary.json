@@ -1,0 +1,188 @@
+{
+    "applicationSha": "893ca52aeedca378e3b16b22f9b6f68e2c1cb61d",
+    "actualMain": "f3e84221f1c6aa6574ef67e5197bde0b55050b63",
+    "preview": "https://linkedinpreview-r9hvj17za-gatteos.vercel.app",
+    "deploymentId": "dpl_2DjcCvDNt79oWYjbFv9YKYNiyF47",
+    "behaviorCount": 35,
+    "checks": [
+        "desktop-native-free-copy",
+        "desktop-held-intentional-handoff",
+        "desktop-import-before-planning",
+        "desktop-early-navigation-confirmed-save",
+        "desktop-current-text-rehydration",
+        "desktop-optional-planning-resume",
+        "mobile-native-free-copy-preview",
+        "mobile-pretreatment-handoff-clock",
+        "mobile-import-media-clock-before-planning",
+        "mobile-media-preview",
+        "mobile-current-text-media-remount",
+        "mobile-dashboard-native-copy",
+        "mobile-optional-planning",
+        "1440-monthly-policy-held-dual-checkout",
+        "1440-lifetime-policy-held-dual-checkout",
+        "390-monthly-policy-held-dual-checkout",
+        "390-lifetime-policy-held-dual-checkout",
+        "1440-saved-monthly-plan-precedence",
+        "1440-oauth-denied-precedence",
+        "1440-checkout-success-precedence",
+        "1440-checkout-cancel-precedence",
+        "390-saved-monthly-plan-precedence",
+        "390-oauth-denied-precedence",
+        "390-checkout-success-precedence",
+        "390-checkout-cancel-precedence",
+        "1440-onboarding-monthly-held-dual-checkout",
+        "1440-onboarding-lifetime-held-dual-checkout",
+        "390-onboarding-monthly-held-dual-checkout",
+        "390-onboarding-lifetime-held-dual-checkout",
+        "mobile-pending-sidebar-save-media",
+        "mobile-navigation-media-rehydrated",
+        "1440-blog-smoke",
+        "1440-dashboard-smoke",
+        "390-blog-smoke",
+        "390-dashboard-smoke"
+    ],
+    "excludedDiagnosticCount": 12,
+    "diagnostics": [
+        {
+            "name": "diagnostic-dom-serialization",
+            "detail": {
+                "excluded": true,
+                "cause": "wait_js returned DOM object, CDP Object reference chain too long; no product action reached"
+            }
+        },
+        {
+            "name": "diagnostic-handoff-selector",
+            "detail": {
+                "excluded": true,
+                "cause": "footer is button not anchor; failed selector before dispatch"
+            }
+        },
+        {
+            "name": "diagnostic-posts-selector",
+            "detail": {
+                "excluded": true,
+                "cause": "Posts is section label; actual link is View all posts. Timer claim excluded for prior edit."
+            }
+        },
+        {
+            "name": "diagnostic-mobile-copy-target",
+            "detail": {
+                "excluded": true,
+                "clipboard": "1. LIN108 October8 mobile native copy with imported media.",
+                "editor": "<div contenteditable=\"true\" translate=\"no\" class=\"tiptap ProseMirror prose-md focus:outline-hidden resize-none block w-full p-0 text-foreground border-none appearance-none placeholder:text-muted-foreground focus:ring-0 overflow-y-auto h-full\" tabindex=\"0\"><ol><li><p>LIN108 October8 mobile native copy with imported media.</p></li></ol></div>",
+                "errors": [],
+                "buttons": [
+                    {
+                        "text": "Editor",
+                        "rect": {
+                            "x": 1,
+                            "y": -28.453125,
+                            "width": 194,
+                            "height": 46,
+                            "top": -28.453125,
+                            "right": 195,
+                            "bottom": 17.546875,
+                            "left": 1
+                        }
+                    },
+                    {
+                        "text": "Preview",
+                        "rect": {
+                            "x": 195,
+                            "y": -28.453125,
+                            "width": 194,
+                            "height": 46,
+                            "top": -28.453125,
+                            "right": 389,
+                            "bottom": 17.546875,
+                            "left": 195
+                        }
+                    },
+                    {
+                        "text": "Copy Text",
+                        "rect": {
+                            "x": 257.3125,
+                            "y": 404.65625,
+                            "width": 115.6875,
+                            "height": 32,
+                            "top": 404.65625,
+                            "right": 373,
+                            "bottom": 436.65625,
+                            "left": 257.3125
+                        }
+                    }
+                ],
+                "cause": "Tab-transition stale coordinate suspected, not confirmed copy failure; original clipboard retained"
+            }
+        },
+        {
+            "name": "diagnostic-mobile-tab-selector",
+            "detail": {
+                "excluded": true,
+                "cause": "Custom mobile tabs have no role=tab or data-state; trusted Preview selected border-b-2 class."
+            }
+        },
+        {
+            "name": "diagnostic-mobile-hidden-sidebar",
+            "detail": {
+                "excluded": true,
+                "cause": "Mobile sidebar unmounted, a[href=/dashboard] null before click; pending save timing excluded."
+            }
+        },
+        {
+            "name": "diagnostic-offer-case",
+            "detail": {
+                "excluded": true,
+                "cause": "Rendered BEST VALUE uppercase; case-sensitive assertion stopped before checkout."
+            }
+        },
+        {
+            "name": "diagnostic-lifetime-selector",
+            "detail": {
+                "excluded": true,
+                "cause": "Exact text helper did not match multi-line lifetime plan selector; no click dispatched."
+            }
+        },
+        {
+            "name": "diagnostic-css-plan-case",
+            "detail": {
+                "excluded": true,
+                "cause": "CSS uppercase innerText differed from textContent; selector stopped before plan click."
+            }
+        },
+        {
+            "name": "diagnostic-fixture-readback-name",
+            "detail": {
+                "excluded": true,
+                "cause": "Wrong fixture readback variable after navigation; repeat with actual local persistence key."
+            }
+        },
+        {
+            "name": "diagnostic-draft-row-schema",
+            "detail": {
+                "excluded": true,
+                "cause": "Readback used flat text field instead of stored Tiptap content; repeated against observed schema."
+            }
+        },
+        {
+            "name": "diagnostic-mobile-dashboard-layout",
+            "detail": {
+                "excluded": true,
+                "cause": "Mobile uses Posts table rather than desktop View all posts link; expectation corrected from observed UI."
+            }
+        }
+    ],
+    "contextCount": 35,
+    "closedContextCount": 35,
+    "emptyErrorContextCount": 35,
+    "screenshotCount": 22,
+    "localFullTests": 150,
+    "localFocusedTests": 66,
+    "localGatesExit": 0,
+    "codeCi": {
+        "runId": 37754692359,
+        "attempt": 2,
+        "conclusion": "success"
+    },
+    "historicalHydrationCause": "UNPROVEN; not reproduced in this integrated run; not declared fixed"
+}

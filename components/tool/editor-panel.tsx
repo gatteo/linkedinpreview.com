@@ -116,6 +116,7 @@ function withOrderedListStart(nodes: any[], selection: Selection): any[] {
 
 export function EditorPanel({
     initialContent,
+    initialMedia,
     injectedDoc,
     onInjectedDocApplied,
     onRestoreDoc,
@@ -124,8 +125,10 @@ export function EditorPanel({
     onShare,
     contentReplace,
     onContentReplaceApplied,
+    onCopyText,
 }: {
     initialContent?: any
+    initialMedia?: Media | null
     injectedDoc?: any
     onInjectedDocApplied?: () => void
     onRestoreDoc?: (doc: any) => void
@@ -134,15 +137,20 @@ export function EditorPanel({
     onShare?: () => Promise<string | null>
     contentReplace?: string | null
     onContentReplaceApplied?: () => void
+    onCopyText?: () => void
 }) {
     const fileInputRef = React.useRef<HTMLInputElement>(null)
     const justClearedRef = React.useRef(false)
-    const [currentMedia, setCurrentMedia] = React.useState<Media | null>(null)
+    const [currentMedia, setCurrentMedia] = React.useState<Media | null>(initialMedia ?? null)
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
     const { notifyCopy } = useFeedbackAfterCopy()
     const { ensureSession } = useAnonymousAuth()
+
+    React.useEffect(() => {
+        setCurrentMedia(initialMedia ?? null)
+    }, [initialMedia])
 
     const handleMediaChangeWrapper = React.useCallback(
         (media: Media | null) => {
@@ -273,11 +281,12 @@ export function EditorPanel({
     const onCopied = React.useCallback(
         (json: any, text: string) => {
             toast.success('Text copied to clipboard')
+            onCopyText?.()
             notifyCopy(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
             analyzePost(json, text) // fire-and-forget
         },
-        [notifyCopy, currentMedia, analyzePost],
+        [notifyCopy, currentMedia, analyzePost, onCopyText],
     )
 
     const handleCopy = React.useCallback(() => {

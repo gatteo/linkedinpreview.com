@@ -1,0 +1,2769 @@
+[
+    {
+        "name": "desktop-free-tool",
+        "detail": {
+            "clipboard": "LIN-108 October 7 contained desktop draft.",
+            "preview": true,
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "header": "LinkedInPreview\nFeatures\nHow it works\nOpen source\nFAQ\nStart writing\nCreate my LinkedIn plan",
+            "enrollment": "{\"testId\":\"EXP-11\",\"enrollmentId\":\"a006504f-e50d-4e59-87bd-293be1134c30\",\"eligibilityAt\":\"2026-10-07T13:20:03.703Z\",\"assignmentVersion\":\"exp11_header_v1\",\"variant\":\"control\",\"assignmentStatus\":\"flag_unavailable\",\"releaseSha\":\"14e3226c3cf127382734140893db43946c29fb6d\"}"
+        }
+    },
+    {
+        "name": "desktop-import-intent",
+        "detail": {
+            "href": "/dashboard/editor?import=q1YqqSxIVbJSSslPVtJRSs7PK0nNK1Gyiq6GSRQkFiWmFyUWZGCXLkmtKFHSgVBWSj6efrqGBhYK_skl-UmpRQrmCiAtiZl5qSkKKanF2SX5BQopRYlpJXpKtbG1sbUA&activation=1d052073-ff35-4c6f-9001-d230066bb569&from=tool_footer",
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-1A4D0E025C6A19464FF46A52DAF60B7B",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-DC09FDBCBDC9429C365A5CA20C92A20E",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "desktop-usable-import",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": false
+            },
+            "header": {
+                "testId": "EXP-11",
+                "enrollmentId": "c0233057-7007-4752-bab9-cc1cb413f684",
+                "eligibilityAt": "2026-10-07T13:21:45.008Z",
+                "assignmentVersion": "exp11_header_v1",
+                "variant": "control",
+                "assignmentStatus": "flag_unavailable",
+                "releaseSha": "14e3226c3cf127382734140893db43946c29fb6d"
+            },
+            "clockPreserved": true,
+            "beforePlanning": true,
+            "hydrationExcluded": true,
+            "text": "LIN-108 integrated desktop import with clock."
+        }
+    },
+    {
+        "name": "desktop-pending-navigation-save",
+        "detail": {
+            "used": true,
+            "elapsedMs": 729.2,
+            "rows": [
+                {
+                    "id": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN-108 integrated desktop edit saved on navigation.",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN-108 integrated desktop edit saved on navigation."
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": null,
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 7,
+                    "char_count": 52,
+                    "created_at": "2026-10-07T13:21:47.705Z",
+                    "updated_at": "2026-10-07T13:21:48.981Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-0001ACE02B56D57A28BA9794F3B0E696",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-reload-deferral",
+        "detail": {
+            "currentText": "LIN-108 integrated desktop edit saved on navigation.",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            }
+        }
+    },
+    {
+        "name": "errors-5D5C6BE10A73CA3441C014A362800F5A",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-free-copy",
+        "detail": {
+            "clipboard": "LIN-108 October 7 mobile native clipboard.",
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            },
+            "width": 390
+        }
+    },
+    {
+        "name": "mobile-tabs-and-import-intent",
+        "detail": {
+            "href": "/dashboard/editor?import=q1YqqSxIVbJSSslPVtJRSs7PK0nNK1Gyiq6GSRQkFiWmFyUWZGCXLkmtKFHSgVBWSj6efrqGBhYK_skl-UmpRQrmCrn5SZk5qQp5iSWZZakKyTmZBUn5iUUpekq1sbWxtQA&activation=2b7d3c82-7a4f-444a-a551-c940c86bb6f0&from=tool_footer",
+            "textRetained": true
+        }
+    },
+    {
+        "name": "errors-CD1235568A6B9E05CCF15C4B8FF294A8",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/analyze",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-usable-import",
+        "detail": {
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "draftId": "f9929f64-daa9-4a98-87f6-6f6c4c11a4f0",
+                "used": false
+            },
+            "planningAbsent": true,
+            "hydrationExcluded": true,
+            "clockPreserved": true
+        }
+    },
+    {
+        "name": "mobile-pending-navigation-save",
+        "detail": {
+            "elapsedMs": 580.5,
+            "rows": [
+                {
+                    "id": "0e1a6d43-bee3-4227-905a-ccdd541e51bf",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN-108 mobile edited and saved before debounce.",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN-108 mobile edited and saved before debounce."
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": null,
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 7,
+                    "char_count": 48,
+                    "created_at": "2026-10-07T13:25:03.878Z",
+                    "updated_at": "2026-10-07T13:25:04.619Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-1008695B394D7C375A2E462CE4796981",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-reload-deferral",
+        "detail": {
+            "text": "LIN-108 mobile edited and saved before debounce.",
+            "dialogAbsent": true
+        }
+    },
+    {
+        "name": "errors-32310707AB08A43413002655A433B578",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-optional-planning",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nYour draft is saved. Now the plan behind it.\n\nI\u2019ll audit your LinkedIn, learn your goals, and build the strategy that makes posts like this one land, plus the full toolkit to write them.\n\nLet\u2019s start\nYour draft is saved\n4.8\n\u00a0from 3,342 professionals\nPersonalized strategy\nAbout 3 minutes",
+            "draftChoice": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            }
+        }
+    },
+    {
+        "name": "errors-9E84F473C1F9F63DD4F70195D35C4A5C",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-monthly-policy-and-held-checkout",
+        "detail": {
+            "policy": "7-day money-back guarantee",
+            "payload": {
+                "plan": "monthly",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            },
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-2DF22A2E67E42A4E3CA44364FA217B77",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/billing/checkout",
+                    "method": "POST",
+                    "fixture": true,
+                    "held": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-lifetime-policy-and-held-checkout",
+        "detail": {
+            "policy": "Lifetime purchases are non-refundable",
+            "payload": {
+                "plan": "lifetime",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            },
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-DCDA01DF338D8C2157704572B11F5A80",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/billing/checkout",
+                    "method": "POST",
+                    "fixture": true,
+                    "held": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-optional-planning",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nYour draft is saved. Now the plan behind it.\n\nI\u2019ll audit your LinkedIn, learn your goals, and build the strategy that makes posts like this one land, plus the full toolkit to write them.\n\nLet\u2019s start\nYour draft is saved\n4.8\n\u00a0from 3,342 professionals\nPersonalized strategy\nAbout 3 minutes",
+            "choicePreserved": true
+        }
+    },
+    {
+        "name": "errors-4BE1F5599BC79CEB1101FF323542A65E",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-monthly-policy-and-held-checkout",
+        "detail": {
+            "policy": "7-day money-back guarantee",
+            "payload": {
+                "plan": "monthly",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            },
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-75830D5AA18C29B8E528EE58C9778A73",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/billing/checkout",
+                    "method": "POST",
+                    "fixture": true,
+                    "held": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-lifetime-policy-and-held-checkout",
+        "detail": {
+            "policy": "Lifetime purchases are non-refundable",
+            "payload": {
+                "plan": "lifetime",
+                "source": "upgrade",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "cohortId": "exp10_draft_first_v1",
+                "assignedVariant": "draft_first",
+                "offerVersion": "existing_offer"
+            },
+            "isolation": {
+                "marker": true,
+                "contained": true,
+                "fetch": true,
+                "ws": true,
+                "beacon": true,
+                "xhr": true
+            }
+        }
+    },
+    {
+        "name": "errors-250DA9912DA0547A39974C8FC780739A",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/billing/checkout",
+                    "method": "POST",
+                    "fixture": true,
+                    "held": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-saved-plan-precedence",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 4 / 4 - AUDIT & PLAN\nS\nSynthetic\nEVERYTHING\u2019S READY\nYour 90-day plan is built, Synthetic.\n90-day content calendar, 3\u00d7/week, around your strongest angle\nPosts drafted in your direct & punchy voice, never a blank page\nLive analytics + best-time-to-post, tuned to your audience\nOne-click rewrites on anything you draft\nYour numbers, 90 days from now\n\nModeled on creators who post 3\u00d7/week with a system.\n\nFollowers\nmodeled\n500\n1.2k\nEst. monthly impressions\nmodeled\n1.0k\n7.7k\nProfile views / week\nmodeled\n10\n15\nInbound leads / mo\nfrom zero\n0\n4\nAll the tools you get\n\nEverything you need to go from a blank page to a published post\n\nIn your voice\nAI that writes as you\nDrafts in your voice from your pillars - never generic AI, never a blank page.\nPixel-perfect preview\nKnow exactly how a post looks on desktop and mobile before it ships.\nMON\nTUE\nWED\nTHU\nScheduling calendar\nSee what is queued, in review, and ready to go across the week.\n184%\nLAST 30 DAYS\nPowerful analytics\nSee what worked, spot the patterns, and shape your next post.\nBest time to post\nWe pick the slots your audience is actually online.\nOne-click queue\nFill a whole week of posts in a single click.\nShareable drafts\nSend a draft out for feedback with one link.\nWeekly post ideas\nFresh, personalized ideas based on live trends.\n\n\u2026 AND MUCH MORE\n\n12,000+\nprofessionals grew their\nLinkedIn with us\n4.8 out of 5, from 2,000+ reviews\nMatteo Bossolini\nCo-founder, Cato \u00b7 3.1k followers\n\n\u201cTwo inbound demos in my first week. I stopped dreading the blank page.\u201d\n\nSandra Yvonne Alvarez\nFounder, OmniLiv \u00b7 5.4k followers\n\n\u201cIt finally sounds like me on a good day. Clients actually reply now.\u201d\n\nQuan Wang\nTech lead & instructor \u00b7 11k followers\nProfile views\n+210%\nPost clicks\n+51%\nJulius Richter\nResearcher, MERL \u00b7 3.4k followers\n\n\u201cMy reply rate tripled once the posts sounded human.\u201d\n\nGF\nGiulia Ferrari\nFounder \u00b7 2.1k followers\n\n\u201cClosed a client worth a year of retainers straight from a single post.\u201d\n\nChristine Kaeser-Chen\nResearch engineer \u00b7 6.2k followers\n\n\u201cFrom lurker to three posts a week. My DMs are finally interesting.\u201d\n\nOH\nOmar Haddad\nAgency owner \u00b7 8.8k followers\n\n\u201cTwo discovery calls booked from one carousel. First week.\u201d\n\nRui Tong\nEngineer, Google \u00b7 2.8k followers\nImpressions\n+34%\nEngagement\n+51%\nNP\nNina Petrova\nCoach \u00b7 9.3k followers\n\n\u201cFrom 90 followers watching to a real waitlist. Wild.\u201d\n\nJonathan Le Roux\nResearch lead \u00b7 4.9k followers\n\n\u201cA month of posts planned in one sitting. The consistency did the rest.\u201d\n\nSusan Nothnagel\nConsultant \u00b7 7.7k followers\n\n\u201cA retainer client came in from a post I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\nLifetime purchases are non-refundable\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nGet lifetime",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-D0EB549BCFE7872A5CD80FEE024B8A89",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/onboarding_sessions",
+                    "method": "POST",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-oauth-denied-precedence",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 1 / 4 - CONNECT\nFirst, let\u2019s audit your LinkedIn.\n\nI\u2019ll read your profile and recent posts to show you what\u2019s working, what\u2019s missing, and the plan that fixes it - built on your real data, not a template.\n\nConnect LinkedIn\n\nNo problem - paste your profile URL below instead.\n\nOR PASTE YOUR PROFILE URL\nUse profile URL\nSkip for now - I\u2019ll build your plan from a few quick questions\nWe never post anything without you pressing publish. Only you can see this data.",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-9EC2D6B4118FB2983963AA3B63699609",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-checkout-cancel-precedence",
+        "detail": {
+            "dialog": "",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-4EB8FE1C28217505BC95CFDDFC1C7F6F",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-checkout-success-precedence",
+        "detail": {
+            "dialog": "You're on Pro\n\nPayment confirmed - your higher limits and power features are active now. Manage it anytime in Settings.\n\nStart creating\nClose",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "30b7b74d-52a7-428f-a12e-b1d842c83f90",
+                "eligibilityAt": "2026-10-07T13:21:46.219Z",
+                "draftId": "9c51eb85-e08e-408b-9557-a12b9ecde870",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-CF0DFCE113390AD0C15976CEE66EC8F2",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-saved-plan-precedence",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 4 / 4 - AUDIT & PLAN\nS\nSynthetic\nEVERYTHING\u2019S READY\nYour 90-day plan is built, Synthetic.\n90-day content calendar, 3\u00d7/week, around your strongest angle\nPosts drafted in your direct & punchy voice, never a blank page\nLive analytics + best-time-to-post, tuned to your audience\nOne-click rewrites on anything you draft\nYour numbers, 90 days from now\n\nModeled on creators who post 3\u00d7/week with a system.\n\nFollowers\nmodeled\n500\n0\nEst. monthly impressions\nmodeled\n1.0k\n0\nProfile views / week\nmodeled\n10\n0\nInbound leads / mo\nfrom zero\n0\n0\nAll the tools you get\n\nEverything you need to go from a blank page to a published post\n\nIn your voice\nAI that writes as you\nDrafts in your voice from your pillars - never generic AI, never a blank page.\nPixel-perfect preview\nKnow exactly how a post looks on desktop and mobile before it ships.\nMON\nTUE\nWED\nTHU\nScheduling calendar\nSee what is queued, in review, and ready to go across the week.\n184%\nLAST 30 DAYS\nPowerful analytics\nSee what worked, spot the patterns, and shape your next post.\nBest time to post\nWe pick the slots your audience is actually online.\nOne-click queue\nFill a whole week of posts in a single click.\nShareable drafts\nSend a draft out for feedback with one link.\nWeekly post ideas\nFresh, personalized ideas based on live trends.\n\n\u2026 AND MUCH MORE\n\n12,000+\nprofessionals grew their\nLinkedIn with us\n4.8 out of 5, from 2,000+ reviews\nMatteo Bossolini\nCo-founder, Cato \u00b7 3.1k followers\n\n\u201cTwo inbound demos in my first week. I stopped dreading the blank page.\u201d\n\nSandra Yvonne Alvarez\nFounder, OmniLiv \u00b7 5.4k followers\n\n\u201cIt finally sounds like me on a good day. Clients actually reply now.\u201d\n\nQuan Wang\nTech lead & instructor \u00b7 11k followers\nProfile views\n+210%\nPost clicks\n+51%\nJulius Richter\nResearcher, MERL \u00b7 3.4k followers\n\n\u201cMy reply rate tripled once the posts sounded human.\u201d\n\nGF\nGiulia Ferrari\nFounder \u00b7 2.1k followers\n\n\u201cClosed a client worth a year of retainers straight from a single post.\u201d\n\nChristine Kaeser-Chen\nResearch engineer \u00b7 6.2k followers\n\n\u201cFrom lurker to three posts a week. My DMs are finally interesting.\u201d\n\nOH\nOmar Haddad\nAgency owner \u00b7 8.8k followers\n\n\u201cTwo discovery calls booked from one carousel. First week.\u201d\n\nRui Tong\nEngineer, Google \u00b7 2.8k followers\nImpressions\n+34%\nEngagement\n+51%\nNP\nNina Petrova\nCoach \u00b7 9.3k followers\n\n\u201cFrom 90 followers watching to a real waitlist. Wild.\u201d\n\nJonathan Le Roux\nResearch lead \u00b7 4.9k followers\n\n\u201cA month of posts planned in one sitting. The consistency did the rest.\u201d\n\nSusan Nothnagel\nConsultant \u00b7 7.7k followers\n\n\u201cA retainer client came in from a post I wrote in ten minutes.\u201d\n\nTH\nTom Hansen\nSales lead \u00b7 6.7k followers\nInbound leads\n5x\nSaves\n+88%\nLymarie Molina\nProposal coordinator \u00b7 1.9k followers\n\n\u201cA recruiter reached out about a role I never even applied for.\u201d\n\nMatteo Vallebona\nProduct specialist \u00b7 2.1k followers\n\n\u201cThe hardest part used to be starting. Now it takes ten minutes.\u201d\n\nCLAIM YOUR PLAN\nThe first client you close pays for it 10 times over.\nLIFETIME FOUNDER PASS\nSynthetic\n#2,848\nS\n$39.99\nonce\n\nPay once, keep it forever. Every future feature included - no renewals, ever.\n\n152 spots left\nOR\nMonthly\nBilled monthly. Cancel anytime.\n$11.99/mo\nLifetime purchases are non-refundable\n4.8\nfrom 3,342 reviews\nContinue on the free plan\nGet lifetime",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "draftId": "0e1a6d43-bee3-4227-905a-ccdd541e51bf",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-D4421013FDB15A3FF8DB2CBB19C23E73",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-oauth-denied-precedence",
+        "detail": {
+            "dialog": "Your personalized LinkedIn audit\n\nConnect your profile, answer a few questions, and get a personalized LinkedIn strategy.\n\nSTEP 1 / 4 - CONNECT\nFirst, let\u2019s audit your LinkedIn.\n\nI\u2019ll read your profile and recent posts to show you what\u2019s working, what\u2019s missing, and the plan that fixes it - built on your real data, not a template.\n\nConnect LinkedIn\n\nNo problem - paste your profile URL below instead.\n\nOR PASTE YOUR PROFILE URL\nUse profile URL\nSkip for now - I\u2019ll build your plan from a few quick questions\nWe never post anything without you pressing publish. Only you can see this data.",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "draftId": "0e1a6d43-bee3-4227-905a-ccdd541e51bf",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-54A4CF0F2105A0C0F87658B5E999811F",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-checkout-cancel-precedence",
+        "detail": {
+            "dialog": "",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "draftId": "0e1a6d43-bee3-4227-905a-ccdd541e51bf",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-4A3A262120635F167D71FD3FE94AF332",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-checkout-success-precedence",
+        "detail": {
+            "dialog": "You're on Pro\n\nPayment confirmed - your higher limits and power features are active now. Manage it anytime in Settings.\n\nStart creating\nClose",
+            "state": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "2b7d3c82-7a4f-444a-a551-c940c86bb6f0",
+                "eligibilityAt": "2026-10-07T13:23:09.676Z",
+                "draftId": "0e1a6d43-bee3-4227-905a-ccdd541e51bf",
+                "used": true
+            },
+            "syntheticReturnOnly": true
+        }
+    },
+    {
+        "name": "errors-D321E9719C6245B2FA51763412EA8244",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "blog-load",
+        "detail": {
+            "title": "Tips & guides to write great LinkedIn posts"
+        }
+    },
+    {
+        "name": "errors-46EE4869991FF03679622F54C70F8AEB",
+        "detail": {
+            "errors": [],
+            "requests": []
+        }
+    },
+    {
+        "name": "dashboard-load",
+        "detail": {
+            "title": "Posts",
+            "deferralPreserved": true
+        }
+    },
+    {
+        "name": "errors-1F5EED7C2EE4D1B49B128E4DED01701F",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-3B1A660BA8ACA97CD738723406CEF7DF",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "desktop-media-import-remount",
+        "detail": {
+            "nativeIndexedDBSeed": true,
+            "fixturePersistenceOnly": true,
+            "rows": [
+                {
+                    "id": "d6d0bbc4-64b2-426e-9e88-1d8ea3532d3c",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN-108 synthetic media import desktop",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN-108 synthetic media import desktop"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": {
+                        "type": "image",
+                        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAO0lEQVR4AezXwQkAMAgDwND9d27rBD4FOdB3wv1yktzJrwI/f+4UIECAAAECBAgQIECAAAEC+wW63f0AAAD//+3aM8YAAAAGSURBVAMABkQgIT13JVIAAAAASUVORK5CYII="
+                    },
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 5,
+                    "char_count": 38,
+                    "created_at": "2026-10-07T13:30:44.264Z",
+                    "updated_at": "2026-10-07T13:30:44.603Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ],
+            "imageNaturalWidth": 32,
+            "deferralPreserved": true
+        }
+    },
+    {
+        "name": "errors-76B86A06065EA376C98530EEB22B186F",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "errors-76BC672ED07B09E74738528B1EBA22F0",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "PATCH",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    },
+    {
+        "name": "mobile-media-import-remount",
+        "detail": {
+            "nativeIndexedDBSeed": true,
+            "fixturePersistenceOnly": true,
+            "rows": [
+                {
+                    "id": "27592c4f-8113-4ec4-867c-9af7c8ae2530",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN-108 synthetic media import mobile",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN-108 synthetic media import mobile"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": {
+                        "type": "image",
+                        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAO0lEQVR4AezXwQkAMAgDwND9d27rBD4FOdB3wv1yktzJrwI/f+4UIECAAAECBAgQIECAAAEC+wW63f0AAAD//+3aM8YAAAAGSURBVAMABkQgIT13JVIAAAAASUVORK5CYII="
+                    },
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 5,
+                    "char_count": 37,
+                    "created_at": "2026-10-07T13:30:48.095Z",
+                    "updated_at": "2026-10-07T13:30:48.479Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ],
+            "imageNaturalWidth": 32,
+            "deferralPreserved": true
+        }
+    },
+    {
+        "name": "errors-C9DCEA4E7E4E908A106C8E791BC22095",
+        "detail": {
+            "errors": [],
+            "requests": [
+                {
+                    "path": "/auth/v1/signup",
+                    "method": "POST",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/featurebase/jwt",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/strategy",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/billing",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/api/linkedin/status",
+                    "method": "GET",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/drafts",
+                    "method": "DELETE",
+                    "fixture": true
+                },
+                {
+                    "path": "/rest/v1/branding",
+                    "method": "GET",
+                    "fixture": true
+                }
+            ]
+        }
+    }
+]

@@ -63,6 +63,18 @@ test('processor-confirmed purchase events retain attribution without changing en
                         enrollment_id: exposureId,
                         cohort_id: 'exp9_monthly_first_v2',
                         eligibility_at: '2026-10-05T20:00:00.000Z',
+                        assigned_variant: 'monthly_first',
+                        assignment_version: 'monthly_first_v2',
+                        offer_version: 'monthly_first_v2',
+                        release_sha: 'f3e84221f1c6aa6574ef67e5197bde0b55050b63',
+                        monthly_entry_source: 'navbar',
+                        draft_enrollment_id: '00000000-0000-4000-8000-000000000010',
+                        draft_cohort_id: 'exp10_draft_first_v1',
+                        draft_eligibility_at: '2026-10-05T19:00:00.000Z',
+                        draft_assigned_variant: 'draft_first',
+                        draft_assignment_version: 'imported_draft_v1',
+                        draft_offer_version: 'existing_offer',
+                        draft_entry_source: 'tool_footer',
                     },
                 },
             },
@@ -78,6 +90,25 @@ test('processor-confirmed purchase events retain attribution without changing en
         assert.equal(success.captured[0][2].payment_status, 'paid')
         assert.equal(success.captured[0][2].recurring_outcome, 'requires_processor_reconciliation')
         assert.equal(success.captured[0][2].entry_source, 'tool_footer')
+        for (const key of [
+            'enrollment_id',
+            'cohort_id',
+            'eligibility_at',
+            'assigned_variant',
+            'assignment_version',
+            'offer_version',
+            'release_sha',
+            'monthly_entry_source',
+            'draft_enrollment_id',
+            'draft_cohort_id',
+            'draft_eligibility_at',
+            'draft_assigned_variant',
+            'draft_assignment_version',
+            'draft_offer_version',
+            'draft_entry_source',
+        ]) {
+            assert.equal(success.captured[0][2][key], event.data.object.metadata[key])
+        }
         const failed = await webhook(event, true)
         assert.equal(failed.result.status, 500)
         assert.equal(failed.captured.length, 0)

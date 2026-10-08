@@ -137,6 +137,7 @@ async function checkout(ui, authenticated = true) {
     const route = await loadTS('app/api/billing/checkout/route.ts', {
         '@/config/entry-sources': entry,
         '@/config/pricing': { CHECKOUT_UI: ui },
+        '@/lib/draft-first': { DRAFT_FIRST_VERSION: 'imported_draft_v1' },
         '@/lib/dev/missing-env': { devMissingEnv: () => ({}) },
         '@/lib/stripe': {
             getStripe: () => ({
@@ -242,9 +243,10 @@ test('actual checkout client sends enrollment and records returned processor ses
             '@/env.mjs': { env: {} },
             '@/config/pricing': { CHECKOUT_UI: 'hosted' },
             '@/lib/dev/report-missing-env': { reportMissingEnv() {} },
+            '@/lib/draft-first': { draftFirstProperties: () => ({}) },
             '@/lib/monthly-offer': { monthlyCheckoutAttribution: () => monthlyOffer },
             '@/components/dashboard/auth-provider': { useAuth: () => ({ userId }) },
-            '../ai': { track: (event, props) => events.push({ event, props }) },
+            '../ai': { getEntrySource: () => 'tool_footer', track: (event, props) => events.push({ event, props }) },
             '../types': { markCheckoutPending() {} },
         },
         {

@@ -1,0 +1,12 @@
+[warn] Ignored unknown option { importOrderSeparation: false }.
+[warn] Ignored unknown option { importOrderSortSpecifiers: true }.
+[warn] Ignored unknown option { importOrderBuiltinModulesToTop: true }.
+[warn] Ignored unknown option { importOrderMergeDuplicateImports: true }.
+[warn] Ignored unknown option { importOrderCombineTypeAndValueImports: true }.
+tests/draft-monthly-integration.test.mjs 56ms (unchanged)
+[warn] Ignored unknown option { importOrderSeparation: false }.
+[warn] Ignored unknown option { importOrderSortSpecifiers: true }.
+[warn] Ignored unknown option { importOrderBuiltinModulesToTop: true }.
+[warn] Ignored unknown option { importOrderMergeDuplicateImports: true }.
+[warn] Ignored unknown option { importOrderCombineTypeAndValueImports: true }.
+tests/monthly-offer.test.mjs 32ms (unchanged)
