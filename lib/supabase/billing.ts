@@ -19,12 +19,13 @@ interface BillingPatch {
 }
 
 /**
- * Fetch billing for the current user. Returns DEFAULT_BILLING when no row exists.
+ * Fetch billing for the expected current identity under RLS. Returns DEFAULT_BILLING when no row exists.
  */
-export async function fetchBilling(client: SupabaseClient): Promise<BillingData> {
+export async function fetchBilling(client: SupabaseClient, userId: string): Promise<BillingData> {
     const { data, error } = await client
         .from('billing')
-        .select('plan, plan_source, plan_renews_at, stripe_customer_id, stripe_subscription_id')
+        .select('user_id, plan, plan_source, plan_renews_at, stripe_customer_id, stripe_subscription_id')
+        .eq('user_id', userId)
         .maybeSingle()
 
     if (error) {
@@ -33,6 +34,7 @@ export async function fetchBilling(client: SupabaseClient): Promise<BillingData>
     }
 
     if (!data) return DEFAULT_BILLING
+    if (data.user_id !== userId) throw new Error('Billing identity mismatch')
 
     return {
         plan: (data.plan ?? 'free') as Plan,

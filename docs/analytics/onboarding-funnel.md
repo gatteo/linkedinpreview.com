@@ -14,6 +14,33 @@
   helper `lib/analytics/server.ts`). Vercel previews run `NODE_ENV=production` and DO
   capture - filter by `$host` when analyzing.
 
+## Monthly-first release contract (EXP-9 revision 2)
+
+This section supersedes the legacy one-hour `purchase_completed` conversion definition for EXP-9.
+
+`paid_conversion_eligible` is persisted and captured before `MonthlyOffer` mounts, sets monthly default, or renders.
+EXP-9 account enrollment and EXP-11 browser daily-lane enrollment use separate storage keys, IDs and clocks.
+Integrating the staged header does not activate EXP-11, reset frozen controls or change the monthly denominator.
+`paid_conversion_identity_linked` bridges a pre-auth enrollment to the authenticated account without resetting its clock.
+One enrollment per account/device bridge persists across remounts and reloads. Production analysis freezes host/test/staff
+exclusions before launch. Known free, paid guardrail and unknown billing are separate strata; failed billing reads never
+become verified free. Render failures remain in enrollment; `onb_offer_variant_view` measures rendered reach only.
+
+All offer/checkout events carry schema_version, enrollment_id, cohort_id=`exp9_monthly_first_v2`,
+assigned_variant=`monthly_first`, eligibility_at, assignment_version/offer_version=`monthly_first_v2`, release_sha,
+entry_source, arrival_source, device_class, billing_state_at_assignment and identity_state. No draft/email/raw URL is sent.
+Original first dashboard touch is persisted separately from billing/OAuth return. Source before that dashboard touch,
+cross-device/account merges, storage loss and blocked telemetry remain explicit attribution limitations.
+
+Checkout's optional validated `monthlyOffer` envelope reaches Session and subscription/payment-intent metadata;
+authenticated user_id/client_reference_id remains authoritative. onb_checkout_opened includes the returned session_id.
+`purchase_completed` includes Stripe event/session/subscription identifiers, livemode/payment_status and attribution,
+but is labeled `requires_processor_reconciliation`. Do not count its events as new recurring purchases.
+
+Sentinel matches positive live settled FIRST subscription invoice/payment, account prior-recurring history and Session
+metadata. Exclude renewals, prior recurring reactivations, lifetime, zero/test and duplicate deliveries from NEW recurring
+truth. Report unmatched purchases separately, never infer a proportional join. See `docs/monthly-first-release.md`.
+
 ## Funnel definition
 
 `funnel_version: v3` = the 17-step audit funnel. Step order:
@@ -160,6 +187,7 @@ The free-tool events are captured before the dashboard onboarding controller, so
 | Event                      | Properties                                               | Meaning                                                                                                                                                                                                                                     |
 | -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `onb_paywall_view`         | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
+| `onb_offer_variant_view`   | `variant: monthly_first`                                 | EXP-9 monthly-first pricing block rendered; reach diagnostic only. The pre-render `paid_conversion_eligible` enrollment, including render/checkout failures, is the denominator.                                                            |
 | `onb_paywall_scroll`       | `depth: 25\|50\|75\|100`                                 | how far the offer was actually read; each milestone fires once. A paywall viewer with NO `onb_paywall_scroll` never scrolled at all, which is what distinguishes a non-reader from a decliner                                               |
 | `onb_paywall_gate_blocked` | -                                                        | the CTA was clicked before the reader reached the end of the offer; the click scrolls them there instead of buying. Counts purchase intent that the old disabled button swallowed                                                           |
 | `onb_offer_select`         | `plan`                                                   | plan card clicked (opens checkout)                                                                                                                                                                                                          |

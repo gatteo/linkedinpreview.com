@@ -1,0 +1,67 @@
+[
+    {
+        "path": "/auth/v1/user",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/api/featurebase/jwt",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/api/linkedin/status",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/api/linkedin/status",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/drafts",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/branding",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/drafts",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/drafts",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/branding",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/drafts",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/branding",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/strategy",
+        "method": "GET",
+        "fixture": true
+    },
+    {
+        "path": "/rest/v1/billing",
+        "method": "GET",
+        "fixture": true
+    }
+]
