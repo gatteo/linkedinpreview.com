@@ -11,6 +11,10 @@ export function useBranding() {
     const { isReady, userId, supabase } = useAuth()
     const [branding, setBranding] = React.useState<BrandingData>(DEFAULT_BRANDING)
     const [isLoading, setIsLoading] = React.useState(true)
+    // A failed read leaves DEFAULT_BRANDING in state, which is indistinguishable
+    // from a genuinely empty profile. Callers that branch on emptiness (the
+    // onboarding gate) must be able to tell the two apart.
+    const [loadFailed, setLoadFailed] = React.useState(false)
 
     // Fetch on mount when auth is ready
     React.useEffect(() => {
@@ -22,12 +26,16 @@ export function useBranding() {
             .then((data) => {
                 if (!cancelled) {
                     setBranding(data)
+                    setLoadFailed(false)
                     setIsLoading(false)
                 }
             })
             .catch(() => {
                 toast.error('Failed to load branding settings')
-                if (!cancelled) setIsLoading(false)
+                if (!cancelled) {
+                    setLoadFailed(true)
+                    setIsLoading(false)
+                }
             })
 
         return () => {
@@ -51,5 +59,5 @@ export function useBranding() {
         [supabase, userId],
     )
 
-    return { branding, isLoading, updateBranding }
+    return { branding, isLoading, loadFailed, updateBranding }
 }
