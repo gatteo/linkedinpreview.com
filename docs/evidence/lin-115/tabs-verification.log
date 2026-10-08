@@ -1,0 +1,458 @@
+TAP version 13
+# Subtest: detects direct and retried upstream 429 failures
+ok 1 - detects direct and retried upstream 429 failures
+  ---
+  duration_ms: 0.414042
+  type: 'test'
+  ...
+# Subtest: does not reclassify provider auth or unknown failures
+ok 2 - does not reclassify provider auth or unknown failures
+  ---
+  duration_ms: 0.059959
+  type: 'test'
+  ...
+# Subtest: affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+    # Subtest: generate: direct provider 429
+    ok 1 - generate: direct provider 429
+      ---
+      duration_ms: 2.233709
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 429
+    ok 2 - generate: retry-wrapped provider 429
+      ---
+      duration_ms: 0.389084
+      type: 'test'
+      ...
+    # Subtest: generate: direct provider 401
+    ok 3 - generate: direct provider 401
+      ---
+      duration_ms: 0.424083
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 401
+    ok 4 - generate: retry-wrapped provider 401
+      ---
+      duration_ms: 0.327625
+      type: 'test'
+      ...
+    # Subtest: generate: generic failure
+    ok 5 - generate: generic failure
+      ---
+      duration_ms: 0.776459
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 429
+    ok 6 - strategy/formats: direct provider 429
+      ---
+      duration_ms: 0.654667
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 429
+    ok 7 - strategy/formats: retry-wrapped provider 429
+      ---
+      duration_ms: 0.3255
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 401
+    ok 8 - strategy/formats: direct provider 401
+      ---
+      duration_ms: 0.295375
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 401
+    ok 9 - strategy/formats: retry-wrapped provider 401
+      ---
+      duration_ms: 0.451
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: generic failure
+    ok 10 - strategy/formats: generic failure
+      ---
+      duration_ms: 0.1645
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 429
+    ok 11 - strategy/positioning: direct provider 429
+      ---
+      duration_ms: 0.348
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 429
+    ok 12 - strategy/positioning: retry-wrapped provider 429
+      ---
+      duration_ms: 0.225709
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 401
+    ok 13 - strategy/positioning: direct provider 401
+      ---
+      duration_ms: 0.102167
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 401
+    ok 14 - strategy/positioning: retry-wrapped provider 401
+      ---
+      duration_ms: 0.095459
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: generic failure
+    ok 15 - strategy/positioning: generic failure
+      ---
+      duration_ms: 0.089042
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 429
+    ok 16 - analyze: direct provider 429
+      ---
+      duration_ms: 0.490958
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 429
+    ok 17 - analyze: retry-wrapped provider 429
+      ---
+      duration_ms: 0.20675
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 401
+    ok 18 - analyze: direct provider 401
+      ---
+      duration_ms: 0.108458
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 401
+    ok 19 - analyze: retry-wrapped provider 401
+      ---
+      duration_ms: 0.107417
+      type: 'test'
+      ...
+    # Subtest: analyze: generic failure
+    ok 20 - analyze: generic failure
+      ---
+      duration_ms: 0.103125
+      type: 'test'
+      ...
+    1..20
+ok 3 - affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+  ---
+  duration_ms: 98.312
+  type: 'test'
+  ...
+# Subtest: affected routes retain the executable handler seam and supplemental provider mapping
+ok 4 - affected routes retain the executable handler seam and supplemental provider mapping
+  ---
+  duration_ms: 3.071916
+  type: 'test'
+  ...
+# Subtest: exact pathname/title allowlist excludes other routes and later cards
+ok 5 - exact pathname/title allowlist excludes other routes and later cards
+  ---
+  duration_ms: 0.695917
+  type: 'test'
+  ...
+# Subtest: /blog/where-are-linkedin-drafts-saved: server fallback, keyboard open, single persistent tool and existing event
+ok 6 - /blog/where-are-linkedin-drafts-saved: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 22.683416
+  type: 'test'
+  ...
+# Subtest: /blog/linkedin-post-length-guide-2026: server fallback, keyboard open, single persistent tool and existing event
+ok 7 - /blog/linkedin-post-length-guide-2026: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 4.903541
+  type: 'test'
+  ...
+# Subtest: /blog/how-to-write-open-to-work-linkedin-post: server fallback, keyboard open, single persistent tool and existing event
+ok 8 - /blog/how-to-write-open-to-work-linkedin-post: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 4.960542
+  type: 'test'
+  ...
+# Subtest: /blog/how-to-draft-linkedin-posts: server fallback, keyboard open, single persistent tool and existing event
+ok 9 - /blog/how-to-draft-linkedin-posts: server fallback, keyboard open, single persistent tool and existing event
+  ---
+  duration_ms: 5.174625
+  type: 'test'
+  ...
+# React does not recognize the `asChild` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `aschild` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `defaultSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `defaultsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `minSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `minsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# React does not recognize the `maxSize` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `maxsize` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+# Subtest: nonmatching cards retain primary label, fallback and navigation without loading Tool
+ok 10 - nonmatching cards retain primary label, fallback and navigation without loading Tool
+  ---
+  duration_ms: 2.473
+  type: 'test'
+  ...
+# Subtest: actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested
+ok 11 - actual Tool keeps default/embed desktop layout and reuses persistent tabs only when requested
+  ---
+  duration_ms: 61.654042
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback removes the capture surface without changing the full-post copy path
+ok 12 - EXP-6 rollback removes the capture surface without changing the full-post copy path
+  ---
+  duration_ms: 9.282666
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+ok 13 - EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+  ---
+  duration_ms: 1.737542
+  type: 'test'
+  ...
+# Subtest: EXP-6 migration makes email dedupe atomic and denies direct client access
+ok 14 - EXP-6 migration makes email dedupe atomic and denies direct client access
+  ---
+  duration_ms: 3.451583
+  type: 'test'
+  ...
+# Subtest: free-tool dashboard CTAs record the canonical entry events
+ok 15 - free-tool dashboard CTAs record the canonical entry events
+  ---
+  duration_ms: 7.934334
+  type: 'test'
+  ...
+# Subtest: upgrade dialog records canonical pricing and purchase-intent events
+ok 16 - upgrade dialog records canonical pricing and purchase-intent events
+  ---
+  duration_ms: 1.516834
+  type: 'test'
+  ...
+# Subtest: event dictionary documents every canonical revenue event
+ok 17 - event dictionary documents every canonical revenue event
+  ---
+  duration_ms: 1.666542
+  type: 'test'
+  ...
+# Subtest: homepage metadata states the free formatter and editor use case
+ok 18 - homepage metadata states the free formatter and editor use case
+  ---
+  duration_ms: 0.424084
+  type: 'test'
+  ...
+# Subtest: dashboard nudge uses the clear free-plan EXP-1 variant without changing its mechanics
+ok 19 - dashboard nudge uses the clear free-plan EXP-1 variant without changing its mechanics
+  ---
+  duration_ms: 3.750458
+  type: 'test'
+  ...
+# Subtest: paywall purchase CTA starts plan selection without a scroll gate
+ok 20 - paywall purchase CTA starts plan selection without a scroll gate
+  ---
+  duration_ms: 1.021667
+  type: 'test'
+  ...
+# Subtest: display policy keeps prices and the monthly window unchanged
+ok 21 - display policy keeps prices and the monthly window unchanged
+  ---
+  duration_ms: 0.298083
+  type: 'test'
+  ...
+# Subtest: rendered terms scope prospective lifetime policy and retain mandatory rights
+ok 22 - rendered terms scope prospective lifetime policy and retain mandatory rights
+  ---
+  duration_ms: 18.992667
+  type: 'test'
+  ...
+# Subtest: onboarding monthly selection renders only its refund policy
+ok 23 - onboarding monthly selection renders only its refund policy
+  ---
+  duration_ms: 54.900083
+  type: 'test'
+  ...
+# Subtest: upgrade monthly checkout selection renders only its refund policy
+ok 24 - upgrade monthly checkout selection renders only its refund policy
+  ---
+  duration_ms: 11.465375
+  type: 'test'
+  ...
+# Subtest: onboarding lifetime selection renders only its refund policy
+ok 25 - onboarding lifetime selection renders only its refund policy
+  ---
+  duration_ms: 36.882959
+  type: 'test'
+  ...
+# Subtest: upgrade lifetime checkout selection renders only its refund policy
+ok 26 - upgrade lifetime checkout selection renders only its refund policy
+  ---
+  duration_ms: 9.705959
+  type: 'test'
+  ...
+# Subtest: upgrade plan picker and checkout-error fallback show scoped policy on each card
+ok 27 - upgrade plan picker and checkout-error fallback show scoped policy on each card
+  ---
+  duration_ms: 14.826125
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves root path
+ok 28 - UtmUrl preserves root path
+  ---
+  duration_ms: 0.369666
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters
+ok 29 - UtmUrl preserves existing query parameters
+  ---
+  duration_ms: 0.049417
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves fragment
+ok 30 - UtmUrl preserves fragment
+  ---
+  duration_ms: 0.039875
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters and fragment
+ok 31 - UtmUrl preserves existing query parameters and fragment
+  ---
+  duration_ms: 0.040875
+  type: 'test'
+  ...
+1..31
+# tests 51
+# suites 0
+# pass 51
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 463.840209
+$ tsc --noEmit
+$ eslint .
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/dashboard/posts-table.tsx
+  256:19  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/dashboard/posts-table.tsx:256:19
+  254 |     const columns = React.useMemo(() => createColumns(onDuplicate, onDelete), [onDuplicate, onDelete])
+  255 |
+> 256 |     const table = useReactTable({
+      |                   ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  257 |         data,
+  258 |         columns,
+  259 |         state: { sorting, columnVisibility, rowSelection, columnFilters },  react-hooks/incompatible-library
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/shadcn-demo/data-table.tsx
+  315:19  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/components/shadcn-demo/data-table.tsx:315:19
+  313 |     const dataIds = React.useMemo<UniqueIdentifier[]>(() => data?.map(({ id }) => id) || [], [data])
+  314 |
+> 315 |     const table = useReactTable({
+      |                   ^^^^^^^^^^^^^ TanStack Table's `useReactTable()` API returns functions that cannot be memoized safely
+  316 |         data,
+  317 |         columns,
+  318 |         state: {  react-hooks/incompatible-library
+
+✖ 2 problems (0 errors, 2 warnings)
+
+$ rm -rf .next .contentlayer tsconfig.tsbuildinfo
+$ NODE_ENV=production contentlayer build; next build
+Generated 209 documents in .contentlayer
+TypeError: The "code" argument must be of type number. Received an instance of Object
+    at process.set [as exitCode] (node:internal/bootstrap/node:122:9)
+    at Cli.runExit (/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/clipanion@3.2.1_typanion@3.14.0/node_modules/clipanion/lib/advanced/Cli.js:232:26)
+    at run (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/@contentlayer+cli@0.3.4_esbuild@0.18.20/node_modules/@contentlayer/cli/src/index.ts:39:3)
+    at main (/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/contentlayer@0.3.4_esbuild@0.18.20/node_modules/contentlayer/bin/cli.cjs:5:3) {
+  code: 'ERR_INVALID_ARG_TYPE'
+}
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.1s
+  Skipping validation of types
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/263) ...
+  Generating static pages using 9 workers (65/263) 
+  Generating static pages using 9 workers (131/263) 
+  Generating static pages using 9 workers (197/263) 
+✓ Generating static pages using 9 workers (263/263) in 1507.7ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/analytics/insights
+├ ƒ /api/analytics/linkedin
+├ ƒ /api/analytics/refresh-metrics
+├ ƒ /api/analyze
+├ ƒ /api/billing/checkout
+├ ƒ /api/billing/portal
+├ ƒ /api/billing/webhook
+├ ƒ /api/carousel/edit
+├ ƒ /api/carousel/generate
+├ ƒ /api/chat
+├ ƒ /api/cron/publish
+├ ƒ /api/cron/sync-analytics
+├ ƒ /api/extract
+├ ƒ /api/featurebase/jwt
+├ ƒ /api/generate
+├ ƒ /api/ideas
+├ ƒ /api/leads
+├ ƒ /api/link-preview
+├ ƒ /api/linkedin/analytics/auth
+├ ƒ /api/linkedin/analytics/callback
+├ ƒ /api/linkedin/auth
+├ ƒ /api/linkedin/callback
+├ ƒ /api/linkedin/disconnect
+├ ƒ /api/linkedin/publish
+├ ƒ /api/linkedin/status
+├ ƒ /api/linkedin/switch
+├ ƒ /api/onboarding/enrich
+├ ƒ /api/onboarding/enrich/status
+├ ƒ /api/onboarding/first-post
+├ ƒ /api/onboarding/insights
+├ ƒ /api/strategy/formats
+├ ƒ /api/strategy/positioning
+├ ƒ /api/suggestions
+├ ƒ /auth/confirm
+├ ƒ /blog
+├ ● /blog/[slug]
+│ ├ /blog/linkedin-conference-post-2026
+│ ├ /blog/linkedin-dwell-time-2026
+│ ├ /blog/how-to-get-more-linkedin-followers-2026
+│ └ [+193 more paths]
+├ ○ /changelog
+├ ○ /compare
+├ ● /compare/[slug]
+│ ├ /compare/authoredup
+│ ├ /compare/publer
+│ ├ /compare/supergrow
+│ └ [+3 more paths]
+├ ○ /dash-example
+├ ○ /dashboard
+├ ○ /dashboard/analytics
+├ ○ /dashboard/branding
+├ ○ /dashboard/calendar
+├ ○ /dashboard/carousel
+├ ○ /dashboard/carousel/editor
+├ ○ /dashboard/editor
+├ ○ /dashboard/settings
+├ ○ /dashboard/strategy
+├ ○ /embed
+├ ○ /formatter
+├ ○ /linkedin-link-preview
+├ ○ /linkedin-post-generator
+├ ○ /linkedin-vorschau
+├ ƒ /llms.txt
+├ ƒ /preview
+├ ○ /privacy
+├ ○ /robots.txt
+├ ƒ /rss.xml
+├ ○ /sitemap.xml
+└ ○ /terms
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

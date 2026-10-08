@@ -1,12 +1,26 @@
+'use client'
+
+import { useEffect, useId, useRef, useState, type MouseEvent } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { UtmUrl } from '@/utils/urls'
 
 import { UtmMediums } from '@/types/urls'
+import { articleToolEntry } from '@/config/article-tool-entries'
 import { cn, shineAnimation } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { TrackClick } from '@/components/tracking/track-click'
 
-import { TrackClick } from './tracking/track-click'
+const ArticleTool = dynamic(() => import('@/components/tool/tool').then((mod) => mod.Tool), {
+    loading: () => (
+        <p className='p-6' role='status'>
+            Loading the free editor...
+        </p>
+    ),
+    ssr: false,
+})
 
 type Props = {
     title: string
@@ -29,6 +43,31 @@ export function CtaCard({
     pattern = 'circles',
     align = 'center',
 }: Props) {
+    const entry = articleToolEntry(usePathname(), title)
+    const [opened, setOpened] = useState(false)
+    const toolId = useId()
+    const toolRef = useRef<HTMLDivElement>(null)
+    const buttonText = entry?.buttonText ?? primaryButtonText
+
+    useEffect(() => {
+        if (opened) toolRef.current?.focus({ preventScroll: true })
+    }, [opened])
+
+    function openTool(event: MouseEvent<HTMLAnchorElement>) {
+        if (
+            !entry ||
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+        )
+            return
+        event.preventDefault()
+        setOpened(true)
+    }
+
     return (
         <Card
             className={cn(
@@ -44,6 +83,7 @@ export function CtaCard({
                     <div className={cn('text-balance', align === 'center' && 'text-center')}>
                         <CardTitle className='font-heading tracking-wide'>{title}</CardTitle>
                         <CardDescription className='mt-2'>{description}</CardDescription>
+                        {entry && <p className='text-muted-foreground mt-2 text-sm'>{entry.supportingCopy}</p>}
                     </div>
                     <div className='flex gap-4'>
                         {secondaryButtonText && secondaryButtonUrl && (
@@ -70,17 +110,21 @@ export function CtaCard({
                             event='cta_card_clicked'
                             properties={{
                                 button_type: 'primary',
-                                button_text: primaryButtonText,
+                                button_text: buttonText,
                                 button_url: primaryButtonUrl,
                                 card_title: title,
                             }}>
                             <Button asChild>
                                 <Link
+                                    onClick={openTool}
+                                    aria-expanded={entry ? opened : undefined}
+                                    aria-controls={entry ? toolId : undefined}
+                                    prefetch={entry ? false : undefined}
                                     href={UtmUrl(primaryButtonUrl, {
                                         medium: UtmMediums.Blog,
                                         content: 'card_cta',
                                     })}>
-                                    {primaryButtonText}
+                                    {buttonText}
                                 </Link>
                             </Button>
                         </TrackClick>
@@ -94,6 +138,18 @@ export function CtaCard({
                     style={{ backgroundImage: `url('/images/patterns/${pattern}.png')` }}
                 />
             </div>
+            {entry && opened && (
+                <div
+                    id={toolId}
+                    ref={toolRef}
+                    tabIndex={-1}
+                    role='region'
+                    aria-label={entry.buttonText}
+                    data-article-tool={entry.pathname}
+                    className='min-w-0 outline-none [&>section>div]:border-0 [&>section>div]:py-6 [&>section>div]:sm:px-4'>
+                    <ArticleTool layout='tabs' />
+                </div>
+            )}
         </Card>
     )
 }

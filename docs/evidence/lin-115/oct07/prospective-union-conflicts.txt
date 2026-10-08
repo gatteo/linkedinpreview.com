@@ -1,0 +1,5 @@
+app/api/billing/checkout/route.schema.ts
+app/api/billing/checkout/route.ts
+app/api/billing/webhook/route.ts
+components/dashboard/onboarding/ai.ts
+components/dashboard/onboarding/steps/checkout.tsx

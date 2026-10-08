@@ -1,0 +1,39 @@
+{
+    "scope": "local current-main application only, not READY preview or production approval",
+    "base": "86011f3beb217cf5902a740a9b6cc5bd7033244a",
+    "local_application_merge": "e824e35035bc351cfc4db89228babce8762ed392",
+    "remote_head_at_failed_delivery": "4720e9df6563915a8b2aeccbead01de36abedb85",
+    "behavior_records": 74,
+    "diagnostic_records": 5,
+    "error_records": 25,
+    "nonempty_error_records": [],
+    "contexts": 25,
+    "closed_contexts": 25,
+    "article_width_flows": 8,
+    "native_clipboard_article_checks": 8,
+    "prospective_monthly_tests": 111,
+    "prospective_draft_initial": {
+        "pass": 125,
+        "fail": 1,
+        "cause": "layout-only missing draft-first test mock"
+    },
+    "prospective_draft_corrected_tests": 126,
+    "prospective_union_conflicts": [
+        "app/api/billing/checkout/route.schema.ts",
+        "app/api/billing/checkout/route.ts",
+        "app/api/billing/webhook/route.ts",
+        "components/dashboard/onboarding/ai.ts",
+        "components/dashboard/onboarding/steps/checkout.tsx"
+    ],
+    "excluded_harness_attempts": [
+        "Invisible editor innerText is empty in Preview; diagnostics retain identical textContent/state on returning Editor. Corrected native media assertion uses textContent.",
+        "Dashboard assertion expected nonexistent Dashboard literal; actual route is Posts. Corrected desktop/mobile Posts assertions passed.",
+        "First focused invocation included nonexistent draft-import.test.mjs ignored by Node. Corrected existing-only command ran 42 actual tests."
+    ],
+    "pending": [
+        "Normal push of same #105 once GitHub delivery recovers",
+        "READY changed-application preview and contained remote smoke, including import/return precedence",
+        "Independent Sentinel changed-head review",
+        "Atlas actual priority squashes and actual-main re-reconciliation before launch"
+    ]
+}

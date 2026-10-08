@@ -31,6 +31,7 @@ export type Media = { type: 'image' | 'video'; src: string }
 
 type ToolProps = {
     variant?: 'default' | 'embed'
+    layout?: 'auto' | 'tabs'
     injectedDoc?: any
 }
 
@@ -76,7 +77,7 @@ function isSameDoc(a: any, b: any): boolean {
     }
 }
 
-export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
+export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
@@ -87,7 +88,8 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
     // breakpoint remounts the editor, which is what rotating a phone does.
     const [pendingDoc, setPendingDoc] = React.useState<any>(null)
     const [isLoading, setIsLoading] = React.useState(true)
-    const isDesktop = useIsDesktop()
+    const isDesktopViewport = useIsDesktop()
+    const isDesktop = layout === 'auto' && isDesktopViewport
 
     const { flush } = useDraftPersistence(content)
 
@@ -370,9 +372,14 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                 // needs no re-measure on the way back.
                 <div className='relative flex min-h-0 flex-1'>
                     <div
+                        aria-hidden={layout === 'tabs' && mobileTab !== 'editor' ? true : undefined}
+                        inert={layout === 'tabs' && mobileTab !== 'editor'}
                         className={cn(
                             'flex flex-col',
                             mobileTab === 'editor' ? 'min-w-0 flex-1' : 'invisible absolute inset-0',
+                            layout === 'tabs' &&
+                                mobileTab !== 'editor' &&
+                                'pointer-events-none opacity-0 [&_button]:transition-none',
                         )}>
                         <EditorPanel
                             initialContent={seedDoc}
@@ -385,9 +392,14 @@ export function Tool({ variant = 'default', injectedDoc }: ToolProps) {
                         />
                     </div>
                     <div
+                        aria-hidden={layout === 'tabs' && mobileTab !== 'preview' ? true : undefined}
+                        inert={layout === 'tabs' && mobileTab !== 'preview'}
                         className={cn(
                             'flex flex-col',
                             mobileTab === 'preview' ? 'w-full flex-1' : 'invisible absolute inset-0',
+                            layout === 'tabs' &&
+                                mobileTab !== 'preview' &&
+                                'pointer-events-none opacity-0 [&_button]:transition-none',
                         )}>
                         <PreviewPanel
                             content={content}

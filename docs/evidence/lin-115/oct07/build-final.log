@@ -1,0 +1,103 @@
+$ NODE_ENV=production contentlayer build; next build
+Generated 209 documents in .contentlayer
+TypeError: The "code" argument must be of type number. Received an instance of Object
+    at process.set [as exitCode] (node:internal/bootstrap/node:122:9)
+    at Cli.runExit (/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/clipanion@3.2.1_typanion@3.14.0/node_modules/clipanion/lib/advanced/Cli.js:232:26)
+    at run (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/@contentlayer+cli@0.3.4_esbuild@0.18.20/node_modules/@contentlayer/cli/src/index.ts:39:3)
+    at main (/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/node_modules/.pnpm/contentlayer@0.3.4_esbuild@0.18.20/node_modules/contentlayer/bin/cli.cjs:5:3) {
+  code: 'ERR_INVALID_ARG_TYPE'
+}
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.0s
+  Skipping validation of types
+  Collecting page data using 9 workers ...
+  Generating static pages using 9 workers (0/263) ...
+  Generating static pages using 9 workers (65/263) 
+  Generating static pages using 9 workers (131/263) 
+  Generating static pages using 9 workers (197/263) 
+✓ Generating static pages using 9 workers (263/263) in 1437.4ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/analytics/insights
+├ ƒ /api/analytics/linkedin
+├ ƒ /api/analytics/refresh-metrics
+├ ƒ /api/analyze
+├ ƒ /api/billing/checkout
+├ ƒ /api/billing/portal
+├ ƒ /api/billing/webhook
+├ ƒ /api/carousel/edit
+├ ƒ /api/carousel/generate
+├ ƒ /api/chat
+├ ƒ /api/cron/publish
+├ ƒ /api/cron/sync-analytics
+├ ƒ /api/extract
+├ ƒ /api/featurebase/jwt
+├ ƒ /api/generate
+├ ƒ /api/ideas
+├ ƒ /api/leads
+├ ƒ /api/link-preview
+├ ƒ /api/linkedin/analytics/auth
+├ ƒ /api/linkedin/analytics/callback
+├ ƒ /api/linkedin/auth
+├ ƒ /api/linkedin/callback
+├ ƒ /api/linkedin/disconnect
+├ ƒ /api/linkedin/publish
+├ ƒ /api/linkedin/status
+├ ƒ /api/linkedin/switch
+├ ƒ /api/onboarding/enrich
+├ ƒ /api/onboarding/enrich/status
+├ ƒ /api/onboarding/first-post
+├ ƒ /api/onboarding/insights
+├ ƒ /api/strategy/formats
+├ ƒ /api/strategy/positioning
+├ ƒ /api/suggestions
+├ ƒ /auth/confirm
+├ ƒ /blog
+├ ● /blog/[slug]
+│ ├ /blog/linkedin-conference-post-2026
+│ ├ /blog/linkedin-dwell-time-2026
+│ ├ /blog/how-to-get-more-linkedin-followers-2026
+│ └ [+193 more paths]
+├ ○ /changelog
+├ ○ /compare
+├ ● /compare/[slug]
+│ ├ /compare/authoredup
+│ ├ /compare/publer
+│ ├ /compare/supergrow
+│ └ [+3 more paths]
+├ ○ /dash-example
+├ ○ /dashboard
+├ ○ /dashboard/analytics
+├ ○ /dashboard/branding
+├ ○ /dashboard/calendar
+├ ○ /dashboard/carousel
+├ ○ /dashboard/carousel/editor
+├ ○ /dashboard/editor
+├ ○ /dashboard/settings
+├ ○ /dashboard/strategy
+├ ○ /embed
+├ ○ /formatter
+├ ○ /linkedin-link-preview
+├ ○ /linkedin-post-generator
+├ ○ /linkedin-vorschau
+├ ƒ /llms.txt
+├ ƒ /preview
+├ ○ /privacy
+├ ○ /robots.txt
+├ ƒ /rss.xml
+├ ○ /sitemap.xml
+└ ○ /terms
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
