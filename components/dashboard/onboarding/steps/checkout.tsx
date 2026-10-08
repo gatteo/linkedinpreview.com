@@ -9,6 +9,8 @@ import { env } from '@/env.mjs'
 import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
 import { reportMissingEnv } from '@/lib/dev/report-missing-env'
 import { draftFirstProperties } from '@/lib/draft-first'
+import { monthlyCheckoutAttribution } from '@/lib/monthly-offer'
+import { useAuth } from '@/components/dashboard/auth-provider'
 
 import { getEntrySource, track } from '../ai'
 import { markCheckoutPending } from '../types'
@@ -30,6 +32,7 @@ type OnboardingCheckoutProps = {
 }
 
 export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onError }: OnboardingCheckoutProps) {
+    const { userId } = useAuth()
     const [clientSecret, setClientSecret] = React.useState<string | null>(null)
     const onCompleteRef = React.useRef(onComplete)
     const onErrorRef = React.useRef(onError)
@@ -67,6 +70,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                 cohortId: draftFirstProperties().cohort_id,
                 assignedVariant: draftFirstProperties().assigned_variant,
                 offerVersion: draftFirstProperties().offer_version,
+                monthlyOffer: monthlyCheckoutAttribution(userId),
             }),
         })
             .then(async (res) => {
@@ -105,7 +109,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
         return () => {
             cancelled = true
         }
-    }, [plan, source])
+    }, [plan, source, userId])
 
     // Unmounting an opened checkout without completing = the user backed out of
     // the payment form (plan switch, decline, or navigation).

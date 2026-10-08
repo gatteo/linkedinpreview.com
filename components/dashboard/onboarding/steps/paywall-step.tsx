@@ -26,8 +26,10 @@ import {
     type CheckoutPlan,
 } from '@/config/pricing'
 import { SOCIAL_PROOF } from '@/config/social-proof'
+import { enrollMonthlyOffer, monthlyOfferProperties, type MonthlyEnrollment } from '@/lib/monthly-offer'
 import { cn } from '@/lib/utils'
 import { usePlan } from '@/hooks/use-plan'
+import { useAuth } from '@/components/dashboard/auth-provider'
 import { PostCard } from '@/components/tool/preview/post-card'
 import { ScreenSizeProvider } from '@/components/tool/preview/preview-size-context'
 
@@ -60,6 +62,28 @@ function seededSocialCounts(seed: string) {
 }
 
 export function PaywallStep() {
+    const { userId, isReady, isAnonymous } = useAuth()
+    const { isLoading, isPaid, billingResolved, billingUserId } = usePlan()
+    const [assignment, setAssignment] = React.useState<{ userId: string | null; enrollment: MonthlyEnrollment } | null>(
+        null,
+    )
+    React.useEffect(() => {
+        if (!isReady || isLoading || billingUserId !== userId) return
+        setAssignment({
+            userId,
+            enrollment: enrollMonthlyOffer({
+                userId,
+                isAnonymous,
+                billingState: billingResolved ? (isPaid ? 'paid' : 'free') : 'unknown',
+                capture: track,
+            }),
+        })
+    }, [userId, isReady, isAnonymous, isLoading, isPaid, billingResolved, billingUserId])
+    if (!assignment || assignment.userId !== userId) return <div role='status'>Loading your plan...</div>
+    return <MonthlyOffer key={assignment.enrollment.enrollmentId} enrollment={assignment.enrollment} />
+}
+
+export function MonthlyOffer({ enrollment }: { enrollment: MonthlyEnrollment }) {
     const { answers, finishOffer, role, setUninterruptible } = useOnboarding()
     const { refresh } = usePlan()
     const fn = firstName(answers.profile.name)
@@ -69,7 +93,7 @@ export function PaywallStep() {
     const wedge = answers.topics[0] || answers.insights?.currentTopics[0] || ''
     const langPair = languageCodePair(answers.identity)
 
-    const [selected, setSelected] = React.useState<CheckoutPlan>('lifetime')
+    const [selected, setSelected] = React.useState<CheckoutPlan>('monthly')
     const [checkout, setCheckout] = React.useState(false)
     const [checkoutError, setCheckoutError] = React.useState(false)
 
@@ -104,7 +128,8 @@ export function PaywallStep() {
     })
 
     React.useEffect(() => {
-        track('onb_paywall_view', { ideas: answers.postIdeas?.length ?? 0 })
+        track('onb_paywall_view', { ...monthlyOfferProperties(enrollment), ideas: answers.postIdeas?.length ?? 0 })
+        track('onb_offer_variant_view', { ...monthlyOfferProperties(enrollment), variant: 'monthly_first' })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -362,20 +387,11 @@ export function PaywallStep() {
                         Checkout is not available right now. You can continue on the free plan and upgrade later.
                     </p>
                 )}
-                <GoldenTicket
-                    selected={selected === 'lifetime'}
-                    onSelect={() => setSelected('lifetime')}
-                    name={answers.profile.name}
-                    avatarUrl={answers.profile.avatarUrl}
-                />
-                <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
-                    or
-                </div>
                 <button
                     type='button'
                     onClick={() => setSelected('monthly')}
                     className={cn(
-                        'flex w-full cursor-pointer items-center gap-3.5 rounded-[13px] border px-4 py-[15px] text-left transition-colors',
+                        'mt-4 flex w-full cursor-pointer items-center gap-3.5 rounded-[13px] border px-4 py-[15px] text-left transition-colors',
                         selected === 'monthly'
                             ? 'border-primary bg-[color-mix(in_oklch,var(--primary)_7%,var(--card))] shadow-[0_0_0_1px_var(--primary)]'
                             : 'bg-secondary border-border hover:border-primary/50',
@@ -389,7 +405,9 @@ export function PaywallStep() {
                         )}
                     />
                     <span className='min-w-0'>
-                        <b className='font-heading text-[15px] font-semibold'>Monthly</b>
+                        <span className='flex items-center gap-2'>
+                            <b className='font-heading text-[15px] font-semibold'>Monthly</b>
+                        </span>
                         <span className='text-muted-foreground mt-0.5 block text-xs'>
                             Billed monthly. Cancel anytime.
                         </span>
@@ -399,6 +417,15 @@ export function PaywallStep() {
                         <span className='text-muted-foreground ml-[3px] text-xs'>/mo</span>
                     </span>
                 </button>
+                <div className='text-muted-foreground my-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.08em] uppercase before:h-px before:flex-1 before:bg-[var(--border)] after:h-px after:flex-1 after:bg-[var(--border)]'>
+                    or
+                </div>
+                <GoldenTicket
+                    selected={selected === 'lifetime'}
+                    onSelect={() => setSelected('lifetime')}
+                    name={answers.profile.name}
+                    avatarUrl={answers.profile.avatarUrl}
+                />
 
                 <div className='text-muted-foreground mt-4 flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-[12.5px]'>
                     <span className='inline-flex items-center gap-1.5'>

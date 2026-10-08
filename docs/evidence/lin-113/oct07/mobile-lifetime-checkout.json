@@ -1,0 +1,14 @@
+{
+    "plan": "lifetime",
+    "source": "onboarding",
+    "monthlyOffer": {
+        "enrollmentId": "a878093f-9af1-4f6e-855b-26e69cc6ccfc",
+        "cohortId": "exp9_monthly_first_v2",
+        "assignedVariant": "monthly_first",
+        "eligibilityAt": "2026-10-07T11:11:46.863Z",
+        "offerVersion": "monthly_first_v2",
+        "entrySource": "navbar",
+        "billingState": "free",
+        "releaseSha": "6b975c502bbc51f3e0be67b160894c7df4c66e62"
+    }
+}

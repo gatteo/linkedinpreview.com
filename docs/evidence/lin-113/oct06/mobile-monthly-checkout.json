@@ -1,0 +1,14 @@
+{
+    "plan": "monthly",
+    "source": "onboarding",
+    "monthlyOffer": {
+        "enrollmentId": "71e353e8-7a2b-481a-b6ae-bd1cc1124838",
+        "cohortId": "exp9_monthly_first_v2",
+        "assignedVariant": "monthly_first",
+        "eligibilityAt": "2026-10-06T05:50:40.742Z",
+        "offerVersion": "monthly_first_v2",
+        "entrySource": "navbar",
+        "billingState": "free",
+        "releaseSha": "80435eecd3231162a33dab1e125d667ecd43dcac"
+    }
+}

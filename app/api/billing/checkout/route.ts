@@ -26,8 +26,17 @@ export async function POST(request: Request) {
     if (!parsed.success) {
         return Response.json({ error: 'Invalid plan', code: 'INVALID_INPUT' }, { status: 400 })
     }
-    const { plan, source, entrySource, exposureId, eligibilityAt, cohortId, assignedVariant, offerVersion } =
-        parsed.data
+    const {
+        plan,
+        source,
+        entrySource,
+        exposureId,
+        eligibilityAt,
+        cohortId,
+        assignedVariant,
+        offerVersion,
+        monthlyOffer,
+    } = parsed.data
 
     const supabase = await createClient()
     const {
@@ -70,6 +79,31 @@ export async function POST(request: Request) {
                           offer_version: offerVersion ?? 'existing_offer',
                       }
                     : {}),
+                ...(exposureId && cohortId
+                    ? {
+                          draft_enrollment_id: exposureId,
+                          draft_cohort_id: cohortId,
+                          draft_assigned_variant: assignedVariant ?? 'draft_first',
+                          draft_assignment_version: DRAFT_FIRST_VERSION,
+                          ...(eligibilityAt ? { draft_eligibility_at: eligibilityAt } : {}),
+                          draft_offer_version: offerVersion ?? 'existing_offer',
+                          draft_entry_source: entrySource,
+                      }
+                    : {}),
+                ...(monthlyOffer
+                    ? {
+                          enrollment_id: monthlyOffer.enrollmentId,
+                          cohort_id: monthlyOffer.cohortId,
+                          assigned_variant: monthlyOffer.assignedVariant,
+                          eligibility_at: monthlyOffer.eligibilityAt,
+                          assignment_version: monthlyOffer.offerVersion,
+                          offer_version: monthlyOffer.offerVersion,
+                          entry_source: exposureId ? entrySource : monthlyOffer.entrySource,
+                          monthly_entry_source: monthlyOffer.entrySource,
+                          billing_state_at_assignment: monthlyOffer.billingState,
+                          release_sha: monthlyOffer.releaseSha,
+                      }
+                    : {}),
             },
             // Without this Stripe renders no promotion-code field at all, so any
             // coupon we issue is unredeemable.
@@ -81,7 +115,7 @@ export async function POST(request: Request) {
             // where the initiating surface (source) resumes via the query params.
             const origin = new URL(request.url).origin
             params.ui_mode = 'hosted_page'
-            const attribution = `&entry_source=${entrySource}${exposureId ? `&activation=${exposureId}` : ''}`
+            const attribution = `&entry_source=${exposureId ? entrySource : (monthlyOffer?.entrySource ?? entrySource)}${exposureId ? `&activation=${exposureId}` : ''}${monthlyOffer ? `&offer_enrollment=${monthlyOffer.enrollmentId}` : ''}`
             params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
             params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
         } else {
