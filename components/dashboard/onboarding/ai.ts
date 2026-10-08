@@ -20,6 +20,8 @@ import type {
 import { OB_FUNNEL_VERSION } from '@/config/analytics'
 import type { ResolvedEntrySource } from '@/config/entry-sources'
 import type { Role } from '@/config/onboarding-personalization'
+import { draftFirstProperties } from '@/lib/draft-first'
+import { monthlyOfferProperties, rememberOfferEntry } from '@/lib/monthly-offer'
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import type { StrategyAudience, StrategyGoal } from '@/lib/strategy'
 
@@ -299,8 +301,23 @@ let entrySource: ResolvedEntrySource = 'direct'
 
 export function setEntrySource(source: ResolvedEntrySource) {
     entrySource = source
+    rememberOfferEntry(source)
+}
+
+export function getEntrySource(): ResolvedEntrySource {
+    return entrySource
 }
 
 export function track(event: string, props?: Record<string, unknown>) {
-    posthog?.capture(event, { funnel_version: OB_FUNNEL_VERSION, entry_source: entrySource, ...props })
+    posthog?.capture(event, {
+        funnel_version: OB_FUNNEL_VERSION,
+        ...draftFirstProperties(),
+        entry_source: entrySource,
+        ...monthlyOfferProperties(),
+        draft_enrollment_id: draftFirstProperties().enrollment_id,
+        draft_cohort_id: draftFirstProperties().cohort_id,
+        draft_eligibility_at: draftFirstProperties().eligibility_at,
+        draft_entry_source: draftFirstProperties().entry_source,
+        ...props,
+    })
 }

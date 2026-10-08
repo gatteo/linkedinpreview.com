@@ -110,6 +110,7 @@ export async function createDraft(
     initialContent?: any,
     label?: string | null,
     kind: DraftKind = 'post',
+    media: DraftContent['media'] = null,
 ): Promise<DraftManifestEntry> {
     const id = crypto.randomUUID()
     const title = extractTitle(initialContent)
@@ -124,7 +125,7 @@ export async function createDraft(
             title,
             kind,
             content: initialContent ?? null,
-            media: null,
+            media,
             status: 'draft',
             label: label ?? null,
             word_count: stats.wordCount,

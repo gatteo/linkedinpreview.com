@@ -1,0 +1,15 @@
+{
+    "id": "dpl_6Sm4ocxPw7q2BwSALfHpug4r3Cco",
+    "url": "linkedinpreview-9n9vdduaa-gatteos.vercel.app",
+    "target": null,
+    "readyState": "READY",
+    "gitSource": {
+        "ref": "feat/lin-108-draft-first",
+        "repoId": 786897221,
+        "sha": "14e3226c3cf127382734140893db43946c29fb6d",
+        "type": "github",
+        "prId": null
+    },
+    "errorCode": null,
+    "errorMessage": null
+}

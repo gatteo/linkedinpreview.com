@@ -10,11 +10,7 @@ export async function encodeDraft(content: any): Promise<string | null> {
         const bytes = new TextEncoder().encode(json)
 
         const cs = new CompressionStream('deflate-raw')
-        const writer = cs.writable.getWriter()
-        writer.write(bytes)
-        writer.close()
-
-        const compressed = await new Response(cs.readable).arrayBuffer()
+        const compressed = await new Response(new Response(bytes).body!.pipeThrough(cs)).arrayBuffer()
         // base64url: standard base64 with +→- /→_ and no padding
         const base64 = btoa(String.fromCharCode(...new Uint8Array(compressed)))
         return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -34,11 +30,7 @@ export async function decodeDraft(encoded: string): Promise<any | null> {
         const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
 
         const ds = new DecompressionStream('deflate-raw')
-        const writer = ds.writable.getWriter()
-        writer.write(bytes)
-        writer.close()
-
-        const decompressed = await new Response(ds.readable).arrayBuffer()
+        const decompressed = await new Response(new Response(bytes).body!.pipeThrough(ds)).arrayBuffer()
         const json = new TextDecoder().decode(decompressed)
         return JSON.parse(json)
     } catch {

@@ -1,0 +1,159 @@
+{
+    "checks": [
+        {
+            "name": "desktop fixture before state reset",
+            "pass": true
+        },
+        {
+            "name": "free typing updates preview",
+            "pass": true
+        },
+        {
+            "name": "free native clipboard success",
+            "pass": true
+        },
+        {
+            "name": "desktop imported editor before planning",
+            "pass": true
+        },
+        {
+            "name": "desktop hydration excluded",
+            "pass": true
+        },
+        {
+            "name": "desktop navigation saves and marks used before debounce",
+            "pass": true
+        },
+        {
+            "name": "desktop dashboard renders",
+            "pass": true
+        },
+        {
+            "name": "desktop no uncaught errors",
+            "pass": true
+        },
+        {
+            "name": "mobile fixture before state reset",
+            "pass": true
+        },
+        {
+            "name": "mobile imported editor before planning",
+            "pass": true
+        },
+        {
+            "name": "mobile hydration excluded",
+            "pass": true
+        },
+        {
+            "name": "mobile navigation saves and marks used before debounce",
+            "pass": true
+        },
+        {
+            "name": "mobile dashboard renders",
+            "pass": true
+        },
+        {
+            "name": "mobile no uncaught errors",
+            "pass": true
+        },
+        {
+            "name": "blog route renders",
+            "pass": true
+        }
+    ],
+    "evidence": [
+        {
+            "mode": "desktop",
+            "path": "/dashboard",
+            "choice": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "8f07324d-c4c3-40b2-836e-9dcab9837ed0",
+                "eligibilityAt": "2026-10-05T21:59:06.062Z",
+                "draftId": "9fb4ed82-ee8e-4520-b370-067fbf369b63",
+                "used": true
+            },
+            "rows": [
+                {
+                    "id": "9fb4ed82-ee8e-4520-b370-067fbf369b63",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN108 revision navigation saved edit",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN108 revision navigation saved edit"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": null,
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 5,
+                    "char_count": 37,
+                    "created_at": "2026-10-05T21:59:06.880Z",
+                    "updated_at": "2026-10-05T21:59:09.224Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ],
+            "saveMs": [245.40000000596046],
+            "errors": []
+        },
+        {
+            "mode": "mobile",
+            "path": "/dashboard",
+            "choice": {
+                "version": "imported_draft_v1",
+                "entrySource": "tool_footer",
+                "exposureId": "11111111-1111-4111-8111-111111111111",
+                "draftId": "34de84f1-0c01-41a4-9636-bbdfc88c6e8d",
+                "used": true
+            },
+            "rows": [
+                {
+                    "id": "34de84f1-0c01-41a4-9636-bbdfc88c6e8d",
+                    "user_id": "11111111-1111-4111-8111-111111111111",
+                    "title": "LIN108 revision navigation saved edit",
+                    "kind": "post",
+                    "content": {
+                        "type": "doc",
+                        "content": [
+                            {
+                                "type": "paragraph",
+                                "content": [
+                                    {
+                                        "type": "text",
+                                        "text": "LIN108 revision navigation saved edit"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "media": null,
+                    "status": "draft",
+                    "label": null,
+                    "word_count": 5,
+                    "char_count": 37,
+                    "created_at": "2026-10-05T21:59:12.128Z",
+                    "updated_at": "2026-10-05T21:59:15.361Z",
+                    "scheduled_at": null,
+                    "published_at": null,
+                    "linkedin_post_url": null,
+                    "publish_error": null
+                }
+            ],
+            "saveMs": [520.8000000119209],
+            "errors": []
+        }
+    ]
+}

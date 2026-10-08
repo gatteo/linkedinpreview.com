@@ -14,6 +14,33 @@
   helper `lib/analytics/server.ts`). Vercel previews run `NODE_ENV=production` and DO
   capture - filter by `$host` when analyzing.
 
+## Monthly-first release contract (EXP-9 revision 2)
+
+This section supersedes the legacy one-hour `purchase_completed` conversion definition for EXP-9.
+
+`paid_conversion_eligible` is persisted and captured before `MonthlyOffer` mounts, sets monthly default, or renders.
+EXP-9 account enrollment and EXP-11 browser daily-lane enrollment use separate storage keys, IDs and clocks.
+Integrating the staged header does not activate EXP-11, reset frozen controls or change the monthly denominator.
+`paid_conversion_identity_linked` bridges a pre-auth enrollment to the authenticated account without resetting its clock.
+One enrollment per account/device bridge persists across remounts and reloads. Production analysis freezes host/test/staff
+exclusions before launch. Known free, paid guardrail and unknown billing are separate strata; failed billing reads never
+become verified free. Render failures remain in enrollment; `onb_offer_variant_view` measures rendered reach only.
+
+All offer/checkout events carry schema_version, enrollment_id, cohort_id=`exp9_monthly_first_v2`,
+assigned_variant=`monthly_first`, eligibility_at, assignment_version/offer_version=`monthly_first_v2`, release_sha,
+entry_source, arrival_source, device_class, billing_state_at_assignment and identity_state. No draft/email/raw URL is sent.
+Original first dashboard touch is persisted separately from billing/OAuth return. Source before that dashboard touch,
+cross-device/account merges, storage loss and blocked telemetry remain explicit attribution limitations.
+
+Checkout's optional validated `monthlyOffer` envelope reaches Session and subscription/payment-intent metadata;
+authenticated user_id/client_reference_id remains authoritative. onb_checkout_opened includes the returned session_id.
+`purchase_completed` includes Stripe event/session/subscription identifiers, livemode/payment_status and attribution,
+but is labeled `requires_processor_reconciliation`. Do not count its events as new recurring purchases.
+
+Sentinel matches positive live settled FIRST subscription invoice/payment, account prior-recurring history and Session
+metadata. Exclude renewals, prior recurring reactivations, lifetime, zero/test and duplicate deliveries from NEW recurring
+truth. Report unmatched purchases separately, never infer a proportional join. See `docs/monthly-first-release.md`.
+
 ## Funnel definition
 
 `funnel_version: v3` = the 17-step audit funnel. Step order:
@@ -160,6 +187,7 @@ The free-tool events are captured before the dashboard onboarding controller, so
 | Event                      | Properties                                               | Meaning                                                                                                                                                                                                                                     |
 | -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `onb_paywall_view`         | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
+| `onb_offer_variant_view`   | `variant: monthly_first`                                 | EXP-9 monthly-first pricing block rendered; reach diagnostic only. The pre-render `paid_conversion_eligible` enrollment, including render/checkout failures, is the denominator.                                                            |
 | `onb_paywall_scroll`       | `depth: 25\|50\|75\|100`                                 | how far the offer was actually read; each milestone fires once. A paywall viewer with NO `onb_paywall_scroll` never scrolled at all, which is what distinguishes a non-reader from a decliner                                               |
 | `onb_paywall_gate_blocked` | -                                                        | the CTA was clicked before the reader reached the end of the offer; the click scrolls them there instead of buying. Counts purchase intent that the old disabled button swallowed                                                           |
 | `onb_offer_select`         | `plan`                                                   | plan card clicked (opens checkout)                                                                                                                                                                                                          |
@@ -178,7 +206,38 @@ The free-tool events are captured before the dashboard onboarding controller, so
 | `onb_rich_session_missing`                   | -                      | poll got no session row (bug signal)              |
 | `onb_insights_ready` / `onb_insights_failed` | `kind` / -             | the insights kick-off + poll resolved client-side |
 
+## Imported-draft-first activation (LIN-108)
+
+See `docs/draft-first-activation.md` for eligibility, precedence, persistence and release coordination. These events use `activation_version: imported_draft_v1`, `exposure_id` and the original `entry_source`; no draft text, media, email or profile is captured. The free-tool event fires before authentication and before any treatment outcome. Failures are not excluded from the denominator.
+
+| Event                         | Properties                                                                                          | Meaning                                                                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `draft_first_eligible`        | `activation_version`, `exposure_id`, `entry_source: tool_footer\|tool_nudge\|tool_header`           | Intentional free-tool draft handoff, before encoding/media/auth/import; explicit planning is not included                                |
+| `draft_import_result`         | common activation properties, `outcome: success\|failure`, `draft_id?`, `has_media?`, `error_code?` | Separate draft persistence succeeded, or decode/media/create failed; editor rendering is separately observed by Pro-action readiness     |
+| `draft_meaningful_use`        | common activation properties, `action: saved_edit\|copied`, `outcome: success\|failure`, `draft_id` | Confirmed saved edit or successful nonempty clipboard write; failed save is not successful use; hydration/unsaved typing never qualifies |
+| `draft_first_pro_action_view` | common activation properties, `action: higher_ai_limits`                                            | Nonblocking existing Pro action rendered after the imported text is usable, unpaid users only                                            |
+| `draft_planning_resumed`      | common activation properties, `reason`                                                              | User voluntarily reopened planning via editor action                                                                                     |
+
+All dashboard `track()` events carry stored activation properties when available, including schema_version=1, enrollment_id (the opaque exposure_id), cohort_id=exp10_draft_first_v1, assigned_variant=draft_first, assignment_version, eligibility_at (nullable), offer_version=existing_offer and original entry_source. Pending-auth eligibility reports billing_state_at_assignment=unknown, not verified free. Checkout validates bounded attribution and copies it to Session and subscription/payment-intent metadata without affecting entitlement. `onb_checkout_opened` includes returned session_id. `purchase_completed` additionally carries envelope, stripe_event_id, session_id, subscription_id, livemode and payment_status. It is completion telemetry, not paid classification. Sentinel reconciles live positive settled first invoices/payments and prior-recurring status read-only, dedupes retries and accounts, and separates unknown/test/renewal/lifetime/unmatched rows. Atlas registers actual release SHAs/times for joining and overlap partitions. PR #96 independently owns EXP-9 monthly-first eligibility and offer envelope. See docs/draft-first-activation.md for exact reconciliation and storage limitations.
+
 ## Server events (posthog-node via `lib/analytics/server.ts`, distinctId = user id)
+
+### Actual monthly-main and draft-first integration
+
+When both enrollments exist, generic `enrollment_id`, `cohort_id`, `eligibility_at`,
+`assignment_version` and `offer_version` retain the monthly offer envelope. Draft
+identity and first eligibility remain separately scoped as `draft_enrollment_id`,
+`draft_cohort_id`, `draft_eligibility_at` and `draft_entry_source`; checkout and
+`purchase_completed` also retain `draft_assigned_variant`,
+`draft_assignment_version` and `draft_offer_version`. `monthly_entry_source`
+preserves the monthly first touch even when checkout's original draft source is
+used for the return URL. Both opaque IDs travel in hosted returns as `activation`
+and `offer_enrollment`. Session, subscription and payment-intent metadata retain
+both envelopes. No stored clock is reset by this integration and neither client
+envelope authorizes billing. Missing enrollments remain missing, not inferred.
+Overlapping paid outcomes require account/processor reconciliation and must not
+be summed as independent starts. The header experiment remains separately scoped
+and frozen; its dictionary and storage are unchanged.
 
 These fire whether or not the tab stays open - they are the error/latency truth.
 
@@ -275,3 +334,16 @@ report fallback/unknown identities separately, and filter exact production host 
 Preview, prelaunch and historical route/click counts are not live randomized outcomes. Join actual EXP-9/10
 release clocks and existing modal variant from PostHog feature properties; never infer overlap from an unknown
 header field, claim all eligibles are unpaid, or sum correlated paid outcomes.
+
+### Draft-first/current-header integration
+
+EXP-11 browser enrollment (`lp-daily-test-enrollment-v1`) and EXP-10 account deferral
+(`lp-draft-first:<user_id>`, with pre-auth session exposure) remain independent stores.
+Header `daily_test_enrollment_id` and first `eligibility_at` must not replace the draft's
+`exposure_id`/`enrollment_id` or pre-auth clock. A disabled/unavailable header flag renders
+control without rewriting a frozen assignment. Neither enrollment authorizes paid access.
+Draft import/use/checkout events retain the original tool source and EXP-10 envelope;
+header identity and overlap require the existing person/event join, not inferred equality.
+PR #96 monthly enrollment remains separate and unmerged at this integration. Its paid
+identity-owned provider and monthly attribution changes must be reconciled against actual
+main after Atlas's monthly squash, not bundled into PR #104 or treated as already live.

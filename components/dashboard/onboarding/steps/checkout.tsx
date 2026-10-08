@@ -8,8 +8,11 @@ import { Loader2Icon } from 'lucide-react'
 import { env } from '@/env.mjs'
 import { CHECKOUT_UI, type CheckoutPlan } from '@/config/pricing'
 import { reportMissingEnv } from '@/lib/dev/report-missing-env'
+import { draftFirstProperties } from '@/lib/draft-first'
+import { monthlyCheckoutAttribution } from '@/lib/monthly-offer'
+import { useAuth } from '@/components/dashboard/auth-provider'
 
-import { track } from '../ai'
+import { getEntrySource, track } from '../ai'
 import { markCheckoutPending } from '../types'
 
 // Load Stripe.js once. Null when the publishable key is not configured yet, so
@@ -29,6 +32,7 @@ type OnboardingCheckoutProps = {
 }
 
 export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onError }: OnboardingCheckoutProps) {
+    const { userId } = useAuth()
     const [clientSecret, setClientSecret] = React.useState<string | null>(null)
     const onCompleteRef = React.useRef(onComplete)
     const onErrorRef = React.useRef(onError)
@@ -57,7 +61,17 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
         fetch('/api/billing/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ plan, source }),
+            body: JSON.stringify({
+                plan,
+                source,
+                entrySource: getEntrySource(),
+                exposureId: draftFirstProperties().exposure_id,
+                eligibilityAt: draftFirstProperties().eligibility_at ?? undefined,
+                cohortId: draftFirstProperties().cohort_id,
+                assignedVariant: draftFirstProperties().assigned_variant,
+                offerVersion: draftFirstProperties().offer_version,
+                monthlyOffer: monthlyCheckoutAttribution(userId),
+            }),
         })
             .then(async (res) => {
                 if (!res.ok) {
@@ -65,11 +79,11 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                     reportMissingEnv('Stripe checkout', data.missing)
                     throw new Error('checkout-unavailable')
                 }
-                const data = (await res.json()) as { clientSecret?: string; url?: string }
+                const data = (await res.json()) as { clientSecret?: string; url?: string; sessionId?: string }
                 if (cancelled) return
                 if (CHECKOUT_UI === 'hosted') {
                     if (!data.url) throw new Error('no-checkout-url')
-                    track('onb_checkout_opened', { plan, ui: 'hosted' })
+                    track('onb_checkout_opened', { plan, ui: 'hosted', session_id: data.sessionId })
                     // The redirect ends this page - mark settled so the unmount
                     // is not counted as an abandon (cancel returns are tracked
                     // by the surface handling the ?checkout=cancelled param).
@@ -82,7 +96,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
                 }
                 if (!data.clientSecret) throw new Error('no-client-secret')
                 openedRef.current = true
-                track('onb_checkout_opened', { plan, ui: 'embedded' })
+                track('onb_checkout_opened', { plan, ui: 'embedded', session_id: data.sessionId })
                 setClientSecret(data.clientSecret)
             })
             .catch(() => {
@@ -95,7 +109,7 @@ export function OnboardingCheckout({ plan, source = 'upgrade', onComplete, onErr
         return () => {
             cancelled = true
         }
-    }, [plan, source])
+    }, [plan, source, userId])
 
     // Unmounting an opened checkout without completing = the user backed out of
     // the payment form (plan switch, decline, or navigation).

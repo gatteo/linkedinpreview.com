@@ -1,0 +1,500 @@
+TAP version 13
+# Subtest: detects direct and retried upstream 429 failures
+ok 1 - detects direct and retried upstream 429 failures
+  ---
+  duration_ms: 0.4435
+  type: 'test'
+  ...
+# Subtest: does not reclassify provider auth or unknown failures
+ok 2 - does not reclassify provider auth or unknown failures
+  ---
+  duration_ms: 0.065333
+  type: 'test'
+  ...
+# Subtest: affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+    # Subtest: generate: direct provider 429
+    ok 1 - generate: direct provider 429
+      ---
+      duration_ms: 2.278166
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 429
+    ok 2 - generate: retry-wrapped provider 429
+      ---
+      duration_ms: 0.396
+      type: 'test'
+      ...
+    # Subtest: generate: direct provider 401
+    ok 3 - generate: direct provider 401
+      ---
+      duration_ms: 0.412208
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 401
+    ok 4 - generate: retry-wrapped provider 401
+      ---
+      duration_ms: 0.365333
+      type: 'test'
+      ...
+    # Subtest: generate: generic failure
+    ok 5 - generate: generic failure
+      ---
+      duration_ms: 0.752584
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 429
+    ok 6 - strategy/formats: direct provider 429
+      ---
+      duration_ms: 0.757792
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 429
+    ok 7 - strategy/formats: retry-wrapped provider 429
+      ---
+      duration_ms: 0.364417
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 401
+    ok 8 - strategy/formats: direct provider 401
+      ---
+      duration_ms: 0.323708
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 401
+    ok 9 - strategy/formats: retry-wrapped provider 401
+      ---
+      duration_ms: 0.47675
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: generic failure
+    ok 10 - strategy/formats: generic failure
+      ---
+      duration_ms: 0.512209
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 429
+    ok 11 - strategy/positioning: direct provider 429
+      ---
+      duration_ms: 0.773458
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 429
+    ok 12 - strategy/positioning: retry-wrapped provider 429
+      ---
+      duration_ms: 1.079375
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 401
+    ok 13 - strategy/positioning: direct provider 401
+      ---
+      duration_ms: 0.129667
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 401
+    ok 14 - strategy/positioning: retry-wrapped provider 401
+      ---
+      duration_ms: 0.116208
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: generic failure
+    ok 15 - strategy/positioning: generic failure
+      ---
+      duration_ms: 0.102
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 429
+    ok 16 - analyze: direct provider 429
+      ---
+      duration_ms: 0.575417
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 429
+    ok 17 - analyze: retry-wrapped provider 429
+      ---
+      duration_ms: 0.241916
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 401
+    ok 18 - analyze: direct provider 401
+      ---
+      duration_ms: 0.121416
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 401
+    ok 19 - analyze: retry-wrapped provider 401
+      ---
+      duration_ms: 0.112042
+      type: 'test'
+      ...
+    # Subtest: analyze: generic failure
+    ok 20 - analyze: generic failure
+      ---
+      duration_ms: 0.145375
+      type: 'test'
+      ...
+    1..20
+ok 3 - affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+  ---
+  duration_ms: 168.398458
+  type: 'test'
+  ...
+# Subtest: affected routes retain the executable handler seam and supplemental provider mapping
+ok 4 - affected routes retain the executable handler seam and supplemental provider mapping
+  ---
+  duration_ms: 5.800167
+  type: 'test'
+  ...
+# Subtest: actual checkout validates attribution and leaves old callers, auth and prices intact
+ok 5 - actual checkout validates attribution and leaves old callers, auth and prices intact
+  ---
+  duration_ms: 44.048
+  type: 'test'
+  ...
+# Subtest: hosted and embedded checkout retain first entry in processor metadata for both plans
+ok 6 - hosted and embedded checkout retain first entry in processor metadata for both plans
+  ---
+  duration_ms: 44.171167
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 7 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 97.390333
+  type: 'test'
+  ...
+# Subtest: actual controller defers imports without onboarding completion and survives reload/navigation
+ok 8 - actual controller defers imports without onboarding completion and survives reload/navigation
+  ---
+  duration_ms: 214.124584
+  type: 'test'
+  ...
+# Subtest: optional planning request opens the real controller and preserves saved answers
+ok 9 - optional planning request opens the real controller and preserves saved answers
+  ---
+  duration_ms: 23.917375
+  type: 'test'
+  ...
+# Subtest: explicit planning URL and existing planning placements override deferral
+ok 10 - explicit planning URL and existing planning placements override deferral
+  ---
+  duration_ms: 85.653
+  type: 'test'
+  ...
+# Subtest: gate preserves saved planning, OAuth and checkout return precedence
+ok 11 - gate preserves saved planning, OAuth and checkout return precedence
+  ---
+  duration_ms: 120.979875
+  type: 'test'
+  ...
+# Subtest: controller snapshots returns before another consumer strips the URL
+ok 12 - controller snapshots returns before another consumer strips the URL
+  ---
+  duration_ms: 15.470917
+  type: 'test'
+  ...
+# Subtest: completed users stay completed; legacy backfill remains distinct from deferral
+ok 13 - completed users stay completed; legacy backfill remains distinct from deferral
+  ---
+  duration_ms: 34.005875
+  type: 'test'
+  ...
+# Subtest: account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+ok 14 - account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+  ---
+  duration_ms: 8.403416
+  type: 'test'
+  ...
+# Subtest: actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+ok 15 - actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+  ---
+  duration_ms: 67.039
+  type: 'test'
+  ...
+# Subtest: malformed imports and missing media never create a blank or overwrite existing drafts
+ok 16 - malformed imports and missing media never create a blank or overwrite existing drafts
+  ---
+  duration_ms: 113.09425
+  type: 'test'
+  ...
+# Subtest: failed create/load cannot count successful import or trigger empty-draft deletion
+ok 17 - failed create/load cannot count successful import or trigger empty-draft deletion
+  ---
+  duration_ms: 108.087083
+  type: 'test'
+  ...
+# Subtest: actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+ok 18 - actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+  ---
+  duration_ms: 23.172542
+  type: 'test'
+  ...
+# Subtest: actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+ok 19 - actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+  ---
+  duration_ms: 18.499834
+  type: 'test'
+  ...
+# Subtest: pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+ok 20 - pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+  ---
+  duration_ms: 7.214042
+  type: 'test'
+  ...
+# Subtest: meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+ok 21 - meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+  ---
+  duration_ms: 105.856
+  type: 'test'
+  ...
+# Subtest: navigation saves record only confirmed meaningful edits, excluding failure and hydration
+    # Subtest: unmount: meaningful=true, failure=true
+    ok 1 - unmount: meaningful=true, failure=true
+      ---
+      duration_ms: 53.206333
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=true, failure=false
+    ok 2 - unmount: meaningful=true, failure=false
+      ---
+      duration_ms: 55.388667
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=true
+    ok 3 - unmount: meaningful=false, failure=true
+      ---
+      duration_ms: 49.301333
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=false
+    ok 4 - unmount: meaningful=false, failure=false
+      ---
+      duration_ms: 49.610625
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=true
+    ok 5 - switch: meaningful=true, failure=true
+      ---
+      duration_ms: 50.18575
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=false
+    ok 6 - switch: meaningful=true, failure=false
+      ---
+      duration_ms: 50.130792
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=true
+    ok 7 - switch: meaningful=false, failure=true
+      ---
+      duration_ms: 54.352667
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=false
+    ok 8 - switch: meaningful=false, failure=false
+      ---
+      duration_ms: 50.868042
+      type: 'test'
+      ...
+    1..8
+ok 22 - navigation saves record only confirmed meaningful edits, excluding failure and hydration
+  ---
+  duration_ms: 413.77975
+  type: 'test'
+  ...
+# Subtest: navigation successes deduplicate against earlier save or copy and remain draft scoped
+    # Subtest: unmount after save
+    ok 1 - unmount after save
+      ---
+      duration_ms: 52.149
+      type: 'test'
+      ...
+    # Subtest: unmount after copy
+    ok 2 - unmount after copy
+      ---
+      duration_ms: 49.043209
+      type: 'test'
+      ...
+    # Subtest: unmount after different_draft
+    ok 3 - unmount after different_draft
+      ---
+      duration_ms: 49.606042
+      type: 'test'
+      ...
+    # Subtest: switch after save
+    ok 4 - switch after save
+      ---
+      duration_ms: 50.806791
+      type: 'test'
+      ...
+    # Subtest: switch after copy
+    ok 5 - switch after copy
+      ---
+      duration_ms: 51.924666
+      type: 'test'
+      ...
+    # Subtest: switch after different_draft
+    ok 6 - switch after different_draft
+      ---
+      duration_ms: 50.135042
+      type: 'test'
+      ...
+    1..6
+ok 23 - navigation successes deduplicate against earlier save or copy and remain draft scoped
+  ---
+  duration_ms: 304.181291
+  type: 'test'
+  ...
+# Subtest: save accounting snapshots meaningful intent before asynchronous hydration changes
+ok 24 - save accounting snapshots meaningful intent before asynchronous hydration changes
+  ---
+  duration_ms: 49.068292
+  type: 'test'
+  ...
+# Subtest: debounced persistence uses the same success/failure accounting and captures account scope
+    # Subtest: failure=true
+    ok 1 - failure=true
+      ---
+      duration_ms: 45.830875
+      type: 'test'
+      ...
+    # Subtest: failure=false
+    ok 2 - failure=false
+      ---
+      duration_ms: 50.48775
+      type: 'test'
+      ...
+    1..2
+ok 25 - debounced persistence uses the same success/failure accounting and captures account scope
+  ---
+  duration_ms: 96.597708
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback removes the capture surface without changing the full-post copy path
+ok 26 - EXP-6 rollback removes the capture surface without changing the full-post copy path
+  ---
+  duration_ms: 8.564416
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+ok 27 - EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+  ---
+  duration_ms: 3.471125
+  type: 'test'
+  ...
+# Subtest: EXP-6 migration makes email dedupe atomic and denies direct client access
+ok 28 - EXP-6 migration makes email dedupe atomic and denies direct client access
+  ---
+  duration_ms: 2.070666
+  type: 'test'
+  ...
+# Subtest: free-tool dashboard CTAs record the canonical entry events
+ok 29 - free-tool dashboard CTAs record the canonical entry events
+  ---
+  duration_ms: 5.289875
+  type: 'test'
+  ...
+# Subtest: upgrade dialog records canonical pricing and purchase-intent events
+ok 30 - upgrade dialog records canonical pricing and purchase-intent events
+  ---
+  duration_ms: 2.323333
+  type: 'test'
+  ...
+# Subtest: event dictionary documents every canonical revenue event
+ok 31 - event dictionary documents every canonical revenue event
+  ---
+  duration_ms: 2.17125
+  type: 'test'
+  ...
+# Subtest: homepage metadata states the free formatter and editor use case
+ok 32 - homepage metadata states the free formatter and editor use case
+  ---
+  duration_ms: 1.032334
+  type: 'test'
+  ...
+# Subtest: draft-first nudge preserves the free planning offer and existing nudge mechanics
+ok 33 - draft-first nudge preserves the free planning offer and existing nudge mechanics
+  ---
+  duration_ms: 11.54925
+  type: 'test'
+  ...
+# Subtest: paywall purchase CTA starts plan selection without a scroll gate
+ok 34 - paywall purchase CTA starts plan selection without a scroll gate
+  ---
+  duration_ms: 0.427958
+  type: 'test'
+  ...
+# Subtest: display policy keeps prices and the monthly window unchanged
+ok 35 - display policy keeps prices and the monthly window unchanged
+  ---
+  duration_ms: 0.351709
+  type: 'test'
+  ...
+# Subtest: rendered terms scope prospective lifetime policy and retain mandatory rights
+ok 36 - rendered terms scope prospective lifetime policy and retain mandatory rights
+  ---
+  duration_ms: 23.118166
+  type: 'test'
+  ...
+# Subtest: onboarding monthly selection renders only its refund policy
+ok 37 - onboarding monthly selection renders only its refund policy
+  ---
+  duration_ms: 77.629583
+  type: 'test'
+  ...
+# Subtest: upgrade monthly checkout selection renders only its refund policy
+ok 38 - upgrade monthly checkout selection renders only its refund policy
+  ---
+  duration_ms: 18.448375
+  type: 'test'
+  ...
+# Subtest: onboarding lifetime selection renders only its refund policy
+ok 39 - onboarding lifetime selection renders only its refund policy
+  ---
+  duration_ms: 66.367834
+  type: 'test'
+  ...
+# Subtest: upgrade lifetime checkout selection renders only its refund policy
+ok 40 - upgrade lifetime checkout selection renders only its refund policy
+  ---
+  duration_ms: 14.121666
+  type: 'test'
+  ...
+# Subtest: upgrade plan picker and checkout-error fallback show scoped policy on each card
+ok 41 - upgrade plan picker and checkout-error fallback show scoped policy on each card
+  ---
+  duration_ms: 18.681584
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves root path
+ok 42 - UtmUrl preserves root path
+  ---
+  duration_ms: 0.482417
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters
+ok 43 - UtmUrl preserves existing query parameters
+  ---
+  duration_ms: 0.057666
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves fragment
+ok 44 - UtmUrl preserves fragment
+  ---
+  duration_ms: 0.044167
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters and fragment
+ok 45 - UtmUrl preserves existing query parameters and fragment
+  ---
+  duration_ms: 0.039834
+  type: 'test'
+  ...
+1..45
+# tests 81
+# suites 0
+# pass 81
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2150.898166

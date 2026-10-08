@@ -1,0 +1,11 @@
+Vercel CLI 56.5.0 (Node.js 22.23.1)
+Error: Not able to load user because of unexpected error: User not found. (404)
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                     Update available! v56.5.0 ≫ v62.7.0                      │
+│   Changelog: https://github.com/vercel/vercel/releases/tag/vercel%4062.7.0   │
+│        Run `pnpm i -g vercel@latest --allow-build=esbuild` to update.        │
+│                                                                              │
+│             The latest update may fix any errors that occurred.              │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯

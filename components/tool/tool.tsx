@@ -2,7 +2,6 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { ArrowUpRight, Eye, PenLine } from 'lucide-react'
 import posthog from 'posthog-js'
 import { Group, Panel } from 'react-resizable-panels'
@@ -10,6 +9,7 @@ import { toast } from 'sonner'
 
 import { withEntrySource, type EntrySource } from '@/config/entry-sources'
 import { Routes } from '@/config/routes'
+import { ACTIVATION_PARAM, draftFirstProperties, prepareDraftFirst } from '@/lib/draft-first'
 import { pruneDraftMedia, putDraftMedia } from '@/lib/draft-media'
 import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { extractPlainText } from '@/lib/editor-utils'
@@ -218,24 +218,40 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
     }, [content, media, flush])
 
     const handleOpenDashboard = React.useCallback(
-        async (source: string) => {
-            posthog.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
-            if (source === 'tool_nudge') posthog.capture('dashboard_nudge_clicked', { source })
-            posthog.capture('tool_pro_cta_click', { source })
+        async (source: EntrySource, planning = false) => {
+            posthog?.capture('cta_button_clicked', { button_name: 'open_dashboard', source })
+            if (source === 'tool_nudge') posthog?.capture('dashboard_nudge_clicked', { source })
+            posthog?.capture('tool_pro_cta_click', { source })
             flush()
-            const entry: EntrySource = source === 'tool_nudge' ? 'tool_nudge' : 'tool_footer'
-            if (!content) {
-                window.location.href = withEntrySource(Routes.Dashboard, entry)
+            if (!hasText(content)) {
+                window.location.href = withEntrySource(Routes.Dashboard, source)
                 return
+            }
+            const exposureId = crypto.randomUUID()
+            if (!planning) {
+                posthog?.capture('draft_first_eligible', {
+                    ...draftFirstProperties(prepareDraftFirst(source, exposureId)),
+                    identity_state: 'pending_auth',
+                    billing_state_at_assignment: 'unknown',
+                    arrival_source: source,
+                    gate_reason: 'intentional_handoff',
+                })
             }
             const encoded = await encodeDraft(content)
             if (!encoded) {
-                window.location.href = withEntrySource(Routes.Dashboard, entry)
+                toast.error('Could not open this draft. Your draft is safe here. Please try again.')
                 return
             }
-            window.location.href = withEntrySource(`/dashboard/editor?import=${encoded}`, entry)
+            const mediaKey = media ? await putDraftMedia(media) : null
+            if (media && !mediaKey) {
+                toast.error('Could not carry your media over. Your draft is safe here. Please try again.')
+                return
+            }
+            const mediaParam = mediaKey ? `&m=${encodeURIComponent(mediaKey)}` : ''
+            const intent = planning ? '&planning=1' : `&${ACTIVATION_PARAM}=${exposureId}`
+            window.location.href = withEntrySource(`/dashboard/editor?import=${encoded}${mediaParam}${intent}`, source)
         },
-        [content, flush],
+        [content, media, flush],
     )
 
     // Light, one-time nudge: once the user has written a real post, invite them to
@@ -263,11 +279,12 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
         }
 
         posthog.capture('dashboard_nudge_shown', { source: 'tool' })
-        toast('Nice post. Plan what to publish next.', {
-            description: 'Get a free audit and a personalized 90-day posting plan. This draft comes with you.',
+        toast('Nice post. Keep working in the full editor.', {
+            description:
+                'Your draft comes with you. Get a free audit and a personalized 90-day plan whenever you want.',
             duration: 12000,
             action: {
-                label: 'Create a free plan',
+                label: 'Continue my draft',
                 onClick: () => handleOpenDashboard('tool_nudge'),
             },
         })
@@ -399,12 +416,15 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
             {variant === 'default' && contentHasText && (
                 <div className='border-border bg-secondary flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5 border-t px-5 py-2'>
                     <span className='text-muted-foreground text-[13.5px] leading-snug'>
-                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Get a free audit of your
-                        LinkedIn and a 90-day plan - this draft comes with you.
+                        <b className='text-foreground font-semibold'>Happy with this draft?</b> Keep editing, or get a
+                        free LinkedIn audit and 90-day plan - this draft comes with you.
                     </span>
                     <Button variant='outline' size='sm' onClick={() => handleOpenDashboard('tool_footer')}>
-                        Create my LinkedIn plan
+                        Continue my draft
                         <ArrowUpRight className='size-3.5' />
+                    </Button>
+                    <Button variant='ghost' size='sm' onClick={() => handleOpenDashboard('tool_footer', true)}>
+                        Create my LinkedIn plan
                     </Button>
                 </div>
             )}
@@ -427,11 +447,9 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                             Write on the left, watch the feed on the right.
                         </h2>
                     </div>
-                    <Button asChild variant='outline'>
-                        <Link href={withEntrySource(Routes.DashboardEditor(), 'tool_header')}>
-                            Open in full editor
-                            <ArrowUpRight className='size-4' />
-                        </Link>
+                    <Button variant='outline' onClick={() => handleOpenDashboard('tool_header')}>
+                        Open in full editor
+                        <ArrowUpRight className='size-4' />
                     </Button>
                 </div>
                 {/* Full-bleed below sm: the panel is the product, and 56px of gutter on a phone

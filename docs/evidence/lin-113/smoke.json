@@ -1,0 +1,78 @@
+[
+    {
+        "name": "desktop monthly default/selection",
+        "passed": true
+    },
+    {
+        "name": "no extra monthly badge",
+        "passed": true
+    },
+    {
+        "name": "monthly first; prices/proof/urgency retained",
+        "passed": true
+    },
+    {
+        "name": "desktop monthly checkout payload",
+        "passed": true
+    },
+    {
+        "name": "failure preserves free fallback",
+        "passed": true
+    },
+    {
+        "name": "lifetime selectable",
+        "passed": true
+    },
+    {
+        "name": "desktop lifetime checkout payload",
+        "passed": true
+    },
+    {
+        "name": "mobile no horizontal overflow",
+        "passed": true
+    },
+    {
+        "name": "mobile monthly checkout payload",
+        "passed": true
+    },
+    {
+        "name": "mobile lifetime checkout payload",
+        "passed": true
+    },
+    {
+        "name": "no browser runtime errors",
+        "passed": true
+    },
+    {
+        "name": "reload retains enrollment and eligibility clock/source",
+        "passed": true
+    },
+    {
+        "name": "reload monthly default",
+        "passed": true
+    },
+    {
+        "name": "home tool editor loads",
+        "passed": true
+    },
+    {
+        "name": "typing updates live preview",
+        "passed": true
+    },
+    {
+        "name": "real pointer Copy Text feedback after settled scroll",
+        "passed": true
+    },
+    {
+        "name": "original Clipboard API exact text",
+        "passed": true
+    },
+    {
+        "name": "home no runtime errors",
+        "passed": true
+    },
+    {
+        "name": "blog renders without error boundary",
+        "passed": true
+    }
+]
