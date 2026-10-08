@@ -1,0 +1,409 @@
+TAP version 13
+# Subtest: actual controller defers imports without onboarding completion and survives reload/navigation
+ok 1 - actual controller defers imports without onboarding completion and survives reload/navigation
+  ---
+  duration_ms: 248.021125
+  type: 'test'
+  ...
+# Subtest: optional planning request opens the real controller and preserves saved answers
+ok 2 - optional planning request opens the real controller and preserves saved answers
+  ---
+  duration_ms: 47.886917
+  type: 'test'
+  ...
+# Subtest: explicit planning URL and existing planning placements override deferral
+ok 3 - explicit planning URL and existing planning placements override deferral
+  ---
+  duration_ms: 114.998208
+  type: 'test'
+  ...
+# Subtest: gate preserves saved planning, OAuth and checkout return precedence
+ok 4 - gate preserves saved planning, OAuth and checkout return precedence
+  ---
+  duration_ms: 116.142166
+  type: 'test'
+  ...
+# Subtest: controller snapshots returns before another consumer strips the URL
+ok 5 - controller snapshots returns before another consumer strips the URL
+  ---
+  duration_ms: 13.2475
+  type: 'test'
+  ...
+# Subtest: completed users stay completed; legacy backfill remains distinct from deferral
+ok 6 - completed users stay completed; legacy backfill remains distinct from deferral
+  ---
+  duration_ms: 29.260417
+  type: 'test'
+  ...
+# Subtest: account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+ok 7 - account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+  ---
+  duration_ms: 7.816416
+  type: 'test'
+  ...
+# Subtest: actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+ok 8 - actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+  ---
+  duration_ms: 60.568
+  type: 'test'
+  ...
+# Subtest: malformed imports and missing media never create a blank or overwrite existing drafts
+ok 9 - malformed imports and missing media never create a blank or overwrite existing drafts
+  ---
+  duration_ms: 106.733417
+  type: 'test'
+  ...
+# Subtest: failed create/load cannot count successful import or trigger empty-draft deletion
+ok 10 - failed create/load cannot count successful import or trigger empty-draft deletion
+  ---
+  duration_ms: 103.454375
+  type: 'test'
+  ...
+# Subtest: actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+ok 11 - actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+  ---
+  duration_ms: 19.172458
+  type: 'test'
+  ...
+# Subtest: actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+ok 12 - actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+  ---
+  duration_ms: 16.239583
+  type: 'test'
+  ...
+# Subtest: pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+ok 13 - pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+  ---
+  duration_ms: 6.232209
+  type: 'test'
+  ...
+# Subtest: meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+ok 14 - meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+  ---
+  duration_ms: 101.64625
+  type: 'test'
+  ...
+# Subtest: navigation saves record only confirmed meaningful edits, excluding failure and hydration
+    # Subtest: unmount: meaningful=true, failure=true
+    ok 1 - unmount: meaningful=true, failure=true
+      ---
+      duration_ms: 50.107792
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=true, failure=false
+    ok 2 - unmount: meaningful=true, failure=false
+      ---
+      duration_ms: 49.445083
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=true
+    ok 3 - unmount: meaningful=false, failure=true
+      ---
+      duration_ms: 49.139417
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=false
+    ok 4 - unmount: meaningful=false, failure=false
+      ---
+      duration_ms: 49.146083
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=true
+    ok 5 - switch: meaningful=true, failure=true
+      ---
+      duration_ms: 48.798208
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=false
+    ok 6 - switch: meaningful=true, failure=false
+      ---
+      duration_ms: 49.85375
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=true
+    ok 7 - switch: meaningful=false, failure=true
+      ---
+      duration_ms: 51.962292
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=false
+    ok 8 - switch: meaningful=false, failure=false
+      ---
+      duration_ms: 48.794083
+      type: 'test'
+      ...
+    1..8
+ok 15 - navigation saves record only confirmed meaningful edits, excluding failure and hydration
+  ---
+  duration_ms: 397.86125
+  type: 'test'
+  ...
+# Subtest: navigation successes deduplicate against earlier save or copy and remain draft scoped
+    # Subtest: unmount after save
+    ok 1 - unmount after save
+      ---
+      duration_ms: 49.789292
+      type: 'test'
+      ...
+    # Subtest: unmount after copy
+    ok 2 - unmount after copy
+      ---
+      duration_ms: 48.468584
+      type: 'test'
+      ...
+    # Subtest: unmount after different_draft
+    ok 3 - unmount after different_draft
+      ---
+      duration_ms: 48.214
+      type: 'test'
+      ...
+    # Subtest: switch after save
+    ok 4 - switch after save
+      ---
+      duration_ms: 48.715959
+      type: 'test'
+      ...
+    # Subtest: switch after copy
+    ok 5 - switch after copy
+      ---
+      duration_ms: 46.971542
+      type: 'test'
+      ...
+    # Subtest: switch after different_draft
+    ok 6 - switch after different_draft
+      ---
+      duration_ms: 48.979417
+      type: 'test'
+      ...
+    1..6
+ok 16 - navigation successes deduplicate against earlier save or copy and remain draft scoped
+  ---
+  duration_ms: 291.551209
+  type: 'test'
+  ...
+# Subtest: save accounting snapshots meaningful intent before asynchronous hydration changes
+ok 17 - save accounting snapshots meaningful intent before asynchronous hydration changes
+  ---
+  duration_ms: 48.0835
+  type: 'test'
+  ...
+# Subtest: debounced persistence uses the same success/failure accounting and captures account scope
+    # Subtest: failure=true
+    ok 1 - failure=true
+      ---
+      duration_ms: 49.341916
+      type: 'test'
+      ...
+    # Subtest: failure=false
+    ok 2 - failure=false
+      ---
+      duration_ms: 48.922
+      type: 'test'
+      ...
+    1..2
+ok 18 - debounced persistence uses the same success/failure accounting and captures account scope
+  ---
+  duration_ms: 98.492
+  type: 'test'
+  ...
+# Subtest: draft import preserves undefined header assignment and separate eligibility
+ok 19 - draft import preserves undefined header assignment and separate eligibility
+  ---
+  duration_ms: 65.596
+  type: 'test'
+  ...
+# Subtest: draft import preserves control header assignment and separate eligibility
+ok 20 - draft import preserves control header assignment and separate eligibility
+  ---
+  duration_ms: 58.900792
+  type: 'test'
+  ...
+# Subtest: draft import preserves pro header assignment and separate eligibility
+ok 21 - draft import preserves pro header assignment and separate eligibility
+  ---
+  duration_ms: 67.889584
+  type: 'test'
+  ...
+# Subtest: integrated hosted/monthly: both cohort clocks survive authenticated processor payload
+ok 22 - integrated hosted/monthly: both cohort clocks survive authenticated processor payload
+  ---
+  duration_ms: 42.597958
+  type: 'test'
+  ...
+# Subtest: integrated hosted/lifetime: both cohort clocks survive authenticated processor payload
+ok 23 - integrated hosted/lifetime: both cohort clocks survive authenticated processor payload
+  ---
+  duration_ms: 26.230291
+  type: 'test'
+  ...
+# Subtest: integrated embedded/monthly: both cohort clocks survive authenticated processor payload
+ok 24 - integrated embedded/monthly: both cohort clocks survive authenticated processor payload
+  ---
+  duration_ms: 18.911125
+  type: 'test'
+  ...
+# Subtest: integrated embedded/lifetime: both cohort clocks survive authenticated processor payload
+ok 25 - integrated embedded/lifetime: both cohort clocks survive authenticated processor payload
+  ---
+  duration_ms: 26.403875
+  type: 'test'
+  ...
+# Subtest: integrated real checkout component sends both envelopes without account borrowing
+ok 26 - integrated real checkout component sends both envelopes without account borrowing
+  ---
+  duration_ms: 36.862042
+  type: 'test'
+  ...
+# Subtest: integrated actual track carries monthly generic and separately scoped draft IDs
+ok 27 - integrated actual track carries monthly generic and separately scoped draft IDs
+  ---
+  duration_ms: 38.278625
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> pro account assignment
+ok 28 - actual provider + offer gate isolate free -> pro account assignment
+  ---
+  duration_ms: 303.1805
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate pro -> free account assignment
+ok 29 - actual provider + offer gate isolate pro -> free account assignment
+  ---
+  duration_ms: 106.650334
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> lifetime account assignment
+ok 30 - actual provider + offer gate isolate free -> lifetime account assignment
+  ---
+  duration_ms: 48.119875
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate lifetime -> free account assignment
+ok 31 - actual provider + offer gate isolate lifetime -> free account assignment
+  ---
+  duration_ms: 37.461167
+  type: 'test'
+  ...
+# Subtest: initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+ok 32 - initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+  ---
+  duration_ms: 34.445458
+  type: 'test'
+  ...
+# Subtest: paid-to-other-account read failure never inherits paid or verified-free assignment
+ok 33 - paid-to-other-account read failure never inherits paid or verified-free assignment
+  ---
+  duration_ms: 35.249417
+  type: 'test'
+  ...
+# Subtest: rapid identity changes ignore late read success/error and stale realtime callbacks
+ok 34 - rapid identity changes ignore late read success/error and stale realtime callbacks
+  ---
+  duration_ms: 32.20925
+  type: 'test'
+  ...
+# Subtest: unready and failed anonymous auth do not inherit previous identity billing
+ok 35 - unready and failed anonymous auth do not inherit previous identity billing
+  ---
+  duration_ms: 32.710041
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 36 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 160.666541
+  type: 'test'
+  ...
+# Subtest: eligibility persists before capture, dedupes remounts and retains original source and clock
+ok 37 - eligibility persists before capture, dedupes remounts and retains original source and clock
+  ---
+  duration_ms: 91.667667
+  type: 'test'
+  ...
+# Subtest: unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+ok 38 - unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+  ---
+  duration_ms: 45.538875
+  type: 'test'
+  ...
+# Subtest: pre-auth enrollment bridges once to identified account without resetting eligibility
+ok 39 - pre-auth enrollment bridges once to identified account without resetting eligibility
+  ---
+  duration_ms: 10.449916
+  type: 'test'
+  ...
+# Subtest: actual paywall gate commits eligibility before mounting the treatment
+ok 40 - actual paywall gate commits eligibility before mounting the treatment
+  ---
+  duration_ms: 118.350125
+  type: 'test'
+  ...
+# Subtest: actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+ok 41 - actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+  ---
+  duration_ms: 69.477167
+  type: 'test'
+  ...
+# Subtest: schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+ok 42 - schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+  ---
+  duration_ms: 17.934917
+  type: 'test'
+  ...
+# Subtest: actual checkout client sends enrollment and records returned processor session, not paid success
+ok 43 - actual checkout client sends enrollment and records returned processor session, not paid success
+  ---
+  duration_ms: 11.220334
+  type: 'test'
+  ...
+# Subtest: display policy keeps prices and the monthly window unchanged
+ok 44 - display policy keeps prices and the monthly window unchanged
+  ---
+  duration_ms: 0.318834
+  type: 'test'
+  ...
+# Subtest: rendered terms scope prospective lifetime policy and retain mandatory rights
+ok 45 - rendered terms scope prospective lifetime policy and retain mandatory rights
+  ---
+  duration_ms: 36.681083
+  type: 'test'
+  ...
+# Subtest: onboarding monthly selection renders only its refund policy
+ok 46 - onboarding monthly selection renders only its refund policy
+  ---
+  duration_ms: 120.264417
+  type: 'test'
+  ...
+# Subtest: upgrade monthly checkout selection renders only its refund policy
+ok 47 - upgrade monthly checkout selection renders only its refund policy
+  ---
+  duration_ms: 27.432583
+  type: 'test'
+  ...
+# Subtest: onboarding lifetime selection renders only its refund policy
+ok 48 - onboarding lifetime selection renders only its refund policy
+  ---
+  duration_ms: 86.021958
+  type: 'test'
+  ...
+# Subtest: upgrade lifetime checkout selection renders only its refund policy
+ok 49 - upgrade lifetime checkout selection renders only its refund policy
+  ---
+  duration_ms: 19.640792
+  type: 'test'
+  ...
+# Subtest: upgrade plan picker and checkout-error fallback show scoped policy on each card
+ok 50 - upgrade plan picker and checkout-error fallback show scoped policy on each card
+  ---
+  duration_ms: 21.40775
+  type: 'test'
+  ...
+1..50
+# tests 66
+# suites 0
+# pass 66
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2132.946125

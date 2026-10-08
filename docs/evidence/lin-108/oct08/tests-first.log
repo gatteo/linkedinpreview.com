@@ -1,0 +1,934 @@
+TAP version 13
+# Subtest: detects direct and retried upstream 429 failures
+ok 1 - detects direct and retried upstream 429 failures
+  ---
+  duration_ms: 0.442958
+  type: 'test'
+  ...
+# Subtest: does not reclassify provider auth or unknown failures
+ok 2 - does not reclassify provider auth or unknown failures
+  ---
+  duration_ms: 0.0645
+  type: 'test'
+  ...
+# Subtest: affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+    # Subtest: generate: direct provider 429
+    ok 1 - generate: direct provider 429
+      ---
+      duration_ms: 7.050167
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 429
+    ok 2 - generate: retry-wrapped provider 429
+      ---
+      duration_ms: 0.403375
+      type: 'test'
+      ...
+    # Subtest: generate: direct provider 401
+    ok 3 - generate: direct provider 401
+      ---
+      duration_ms: 0.4595
+      type: 'test'
+      ...
+    # Subtest: generate: retry-wrapped provider 401
+    ok 4 - generate: retry-wrapped provider 401
+      ---
+      duration_ms: 0.334375
+      type: 'test'
+      ...
+    # Subtest: generate: generic failure
+    ok 5 - generate: generic failure
+      ---
+      duration_ms: 0.772541
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 429
+    ok 6 - strategy/formats: direct provider 429
+      ---
+      duration_ms: 0.71475
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 429
+    ok 7 - strategy/formats: retry-wrapped provider 429
+      ---
+      duration_ms: 0.343541
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: direct provider 401
+    ok 8 - strategy/formats: direct provider 401
+      ---
+      duration_ms: 0.301417
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: retry-wrapped provider 401
+    ok 9 - strategy/formats: retry-wrapped provider 401
+      ---
+      duration_ms: 0.459792
+      type: 'test'
+      ...
+    # Subtest: strategy/formats: generic failure
+    ok 10 - strategy/formats: generic failure
+      ---
+      duration_ms: 0.189042
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 429
+    ok 11 - strategy/positioning: direct provider 429
+      ---
+      duration_ms: 1.457125
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 429
+    ok 12 - strategy/positioning: retry-wrapped provider 429
+      ---
+      duration_ms: 1.704208
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: direct provider 401
+    ok 13 - strategy/positioning: direct provider 401
+      ---
+      duration_ms: 8.702541
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: retry-wrapped provider 401
+    ok 14 - strategy/positioning: retry-wrapped provider 401
+      ---
+      duration_ms: 0.551541
+      type: 'test'
+      ...
+    # Subtest: strategy/positioning: generic failure
+    ok 15 - strategy/positioning: generic failure
+      ---
+      duration_ms: 0.328708
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 429
+    ok 16 - analyze: direct provider 429
+      ---
+      duration_ms: 5.821833
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 429
+    ok 17 - analyze: retry-wrapped provider 429
+      ---
+      duration_ms: 0.595208
+      type: 'test'
+      ...
+    # Subtest: analyze: direct provider 401
+    ok 18 - analyze: direct provider 401
+      ---
+      duration_ms: 1.320708
+      type: 'test'
+      ...
+    # Subtest: analyze: retry-wrapped provider 401
+    ok 19 - analyze: retry-wrapped provider 401
+      ---
+      duration_ms: 0.187708
+      type: 'test'
+      ...
+    # Subtest: analyze: generic failure
+    ok 20 - analyze: generic failure
+      ---
+      duration_ms: 0.147
+      type: 'test'
+      ...
+    1..20
+ok 3 - affected route handlers preserve auth and rate-limit preconditions while classifying provider failures
+  ---
+  duration_ms: 271.494375
+  type: 'test'
+  ...
+# Subtest: affected routes retain the executable handler seam and supplemental provider mapping
+ok 4 - affected routes retain the executable handler seam and supplemental provider mapping
+  ---
+  duration_ms: 14.5595
+  type: 'test'
+  ...
+# Subtest: billing free read explicitly scopes and validates expected user
+ok 5 - billing free read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.647209
+  type: 'test'
+  ...
+# Subtest: billing pro read explicitly scopes and validates expected user
+ok 6 - billing pro read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.064584
+  type: 'test'
+  ...
+# Subtest: billing lifetime read explicitly scopes and validates expected user
+ok 7 - billing lifetime read explicitly scopes and validates expected user
+  ---
+  duration_ms: 0.048625
+  type: 'test'
+  ...
+# Subtest: wrong-account and ownerless rows reject instead of verified billing
+ok 8 - wrong-account and ownerless rows reject instead of verified billing
+  ---
+  duration_ms: 0.2465
+  type: 'test'
+  ...
+# Subtest: own absent row stays free; read errors remain failures
+ok 9 - own absent row stays free; read errors remain failures
+  ---
+  duration_ms: 0.083042
+  type: 'test'
+  ...
+# Subtest: actual checkout validates attribution and leaves old callers, auth and prices intact
+ok 10 - actual checkout validates attribution and leaves old callers, auth and prices intact
+  ---
+  duration_ms: 66.750708
+  type: 'test'
+  ...
+# Subtest: hosted and embedded checkout retain first entry in processor metadata for both plans
+ok 11 - hosted and embedded checkout retain first entry in processor metadata for both plans
+  ---
+  duration_ms: 111.227541
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 12 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 152.483542
+  type: 'test'
+  ...
+# Subtest: actual controller defers imports without onboarding completion and survives reload/navigation
+ok 13 - actual controller defers imports without onboarding completion and survives reload/navigation
+  ---
+  duration_ms: 362.077584
+  type: 'test'
+  ...
+# Subtest: optional planning request opens the real controller and preserves saved answers
+ok 14 - optional planning request opens the real controller and preserves saved answers
+  ---
+  duration_ms: 66.133959
+  type: 'test'
+  ...
+# Subtest: explicit planning URL and existing planning placements override deferral
+ok 15 - explicit planning URL and existing planning placements override deferral
+  ---
+  duration_ms: 205.930833
+  type: 'test'
+  ...
+# Subtest: gate preserves saved planning, OAuth and checkout return precedence
+ok 16 - gate preserves saved planning, OAuth and checkout return precedence
+  ---
+  duration_ms: 201.925541
+  type: 'test'
+  ...
+# Subtest: controller snapshots returns before another consumer strips the URL
+ok 17 - controller snapshots returns before another consumer strips the URL
+  ---
+  duration_ms: 23.034375
+  type: 'test'
+  ...
+# Subtest: completed users stay completed; legacy backfill remains distinct from deferral
+ok 18 - completed users stay completed; legacy backfill remains distinct from deferral
+  ---
+  duration_ms: 30.717708
+  type: 'test'
+  ...
+# Subtest: account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+ok 19 - account-scoped storage rejects corruption and tolerates blocked storage without leaking identities
+  ---
+  duration_ms: 8.533833
+  type: 'test'
+  ...
+# Subtest: actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+ok 20 - actual import hook deduplicates overlapping loads and preserves nested text, media and attribution
+  ---
+  duration_ms: 69.129042
+  type: 'test'
+  ...
+# Subtest: malformed imports and missing media never create a blank or overwrite existing drafts
+ok 21 - malformed imports and missing media never create a blank or overwrite existing drafts
+  ---
+  duration_ms: 104.162958
+  type: 'test'
+  ...
+# Subtest: failed create/load cannot count successful import or trigger empty-draft deletion
+ok 22 - failed create/load cannot count successful import or trigger empty-draft deletion
+  ---
+  duration_ms: 103.762875
+  type: 'test'
+  ...
+# Subtest: actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+ok 23 - actual editor counts meaningful use after hydration and preserves edits across mobile remounts
+  ---
+  duration_ms: 21.161167
+  type: 'test'
+  ...
+# Subtest: actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+ok 24 - actual free-tool handoff records eligibility before encoding, carries media, and preserves explicit planning
+  ---
+  duration_ms: 16.443167
+  type: 'test'
+  ...
+# Subtest: pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+ok 25 - pre-auth eligibility clock and enrollment survive binding and never reset on another attempt
+  ---
+  duration_ms: 6.493125
+  type: 'test'
+  ...
+# Subtest: meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+ok 26 - meaningful edit requires confirmed persistence, failed saves and hydration cannot count success
+  ---
+  duration_ms: 102.331625
+  type: 'test'
+  ...
+# Subtest: navigation saves record only confirmed meaningful edits, excluding failure and hydration
+    # Subtest: unmount: meaningful=true, failure=true
+    ok 1 - unmount: meaningful=true, failure=true
+      ---
+      duration_ms: 51.874208
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=true, failure=false
+    ok 2 - unmount: meaningful=true, failure=false
+      ---
+      duration_ms: 51.227417
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=true
+    ok 3 - unmount: meaningful=false, failure=true
+      ---
+      duration_ms: 50.662416
+      type: 'test'
+      ...
+    # Subtest: unmount: meaningful=false, failure=false
+    ok 4 - unmount: meaningful=false, failure=false
+      ---
+      duration_ms: 48.37725
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=true
+    ok 5 - switch: meaningful=true, failure=true
+      ---
+      duration_ms: 47.129209
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=true, failure=false
+    ok 6 - switch: meaningful=true, failure=false
+      ---
+      duration_ms: 47.883292
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=true
+    ok 7 - switch: meaningful=false, failure=true
+      ---
+      duration_ms: 49.907666
+      type: 'test'
+      ...
+    # Subtest: switch: meaningful=false, failure=false
+    ok 8 - switch: meaningful=false, failure=false
+      ---
+      duration_ms: 49.576583
+      type: 'test'
+      ...
+    1..8
+ok 27 - navigation saves record only confirmed meaningful edits, excluding failure and hydration
+  ---
+  duration_ms: 397.227833
+  type: 'test'
+  ...
+# Subtest: navigation successes deduplicate against earlier save or copy and remain draft scoped
+    # Subtest: unmount after save
+    ok 1 - unmount after save
+      ---
+      duration_ms: 49.222208
+      type: 'test'
+      ...
+    # Subtest: unmount after copy
+    ok 2 - unmount after copy
+      ---
+      duration_ms: 48.941041
+      type: 'test'
+      ...
+    # Subtest: unmount after different_draft
+    ok 3 - unmount after different_draft
+      ---
+      duration_ms: 48.830833
+      type: 'test'
+      ...
+    # Subtest: switch after save
+    ok 4 - switch after save
+      ---
+      duration_ms: 48.927209
+      type: 'test'
+      ...
+    # Subtest: switch after copy
+    ok 5 - switch after copy
+      ---
+      duration_ms: 49.721833
+      type: 'test'
+      ...
+    # Subtest: switch after different_draft
+    ok 6 - switch after different_draft
+      ---
+      duration_ms: 48.066042
+      type: 'test'
+      ...
+    1..6
+ok 28 - navigation successes deduplicate against earlier save or copy and remain draft scoped
+  ---
+  duration_ms: 294.134292
+  type: 'test'
+  ...
+# Subtest: save accounting snapshots meaningful intent before asynchronous hydration changes
+ok 29 - save accounting snapshots meaningful intent before asynchronous hydration changes
+  ---
+  duration_ms: 55.992
+  type: 'test'
+  ...
+# Subtest: debounced persistence uses the same success/failure accounting and captures account scope
+    # Subtest: failure=true
+    ok 1 - failure=true
+      ---
+      duration_ms: 53.602083
+      type: 'test'
+      ...
+    # Subtest: failure=false
+    ok 2 - failure=false
+      ---
+      duration_ms: 53.840084
+      type: 'test'
+      ...
+    1..2
+ok 30 - debounced persistence uses the same success/failure accounting and captures account scope
+  ---
+  duration_ms: 107.65775
+  type: 'test'
+  ...
+# Subtest: draft import preserves undefined header assignment and separate eligibility
+ok 31 - draft import preserves undefined header assignment and separate eligibility
+  ---
+  duration_ms: 87.278084
+  type: 'test'
+  ...
+# Subtest: draft import preserves control header assignment and separate eligibility
+ok 32 - draft import preserves control header assignment and separate eligibility
+  ---
+  duration_ms: 57.769292
+  type: 'test'
+  ...
+# Subtest: draft import preserves pro header assignment and separate eligibility
+ok 33 - draft import preserves pro header assignment and separate eligibility
+  ---
+  duration_ms: 89.955792
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback removes the capture surface without changing the full-post copy path
+ok 34 - EXP-6 rollback removes the capture surface without changing the full-post copy path
+  ---
+  duration_ms: 4.938459
+  type: 'test'
+  ...
+# Subtest: EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+ok 35 - EXP-6 rollback rejects every lead request before parsing, authentication, or persistence
+  ---
+  duration_ms: 1.332959
+  type: 'test'
+  ...
+# Subtest: EXP-6 migration makes email dedupe atomic and denies direct client access
+ok 36 - EXP-6 migration makes email dedupe atomic and denies direct client access
+  ---
+  duration_ms: 1.106917
+  type: 'test'
+  ...
+# Subtest: free-tool dashboard CTAs record the canonical entry events
+ok 37 - free-tool dashboard CTAs record the canonical entry events
+  ---
+  duration_ms: 3.001417
+  type: 'test'
+  ...
+# Subtest: upgrade dialog records canonical pricing and purchase-intent events
+ok 38 - upgrade dialog records canonical pricing and purchase-intent events
+  ---
+  duration_ms: 1.960916
+  type: 'test'
+  ...
+# Subtest: event dictionary documents every canonical revenue event
+ok 39 - event dictionary documents every canonical revenue event
+  ---
+  duration_ms: 1.817583
+  type: 'test'
+  ...
+# Subtest: header control: eligibility precedes flag read and failures remain control
+ok 40 - header control: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 91.644333
+  type: 'test'
+  ...
+# Subtest: header pro: eligibility precedes flag read and failures remain control
+ok 41 - header pro: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 19.965
+  type: 'test'
+  ...
+# Subtest: header undefined: eligibility precedes flag read and failures remain control
+ok 42 - header undefined: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 28.638917
+  type: 'test'
+  ...
+# Subtest: header false: eligibility precedes flag read and failures remain control
+ok 43 - header false: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 15.137333
+  type: 'test'
+  ...
+# Subtest: header true: eligibility precedes flag read and failures remain control
+ok 44 - header true: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 36.016708
+  type: 'test'
+  ...
+# Subtest: header unknown: eligibility precedes flag read and failures remain control
+ok 45 - header unknown: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 20.728
+  type: 'test'
+  ...
+# Subtest: header toString: eligibility precedes flag read and failures remain control
+ok 46 - header toString: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 20.372042
+  type: 'test'
+  ...
+# Subtest: header __proto__: eligibility precedes flag read and failures remain control
+ok 47 - header __proto__: eligibility precedes flag read and failures remain control
+  ---
+  duration_ms: 14.883375
+  type: 'test'
+  ...
+# Subtest: assignment and enrollment ID survive refresh, remount and anonymous-to-known navigation
+ok 48 - assignment and enrollment ID survive refresh, remount and anonymous-to-known navigation
+  ---
+  duration_ms: 73.891333
+  type: 'test'
+  ...
+# Subtest: disabled or unloaded remote flag renders control even with a persisted treatment
+ok 49 - disabled or unloaded remote flag renders control even with a persisted treatment
+  ---
+  duration_ms: 28.022833
+  type: 'test'
+  ...
+# Subtest: loading fallback never changes assignment on remount when a treatment loads later
+ok 50 - loading fallback never changes assignment on remount when a treatment loads later
+  ---
+  duration_ms: 38.479875
+  type: 'test'
+  ...
+# Subtest: unavailable storage getItem retains eligible denominator and safe control
+ok 51 - unavailable storage getItem retains eligible denominator and safe control
+  ---
+  duration_ms: 13.421083
+  type: 'test'
+  ...
+# Subtest: unavailable storage setItem retains eligible denominator and safe control
+ok 52 - unavailable storage setItem retains eligible denominator and safe control
+  ---
+  duration_ms: 27.630542
+  type: 'test'
+  ...
+# Subtest: flag getter failure and malformed persisted state cannot expose treatment
+ok 53 - flag getter failure and malformed persisted state cannot expose treatment
+  ---
+  duration_ms: 9.731333
+  type: 'test'
+  ...
+# Subtest: a preceding daily-lane enrollment excludes this test before flags or eligibility
+ok 54 - a preceding daily-lane enrollment excludes this test before flags or eligibility
+  ---
+  duration_ms: 20.750458
+  type: 'test'
+  ...
+# Subtest: analytics exception cannot break the CTA or expose treatment
+ok 55 - analytics exception cannot break the CTA or expose treatment
+  ---
+  duration_ms: 11.481458
+  type: 'test'
+  ...
+# Subtest: event properties contain no draft, profile, email, payment or auth data
+ok 56 - event properties contain no draft, profile, email, payment or auth data
+  ---
+  duration_ms: 11.24925
+  type: 'test'
+  ...
+# Subtest: only the desktop homepage header CTA changes; mobile and free tool are not experiment slots
+ok 57 - only the desktop homepage header CTA changes; mobile and free tool are not experiment slots
+  ---
+  duration_ms: 9.976084
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //true/pro
+ok 58 - actual React header callbacks: //true/pro
+  ---
+  duration_ms: 250.002667
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //true/undefined
+ok 59 - actual React header callbacks: //true/undefined
+  ---
+  duration_ms: 62.8295
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: //false/pro
+ok 60 - actual React header callbacks: //false/pro
+  ---
+  duration_ms: 81.8675
+  type: 'test'
+  ...
+# Subtest: actual React header callbacks: /blog/true/pro
+ok 61 - actual React header callbacks: /blog/true/pro
+  ---
+  duration_ms: 57.236125
+  type: 'test'
+  ...
+# Subtest: homepage metadata states the free formatter and editor use case
+ok 62 - homepage metadata states the free formatter and editor use case
+  ---
+  duration_ms: 0.975
+  type: 'test'
+  ...
+# Subtest: monthly enrollment preserves frozen header control with later flag undefined
+ok 63 - monthly enrollment preserves frozen header control with later flag undefined
+  ---
+  duration_ms: 185.307375
+  type: 'test'
+  ...
+# Subtest: monthly enrollment preserves frozen header control with later flag control
+ok 64 - monthly enrollment preserves frozen header control with later flag control
+  ---
+  duration_ms: 58.401083
+  type: 'test'
+  ...
+# Subtest: monthly enrollment preserves frozen header control with later flag pro
+ok 65 - monthly enrollment preserves frozen header control with later flag pro
+  ---
+  duration_ms: 72.211959
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> pro account assignment
+ok 66 - actual provider + offer gate isolate free -> pro account assignment
+  ---
+  duration_ms: 393.708792
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate pro -> free account assignment
+ok 67 - actual provider + offer gate isolate pro -> free account assignment
+  ---
+  duration_ms: 161.829
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate free -> lifetime account assignment
+ok 68 - actual provider + offer gate isolate free -> lifetime account assignment
+  ---
+  duration_ms: 78.789084
+  type: 'test'
+  ...
+# Subtest: actual provider + offer gate isolate lifetime -> free account assignment
+ok 69 - actual provider + offer gate isolate lifetime -> free account assignment
+  ---
+  duration_ms: 72.532042
+  type: 'test'
+  ...
+# Subtest: initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+ok 70 - initial pending read blocks enrollment; own failed read assigns unknown and retains original clock
+  ---
+  duration_ms: 75.720042
+  type: 'test'
+  ...
+# Subtest: paid-to-other-account read failure never inherits paid or verified-free assignment
+ok 71 - paid-to-other-account read failure never inherits paid or verified-free assignment
+  ---
+  duration_ms: 62.662333
+  type: 'test'
+  ...
+# Subtest: rapid identity changes ignore late read success/error and stale realtime callbacks
+ok 72 - rapid identity changes ignore late read success/error and stale realtime callbacks
+  ---
+  duration_ms: 34.662625
+  type: 'test'
+  ...
+# Subtest: unready and failed anonymous auth do not inherit previous identity billing
+ok 73 - unready and failed anonymous auth do not inherit previous identity billing
+  ---
+  duration_ms: 34.645542
+  type: 'test'
+  ...
+# Subtest: processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+ok 74 - processor-confirmed purchase events retain attribution without changing entitlements or retry behavior
+  ---
+  duration_ms: 243.7635
+  type: 'test'
+  ...
+# Subtest: eligibility persists before capture, dedupes remounts and retains original source and clock
+ok 75 - eligibility persists before capture, dedupes remounts and retains original source and clock
+  ---
+  duration_ms: 55.672417
+  type: 'test'
+  ...
+# Subtest: unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+ok 76 - unknown billing and paid guardrails never masquerade as verified unpaid enrollment
+  ---
+  duration_ms: 24.107125
+  type: 'test'
+  ...
+# Subtest: pre-auth enrollment bridges once to identified account without resetting eligibility
+ok 77 - pre-auth enrollment bridges once to identified account without resetting eligibility
+  ---
+  duration_ms: 10.887125
+  type: 'test'
+  ...
+# Subtest: actual paywall gate commits eligibility before mounting the treatment
+ok 78 - actual paywall gate commits eligibility before mounting the treatment
+  ---
+  duration_ms: 100.481
+  type: 'test'
+  ...
+# Subtest: actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+not ok 79 - actual hosted/embedded processor parameters preserve identity, price, monthly cohort and lifetime alternative
+  ---
+  duration_ms: 13.882458
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:179:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing mock: app/api/billing/checkout/route.ts -> @/lib/draft-first'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    require (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:31:20)
+    evalmachine.<anonymous>:7:23
+    Script.runInContext (node:vm:149:12)
+    Script.runInNewContext (node:vm:154:17)
+    runInNewContext (node:vm:310:38)
+    loadTS (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:17:5)
+    async checkout (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:137:19)
+    async TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:182:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+not ok 80 - schema rejects partial/foreign attribution and auth remains authoritative; legacy callers still work
+  ---
+  duration_ms: 14.336208
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:208:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing mock: app/api/billing/checkout/route.ts -> @/lib/draft-first'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    require (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:31:20)
+    evalmachine.<anonymous>:7:23
+    Script.runInContext (node:vm:149:12)
+    Script.runInNewContext (node:vm:154:17)
+    runInNewContext (node:vm:310:38)
+    loadTS (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:17:5)
+    async checkout (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:137:19)
+    async TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:209:15)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: actual checkout client sends enrollment and records returned processor session, not paid success
+not ok 81 - actual checkout client sends enrollment and records returned processor session, not paid success
+  ---
+  duration_ms: 13.301041
+  type: 'test'
+  location: '/Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:228:1'
+  failureType: 'testCodeFailure'
+  error: 'Missing mock: components/dashboard/onboarding/steps/checkout.tsx -> @/lib/draft-first'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    require (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:31:20)
+    evalmachine.<anonymous>:36:23
+    Script.runInContext (node:vm:149:12)
+    Script.runInNewContext (node:vm:154:17)
+    runInNewContext (node:vm:310:38)
+    loadTS (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/helpers/component-harness.mjs:17:5)
+    async TestContext.<anonymous> (file:///Users/gatteomini/agents/lp-eng-agent/linkedinpreview.com/tests/monthly-offer.test.mjs:234:36)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: draft-first nudge preserves the free planning offer and existing nudge mechanics
+ok 82 - draft-first nudge preserves the free planning offer and existing nudge mechanics
+  ---
+  duration_ms: 4.07575
+  type: 'test'
+  ...
+# Subtest: flag control safely returns current control
+ok 83 - flag control safely returns current control
+  ---
+  duration_ms: 53.153959
+  type: 'test'
+  ...
+# Subtest: flag undefined safely returns current control
+ok 84 - flag undefined safely returns current control
+  ---
+  duration_ms: 13.369167
+  type: 'test'
+  ...
+# Subtest: flag null safely returns current control
+ok 85 - flag null safely returns current control
+  ---
+  duration_ms: 7.633959
+  type: 'test'
+  ...
+# Subtest: flag true safely returns current control
+ok 86 - flag true safely returns current control
+  ---
+  duration_ms: 6.228791
+  type: 'test'
+  ...
+# Subtest: flag false safely returns current control
+ok 87 - flag false safely returns current control
+  ---
+  duration_ms: 10.835083
+  type: 'test'
+  ...
+# Subtest: flag unknown safely returns current control
+ok 88 - flag unknown safely returns current control
+  ---
+  duration_ms: 3.535834
+  type: 'test'
+  ...
+# Subtest: flag toString safely returns current control
+ok 89 - flag toString safely returns current control
+  ---
+  duration_ms: 12.204208
+  type: 'test'
+  ...
+# Subtest: flag __proto__ safely returns current control
+ok 90 - flag __proto__ safely returns current control
+  ---
+  duration_ms: 10.138125
+  type: 'test'
+  ...
+# Subtest: known treatment is resolved once without changing after delayed flag updates
+ok 91 - known treatment is resolved once without changing after delayed flag updates
+  ---
+  duration_ms: 11.079667
+  type: 'test'
+  ...
+# Subtest: loading assignment stays control when treatment arrives later
+ok 92 - loading assignment stays control when treatment arrives later
+  ---
+  duration_ms: 4.904459
+  type: 'test'
+  ...
+# Subtest: uninitialized PostHog keeps control
+ok 93 - uninitialized PostHog keeps control
+  ---
+  duration_ms: 5.44
+  type: 'test'
+  ...
+# Subtest: failed flag read keeps control instead of breaking the product
+ok 94 - failed flag read keeps control instead of breaking the product
+  ---
+  duration_ms: 10.942875
+  type: 'test'
+  ...
+# Subtest: persisted header treatment uses the existing registry without a second flag read
+ok 95 - persisted header treatment uses the existing registry without a second flag read
+  ---
+  duration_ms: 6.719875
+  type: 'test'
+  ...
+# Subtest: paywall purchase CTA starts plan selection without a scroll gate
+ok 96 - paywall purchase CTA starts plan selection without a scroll gate
+  ---
+  duration_ms: 0.496458
+  type: 'test'
+  ...
+# Subtest: EXP-9 renders and attributes the registered monthly-first offer
+ok 97 - EXP-9 renders and attributes the registered monthly-first offer
+  ---
+  duration_ms: 1.28475
+  type: 'test'
+  ...
+# Subtest: display policy keeps prices and the monthly window unchanged
+ok 98 - display policy keeps prices and the monthly window unchanged
+  ---
+  duration_ms: 0.331625
+  type: 'test'
+  ...
+# Subtest: rendered terms scope prospective lifetime policy and retain mandatory rights
+ok 99 - rendered terms scope prospective lifetime policy and retain mandatory rights
+  ---
+  duration_ms: 26.315375
+  type: 'test'
+  ...
+# Subtest: onboarding monthly selection renders only its refund policy
+ok 100 - onboarding monthly selection renders only its refund policy
+  ---
+  duration_ms: 89.621333
+  type: 'test'
+  ...
+# Subtest: upgrade monthly checkout selection renders only its refund policy
+ok 101 - upgrade monthly checkout selection renders only its refund policy
+  ---
+  duration_ms: 20.345875
+  type: 'test'
+  ...
+# Subtest: onboarding lifetime selection renders only its refund policy
+ok 102 - onboarding lifetime selection renders only its refund policy
+  ---
+  duration_ms: 53.955625
+  type: 'test'
+  ...
+# Subtest: upgrade lifetime checkout selection renders only its refund policy
+ok 103 - upgrade lifetime checkout selection renders only its refund policy
+  ---
+  duration_ms: 10.363209
+  type: 'test'
+  ...
+# Subtest: upgrade plan picker and checkout-error fallback show scoped policy on each card
+ok 104 - upgrade plan picker and checkout-error fallback show scoped policy on each card
+  ---
+  duration_ms: 14.990625
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves root path
+ok 105 - UtmUrl preserves root path
+  ---
+  duration_ms: 0.358084
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters
+ok 106 - UtmUrl preserves existing query parameters
+  ---
+  duration_ms: 0.049791
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves fragment
+ok 107 - UtmUrl preserves fragment
+  ---
+  duration_ms: 0.040708
+  type: 'test'
+  ...
+# Subtest: UtmUrl preserves existing query parameters and fragment
+ok 108 - UtmUrl preserves existing query parameters and fragment
+  ---
+  duration_ms: 0.038583
+  type: 'test'
+  ...
+1..108
+# tests 144
+# suites 0
+# pass 141
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2580.700125

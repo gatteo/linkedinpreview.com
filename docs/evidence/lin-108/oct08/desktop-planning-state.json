@@ -1,0 +1,9 @@
+{
+    "lp-consent": "accepted",
+    "lp-migrated-to-supabase": "1",
+    "lp-draft-first:11111111-1111-4111-8111-111111111111": "{\"version\":\"imported_draft_v1\",\"entrySource\":\"tool_footer\",\"exposureId\":\"185f5bd0-6ce4-4753-a738-bbb2cfdcb3ea\",\"draftId\":\"82e38bb2-3082-4d62-a63b-3adea92553e7\",\"used\":true}",
+    "lp-offer-first-touch": "tool_footer",
+    "lp-daily-test-enrollment-v1": "{\"testId\":\"EXP-11\",\"enrollmentId\":\"3818a6bb-04ee-47b1-8e19-c58c66c9e0a0\",\"eligibilityAt\":\"2026-10-08T09:11:59.691Z\",\"assignmentVersion\":\"exp11_header_v1\",\"variant\":\"control\",\"assignmentStatus\":\"flag_unavailable\",\"releaseSha\":\"893ca52aeedca378e3b16b22f9b6f68e2c1cb61d\"}",
+    "lin108-fixture-drafts": "[{\"id\":\"82e38bb2-3082-4d62-a63b-3adea92553e7\",\"user_id\":\"11111111-1111-4111-8111-111111111111\",\"title\":\"LIN108 desktop early-navigation unique edit October8.\",\"kind\":\"post\",\"content\":{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"LIN108 desktop early-navigation unique edit October8.\"}]}]},\"media\":null,\"status\":\"draft\",\"label\":null,\"word_count\":6,\"char_count\":53,\"created_at\":\"2026-10-08T09:13:01.722Z\",\"updated_at\":\"2026-10-08T09:13:29.685Z\",\"scheduled_at\":null,\"published_at\":null,\"linkedin_post_url\":null,\"publish_error\":null}]",
+    "lp-onboarding-state": "{\"v\":3,\"answers\":{\"entrySource\":\"tool_footer\",\"profile\":{\"avatarUrl\":\"\",\"name\":\"\",\"headline\":\"\"},\"role\":\"\",\"goals\":[],\"audience\":[],\"topics\":[],\"writingStyle\":{\"language\":\"english\",\"sentenceLength\":\"standard\",\"postLength\":\"standard\",\"emojiFrequency\":\"moderate\"},\"frequency\":3,\"schedule\":[{\"time\":\"09:00\",\"days\":[\"mon\",\"wed\",\"fri\"]}],\"positioning\":\"\",\"formats\":[],\"linkedinConnected\":false},\"resumeAt\":\"welcome\"}"
+}
