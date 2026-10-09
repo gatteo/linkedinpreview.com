@@ -26,3 +26,27 @@ export const deckSchema = z.object({
         .min(4)
         .max(15),
 })
+
+export const providerDeckSchema = deckSchema.extend({
+    themeSuggestion: deckSchema.shape.themeSuggestion.unwrap().nullable(),
+    slides: z
+        .array(
+            deckSchema.shape.slides.element.extend({
+                body: z.string().nullable(),
+                suggestedIcon: z.string().nullable(),
+            }),
+        )
+        .min(4)
+        .max(15),
+})
+
+export function normalizeProviderDeck(deck: z.infer<typeof providerDeckSchema>): z.infer<typeof deckSchema> {
+    return {
+        ...(deck.themeSuggestion === null ? {} : { themeSuggestion: deck.themeSuggestion }),
+        slides: deck.slides.map(({ body, suggestedIcon, ...slide }) => ({
+            ...slide,
+            ...(body === null ? {} : { body }),
+            ...(suggestedIcon === null ? {} : { suggestedIcon }),
+        })),
+    }
+}

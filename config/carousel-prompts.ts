@@ -22,7 +22,7 @@ export function carouselBrandingBlock(brandingContext?: string): string {
 // Generate - full deck
 // ---------------------------------------------------------------------------
 
-const ICON_GUIDANCE = `When an icon reinforces a slide, set suggestedIcon to ONE name from this list (omit it otherwise): ${CAROUSEL_ICON_NAMES.join(', ')}.`
+const ICON_GUIDANCE = `When an icon reinforces a slide, set suggestedIcon to ONE name from this list (use null otherwise): ${CAROUSEL_ICON_NAMES.join(', ')}.`
 
 export const CAROUSEL_GENERATE_SYSTEM = `You are an expert LinkedIn carousel (document post) strategist. You design swipeable slide decks that stop the scroll and earn saves.
 
@@ -46,9 +46,9 @@ export const CAROUSEL_GENERATE_SYSTEM = `You are an expert LinkedIn carousel (do
 ## Output Shape
 
 - Return an ordered slides array. The first slide MUST have role "hook"; the last MUST have role "cta"; all others "body".
-- headline is required on every slide. body is optional and only used when a supporting line adds real value.
+- headline is required on every slide. Set body to a supporting line only when it adds real value; otherwise use null. Include body and suggestedIcon on every slide.
 - ${ICON_GUIDANCE}
-- themeSuggestion.vibe is a short phrase describing a fitting visual mood (e.g. "bold high-contrast", "calm minimal editorial").`
+- themeSuggestion.vibe is a short phrase describing a fitting visual mood (e.g. "bold high-contrast", "calm minimal editorial"). Include themeSuggestion, using null when no suggestion is needed.`
 
 const CAROUSEL_FRAMEWORKS: Record<CarouselType, string> = {
     auto: `Pick the structure that best fits the material: a numbered list, a step-by-step guide, a narrative arc, a side-by-side comparison, or a data story. Choose whichever will hold attention best.`,

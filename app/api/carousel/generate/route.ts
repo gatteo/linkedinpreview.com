@@ -7,7 +7,7 @@ import { CAROUSEL_GENERATE_SYSTEM, carouselGenerateUserPrompt } from '@/config/c
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
-import { bodySchema, deckSchema } from './route.schema'
+import { bodySchema, normalizeProviderDeck, providerDeckSchema } from './route.schema'
 
 export const maxDuration = 60
 
@@ -57,12 +57,12 @@ export async function POST(request: Request) {
     try {
         const { object } = await generateObject({
             model: openai(model),
-            schema: deckSchema,
+            schema: providerDeckSchema,
             system: CAROUSEL_GENERATE_SYSTEM,
             prompt: carouselGenerateUserPrompt({ source, content, carouselType, targetSlides, brandingContext }),
         })
 
-        return Response.json(object)
+        return Response.json(normalizeProviderDeck(object))
     } catch (err) {
         console.error('[/api/carousel/generate]', err instanceof Error ? err.message : err)
         return Response.json(
