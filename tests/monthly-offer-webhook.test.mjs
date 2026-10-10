@@ -68,6 +68,12 @@ test('processor-confirmed purchase events retain attribution without changing en
                         offer_version: 'monthly_first_v2',
                         release_sha: 'f3e84221f1c6aa6574ef67e5197bde0b55050b63',
                         monthly_entry_source: 'navbar',
+                        job_enrollment_id: '22222222-2222-4222-8222-222222222222',
+                        job_eligibility_at: '2026-10-10T15:00:00.000Z',
+                        job_flow_version: 'visitor_writing_v1',
+                        job_source: 'public_post_copy',
+                        job: 'writing_help',
+                        historical_overlap: 'unknown',
                         draft_enrollment_id: '00000000-0000-4000-8000-000000000010',
                         draft_cohort_id: 'exp10_draft_first_v1',
                         draft_eligibility_at: '2026-10-05T19:00:00.000Z',
@@ -90,6 +96,16 @@ test('processor-confirmed purchase events retain attribution without changing en
         assert.equal(success.captured[0][2].payment_status, 'paid')
         assert.equal(success.captured[0][2].recurring_outcome, 'requires_processor_reconciliation')
         assert.equal(success.captured[0][2].entry_source, 'tool_footer')
+        for (const key of [
+            'job_enrollment_id',
+            'job_eligibility_at',
+            'job_flow_version',
+            'job_source',
+            'job',
+            'historical_overlap',
+        ]) {
+            assert.equal(success.captured[0][2][key], event.data.object.metadata[key])
+        }
         for (const key of [
             'enrollment_id',
             'cohort_id',

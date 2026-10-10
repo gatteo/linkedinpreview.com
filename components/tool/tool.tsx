@@ -17,6 +17,11 @@ import { cn } from '@/lib/utils'
 import { backupStoredDraft, readStoredDraft, takeBackupDraft, useDraftPersistence } from '@/hooks/use-draft-persistence'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
 import { Button } from '@/components/ui/button'
+import {
+    useVisitorWritingController,
+    VisitorWritingContext,
+    VisitorWritingPanel,
+} from '@/components/tool/visitor-writing-flow'
 
 import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
@@ -90,6 +95,29 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
     const [isLoading, setIsLoading] = React.useState(true)
     const isDesktopViewport = useIsDesktop()
     const isDesktop = layout === 'auto' && isDesktopViewport
+    const writing = useVisitorWritingController(variant === 'default')
+    const previewRef = React.useRef<HTMLDivElement>(null)
+    const writingRef = React.useRef(writing)
+    React.useEffect(() => {
+        writingRef.current = writing
+    }, [writing])
+    React.useEffect(() => {
+        if (isLoading || !writing.enabled || !previewRef.current) return
+        const element = previewRef.current
+        const observer = new IntersectionObserver(([entry]) => {
+            const style = getComputedStyle(element)
+            if (
+                entry.isIntersecting &&
+                style.visibility !== 'hidden' &&
+                style.opacity !== '0' &&
+                !element.closest('[inert]')
+            ) {
+                writingRef.current.previewed(content)
+            }
+        })
+        observer.observe(element)
+        return () => observer.disconnect()
+    }, [content, isLoading, writing.enabled, isDesktop, mobileTab])
 
     const { flush } = useDraftPersistence(content)
 
@@ -351,13 +379,15 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                     </Panel>
                     <ResizeHandle />
                     <Panel defaultSize='50%' minSize='25%' maxSize='60%' className='flex flex-col'>
-                        <PreviewPanel
-                            content={content}
-                            media={media}
-                            promptBranding={variant === 'default'}
-                            onOpenFeedPreview={handleOpenFeedPreview}
-                            hasContent={contentHasText}
-                        />
+                        <div ref={previewRef} data-visitor-writing-preview className='flex min-h-0 flex-1 flex-col'>
+                            <PreviewPanel
+                                content={content}
+                                media={media}
+                                promptBranding={variant === 'default'}
+                                onOpenFeedPreview={handleOpenFeedPreview}
+                                hasContent={contentHasText}
+                            />
+                        </div>
                     </Panel>
                 </Group>
             ) : (
@@ -393,6 +423,8 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                     </div>
                     <div
                         aria-hidden={layout === 'tabs' && mobileTab !== 'preview' ? true : undefined}
+                        ref={previewRef}
+                        data-visitor-writing-preview
                         inert={layout === 'tabs' && mobileTab !== 'preview'}
                         className={cn(
                             'flex flex-col',
@@ -432,33 +464,36 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
     )
 
     if (variant === 'embed') {
-        return inner
+        return <VisitorWritingContext.Provider value={writing}>{inner}</VisitorWritingContext.Provider>
     }
 
     return (
-        <section id='tool' className='border-border bg-canvas scroll-mt-[var(--header-height)] border-t'>
-            <div className='max-w-content border-border mx-auto border-x px-7 py-16'>
-                <div className='mb-6 flex flex-wrap items-end justify-between gap-6'>
-                    <div>
-                        <p className='tracking-label mb-3 font-mono text-xs font-medium text-[color:var(--orange-600)] uppercase'>
-                            Try it now
-                        </p>
-                        <h2 className='font-heading max-w-[560px] text-[clamp(28px,3.6vw,38px)] leading-[1.06] font-bold tracking-[-0.025em]'>
-                            Write on the left, watch the feed on the right.
-                        </h2>
+        <VisitorWritingContext.Provider value={writing}>
+            <section id='tool' className='border-border bg-canvas scroll-mt-[var(--header-height)] border-t'>
+                <div className='max-w-content border-border mx-auto border-x px-7 py-16'>
+                    <div className='mb-6 flex flex-wrap items-end justify-between gap-6'>
+                        <div>
+                            <p className='tracking-label mb-3 font-mono text-xs font-medium text-[color:var(--orange-600)] uppercase'>
+                                Try it now
+                            </p>
+                            <h2 className='font-heading max-w-[560px] text-[clamp(28px,3.6vw,38px)] leading-[1.06] font-bold tracking-[-0.025em]'>
+                                Write on the left, watch the feed on the right.
+                            </h2>
+                        </div>
+                        <Button variant='outline' onClick={() => handleOpenDashboard('tool_header')}>
+                            Open in full editor
+                            <ArrowUpRight className='size-4' />
+                        </Button>
                     </div>
-                    <Button variant='outline' onClick={() => handleOpenDashboard('tool_header')}>
-                        Open in full editor
-                        <ArrowUpRight className='size-4' />
-                    </Button>
-                </div>
-                {/* Full-bleed below sm: the panel is the product, and 56px of gutter on a phone
+                    {/* Full-bleed below sm: the panel is the product, and 56px of gutter on a phone
                     squeezed the post preview badly enough to wrap its own caption. The heading
                     above keeps its padding so copy never touches the screen edge. */}
-                <div className='flex flex-col max-sm:-mx-7' style={{ height: 'max(70vh, 520px)' }}>
-                    {inner}
+                    <div className='flex flex-col max-sm:-mx-7' style={{ height: 'max(70vh, 520px)' }}>
+                        {inner}
+                    </div>
+                    <VisitorWritingPanel />
                 </div>
-            </div>
-        </section>
+            </section>
+        </VisitorWritingContext.Provider>
     )
 }

@@ -646,6 +646,11 @@ test('actual free-tool handoff records eligibility before encoding, carries medi
             '@/hooks/use-is-desktop': { useIsDesktop: () => true },
             '@/components/ui/button': { Button: 'button' },
             './editor-loading': {},
+            '@/components/tool/visitor-writing-flow': {
+                useVisitorWritingController: () => ({ enabled: false }),
+                VisitorWritingContext: { Provider: 'provider' },
+                VisitorWritingPanel: 'visitor-panel',
+            },
             './preview/preview-panel': { PreviewPanel: 'preview' },
             './resize-handle': { ResizeHandle: 'resize' },
         },

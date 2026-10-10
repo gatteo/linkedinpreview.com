@@ -231,6 +231,11 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             '@/hooks/use-is-desktop': { useIsDesktop: () => props.desktop !== false },
             '@/components/ui/button': { Button: passthrough },
             './editor-loading': { EditorLoading: () => null },
+            '@/components/tool/visitor-writing-flow': {
+                useVisitorWritingController: () => ({ enabled: false }),
+                VisitorWritingContext: { Provider: passthrough },
+                VisitorWritingPanel: () => null,
+            },
             './preview/preview-panel': {
                 PreviewPanel: () => React.createElement('div', { 'data-preview-seam': true }),
             },

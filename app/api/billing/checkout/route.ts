@@ -36,6 +36,7 @@ export async function POST(request: Request) {
         assignedVariant,
         offerVersion,
         monthlyOffer,
+        jobOffer,
     } = parsed.data
 
     const supabase = await createClient()
@@ -48,6 +49,18 @@ export async function POST(request: Request) {
     }
 
     const priceId = priceIdFor(plan)
+    if (jobOffer) {
+        if (jobOffer.userId !== user.id || CHECKOUT_UI !== 'hosted') {
+            return Response.json({ code: 'JOB_OFFER_UNAVAILABLE' }, { status: 409 })
+        }
+        try {
+            const { readVisitorWritingPlan } = await import('@/lib/visitor-writing')
+            const plan = await readVisitorWritingPlan(supabase, user.id)
+            if (plan !== 'free') return Response.json({ code: 'JOB_OFFER_UNAVAILABLE' }, { status: 409 })
+        } catch {
+            return Response.json({ code: 'BILLING_UNRESOLVED' }, { status: 503 })
+        }
+    }
     if (!isStripeConfigured() || !priceId) {
         return Response.json(
             {
@@ -68,6 +81,18 @@ export async function POST(request: Request) {
                 user_id: user.id,
                 plan,
                 entry_source: entrySource,
+                ...(jobOffer
+                    ? {
+                          job_enrollment_id: jobOffer.enrollmentId,
+                          job_eligibility_at: jobOffer.eligibilityAt,
+                          job_flow_version: jobOffer.version,
+                          job_source: 'public_post_copy',
+                          job: 'writing_help',
+                          historical_overlap: jobOffer.historicalOverlap,
+                          billing_state_at_assignment: 'free',
+                          release_sha: jobOffer.releaseSha,
+                      }
+                    : {}),
                 ...(exposureId ? { exposure_id: exposureId, activation_version: DRAFT_FIRST_VERSION } : {}),
                 ...(exposureId && cohortId
                     ? {
@@ -118,6 +143,11 @@ export async function POST(request: Request) {
             const attribution = `&entry_source=${exposureId ? entrySource : (monthlyOffer?.entrySource ?? entrySource)}${exposureId ? `&activation=${exposureId}` : ''}${monthlyOffer ? `&offer_enrollment=${monthlyOffer.enrollmentId}` : ''}`
             params.success_url = `${origin}/dashboard?checkout=success&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}&session_id={CHECKOUT_SESSION_ID}`
             params.cancel_url = `${origin}/dashboard?checkout=cancelled&plan=${plan}&source=${source}&${ENTRY_PARAM}=billing_return${attribution}`
+            if (jobOffer) {
+                const attribution = `&job_enrollment=${jobOffer.enrollmentId}`
+                params.success_url = `${origin}/?checkout=success&plan=${plan}&source=visitor_job${attribution}&session_id={CHECKOUT_SESSION_ID}#tool`
+                params.cancel_url = `${origin}/?checkout=cancelled&plan=${plan}&source=visitor_job${attribution}#tool`
+            }
         } else {
             // stripe@22 (OpenAPI v2324) renamed the embedded UI mode value to
             // 'embedded_page' (the old 'embedded' is gone). This is the mode that
