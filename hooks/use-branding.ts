@@ -11,23 +11,40 @@ export function useBranding() {
     const { isReady, userId, supabase } = useAuth()
     const [branding, setBranding] = React.useState<BrandingData>(DEFAULT_BRANDING)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [readState, setReadState] = React.useState<{
+        userId: string
+        supabase: typeof supabase
+        loadFailed: boolean
+    } | null>(null)
+    const currentRead = isReady && readState?.userId === userId && readState?.supabase === supabase
+    const loading = isLoading || !currentRead
+    const loadFailed = !!currentRead && !!readState?.loadFailed
 
     // Fetch on mount when auth is ready
     React.useEffect(() => {
-        if (!isReady || !userId) return
+        if (!isReady || !userId) {
+            setReadState(null)
+            return
+        }
 
         let cancelled = false
         setIsLoading(true)
+        setReadState(null)
+        setBranding(DEFAULT_BRANDING)
         fetchBranding(supabase)
             .then((data) => {
                 if (!cancelled) {
                     setBranding(data)
+                    setReadState({ userId, supabase, loadFailed: false })
                     setIsLoading(false)
                 }
             })
             .catch(() => {
-                toast.error('Failed to load branding settings')
-                if (!cancelled) setIsLoading(false)
+                if (!cancelled) {
+                    toast.error('Failed to load branding settings')
+                    setReadState({ userId, supabase, loadFailed: true })
+                    setIsLoading(false)
+                }
             })
 
         return () => {
@@ -37,6 +54,10 @@ export function useBranding() {
 
     const updateBranding = React.useCallback(
         (updates: Partial<BrandingData>) => {
+            if (loading || loadFailed || !userId) {
+                toast.error('Failed to load branding settings')
+                return false
+            }
             setBranding((current) => {
                 const updated = { ...current, ...updates }
                 // Persist to Supabase in background
@@ -47,9 +68,10 @@ export function useBranding() {
                 }
                 return updated
             })
+            return true
         },
-        [supabase, userId],
+        [supabase, userId, loading, loadFailed],
     )
 
-    return { branding, isLoading, updateBranding }
+    return { branding: currentRead ? branding : DEFAULT_BRANDING, isLoading: loading, loadFailed, updateBranding }
 }

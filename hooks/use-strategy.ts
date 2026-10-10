@@ -11,22 +11,39 @@ export function useStrategy() {
     const { isReady, userId, supabase } = useAuth()
     const [strategy, setStrategy] = React.useState<StrategyData>(DEFAULT_STRATEGY)
     const [isLoading, setIsLoading] = React.useState(true)
+    const [readState, setReadState] = React.useState<{
+        userId: string
+        supabase: typeof supabase
+        loadFailed: boolean
+    } | null>(null)
+    const currentRead = isReady && readState?.userId === userId && readState?.supabase === supabase
+    const loading = isLoading || !currentRead
+    const loadFailed = !!currentRead && !!readState?.loadFailed
 
     React.useEffect(() => {
-        if (!isReady || !userId) return
+        if (!isReady || !userId) {
+            setReadState(null)
+            return
+        }
 
         let cancelled = false
         setIsLoading(true)
+        setReadState(null)
+        setStrategy(DEFAULT_STRATEGY)
         fetchStrategy(supabase)
             .then((data) => {
                 if (!cancelled) {
                     setStrategy(data)
+                    setReadState({ userId, supabase, loadFailed: false })
                     setIsLoading(false)
                 }
             })
             .catch(() => {
-                toast.error('Failed to load strategy')
-                if (!cancelled) setIsLoading(false)
+                if (!cancelled) {
+                    toast.error('Failed to load strategy')
+                    setReadState({ userId, supabase, loadFailed: true })
+                    setIsLoading(false)
+                }
             })
 
         return () => {
@@ -36,6 +53,10 @@ export function useStrategy() {
 
     const updateStrategy = React.useCallback(
         (updates: Partial<StrategyData>) => {
+            if (loading || loadFailed || !userId) {
+                toast.error('Failed to load strategy')
+                return false
+            }
             setStrategy((current) => {
                 const updated = { ...current, ...updates }
                 if (userId) {
@@ -45,9 +66,10 @@ export function useStrategy() {
                 }
                 return updated
             })
+            return true
         },
-        [supabase, userId],
+        [supabase, userId, loading, loadFailed],
     )
 
-    return { strategy, isLoading, updateStrategy }
+    return { strategy: currentRead ? strategy : DEFAULT_STRATEGY, isLoading: loading, loadFailed, updateStrategy }
 }

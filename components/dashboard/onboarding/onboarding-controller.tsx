@@ -48,8 +48,8 @@ const BRANDING_LANGUAGE_BY_CODE: Record<string, string> = {
 
 export function OnboardingController() {
     const { isReady, userId, supabase, email: authEmail } = useAuth()
-    const { branding, isLoading: brandingLoading, updateBranding } = useBranding()
-    const { strategy, isLoading: strategyLoading, updateStrategy } = useStrategy()
+    const { branding, isLoading: brandingLoading, loadFailed: brandingFailed, updateBranding } = useBranding()
+    const { strategy, isLoading: strategyLoading, loadFailed: strategyFailed, updateStrategy } = useStrategy()
     const router = useRouter()
 
     const [open, setOpen] = React.useState(false)
@@ -64,7 +64,22 @@ export function OnboardingController() {
     const finishedRef = React.useRef(false)
     const firstDraftPromiseRef = React.useRef<Promise<{ id: string } | null> | null>(null)
 
-    const ready = isReady && !brandingLoading && !strategyLoading
+    const ready = isReady && !brandingLoading && !strategyLoading && !brandingFailed && !strategyFailed
+    const decisionUserRef = React.useRef(userId)
+
+    React.useEffect(() => {
+        if (decisionUserRef.current === userId) return
+        decisionUserRef.current = userId
+        decidedRef.current = false
+        finishedRef.current = false
+        firstDraftPromiseRef.current = null
+        arrivalRef.current = null
+        setOpen(false)
+        setResumeAnswers(null)
+        setStartStepId('welcome')
+        setLinkedinError(null)
+        if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
+    }, [userId])
 
     React.useEffect(() => {
         arrivalRef.current ??= { search: window.location.search, pathname: window.location.pathname }
@@ -216,6 +231,7 @@ export function OnboardingController() {
     // Dev-only debug menu drives the live modal (open/close) via a window event bus.
     React.useEffect(() => {
         return onOnboardingDebug((command) => {
+            if (!ready && command !== 'close') return
             if (command === 'open') {
                 setResumeAnswers(null)
                 setStartStepId('welcome')
@@ -239,7 +255,7 @@ export function OnboardingController() {
                 setOpen(true)
             }
         })
-    }, [])
+    }, [ready])
 
     // Server-side mirror of the answers (public.onboarding_sessions) so user
     // types can be analyzed later. Debounced + fire-and-forget: localStorage is
@@ -248,21 +264,22 @@ export function OnboardingController() {
     const sessionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
     const saveSession = React.useCallback(
         (answers: OnboardingAnswers, patch: { resume_at?: string; completed_at?: string; converted?: boolean }) => {
-            if (!userId) return
+            if (!userId || !ready) return
             // Strip PII (email) and the server-owned insights blob before the upsert.
             const { insights: _insights, email: _email, ...slim } = answers
             upsertOnboardingSession(supabase, userId, { answers: slim, ...patch }).catch(() => {})
         },
-        [supabase, userId],
+        [supabase, userId, ready],
     )
 
     const handlePersist = React.useCallback(
         (answers: OnboardingAnswers, step: StepId) => {
+            if (!ready) return
             persistOnboarding(answers, step)
             if (sessionTimerRef.current) clearTimeout(sessionTimerRef.current)
             sessionTimerRef.current = setTimeout(() => saveSession(answers, { resume_at: step }), 1500)
         },
-        [saveSession],
+        [saveSession, ready],
     )
 
     // Write-once at the offer (convert or decline). Persists branding + strategy,
@@ -270,7 +287,7 @@ export function OnboardingController() {
     // gates the modal closed via meta.onboardedAt.
     const handleFinish = React.useCallback(
         (answers: OnboardingAnswers, converted: boolean) => {
-            if (finishedRef.current) return
+            if (!ready || finishedRef.current) return
             finishedRef.current = true
             const now = new Date().toISOString()
 
@@ -348,7 +365,7 @@ export function OnboardingController() {
 
             clearOnboarding()
         },
-        [branding, updateBranding, updateStrategy, supabase, userId, saveSession],
+        [branding, updateBranding, updateStrategy, supabase, userId, saveSession, ready],
     )
 
     const handleComplete = React.useCallback(async () => {
@@ -416,7 +433,7 @@ export function OnboardingController() {
     // stalls the whole dashboard behind an unresolved session.
     const userEmail = authEmail
 
-    if (!open) return null
+    if (!open || !ready) return null
 
     return (
         <OnboardingModal

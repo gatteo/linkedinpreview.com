@@ -53,7 +53,7 @@ export function BrandingForm() {
 
     const handleUpdate = React.useCallback(
         (updates: Partial<BrandingData>) => {
-            updateBranding(updates)
+            if (!updateBranding(updates)) return
             setShowSaved(true)
             if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
             savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
