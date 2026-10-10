@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { browser, hooks, loadTS, tick } from './helpers/component-harness.mjs'
 
 const lib = await loadTS('lib/visitor-writing.ts')
+const billingReader = await loadTS('lib/supabase/billing.ts', { '@/lib/billing': await loadTS('lib/billing.ts') })
 const entry = await loadTS('config/entry-sources.ts')
 const schema = (
     await loadTS('app/api/billing/checkout/route.schema.ts', { 'zod': { z }, '@/config/entry-sources': entry })
@@ -46,18 +47,20 @@ function billingClient(scenario = {}) {
                         assert.equal(id, USER)
                         return {
                             maybeSingle: async () =>
-                                scenario.error
-                                    ? { data: null, error: { code: scenario.error } }
-                                    : {
-                                          data: scenario.absent
-                                              ? null
-                                              : {
-                                                    user_id: scenario.rowUser ?? USER,
-                                                    plan: scenario.plan ?? 'free',
-                                                    ...scenario.row,
-                                                },
-                                          error: null,
-                                      },
+                                scenario.deferred
+                                    ? scenario.deferred
+                                    : scenario.error
+                                      ? { data: null, error: { code: scenario.error } }
+                                      : {
+                                            data: scenario.absent
+                                                ? null
+                                                : {
+                                                      user_id: scenario.rowUser ?? USER,
+                                                      plan: scenario.plan ?? 'free',
+                                                      ...scenario.row,
+                                                  },
+                                            error: null,
+                                        },
                         }
                     },
                 }),
@@ -76,11 +79,17 @@ async function controller(scenario = {}) {
     window.location.assign = (url) => locations.push(url)
     let userId = USER,
         listener,
-        billing = scenario.billing ?? {}
+        authReads = 0,
+        billing = scenario.billing ?? { plan: scenario.returnPaid ? 'pro' : 'free' }
     const client = {
         ...billingClient(billing),
         auth: {
-            getUser: async () => ({ data: { user: scenario.noUser ? null : { id: userId } }, error: null }),
+            getUser: async () => {
+                authReads++
+                if (scenario.authErrorAfterRead && authReads > 1)
+                    return { data: { user: null }, error: { code: 'AUTH_UNAVAILABLE' } }
+                return { data: { user: scenario.noUser ? null : { id: userId } }, error: null }
+            },
             onAuthStateChange: (callback) => {
                 listener = callback
                 return { data: { subscription: { unsubscribe() {} } } }
@@ -107,7 +116,7 @@ async function controller(scenario = {}) {
             '@/config/feedback': { feedbackConfig: { storage: { dismissedAt: 'dismissed' }, formId: '' } },
             '@/config/pricing': {},
             '@/lib/supabase/client': { createClient: () => client },
-            '@/lib/supabase/billing': { fetchBilling: async () => ({ plan: scenario.returnPaid ? 'pro' : 'free' }) },
+            '@/lib/supabase/billing': billingReader,
             '@/lib/visitor-writing': lib,
             '@/components/ui/button': { Button: 'button' },
         },
@@ -147,6 +156,9 @@ async function controller(scenario = {}) {
         changeIdentity: (id) => {
             userId = id
             listener?.('SIGNED_IN', { user: { id } })
+        },
+        switchIdentitySilently: (id) => {
+            userId = id
         },
         paid: () => {
             client.from = billingClient({ plan: 'pro' }).from
@@ -344,6 +356,105 @@ test('cancel/success return binds exact stored receipt, does not optimistically 
         assert.equal(c.window.location.search, '')
         assert.equal(c.local.getItem(lib.VISITOR_WRITING_KEY), JSON.stringify(receipt))
     }
+})
+
+function publicReturn(scenario = {}, status = 'success') {
+    return controller({
+        ...scenario,
+        url: `https://preview.invalid/?source=visitor_job&checkout=${status}&job_enrollment=${OTHER}&session_id=synthetic#tool`,
+        seed: { [lib.VISITOR_WRITING_KEY]: JSON.stringify(receipt) },
+    })
+}
+
+for (const billing of [
+    { plan: 'pro' },
+    { plan: 'lifetime' },
+    { plan: 'free' },
+    { plan: 'NOT_A_PLAN' },
+    { row: { plan: null } },
+    { absent: true },
+    { error: 'NETWORK' },
+    { error: 'PGRST116' },
+    { rowUser: OTHER },
+]) {
+    test(`public return uses real reader and only verifies valid own paid plan: ${JSON.stringify(billing)}`, async () => {
+        const c = await publicReturn({ billing })
+        await tick()
+        await tick()
+        const expected = billing.plan === 'pro' || billing.plan === 'lifetime'
+        assert.equal(c.events.filter(([name]) => name === 'job_paid_return_verified').length, expected ? 1 : 0)
+        assert.equal(c.render().message.includes('Your paid plan is active.'), expected)
+        assert.equal(c.local.getItem(lib.VISITOR_WRITING_KEY), JSON.stringify(receipt))
+        assert.equal(c.writes.length, 0)
+        c.h.unmount()
+    })
+}
+
+for (const invalidation of [
+    'identity_changed',
+    'identity_changed_without_event',
+    'identity_round_trip',
+    'receipt_changed',
+    'receipt_removed',
+    'receipt_corrupt',
+    'receipt_round_trip',
+    'storage_unreadable',
+    'unmount',
+]) {
+    test(`delayed real-reader paid return ignores stale work: ${invalidation}`, async () => {
+        let resolve
+        const deferred = new Promise((done) => {
+            resolve = done
+        })
+        const c = await publicReturn({ billing: { deferred } })
+        await tick()
+        if (invalidation === 'identity_changed') c.changeIdentity(OTHER)
+        if (invalidation === 'identity_changed_without_event') c.switchIdentitySilently(OTHER)
+        if (invalidation === 'identity_round_trip') {
+            c.changeIdentity(OTHER)
+            c.changeIdentity(USER)
+        }
+        if (invalidation === 'receipt_changed')
+            c.local.setItem(
+                lib.VISITOR_WRITING_KEY,
+                JSON.stringify({ ...receipt, eligibilityAt: '2026-10-10T16:00:00.000Z' }),
+            )
+        if (invalidation === 'receipt_removed') c.local.removeItem(lib.VISITOR_WRITING_KEY)
+        if (invalidation === 'receipt_corrupt') c.local.setItem(lib.VISITOR_WRITING_KEY, '{')
+        if (invalidation === 'receipt_round_trip') {
+            c.local.setItem(lib.VISITOR_WRITING_KEY, '{}')
+            c.window.dispatchEvent(new Event('storage'))
+            c.local.setItem(lib.VISITOR_WRITING_KEY, JSON.stringify(receipt))
+        }
+        if (invalidation === 'storage_unreadable')
+            c.local.getItem = () => {
+                throw Error('Denied')
+            }
+        if (invalidation === 'unmount') c.h.unmount()
+        resolve({ data: { user_id: USER, plan: 'pro' }, error: null })
+        await tick()
+        await tick()
+        assert.equal(c.events.filter(([name]) => name === 'job_paid_return_verified').length, 0)
+        if (invalidation !== 'unmount') assert.ok(!c.render().message.includes('Your paid plan is active.'))
+        c.h.unmount()
+    })
+}
+
+test('post-read auth failure cannot verify a real-reader paid return', async () => {
+    const c = await publicReturn({ billing: { plan: 'pro' }, authErrorAfterRead: true })
+    await tick()
+    await tick()
+    assert.equal(c.events.filter(([name]) => name === 'job_paid_return_verified').length, 0)
+    assert.ok(!c.render().message.includes('Your paid plan is active.'))
+    c.h.unmount()
+})
+
+test('paid cancel return never reads or verifies paid truth', async () => {
+    const c = await publicReturn({ billing: { plan: 'lifetime' } }, 'cancelled')
+    await tick()
+    assert.equal(c.events.filter(([name]) => name === 'job_paid_return_verified').length, 0)
+    assert.ok(c.render().message.includes('Checkout cancelled.'))
+    c.h.unmount()
 })
 
 async function checkoutRoute(scenario = {}) {

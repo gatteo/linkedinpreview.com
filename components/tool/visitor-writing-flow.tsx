@@ -292,17 +292,57 @@ export function useVisitorWritingController(candidate: boolean): WritingContext 
             if (status === 'success') {
                 client.current ??= createClient()
                 const supabase = client.current
+                const snapshot = JSON.stringify(stored)
+                const version = epoch.current
+                let cancelled = false
+                const neutralMessage = 'Your draft is still in the editor. Check your plan in the dashboard.'
+                const invalidate = () => {
+                    cancelled = true
+                    if (active.current) setMessage(neutralMessage)
+                }
+                const receiptChanged = () => {
+                    try {
+                        if (JSON.stringify(readWritingEnrollment(localStorage)) !== snapshot) invalidate()
+                    } catch {
+                        invalidate()
+                    }
+                }
+                const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+                    if (session?.user.id !== stored.userId) invalidate()
+                })
+                window.addEventListener('storage', receiptChanged)
                 supabase.auth
                     .getUser()
                     .then(async ({ data, error }) => {
-                        if (error || data.user?.id !== stored.userId) return
-                        const billing = await fetchBilling(supabase, stored.userId)
-                        if (active.current && billing.plan !== 'free') {
-                            setMessage('Your paid plan is active. Continue writing in the editor.')
-                            capture('job_paid_return_verified', writingProperties(stored))
+                        if (cancelled || !active.current) return
+                        if (error || data.user?.id !== stored.userId) {
+                            invalidate()
+                            return
                         }
+                        const billing = await fetchBilling(supabase, stored.userId)
+                        const current = await supabase.auth.getUser()
+                        if (cancelled || !active.current) return
+                        if (
+                            version !== epoch.current ||
+                            current.error ||
+                            current.data.user?.id !== stored.userId ||
+                            JSON.stringify(readWritingEnrollment(localStorage)) !== snapshot ||
+                            (billing.plan !== 'pro' && billing.plan !== 'lifetime')
+                        ) {
+                            invalidate()
+                            return
+                        }
+                        setMessage('Your paid plan is active. Continue writing in the editor.')
+                        capture('job_paid_return_verified', writingProperties(stored))
                     })
-                    .catch(() => {})
+                    .catch(() => {
+                        if (!cancelled && active.current) invalidate()
+                    })
+                return () => {
+                    cancelled = true
+                    authListener.subscription.unsubscribe()
+                    window.removeEventListener('storage', receiptChanged)
+                }
             }
         } catch {
             setMessage('Your draft is still available. Check your plan in the dashboard.')

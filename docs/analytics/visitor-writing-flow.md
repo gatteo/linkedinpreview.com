@@ -20,6 +20,8 @@ The offer presents existing $11.99/month Pro first, existing $39.99 lifetime alt
 
 ## Events
 
+Public paid-return verification accepts only explicit `pro` or `lifetime`, not a non-free type cast. After billing resolves it rechecks authenticated identity and the unchanged validated receipt. Return-specific auth/storage watchers and effect cleanup invalidate stale work, including an identity/storage round trip or unmount. Invalid/null/missing/failed billing remains unverified and preserves the draft. This correction is isolated to the new public return; the shared reader and old return/cohort behavior are unchanged.
+
 All branch events are snake_case and optional-chain PostHog capture. No customer/post/prompt/email content is captured.
 
 | Event                                                                | Meaning                                                                                                                     |
