@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
 import { useUpgradePrompt } from '@/components/dashboard/upgrade-provider'
+import { useVisitorWriting } from '@/components/tool/visitor-writing-flow'
 
 import { ChatPhase } from './chat-phase'
 import { ConfigPhase } from './config-phase'
@@ -45,6 +46,11 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
     const { isAuthReady, ensureSession } = useAnonymousAuth()
     const { branding } = useBranding()
     const { openUpgrade } = useUpgradePrompt()
+    const writing = useVisitorWriting()
+    const writingRef = React.useRef(writing)
+    React.useEffect(() => {
+        writingRef.current = writing
+    }, [writing])
     const brandingContext = React.useMemo(() => assembleBrandingContext(branding), [branding])
 
     // Refs to avoid stale closures in useChat callbacks
@@ -100,6 +106,7 @@ export function AIGenerateSheet({ open, onOpenChange, onInsert }: AIGenerateShee
             }
         },
         onError: (err) => {
+            writingRef.current.failed()
             const aiError = parseAIError(err)
 
             if (isRateLimitError(aiError)) {

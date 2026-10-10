@@ -375,3 +375,11 @@ header identity and overlap require the existing person/event join, not inferred
 PR #96 monthly enrollment remains separate and unmerged at this integration. Its paid
 identity-owned provider and monthly attribution changes must be reconciled against actual
 main after Atlas's monthly squash, not bundled into PR #104 or treated as already live.
+
+## Public visitor writing opt-in (LIN-237, not launched)
+
+See [visitor-writing-flow.md](visitor-writing-flow.md) for the source-bound useful-value,
+verified-free/local-exclusion contract, event dictionary, isolated hosted Checkout metadata,
+UNKNOWN historical overlap and mandatory preregistration/release gates. Its `job_*` receipt
+is separate from EXP-9/10/11. Eligibility is recorded before price render; processor truth,
+not a client return or `job_offer_seen`, determines recurring revenue. No new launch is implied.
