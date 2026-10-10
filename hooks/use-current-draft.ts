@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { ENTRY_PARAM } from '@/config/entry-sources'
 import { deferPlanning, intentionalDraftImport, readDraftFirst, writeDraftFirst } from '@/lib/draft-first'
-import { importDraft } from '@/lib/draft-import'
+import { draftImportFailureProperties, importDraft, type DraftImportDiagnostics } from '@/lib/draft-import'
 import { type DraftStatus } from '@/lib/drafts'
 import { extractPlainText } from '@/lib/editor-utils'
 import {
@@ -101,6 +101,7 @@ export function useCurrentDraft() {
     const importRef = React.useRef<{
         key: string
         promise: ReturnType<typeof importDraft<import('@/lib/drafts').DraftManifestEntry>>
+        diagnostics: DraftImportDiagnostics
     } | null>(null)
     // Marks when this editor session started, so the empty-draft sweep only
     // touches drafts created earlier and never a blank another tab just created.
@@ -167,12 +168,22 @@ export function useCurrentDraft() {
                     const choice = deferPlanning(userId, params)
                     setEntrySource(choice.entrySource)
                 }
+                let diagnostics: DraftImportDiagnostics | undefined
                 try {
                     const mediaKey = params.get('m')
                     const key = `${userId}:${importParam}:${mediaKey}`
                     if (importRef.current?.key !== key) {
-                        importRef.current = { key, promise: importDraft(importParam, mediaKey, createDraftHook) }
+                        const pendingDiagnostics: DraftImportDiagnostics = {
+                            failure_stage: 'unknown',
+                            create_resolved: false,
+                        }
+                        importRef.current = {
+                            key,
+                            promise: importDraft(importParam, mediaKey, createDraftHook, pendingDiagnostics),
+                            diagnostics: pendingDiagnostics,
+                        }
                     }
+                    diagnostics = importRef.current.diagnostics
                     const { draft, content: decoded, media } = await importRef.current.promise
                     if (callId !== loadCallRef.current) return
                     loadedEmptyRef.current = !extractPlainText(decoded) && !media
@@ -194,7 +205,11 @@ export function useCurrentDraft() {
                 } catch {
                     if (callId !== loadCallRef.current) return
                     importRef.current = null
-                    track('draft_import_result', { outcome: 'failure', error_code: 'decode_media_or_create' })
+                    track('draft_import_result', {
+                        outcome: 'failure',
+                        error_code: 'decode_media_or_create',
+                        ...draftImportFailureProperties(diagnostics),
+                    })
                     toast.error(
                         'Could not import this draft. Your original is safe in the free tool. Please try again.',
                     )

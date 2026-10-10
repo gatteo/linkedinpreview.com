@@ -212,22 +212,37 @@ async function currentDraft(url, opts = {}) {
         { CompressionStream, DecompressionStream, TextEncoder, TextDecoder, btoa, atob },
     )
     const importer = await loadTS('lib/draft-import.ts', {
-        '@/lib/draft-url': draftURL,
-        '@/lib/draft-media': { readDraftMedia: async () => opts.media ?? null },
+        '@/lib/draft-url': opts.draftURL ?? draftURL,
+        '@/lib/draft-media': opts.mediaReader ?? { readDraftMedia: async () => opts.media ?? null },
+    })
+    const ai = await loadTS('components/dashboard/onboarding/ai.ts', {
+        'posthog-js': { capture: (...args) => events.push(args) },
+        '@/config/analytics': { OB_FUNNEL_VERSION: 'v3' },
+        '@/lib/parse-formatted-text': { toTipTapParagraphs() {} },
+        '@/lib/draft-first': flow,
+        '@/lib/monthly-offer': {
+            rememberOfferEntry() {},
+            monthlyOfferProperties: () => opts.monthlyProperties ?? {},
+        },
     })
     const currentHook = await loadTS(
         'hooks/use-current-draft.ts',
         {
             'react': h.react,
             'next/navigation': {
-                useRouter: () => ({ replace: (href) => redirects.push(href) }),
+                useRouter: () => ({
+                    replace: (href) => {
+                        if (opts.routeError) throw opts.routeError
+                        redirects.push(href)
+                    },
+                }),
                 useSearchParams: () => new URLSearchParams(window.location.search),
             },
             'sonner': { toast: { error: (message) => errors.push(message) } },
             '@/config/entry-sources': entry,
             '@/lib/draft-first': flow,
             '@/lib/draft-import': importer,
-            '@/lib/editor-utils': utils,
+            '@/lib/editor-utils': opts.utils ?? utils,
             '@/lib/supabase/drafts': {
                 fetchDraft: async () => {
                     if (opts.fetchFail) throw Error('fetch')
@@ -249,6 +264,9 @@ async function currentDraft(url, opts = {}) {
                     isLoading: draftsLoading,
                     createDraft: async (content, options) => {
                         writes.push(['create', content, options])
+                        opts.onCreate?.()
+                        await opts.waitForCreate?.()
+                        if (opts.createError) throw opts.createError
                         if (opts.createFail) throw Error('create')
                         await tick()
                         return { id: 'synthetic-draft', label: null, status: 'draft' }
@@ -264,7 +282,7 @@ async function currentDraft(url, opts = {}) {
             '@/components/dashboard/auth-provider': {
                 useAuth: () => ({ isReady: true, userId: opts.user?.id ?? 'synthetic-user', supabase: {} }),
             },
-            '@/components/dashboard/onboarding/ai': { setEntrySource() {}, track: (...args) => events.push(args) },
+            '@/components/dashboard/onboarding/ai': ai,
         },
         { window, ...opts.globals },
     )
@@ -320,6 +338,199 @@ test('failed create/load cannot count successful import or trigger empty-draft d
     const load = await currentDraft('https://preview.invalid/dashboard/editor?draft=existing', { fetchFail: true })
     load.h.unmount()
     assert.equal(load.writes.filter(([kind]) => kind === 'delete').length, 0)
+})
+
+const importEvents = (state) => state.events.filter(([event]) => event === 'draft_import_result')
+const sensitive = 'Synthetic secret token=do-not-capture email=fixture@example.invalid https://private.invalid/media'
+
+test('known import failure boundaries retain only finite diagnostics and unchanged enrollment fields', async (t) => {
+    const invalidDoc = deflateRawSync(JSON.stringify({ type: 'doc', content: [{ type: 'text', text: 123 }] })).toString(
+        'base64url',
+    )
+    const realMedia = await loadTS('lib/draft-media.ts')
+    const monthlyProperties = {
+        enrollment_id: '00000000-0000-4000-8000-000000000009',
+        cohort_id: 'exp9_monthly_first_v2',
+        eligibility_at: '2026-10-07T09:00:00.000Z',
+        entry_source: 'navbar',
+    }
+    for (const [name, url, opts, stage, creates] of [
+        ['malformed decode', importUrl.replace(encoded, 'broken'), {}, 'decode_validation', 0],
+        ['invalid document', importUrl.replace(encoded, invalidDoc), {}, 'decode_validation', 0],
+        [
+            'decode exception',
+            importUrl,
+            {
+                draftURL: {
+                    decodeDraft: async () => {
+                        throw sensitive
+                    },
+                },
+            },
+            'decode_validation',
+            0,
+        ],
+        ['unavailable media', importUrl + '&m=synthetic-unavailable', { mediaReader: realMedia }, 'media_read', 0],
+        [
+            'media exception',
+            importUrl + '&m=synthetic-media',
+            {
+                mediaReader: {
+                    readDraftMedia: async () => {
+                        throw sensitive
+                    },
+                },
+            },
+            'media_read',
+            0,
+        ],
+        ['create rejection', importUrl, { createError: new Error(sensitive) }, 'create', 1],
+        ['create primitive rejection', importUrl, { createError: sensitive }, 'create', 1],
+        [
+            'post-create extraction',
+            importUrl,
+            {
+                utils: {
+                    extractPlainText: () => {
+                        throw sensitive
+                    },
+                },
+            },
+            'post_create',
+            1,
+        ],
+    ]) {
+        await t.test(name, async () => {
+            const state = await currentDraft(url, { ...opts, monthlyProperties })
+            const captured = importEvents(state)
+            assert.equal(captured.length, 1)
+            const props = captured[0][1]
+            assert.equal(props.outcome, 'failure')
+            assert.equal(props.error_code, 'decode_media_or_create')
+            assert.equal(props.diagnostic_schema_version, 1)
+            assert.equal(props.failure_stage, stage)
+            assert.equal(props.create_resolved, stage === 'post_create')
+            assert.equal(props.enrollment_id, monthlyProperties.enrollment_id)
+            assert.equal(props.cohort_id, monthlyProperties.cohort_id)
+            assert.equal(props.eligibility_at, monthlyProperties.eligibility_at)
+            assert.equal(props.entry_source, 'navbar')
+            assert.equal(props.draft_enrollment_id, exposure)
+            assert.equal(props.draft_cohort_id, 'exp10_draft_first_v1')
+            assert.equal(props.draft_entry_source, 'tool_footer')
+            assert.equal(props.draft_eligibility_at, state.flow.readDraftFirst('synthetic-user').eligibilityAt ?? null)
+            assert.equal(props.schema_version, 1, 'existing enrollment schema is unchanged')
+            assert.ok(!JSON.stringify(props).includes(sensitive))
+            assert.ok(!('draft_id' in props) && !('has_media' in props))
+            assert.equal(state.writes.filter(([kind]) => kind === 'create').length, creates)
+            assert.equal(state.redirects.length, 0)
+            assert.equal(state.errors.length, 1)
+            assert.equal(state.render().draftId, null)
+            state.h.unmount()
+            assert.equal(state.writes.length, creates, 'no extra save/create/delete on failed import cleanup')
+        })
+    }
+})
+
+test('post-create routing exception preserves prior success capture and is not evidence of missing persistence', async () => {
+    const state = await currentDraft(importUrl, { routeError: new Error(sensitive) })
+    const captured = importEvents(state)
+    assert.equal(captured.length, 2, 'the existing success then failure emission points are preserved')
+    assert.equal(captured[0][1].outcome, 'success')
+    assert.equal(captured[0][1].draft_id, 'synthetic-draft')
+    assert.equal(captured[0][1].has_media, false)
+    assert.ok(!('failure_stage' in captured[0][1]) && !('create_resolved' in captured[0][1]))
+    assert.equal(captured[1][1].failure_stage, 'post_create')
+    assert.equal(captured[1][1].create_resolved, true)
+    assert.equal(state.flow.readDraftFirst('synthetic-user').draftId, 'synthetic-draft')
+    assert.equal(state.writes.length, 1)
+    assert.ok(!JSON.stringify(captured).includes(sensitive))
+    state.h.unmount()
+    assert.equal(state.writes.length, 1)
+})
+
+test('create rejection after a synthetic write reports unobserved resolution, not absence of persistence', async () => {
+    let syntheticCommitted = false
+    const state = await currentDraft(importUrl, {
+        onCreate: () => {
+            syntheticCommitted = true
+        },
+        createError: new Error(sensitive),
+    })
+    assert.equal(syntheticCommitted, true)
+    assert.equal(importEvents(state).length, 1)
+    assert.equal(importEvents(state)[0][1].failure_stage, 'create')
+    assert.equal(importEvents(state)[0][1].create_resolved, false)
+    assert.equal(state.writes.length, 1)
+    state.h.unmount()
+    assert.equal(state.writes.length, 1)
+})
+
+test('unestablished boundary falls back to unknown without inspecting generic exception text', async () => {
+    class UnknownBoundaryParams extends URLSearchParams {
+        get(key) {
+            if (key === 'm') throw new Error(sensitive)
+            return super.get(key)
+        }
+    }
+    const state = await currentDraft(importUrl, { globals: { URLSearchParams: UnknownBoundaryParams } })
+    const captured = importEvents(state)
+    assert.equal(captured.length, 2, 'both pre-await overlapping failures retain existing emission behavior')
+    for (const [, props] of captured) {
+        assert.equal(props.outcome, 'failure')
+        assert.equal(props.error_code, 'decode_media_or_create')
+        assert.equal(props.failure_stage, 'unknown')
+        assert.equal(props.create_resolved, false)
+        assert.equal(props.diagnostic_schema_version, 1)
+        assert.ok(!JSON.stringify(props).includes(sensitive))
+    }
+    assert.equal(state.writes.length, 0)
+    state.h.unmount()
+    const importer = await loadTS('lib/draft-import.ts', { '@/lib/draft-url': {}, '@/lib/draft-media': {} })
+    assert.deepEqual(json(importer.draftImportFailureProperties()), {
+        diagnostic_schema_version: 1,
+        failure_stage: 'unknown',
+        create_resolved: false,
+    })
+    assert.deepEqual(
+        json(
+            importer.draftImportFailureProperties({
+                failure_stage: sensitive,
+                create_resolved: sensitive,
+                raw: sensitive,
+            }),
+        ),
+        {
+            diagnostic_schema_version: 1,
+            failure_stage: 'unknown',
+            create_resolved: false,
+        },
+    )
+})
+
+test('stale resolved/rejected imports keep one create and cannot capture or replace the newer load', async (t) => {
+    for (const createError of [undefined, new Error(sensitive)]) {
+        await t.test(createError ? 'reject' : 'resolve', async () => {
+            let resolveCreate
+            const pending = new Promise((resolve) => (resolveCreate = resolve))
+            const state = await currentDraft(importUrl, { waitForCreate: () => pending, createError })
+            assert.equal(state.writes.length, 1)
+            assert.equal(importEvents(state).length, 0)
+            state.window.history.replaceState({}, '', '/dashboard/editor?draft=other')
+            state.render()
+            await tick()
+            assert.equal(state.render().draftId, 'other')
+            resolveCreate()
+            await tick()
+            await tick()
+            assert.equal(state.render().draftId, 'other')
+            assert.equal(importEvents(state).length, 0)
+            assert.equal(state.errors.length, 0)
+            assert.equal(state.redirects.length, 0)
+            assert.equal(state.writes.length, 1)
+            state.h.unmount()
+            assert.equal(state.writes.length, 1)
+        })
+    }
 })
 
 function elements(node) {
