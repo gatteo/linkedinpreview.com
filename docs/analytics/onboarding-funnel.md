@@ -210,15 +210,43 @@ The free-tool events are captured before the dashboard onboarding controller, so
 
 See `docs/draft-first-activation.md` for eligibility, precedence, persistence and release coordination. These events use `activation_version: imported_draft_v1`, `exposure_id` and the original `entry_source`; no draft text, media, email or profile is captured. The free-tool event fires before authentication and before any treatment outcome. Failures are not excluded from the denominator.
 
-| Event                         | Properties                                                                                          | Meaning                                                                                                                                  |
-| ----------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `draft_first_eligible`        | `activation_version`, `exposure_id`, `entry_source: tool_footer\|tool_nudge\|tool_header`           | Intentional free-tool draft handoff, before encoding/media/auth/import; explicit planning is not included                                |
-| `draft_import_result`         | common activation properties, `outcome: success\|failure`, `draft_id?`, `has_media?`, `error_code?` | Separate draft persistence succeeded, or decode/media/create failed; editor rendering is separately observed by Pro-action readiness     |
-| `draft_meaningful_use`        | common activation properties, `action: saved_edit\|copied`, `outcome: success\|failure`, `draft_id` | Confirmed saved edit or successful nonempty clipboard write; failed save is not successful use; hydration/unsaved typing never qualifies |
-| `draft_first_pro_action_view` | common activation properties, `action: higher_ai_limits`                                            | Nonblocking existing Pro action rendered after the imported text is usable, unpaid users only                                            |
-| `draft_planning_resumed`      | common activation properties, `reason`                                                              | User voluntarily reopened planning via editor action                                                                                     |
+| Event                         | Properties                                                                                                                          | Meaning                                                                                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `draft_first_eligible`        | `activation_version`, `exposure_id`, `entry_source: tool_footer\|tool_nudge\|tool_header`                                           | Intentional free-tool draft handoff, before encoding/media/auth/import; explicit planning is not included                                     |
+| `draft_import_result`         | common activation properties, `outcome: success\|failure`, `draft_id?`, `has_media?`, `error_code?`; failure-only diagnostics below | Import/create promise resolved and reached success capture, or the import/post-create catch ran; not independent proof of durable persistence |
+| `draft_meaningful_use`        | common activation properties, `action: saved_edit\|copied`, `outcome: success\|failure`, `draft_id`                                 | Confirmed saved edit or successful nonempty clipboard write; failed save is not successful use; hydration/unsaved typing never qualifies      |
+| `draft_first_pro_action_view` | common activation properties, `action: higher_ai_limits`                                                                            | Nonblocking existing Pro action rendered after the imported text is usable, unpaid users only                                                 |
+| `draft_planning_resumed`      | common activation properties, `reason`                                                                                              | User voluntarily reopened planning via editor action                                                                                          |
 
 All dashboard `track()` events carry stored activation properties when available, including schema_version=1, enrollment_id (the opaque exposure_id), cohort_id=exp10_draft_first_v1, assigned_variant=draft_first, assignment_version, eligibility_at (nullable), offer_version=existing_offer and original entry_source. Pending-auth eligibility reports billing_state_at_assignment=unknown, not verified free. Checkout validates bounded attribution and copies it to Session and subscription/payment-intent metadata without affecting entitlement. `onb_checkout_opened` includes returned session_id. `purchase_completed` additionally carries envelope, stripe_event_id, session_id, subscription_id, livemode and payment_status. It is completion telemetry, not paid classification. Sentinel reconciles live positive settled first invoices/payments and prior-recurring status read-only, dedupes retries and accounts, and separates unknown/test/renewal/lifetime/unmatched rows. Atlas registers actual release SHAs/times for joining and overlap partitions. PR #96 independently owns EXP-9 monthly-first eligibility and offer envelope. See docs/draft-first-activation.md for exact reconciliation and storage limitations.
+
+### Import failure diagnostics (LIN-225)
+
+The existing failure capture keeps `outcome=failure` and
+`error_code=decode_media_or_create`. Only failures add `diagnostic_schema_version=1`,
+`failure_stage` and `create_resolved`. Success properties, capture points/counts,
+cohort/enrollment/entry properties and original clocks are unchanged. This is a
+diagnostic schema, not an enrollment or observation reset. Historical captures
+without it have UNKNOWN stage and cannot be backfilled from the generic code.
+
+`failure_stage` is finite and established at the actual executing boundary:
+
+- `decode_validation`: decoding or the existing document validation did not finish.
+- `media_read`: the requested media read rejected or returned null. Null means
+  unavailable with unknown cause, not malformed content or proven TTL expiry.
+- `create`: the create call did not resolve. Rejection does not prove no backend write.
+- `post_create`: the create promise resolved before extraction/tracking/routing/state preparation failed.
+- `unknown`: no known boundary was established; generic errors are not parsed.
+
+`create_resolved=true` means only that the exact create promise was observed to
+resolve. It is NOT proof of durable backend persistence. False means resolution
+was not observed, NOT proof that no write occurred. A later routing failure can
+retain both the existing success and failure captures. Stale-load guards still
+suppress stale captures and shared imports still create once. Metadata contains
+no exception text, URL, import blob, media key, draft content, stack, email,
+account data or token, and adds no identity/attempt ID. Consume this at the
+existing October 15 LIN-112 observation with unchanged seven-day attribution
+maturity; keep failures included and historical/customer impact unknown.
 
 ## Server events (posthog-node via `lib/analytics/server.ts`, distinctId = user id)
 
