@@ -17,6 +17,7 @@ const SURROGATE = 0xd835
 type Transform = {
     exclusive: boolean
     modifier: [number, number]
+    digitStart?: number
     exceptions?: Record<string, string>
 }
 
@@ -76,6 +77,7 @@ const TRANSFORMS: Record<string, Transform> = {
     BOLD: {
         exclusive: false,
         modifier: [0xdd8d, 0xdd93],
+        digitStart: 0x1d7ec,
     },
     ITALIC: {
         exclusive: false,
@@ -101,6 +103,8 @@ const COMBINED_TRANSFORMS: Record<string, Transform> = {
     BOLDITALIC: {
         exclusive: false,
         modifier: [0xddf5, 0xddfb],
+        // Unicode has no italic digits; preserve bold emphasis with sans-serif bold digits.
+        digitStart: 0x1d7ec,
     },
 }
 
@@ -152,7 +156,7 @@ function retrieveAppenders(styles: string[]): Array<Appender> {
  * a surrogate and a modifier from TRANSFORMS.
  */
 function applyTransform(text: string, transform: Transform): string {
-    const { modifier, exceptions } = transform
+    const { modifier, exceptions, digitStart } = transform
 
     return runes(text)
         .map((char) => {
@@ -160,6 +164,9 @@ function applyTransform(text: string, transform: Transform): string {
             if (exception) return exception
 
             const code = char.charCodeAt(0)
+            if (digitStart !== undefined && char.length === 1 && code >= 48 && code <= 57) {
+                return String.fromCodePoint(digitStart + code - 48)
+            }
             if (isCapital(code) || isLower(code)) {
                 const mod = isCapital(code) ? modifier[1] : modifier[0]
                 return String.fromCharCode(SURROGATE, mod + code)

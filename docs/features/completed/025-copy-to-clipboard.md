@@ -30,6 +30,8 @@
 - Selection serialization, including cut-boundary handling and ordered-list `start` carry-over: `components/tool/editor-panel.tsx:79-115,206-219`.
 - Output pipeline (mark to Unicode, list markers, paragraph spacing, sub-range mode): `components/tool/utils.ts:210-228,296-335`.
 
+- Bold digits use the Unicode sans-serif bold digit alphabet, matching the existing bold letters. Bold plus italic uses the same bold digits because Unicode has no italic digit alphabet. Italic-only digits and exclusive font styles retain their existing behavior. Regression coverage: `node --test tests/bold-digits.test.mjs`.
+
 ## Dependencies
 
 - 020 Rich text editor (mark source).
