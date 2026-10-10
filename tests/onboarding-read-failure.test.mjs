@@ -13,7 +13,14 @@ const missing = { data: null, error: { code: 'PGRST116' } }
 const failed = { data: null, error: { code: '42501', message: 'Synthetic read denied' } }
 const row = (data) => ({ data: { data }, error: null })
 
-async function setup({ branding = missing, strategy = missing, url = '/dashboard', saved = null } = {}) {
+async function setup({
+    branding = missing,
+    strategy = missing,
+    url = '/dashboard',
+    saved = null,
+    authReady = true,
+    userId = 'synthetic-one',
+} = {}) {
     const h = hooks()
     const window = browser('https://preview.invalid' + url)
     const localStorage = storage()
@@ -39,7 +46,7 @@ async function setup({ branding = missing, strategy = missing, url = '/dashboard
             }
         },
     }
-    const auth = { isReady: true, userId: 'synthetic-one', supabase }
+    const auth = { isReady: authReady, userId, supabase }
     const authModule = { useAuth: () => auth }
     const hookMocks = {
         'react': h.react,
@@ -126,6 +133,23 @@ async function setup({ branding = missing, strategy = missing, url = '/dashboard
             return cleared
         },
     }
+}
+
+for (const url of [
+    '/dashboard?source=upgrade&checkout=cancelled&from=billing_return',
+    '/dashboard?source=upgrade&checkout=success&from=billing_return',
+    '/dashboard?linkedin=merge-prompt',
+]) {
+    test(`initial auth bootstrap preserves return snapshot: ${url}`, async () => {
+        const state = await setup({ url, authReady: false, userId: null })
+        assert.equal(state.render(), null)
+        state.window.history.replaceState({}, '', '/dashboard?from=billing_return')
+        state.auth.isReady = true
+        state.auth.userId = 'synthetic-one'
+        assert.equal(await state.settle(), null)
+        assert.equal(state.writes.length, 0)
+        state.h.unmount()
+    })
 }
 
 for (const [name, branding, strategy] of [

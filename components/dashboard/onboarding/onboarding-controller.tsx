@@ -69,11 +69,13 @@ export function OnboardingController() {
 
     React.useEffect(() => {
         if (decisionUserRef.current === userId) return
+        // Initial auth bootstrap must keep the arrival snapshot captured before
+        // other return consumers stripped its query parameters.
+        if (decisionUserRef.current !== null) arrivalRef.current = null
         decisionUserRef.current = userId
         decidedRef.current = false
         finishedRef.current = false
         firstDraftPromiseRef.current = null
-        arrivalRef.current = null
         setOpen(false)
         setResumeAnswers(null)
         setStartStepId('welcome')
