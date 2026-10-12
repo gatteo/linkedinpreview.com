@@ -5,6 +5,7 @@ import { deflateRawSync } from 'node:zlib'
 import { browser, hooks, loadTS, storage, tick } from './helpers/component-harness.mjs'
 
 const entry = await loadTS('config/entry-sources.ts')
+const createDiagnostics = await loadTS('lib/draft-create-diagnostics.ts')
 const doc = {
     type: 'doc',
     content: [
@@ -212,6 +213,7 @@ async function currentDraft(url, opts = {}) {
         { CompressionStream, DecompressionStream, TextEncoder, TextDecoder, btoa, atob },
     )
     const importer = await loadTS('lib/draft-import.ts', {
+        '@/lib/draft-create-diagnostics': createDiagnostics,
         '@/lib/draft-url': opts.draftURL ?? draftURL,
         '@/lib/draft-media': opts.mediaReader ?? { readDraftMedia: async () => opts.media ?? null },
     })
@@ -262,8 +264,9 @@ async function currentDraft(url, opts = {}) {
                 useDrafts: () => ({
                     drafts: [],
                     isLoading: draftsLoading,
-                    createDraft: async (content, options) => {
+                    createDraft: async (content, options, diagnostics) => {
                         writes.push(['create', content, options])
+                        if (opts.actualCreate) return opts.actualCreate(content, options, diagnostics)
                         opts.onCreate?.()
                         await opts.waitForCreate?.()
                         if (opts.createError) throw opts.createError
@@ -342,6 +345,278 @@ test('failed create/load cannot count successful import or trigger empty-draft d
 
 const importEvents = (state) => state.events.filter(([event]) => event === 'draft_import_result')
 const sensitive = 'Synthetic secret token=do-not-capture email=fixture@example.invalid https://private.invalid/media'
+
+async function actualDraftCreate(opts = {}) {
+    const carouselTypes = await loadTS('lib/carousel/types.ts')
+    const serialize = await loadTS('lib/carousel/serialize.ts', { '@/lib/carousel/types': carouselTypes })
+    const helpers = await loadTS('lib/drafts.ts', {
+        '@/lib/carousel/types': carouselTypes,
+        '@/lib/carousel/serialize': serialize,
+    })
+    const counts = { inserts: 0, singles: 0, transport: 0 }
+    const denyTransport = () => {
+        counts.transport++
+        throw Error('External transport prohibited')
+    }
+    const api = await loadTS(
+        'lib/supabase/drafts.ts',
+        {
+            '@/lib/drafts': helpers,
+            '@/lib/draft-create-diagnostics': createDiagnostics,
+        },
+        { fetch: denyTransport, ...(opts.globals ?? {}) },
+    )
+    let inserted
+    const client = {
+        from(table) {
+            assert.equal(table, 'drafts')
+            const query = {
+                select: () => query,
+                order: () => query,
+                insert(value) {
+                    counts.inserts++
+                    inserted = value
+                    return query
+                },
+                async single() {
+                    counts.singles++
+                    if (opts.rejection) throw opts.rejection
+                    return opts.response ?? { data: inserted, error: null, status: 201 }
+                },
+                then(resolve, reject) {
+                    return Promise.resolve({ data: [], error: null }).then(resolve, reject)
+                },
+            }
+            return query
+        },
+    }
+    const h = hooks()
+    const hook = await loadTS(
+        'hooks/use-drafts.ts',
+        {
+            'react': h.react,
+            'sonner': { toast: { error() {} } },
+            '@/components/dashboard/auth-provider': {
+                useAuth: () => ({ isReady: true, userId: opts.absentUser ? null : 'synthetic-user', supabase: client }),
+            },
+            '@/lib/supabase/drafts': api,
+        },
+        { fetch: denyTransport },
+    )
+    const drafts = h.render(() => hook.useDrafts())
+    return { create: drafts.createDraft, counts, h, inserted: () => inserted }
+}
+
+test('actual import/user/create modules classify finite boundaries without retries or extra captures', async (t) => {
+    const preprocessingError = Error(sensitive)
+    const requestError = Object.assign(Error(sensitive), { code: sensitive, status: 503, url: sensitive })
+    const mappingError = Error(sensitive)
+    const mappingRow = {
+        get id() {
+            throw mappingError
+        },
+    }
+    const cases = [
+        ['absent-user', { absentUser: true }, 'absent_user', 'auth_unavailable', undefined, 0],
+        [
+            'preprocessing',
+            {
+                globals: {
+                    crypto: {
+                        randomUUID() {
+                            throw preprocessingError
+                        },
+                    },
+                },
+            },
+            'preprocessing',
+            'unknown',
+            undefined,
+            0,
+        ],
+        ['request-rejection', { rejection: requestError }, 'insert_select', 'unknown', 503, 1],
+        [
+            'insert-select-rejection',
+            { response: { data: null, error: { code: '42501', message: sensitive, details: sensitive }, status: 403 } },
+            'insert_select',
+            'permission_denied',
+            403,
+            1,
+        ],
+        [
+            'constraint-rejection',
+            { response: { data: null, error: { code: '23505', message: sensitive }, status: 409 } },
+            'insert_select',
+            'constraint_violation',
+            409,
+            1,
+        ],
+        [
+            'null-result-mapping',
+            { response: { data: null, error: null, status: 201 } },
+            'result_mapping',
+            'unknown',
+            201,
+            1,
+        ],
+        [
+            'result-mapping-throw',
+            { response: { data: mappingRow, error: null, status: 201 } },
+            'result_mapping',
+            'unknown',
+            201,
+            1,
+        ],
+    ]
+    for (const [name, options, checkpoint, category, status, inserts] of cases)
+        await t.test(name, async () => {
+            const actual = await actualDraftCreate(options)
+            const state = await currentDraft(importUrl, { actualCreate: actual.create })
+            const events = importEvents(state)
+            assert.equal(events.length, 1)
+            const props = events[0][1]
+            assert.equal(props.outcome, 'failure')
+            assert.equal(props.diagnostic_schema_version, 1)
+            assert.equal(props.failure_stage, 'create')
+            assert.equal(props.create_resolved, false)
+            assert.equal(props.create_checkpoint, checkpoint)
+            assert.equal(props.create_error_category, category)
+            assert.equal(props.create_error_status, status)
+            assert.equal(props.exposure_id, exposure)
+            assert.equal(props.entry_source, 'tool_footer')
+            assert.equal(props.assigned_variant, 'draft_first')
+            assert.equal(actual.counts.inserts, inserts)
+            assert.equal(actual.counts.singles, inserts)
+            assert.equal(actual.counts.transport, 0)
+            assert.doesNotMatch(
+                JSON.stringify(props),
+                /token=|email=|private\.invalid|stack|message|details|synthetic-user/,
+            )
+            assert.equal(state.redirects.length, 0)
+            state.h.unmount()
+            actual.h.unmount()
+            assert.equal(state.writes.filter(([kind]) => kind === 'delete').length, 0)
+        })
+})
+
+test('actual create preserves thrown error identity and successful insert/entry/media with no success diagnostics', async () => {
+    const error = Object.assign(Error(sensitive), { code: 'PGRST301', status: 401 })
+    const rejected = await actualDraftCreate({ rejection: error })
+    const diagnostics = { failure_stage: 'create', create_resolved: false }
+    await assert.rejects(rejected.create(doc, {}, diagnostics), (value) => value === error)
+    assert.equal(diagnostics.create_error_category, 'auth_error')
+    assert.equal(diagnostics.create_error_status, 401)
+    rejected.h.unmount()
+    const actual = await actualDraftCreate()
+    const media = { type: 'image', src: 'data:image/png;base64,synthetic' }
+    const state = await currentDraft(importUrl + '&m=synthetic-media', { actualCreate: actual.create, media })
+    assert.equal(importEvents(state).length, 1)
+    const props = importEvents(state)[0][1]
+    assert.equal(props.outcome, 'success')
+    for (const key of [
+        'diagnostic_schema_version',
+        'failure_stage',
+        'create_resolved',
+        'create_checkpoint',
+        'create_error_category',
+        'create_error_status',
+    ]) {
+        assert.equal(Object.hasOwn(props, key), false)
+    }
+    assert.deepEqual(json(actual.inserted().content), doc)
+    assert.deepEqual(json(actual.inserted().media), media)
+    assert.equal(actual.inserted().user_id, 'synthetic-user')
+    assert.equal(actual.counts.inserts, 1)
+    assert.equal(actual.counts.singles, 1)
+    assert.equal(actual.counts.transport, 0)
+    assert.equal(state.render().draftId, actual.inserted().id)
+    state.h.unmount()
+    actual.h.unmount()
+})
+
+test('create diagnostic projection rejects arbitrary, inherited, getter and unsafe metadata', () => {
+    const props = (value) => json(createDiagnostics.draftCreateFailureProperties(value))
+    const unknown = { create_checkpoint: 'unknown', create_error_category: 'unknown' }
+    for (const unsafe of [sensitive, {}, [], 503.1, '503', 0, 999, NaN, Infinity, null]) {
+        assert.deepEqual(
+            props({
+                create_checkpoint: unsafe,
+                create_error_category: unsafe,
+                create_error_status: unsafe,
+                raw_error: sensitive,
+            }),
+            unknown,
+        )
+    }
+    assert.deepEqual(
+        props(
+            Object.create({
+                create_checkpoint: 'absent_user',
+                create_error_category: 'auth_error',
+                create_error_status: 401,
+            }),
+        ),
+        unknown,
+    )
+    const getters = Object.fromEntries(
+        ['create_checkpoint', 'create_error_category', 'create_error_status'].map((key) => [
+            key,
+            {
+                get() {
+                    assert.fail('Unsafe getter invoked')
+                },
+            },
+        ]),
+    )
+    assert.deepEqual(props(Object.defineProperties({}, getters)), unknown)
+    assert.deepEqual(
+        props(
+            new Proxy(
+                {},
+                {
+                    getOwnPropertyDescriptor() {
+                        throw Error(sensitive)
+                    },
+                },
+            ),
+        ),
+        unknown,
+    )
+    const d = {}
+    const error = Object.defineProperties(
+        {},
+        {
+            code: {
+                get() {
+                    assert.fail('Error code getter invoked')
+                },
+            },
+            status: {
+                get() {
+                    assert.fail('Status getter invoked')
+                },
+            },
+        },
+    )
+    createDiagnostics.recordDraftCreateError(d, error)
+    assert.deepEqual(props(d), unknown)
+    for (const [code, category] of [
+        ['42501', 'permission_denied'],
+        ['23502', 'constraint_violation'],
+        ['23503', 'constraint_violation'],
+        ['23505', 'constraint_violation'],
+        ['23514', 'constraint_violation'],
+        ['PGRST301', 'auth_error'],
+        ['PGRST302', 'auth_error'],
+        ['PGRST303', 'auth_error'],
+        ['PGRST116', 'response_cardinality'],
+        [sensitive, 'unknown'],
+        ['__proto__', 'unknown'],
+    ]) {
+        createDiagnostics.recordDraftCreateError(d, { code, message: sensitive }, { status: 403 })
+        assert.deepEqual(props(d), { ...unknown, create_error_category: category, create_error_status: 403 })
+    }
+})
 
 test('known import failure boundaries retain only finite diagnostics and unchanged enrollment fields', async (t) => {
     const invalidDoc = deflateRawSync(JSON.stringify({ type: 'doc', content: [{ type: 'text', text: 123 }] })).toString(
@@ -485,7 +760,11 @@ test('unestablished boundary falls back to unknown without inspecting generic ex
     }
     assert.equal(state.writes.length, 0)
     state.h.unmount()
-    const importer = await loadTS('lib/draft-import.ts', { '@/lib/draft-url': {}, '@/lib/draft-media': {} })
+    const importer = await loadTS('lib/draft-import.ts', {
+        '@/lib/draft-create-diagnostics': createDiagnostics,
+        '@/lib/draft-url': {},
+        '@/lib/draft-media': {},
+    })
     assert.deepEqual(json(importer.draftImportFailureProperties()), {
         diagnostic_schema_version: 1,
         failure_stage: 'unknown',

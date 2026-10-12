@@ -1,9 +1,10 @@
+import { draftCreateFailureProperties, type DraftCreateDiagnostics } from '@/lib/draft-create-diagnostics'
 import { readDraftMedia, type StoredMedia } from '@/lib/draft-media'
 import { decodeDraft } from '@/lib/draft-url'
 
 const FAILURE_STAGES = ['decode_validation', 'media_read', 'create', 'post_create', 'unknown'] as const
 
-export type DraftImportDiagnostics = {
+export type DraftImportDiagnostics = DraftCreateDiagnostics & {
     failure_stage: (typeof FAILURE_STAGES)[number]
     create_resolved: boolean
 }
@@ -14,6 +15,7 @@ export function draftImportFailureProperties(diagnostics?: DraftImportDiagnostic
         failure_stage:
             diagnostics && FAILURE_STAGES.includes(diagnostics.failure_stage) ? diagnostics.failure_stage : 'unknown',
         create_resolved: diagnostics?.create_resolved === true,
+        ...(diagnostics?.failure_stage === 'create' ? draftCreateFailureProperties(diagnostics) : {}),
     }
 }
 
@@ -35,7 +37,7 @@ export function isDraftDocument(value: unknown): boolean {
 export async function importDraft<T>(
     encoded: string,
     mediaKey: string | null,
-    create: (content: any, options: { media: StoredMedia | null }) => Promise<T>,
+    create: (content: any, options: { media: StoredMedia | null }, diagnostics?: DraftImportDiagnostics) => Promise<T>,
     diagnostics?: DraftImportDiagnostics,
 ): Promise<{ draft: T; content: any; media: StoredMedia | null }> {
     if (diagnostics) diagnostics.failure_stage = 'decode_validation'
@@ -45,7 +47,7 @@ export async function importDraft<T>(
     const media = mediaKey ? await readDraftMedia(mediaKey) : null
     if (mediaKey && !media) throw new Error('Draft media unavailable')
     if (diagnostics) diagnostics.failure_stage = 'create'
-    const draft = await create(content, { media })
+    const draft = await create(content, { media }, diagnostics)
     if (diagnostics) {
         diagnostics.create_resolved = true
         diagnostics.failure_stage = 'post_create'

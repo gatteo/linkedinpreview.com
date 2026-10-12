@@ -40,4 +40,11 @@ Kill line: verified regression in free-tool copying, import/content/media persis
 
 ## Verification
 
+LIN-234 adds failure-only create checkpoints on the existing shared import
+diagnostic object. The actual user guard and create adapter distinguish absent
+user, preprocessing, insert/select and result mapping. Only allowlisted category
+and observed numeric status are projected; no raw error, retry, auth rewrite,
+new identity, event or clock. See the event dictionary for finite values and
+limitations. These diagnostics do not establish a historical cause or a repair.
+
 Executable Node coverage loads actual TypeScript controller, hook, public handoff, checkout and webhook modules with explicit offline adapters. Fixtures are synthetic. This tests code paths without any production Supabase, Stripe, provider or LinkedIn request. Independent Sentinel review remains mandatory. Release evidence and browser-fixture limitations are recorded in `docs/evidence/lin-108/README.md` when the preview is ready.
