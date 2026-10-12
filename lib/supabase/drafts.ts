@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+import { recordDraftCreateError, type DraftCreateDiagnostics } from '@/lib/draft-create-diagnostics'
 import {
     computeStats,
     extractTitle,
@@ -111,33 +112,44 @@ export async function createDraft(
     label?: string | null,
     kind: DraftKind = 'post',
     media: DraftContent['media'] = null,
+    diagnostics?: DraftCreateDiagnostics,
 ): Promise<DraftManifestEntry> {
-    const id = crypto.randomUUID()
-    const title = extractTitle(initialContent)
-    const stats = computeStats(initialContent)
-    const now = new Date().toISOString()
+    let response: unknown
+    try {
+        if (diagnostics) diagnostics.create_checkpoint = 'preprocessing'
+        const id = crypto.randomUUID()
+        const title = extractTitle(initialContent)
+        const stats = computeStats(initialContent)
+        const now = new Date().toISOString()
 
-    const { data, error } = await client
-        .from('drafts')
-        .insert({
-            id,
-            user_id: userId,
-            title,
-            kind,
-            content: initialContent ?? null,
-            media,
-            status: 'draft',
-            label: label ?? null,
-            word_count: stats.wordCount,
-            char_count: stats.charCount,
-            created_at: now,
-            updated_at: now,
-        })
-        .select(ENTRY_COLUMNS)
-        .single()
-
-    if (error) throw error
-    return rowToEntry(data as DraftRow)
+        if (diagnostics) diagnostics.create_checkpoint = 'insert_select'
+        const result = await client
+            .from('drafts')
+            .insert({
+                id,
+                user_id: userId,
+                title,
+                kind,
+                content: initialContent ?? null,
+                media,
+                status: 'draft',
+                label: label ?? null,
+                word_count: stats.wordCount,
+                char_count: stats.charCount,
+                created_at: now,
+                updated_at: now,
+            })
+            .select(ENTRY_COLUMNS)
+            .single()
+        response = result
+        const { data, error } = result
+        if (error) throw error
+        if (diagnostics) diagnostics.create_checkpoint = 'result_mapping'
+        return rowToEntry(data as DraftRow)
+    } catch (error) {
+        recordDraftCreateError(diagnostics, error, response)
+        throw error
+    }
 }
 
 // ---------------------------------------------------------------------------

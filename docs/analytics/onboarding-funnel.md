@@ -248,6 +248,33 @@ account data or token, and adds no identity/attempt ID. Consume this at the
 existing October 15 LIN-112 observation with unchanged seven-day attribution
 maturity; keep failures included and historical/customer impact unknown.
 
+#### Create-boundary checkpoints (LIN-234)
+
+Only `failure_stage=create` adds `create_checkpoint`:
+`absent_user`, `preprocessing`, `insert_select`, `result_mapping` or `unknown`.
+The actual draft hook observes absence of a user. The persistence adapter marks
+preprocessing before ID/title/stats preparation, insert/select before the existing
+request builder/await, and result mapping after the response error check. A
+checkpoint is an executing boundary, not proof a request reached the backend.
+
+`create_error_category` is finite: `auth_unavailable` for the absent-user guard;
+`auth_error` for PGRST301/302/303; `permission_denied` for SQLSTATE42501;
+`constraint_violation` for23502/23503/23505/23514; `response_cardinality` for
+PGRST116; otherwise `unknown`. No message/type-name parsing or network inference.
+Optional `create_error_status` accepts only observed numeric statuses
+200/201/204/400/401/403/404/406/408/409/413/422/429/500/502/503/504 from own data properties
+of the response/error. Getter, inherited, arbitrary string/code and unsupported
+status values are discarded. Raw errors, contents, URLs, tokens and new identity
+fields are never captured.
+
+Existing `diagnostic_schema_version=1`, legacy properties, success/failure capture
+points/counts and clocks remain unchanged. No retries or auth/persistence repair.
+Historical create failures without a checkpoint stay unknown. Operational
+diagnosis uses the next genuine failure immediately, not a paid-maturity wait.
+`create_resolved=false` still does not prove no write. A successful diagnostic
+release is not customer recovery; the subsequent repair check is valid import,
+confirmed save and reload, with normal independent review/release protections.
+
 ## Server events (posthog-node via `lib/analytics/server.ts`, distinctId = user id)
 
 ### Actual monthly-main and draft-first integration

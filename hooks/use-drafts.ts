@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { toast } from 'sonner'
 
+import { type DraftImportDiagnostics } from '@/lib/draft-import'
 import { type DraftContent, type DraftKind, type DraftManifestEntry, type DraftStatus } from '@/lib/drafts'
 import {
     createDraft as createDraftApi,
@@ -54,8 +55,15 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
         async (
             initialContent?: any,
             createOpts?: { label?: string | null; media?: DraftContent['media'] },
+            diagnostics?: DraftImportDiagnostics,
         ): Promise<DraftManifestEntry> => {
-            if (!userId) throw new Error('Not authenticated')
+            if (!userId) {
+                if (diagnostics) {
+                    diagnostics.create_checkpoint = 'absent_user'
+                    diagnostics.create_error_category = 'auth_unavailable'
+                }
+                throw new Error('Not authenticated')
+            }
             const entry = await createDraftApi(
                 supabase,
                 userId,
@@ -63,6 +71,7 @@ export function useDrafts(opts: { kind?: DraftKind } = {}) {
                 createOpts?.label ?? null,
                 kind,
                 createOpts?.media,
+                diagnostics,
             )
             setDrafts((prev) => [entry, ...prev])
             return entry
