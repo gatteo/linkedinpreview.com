@@ -208,11 +208,11 @@ for (const count of [3, 4, 15, 16]) {
     })
 }
 
-test('generate prompt asks for null fields, without changing the edit prompt contract', () => {
+test('carousel prompts ask for explicit null optional provider fields', () => {
     assert.match(prompts.CAROUSEL_GENERATE_SYSTEM, /Include body and suggestedIcon on every slide/)
     assert.match(prompts.CAROUSEL_GENERATE_SYSTEM, /use null otherwise/)
     assert.match(prompts.CAROUSEL_GENERATE_SYSTEM, /Include themeSuggestion, using null/)
-    assert.match(prompts.CAROUSEL_EDIT_SYSTEM, /optionally/)
+    assert.match(prompts.CAROUSEL_EDIT_SYSTEM, /Include body, using null/)
 })
 
 async function executeRoute({
