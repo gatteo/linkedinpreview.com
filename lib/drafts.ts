@@ -1,5 +1,6 @@
 import { carouselStats, carouselTitle } from '@/lib/carousel/serialize'
 import { isCarouselDocument } from '@/lib/carousel/types'
+import { truncateTitle } from '@/lib/truncate-title'
 
 // ---------------------------------------------------------------------------
 // Draft schema
@@ -92,7 +93,7 @@ export function extractTitle(content: any): string {
                 .join('')
                 .trim()
             if (text) {
-                return text.length > 60 ? text.slice(0, 57) + '...' : text
+                return truncateTitle(text)
             }
         }
     }
