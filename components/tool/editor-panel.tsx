@@ -17,9 +17,11 @@ import { countPostCharacters, LINKEDIN_CHAR_LIMIT } from '@/lib/linkedin/char-co
 import { toTipTapParagraphs } from '@/lib/parse-formatted-text'
 import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
+import { acceptedWritingValue } from '@/lib/visitor-writing'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 import { FontStyle } from '@/components/tool/extensions/font-style'
+import { useVisitorWriting } from '@/components/tool/visitor-writing-flow'
 
 import { Icons } from '../icon'
 import {
@@ -145,8 +147,25 @@ export function EditorPanel({
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
-    const { notifyCopy } = useFeedbackAfterCopy()
+    const writing = useVisitorWriting()
+    const { registerAI } = writing
+    const writingRef = React.useRef(writing)
+    React.useEffect(() => {
+        writingRef.current = writing
+    }, [writing])
+    const { notifyCopy } = useFeedbackAfterCopy(writing.enabled ? writing.discovery : undefined)
     const { ensureSession } = useAnonymousAuth()
+
+    React.useEffect(() => {
+        if (generateOpen) writingRef.current.start()
+    }, [generateOpen])
+
+    React.useEffect(() => {
+        registerAI(() => setGenerateOpen(true))
+        return () => {
+            registerAI(null)
+        }
+    }, [registerAI])
 
     React.useEffect(() => {
         setCurrentMedia(initialMedia ?? null)
@@ -282,6 +301,7 @@ export function EditorPanel({
         (json: any, text: string) => {
             toast.success('Text copied to clipboard')
             onCopyText?.()
+            writingRef.current.copied(json)
             notifyCopy(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
             analyzePost(json, text) // fire-and-forget
@@ -635,6 +655,9 @@ export function EditorPanel({
                     const paragraphs = toTipTapParagraphs(text)
                     editor.commands.setContent({ type: 'doc', content: paragraphs }, true)
                     onChange(editor.getJSON())
+                    if (acceptedWritingValue(text) && editor.getText().trim()) {
+                        writingRef.current.inserted(editor.getJSON())
+                    }
                 }}
             />
         </div>
