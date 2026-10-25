@@ -343,6 +343,52 @@ test('draft fixture waits for held decoding before exposing a saveable draft', a
     state.h.unmount()
 })
 
+test('a retry hides the failed empty editor until its imported document is ready and still permits intentional clearing', async () => {
+    let timer
+    const opts = {
+        createError: new Error('Synthetic first create failure'),
+        globals: {
+            setTimeout: (fn) => (timer = fn),
+            clearTimeout: () => (timer = undefined),
+        },
+    }
+    const state = await currentDraft(importUrl, opts)
+    assert.equal(state.render().initialContent, null)
+    assert.equal(state.render().isLoading, false)
+    let release
+    let entered
+    const started = new Promise((resolve) => (entered = resolve))
+    const pending = new Promise((resolve) => (release = resolve))
+    opts.createError = null
+    opts.waitForCreate = () => {
+        entered()
+        return pending
+    }
+    // A relevant URL change starts another load, just as the draft-list loading
+    // transition can after an import failed before the list finished loading.
+    state.window.history.replaceState({}, '', importUrl + '&draft=synthetic-retry')
+    state.render()
+    try {
+        await started
+        assert.equal(state.render().isLoading, true, 'the old empty editor must unmount before the retry completes')
+        release()
+        await waitForDraftState(() => !state.render().isLoading, 'retried imported document')
+        assert.deepEqual(json(state.render().initialContent), doc)
+        assert.equal(state.writes.filter(([kind]) => kind === 'update').length, 0)
+        const cleared = { type: 'doc', content: [{ type: 'paragraph' }] }
+        state.render().saveContent(cleared, true)
+        assert.equal(typeof timer, 'function')
+        timer()
+        await tick()
+        const update = state.writes.find(([kind]) => kind === 'update')
+        assert.equal(update[1], 'synthetic-draft')
+        assert.deepEqual(json(update[2].content), cleared)
+    } finally {
+        release()
+        state.h.unmount()
+    }
+})
+
 test('draft fixture readiness fails within a bound rather than accepting an incomplete load', async () => {
     await assert.rejects(
         waitForDraftState(() => false, 'unreachable state'),

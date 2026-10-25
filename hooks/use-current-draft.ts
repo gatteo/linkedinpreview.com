@@ -147,6 +147,7 @@ export function useCurrentDraft() {
         if (!draftIdParam && !importParam && isLoading) return
 
         const callId = ++loadCallRef.current
+        setState((prev) => ({ ...prev, isLoading: true }))
 
         async function load() {
             // Switching drafts: persist any unsaved edit for the draft we're
