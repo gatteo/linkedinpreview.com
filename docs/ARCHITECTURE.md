@@ -37,6 +37,17 @@ Server components fetch data where possible. Client components handle editor int
 
 **Relationships:** A Draft belongs to one User (via user_id FK to auth.users).
 
+Post and carousel title extraction share `lib/truncate-title.ts`. Titles longer than 60 UTF-16 units
+retain the existing 57-unit prefix plus `...`, except that a high surrogate at the cut is omitted
+so an emoji is not split. Content is unchanged. This keeps create/update request JSON acceptable to
+Postgres, which rejects an unpaired surrogate with `22P02` before inserting the row. Regression
+coverage: `node --test tests/draft-title-surrogate.test.mjs tests/draft-first.test.mjs`.
+
+`useCurrentDraft` marks every new load as pending, including a retry after a failed import.
+The dashboard hides the previous editor until that load settles, so TipTap is constructed with
+the loaded document rather than retaining an empty document while only its options change.
+Intentional clearing still uses the normal save path; empty content is not rejected.
+
 The Wave 4 columns above are added in `supabase/migrations/010_post_scheduling.sql`; the `failed`
 status, the `idx_drafts_due` index, and the `claim_due_linkedin_posts` (service-role) and
 `claim_draft_for_publish` (authenticated) RPCs that gate atomic, idempotent publishing live there too.

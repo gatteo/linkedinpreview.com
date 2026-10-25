@@ -25,6 +25,14 @@ const exposure = '11111111-1111-4111-8111-111111111111'
 const importUrl = `https://preview.invalid/dashboard/editor?import=${encoded}&from=tool_footer&activation=${exposure}`
 const json = (value) => JSON.parse(JSON.stringify(value))
 
+async function waitForDraftState(predicate, label) {
+    const deadline = performance.now() + 5000
+    while (!predicate()) {
+        assert.ok(performance.now() < deadline, `Draft fixture did not reach ${label}`)
+        await tick()
+    }
+}
+
 async function activation(window, localStorage = storage(), sessionStorage = storage()) {
     return loadTS('lib/draft-first.ts', { '@/config/entry-sources': entry }, { window, localStorage, sessionStorage })
 }
@@ -293,9 +301,100 @@ async function currentDraft(url, opts = {}) {
     render()
     draftsLoading = false
     render()
-    await new Promise((resolve) => setTimeout(resolve, 30))
+    await waitForDraftState(
+        () => (opts.waitForCreate ? writes.some(([kind]) => kind === 'create') : !render().isLoading),
+        opts.waitForCreate ? 'pending create' : 'completed load',
+    )
     return { render, h, flow, writes, redirects, events, errors, window }
 }
+
+test('draft fixture waits for held decoding before exposing a saveable draft', async () => {
+    let releaseDecode
+    let enteredDecode
+    const decoding = new Promise((resolve) => (enteredDecode = resolve))
+    const pendingDecode = new Promise((resolve) => (releaseDecode = resolve))
+    let timer
+    let ready = false
+    const loading = currentDraft(importUrl, {
+        draftURL: {
+            decodeDraft: () => {
+                enteredDecode()
+                return pendingDecode
+            },
+        },
+        globals: {
+            setTimeout: (fn) => (timer = fn),
+            clearTimeout: () => (timer = undefined),
+        },
+    }).then((state) => {
+        ready = true
+        return state
+    })
+    await decoding
+    await tick()
+    assert.equal(ready, false, 'a pending decoder is not a loaded draft')
+    releaseDecode(doc)
+    const state = await loading
+    assert.equal(state.render().isLoading, false)
+    assert.equal(state.writes.filter(([kind]) => kind === 'create').length, 1)
+    assert.equal(state.events.filter(([event]) => event === 'draft_import_result').length, 1)
+    state.render().saveContent(doc, true)
+    assert.equal(typeof timer, 'function', 'save timer is registered only after the draft exists')
+    state.h.unmount()
+})
+
+test('a retry hides the failed empty editor until its imported document is ready and still permits intentional clearing', async () => {
+    let timer
+    const opts = {
+        createError: new Error('Synthetic first create failure'),
+        globals: {
+            setTimeout: (fn) => (timer = fn),
+            clearTimeout: () => (timer = undefined),
+        },
+    }
+    const state = await currentDraft(importUrl, opts)
+    assert.equal(state.render().initialContent, null)
+    assert.equal(state.render().isLoading, false)
+    let release
+    let entered
+    const started = new Promise((resolve) => (entered = resolve))
+    const pending = new Promise((resolve) => (release = resolve))
+    opts.createError = null
+    opts.waitForCreate = () => {
+        entered()
+        return pending
+    }
+    // A relevant URL change starts another load, just as the draft-list loading
+    // transition can after an import failed before the list finished loading.
+    state.window.history.replaceState({}, '', importUrl + '&draft=synthetic-retry')
+    state.render()
+    try {
+        await started
+        assert.equal(state.render().isLoading, true, 'the old empty editor must unmount before the retry completes')
+        release()
+        await waitForDraftState(() => !state.render().isLoading, 'retried imported document')
+        assert.deepEqual(json(state.render().initialContent), doc)
+        assert.equal(state.writes.filter(([kind]) => kind === 'update').length, 0)
+        const cleared = { type: 'doc', content: [{ type: 'paragraph' }] }
+        state.render().saveContent(cleared, true)
+        assert.equal(typeof timer, 'function')
+        timer()
+        await tick()
+        const update = state.writes.find(([kind]) => kind === 'update')
+        assert.equal(update[1], 'synthetic-draft')
+        assert.deepEqual(json(update[2].content), cleared)
+    } finally {
+        release()
+        state.h.unmount()
+    }
+})
+
+test('draft fixture readiness fails within a bound rather than accepting an incomplete load', async () => {
+    await assert.rejects(
+        waitForDraftState(() => false, 'unreachable state'),
+        /did not reach unreachable state/,
+    )
+})
 
 test('actual import hook deduplicates overlapping loads and preserves nested text, media and attribution', async () => {
     const media = { type: 'image', src: 'data:image/png;base64,synthetic' }
@@ -348,10 +447,15 @@ const sensitive = 'Synthetic secret token=do-not-capture email=fixture@example.i
 
 async function actualDraftCreate(opts = {}) {
     const carouselTypes = await loadTS('lib/carousel/types.ts')
-    const serialize = await loadTS('lib/carousel/serialize.ts', { '@/lib/carousel/types': carouselTypes })
+    const truncate = await loadTS('lib/truncate-title.ts')
+    const serialize = await loadTS('lib/carousel/serialize.ts', {
+        '@/lib/carousel/types': carouselTypes,
+        '@/lib/truncate-title': truncate,
+    })
     const helpers = await loadTS('lib/drafts.ts', {
         '@/lib/carousel/types': carouselTypes,
         '@/lib/carousel/serialize': serialize,
+        '@/lib/truncate-title': truncate,
     })
     const counts = { inserts: 0, singles: 0, transport: 0 }
     const denyTransport = () => {

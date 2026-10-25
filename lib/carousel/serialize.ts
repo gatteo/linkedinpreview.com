@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import { isTextElement, type CarouselDocument } from '@/lib/carousel/types'
+import { truncateTitle } from '@/lib/truncate-title'
 
 /** Title for the drafts list: the hook slide's first non-empty line. */
 export function carouselTitle(doc: CarouselDocument): string {
@@ -13,7 +14,7 @@ export function carouselTitle(doc: CarouselDocument): string {
         for (const el of hook.elements) {
             if (isTextElement(el) && el.text.trim()) {
                 const line = el.text.trim().split('\n')[0]
-                return line.length > 60 ? line.slice(0, 57) + '...' : line
+                return truncateTitle(line)
             }
         }
     }
