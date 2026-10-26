@@ -13,10 +13,10 @@ import { Button } from '@/components/ui/button'
 import { DotBackground } from '@/components/ui/dot-background'
 import { CtaSection } from '@/components/home/cta-section'
 import { Features } from '@/components/home/features'
-import { HowToUse } from '@/components/home/how-to-use'
 import { Reason } from '@/components/home/reason'
 import { StarRating } from '@/components/home/star-rating'
 import { Tool } from '@/components/tool/tool'
+import { FormatterTaskLibrary } from '@/app/(main)/formatter/task-library'
 
 export const metadata: Metadata = {
     title: { absolute: 'LinkedIn Post Formatter - Bold, Italic & Lists Tool' },
@@ -266,7 +266,7 @@ export default function FormatterPage() {
             <div className='max-w-content border-border mx-auto border-x'>
                 <FormatterHero />
                 <Tool />
-                <HowToUse />
+                <FormatterTaskLibrary />
             </div>
 
             <div className='max-w-content border-border mx-auto border-x'>
