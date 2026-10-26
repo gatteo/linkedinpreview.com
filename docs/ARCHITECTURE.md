@@ -10,6 +10,12 @@ Monolithic Next.js 16.1 App Router application deployed as a single Vercel proje
 
 Server components fetch data where possible. Client components handle editor interactivity. Auth is anonymous Supabase sessions (signInAnonymously) - users get a persistent identity without ever seeing a login screen.
 
+The `/formatter` route replaces its shared `HowToUse` call site with the server-rendered
+`app/(main)/formatter/task-library.tsx`: three before/after walkthroughs for hook emphasis,
+lists and mixed letters/digits. Examples are static semantic HTML, not injected drafts or
+sample-copy actions. The shared Tool, homepage, metadata, conversion proof and analytics
+remain unchanged. Coverage: `node --test tests/formatter-task-library.test.mjs`.
+
 ## Data Models
 
 ### Draft
