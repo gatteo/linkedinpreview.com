@@ -105,7 +105,7 @@ export const CAROUSEL_EDIT_SYSTEM = `You are an expert LinkedIn carousel copywri
 - Headlines stay short (3-9 words). Body, when present, is 1-2 tight, skimmable lines.
 - Match the surrounding deck's tone. Use the deck summary for context but never restate other slides.
 - Never use em dashes. No markdown, no hashtags, no emoji unless the branding calls for them.
-- Return ONLY the edited headline and (optionally) body. Drop the body when it adds nothing.`
+- Return ONLY the edited headline and body. Include body, using null when it adds nothing.`
 
 const CAROUSEL_EDIT_INSTRUCTIONS: Record<CarouselEditAction, string> = {
     rewrite: 'Rewrite this slide with a fresh angle while keeping the same core point.',

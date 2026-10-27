@@ -12,3 +12,14 @@ export const slideSchema = z.object({
     headline: z.string(),
     body: z.string().optional(),
 })
+
+export const providerSlideSchema = slideSchema.extend({
+    body: z.string().nullable(),
+})
+
+export function normalizeProviderSlide({
+    body,
+    ...slide
+}: z.infer<typeof providerSlideSchema>): z.infer<typeof slideSchema> {
+    return { ...slide, ...(body === null ? {} : { body }) }
+}

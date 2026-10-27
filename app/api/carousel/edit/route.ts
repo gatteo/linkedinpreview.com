@@ -7,7 +7,7 @@ import { CAROUSEL_EDIT_SYSTEM, carouselEditUserPrompt } from '@/config/carousel-
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/supabase/server'
 
-import { bodySchema, slideSchema } from './route.schema'
+import { bodySchema, normalizeProviderSlide, providerSlideSchema } from './route.schema'
 
 export const maxDuration = 30
 
@@ -57,12 +57,12 @@ export async function POST(request: Request) {
     try {
         const { object } = await generateObject({
             model: openai(model),
-            schema: slideSchema,
+            schema: providerSlideSchema,
             system: CAROUSEL_EDIT_SYSTEM,
             prompt: carouselEditUserPrompt({ action, headline, body: slideBody, deckSummary, brandingContext }),
         })
 
-        return Response.json(object)
+        return Response.json(normalizeProviderSlide(object))
     } catch (err) {
         console.error('[/api/carousel/edit] action:', action, err instanceof Error ? err.message : err)
         return Response.json({ error: 'Failed to edit slide', code: AI_ERROR_CODES.GENERATION_FAILED }, { status: 500 })
