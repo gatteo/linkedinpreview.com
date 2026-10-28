@@ -19,6 +19,7 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
+import { PostCopyJobQuestion } from '@/components/feedback/post-copy-job-question'
 import { FontStyle } from '@/components/tool/extensions/font-style'
 
 import { Icons } from '../icon'
@@ -145,7 +146,7 @@ export function EditorPanel({
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
-    const { notifyCopy } = useFeedbackAfterCopy()
+    const { notifyCopy, question, finishQuestion } = useFeedbackAfterCopy()
     const { ensureSession } = useAnonymousAuth()
 
     React.useEffect(() => {
@@ -466,6 +467,7 @@ export function EditorPanel({
     return (
         <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
+            {question && <PostCopyJobQuestion properties={question} onFinish={finishQuestion} />}
             {/** Panel title */}
             <div className='bg-card border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>

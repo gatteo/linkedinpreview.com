@@ -37,7 +37,7 @@
 - Tally loader: `components/feedback/tally-script.tsx`.
 - Config: `config/feedback.ts` (`formId` from `NEXT_PUBLIC_TALLY_FORM_ID`, storage keys, post-copy prompt tuning).
 - Mounts: `app/(main)/layout.tsx:22-23` (script + FAB), `app/dashboard/layout.tsx:51` (script), `components/footer.tsx` (inline link).
-- Related post-copy feedback prompt: `hooks/use-feedback-after-copy.ts` (separate trigger reusing the same Tally form and cooldown config).
+- Related post-copy feedback prompt: `hooks/use-feedback-after-copy.ts` (separate trigger reusing the same Tally form and cooldown config). On `/` and `/formatter` it shows the LIN-237 job question instead, see `docs/analytics/post-copy-job-discovery.md`.
 
 ## Dependencies
 
