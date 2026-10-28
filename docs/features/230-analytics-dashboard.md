@@ -118,6 +118,9 @@
 - Insight engines: correlation `lib/analytics/content-dna.ts` + features `lib/analytics/content-features.ts`;
   AI digest `lib/analytics/digest.ts` + prompts `config/prompts.ts` (`INSIGHTS_SYSTEM_PROMPT`); content
   fetch `lib/supabase/published-posts.ts`, hook `hooks/use-published-content.ts`.
+  The insights provider schema requires every insight field, with `action` accepting string or null.
+  Null actions are omitted before persistence and HTTP output; public actions remain optional strings,
+  including empty strings. Existing limits, auth and cached GET behavior are unchanged.
 - Data layer: table `supabase/migrations/012_post_metrics.sql`; CRUD `lib/supabase/post-metrics.ts`;
   state `hooks/use-post-metrics.ts`.
 - Manual / history entry: `metrics-entry-dialog.tsx` (manual), `import-metrics-dialog.tsx` (LinkedIn CSV

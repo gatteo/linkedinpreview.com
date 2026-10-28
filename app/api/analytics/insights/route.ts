@@ -12,7 +12,7 @@ import { fetchPostMetrics } from '@/lib/supabase/post-metrics'
 import { fetchPublishedPostsContent } from '@/lib/supabase/published-posts'
 import { createClient } from '@/lib/supabase/server'
 
-import { insightsSchema } from './route.schema'
+import { insightsSchema, normalizeProviderInsights, providerInsightsSchema } from './route.schema'
 
 export const maxDuration = 30
 
@@ -100,11 +100,11 @@ export async function POST(request: Request) {
     try {
         const result = await generateObject({
             model: openai(env.LLM_MODEL ?? DEFAULT_LLM_MODEL),
-            schema: insightsSchema,
+            schema: providerInsightsSchema,
             system: INSIGHTS_SYSTEM_PROMPT,
             prompt: insightsUserPrompt(digest),
         })
-        object = result.object
+        object = normalizeProviderInsights(result.object)
     } catch (err) {
         console.error('[analytics/insights] generation failed:', err)
         return Response.json(
