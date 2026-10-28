@@ -19,7 +19,6 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
 import { useAnonymousAuth } from '@/hooks/use-anonymous-auth'
 import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
-import { PostCopyJobQuestion } from '@/components/feedback/post-copy-job-question'
 import { FontStyle } from '@/components/tool/extensions/font-style'
 
 import { Icons } from '../icon'
@@ -127,6 +126,7 @@ export function EditorPanel({
     contentReplace,
     onContentReplaceApplied,
     onCopyText,
+    onSuccessfulCopy,
 }: {
     initialContent?: any
     initialMedia?: Media | null
@@ -134,6 +134,7 @@ export function EditorPanel({
     onInjectedDocApplied?: () => void
     onRestoreDoc?: (doc: any) => void
     onChange: (json: any) => void
+    onSuccessfulCopy?: (contentLength: number) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
     contentReplace?: string | null
@@ -146,7 +147,7 @@ export function EditorPanel({
     const [shareUrl, setShareUrl] = React.useState<string | null>(null)
     const [shareOpen, setShareOpen] = React.useState(false)
     const [generateOpen, setGenerateOpen] = React.useState(false)
-    const { notifyCopy, question, finishQuestion } = useFeedbackAfterCopy()
+    const { notifyCopy } = useFeedbackAfterCopy()
     const { ensureSession } = useAnonymousAuth()
 
     React.useEffect(() => {
@@ -283,11 +284,12 @@ export function EditorPanel({
         (json: any, text: string) => {
             toast.success('Text copied to clipboard')
             onCopyText?.()
-            notifyCopy(text.length)
+            const feedback = onSuccessfulCopy ?? notifyCopy
+            feedback(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
             analyzePost(json, text) // fire-and-forget
         },
-        [notifyCopy, currentMedia, analyzePost, onCopyText],
+        [notifyCopy, onSuccessfulCopy, currentMedia, analyzePost, onCopyText],
     )
 
     const handleCopy = React.useCallback(() => {
@@ -467,7 +469,7 @@ export function EditorPanel({
     return (
         <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
-            {question && <PostCopyJobQuestion properties={question} onFinish={finishQuestion} />}
+
             {/** Panel title */}
             <div className='bg-card border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>

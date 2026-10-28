@@ -282,23 +282,38 @@ test('overlap records only categorical local-marker presence, never global non-e
     assert.equal(discovery.discoveryOverlap(clean, session), 'local_marker_present')
 })
 
-test('component exposes actual mount once, bounded options, dismissal and Escape', async () => {
+test('in-flow question exposes only after viewport entry, once, with bounded options and dismissal', async () => {
     const h = hooks()
     const events = []
     const listeners = new Map()
     const finished = []
+    let intersect
+    let disconnects = 0
+    const jsx = (type, props) => {
+        if (props.ref) props.ref.current = { tagName: 'SECTION' }
+        return { type, props }
+    }
     const { PostCopyJobQuestion } = await loadTS(
         'components/feedback/post-copy-job-question.tsx',
         {
             'react': h.react,
-            'react/jsx-runtime': h.jsx,
-            'react-dom': { createPortal: (node) => node },
+            'react/jsx-runtime': { jsx, jsxs: jsx },
             'lucide-react': { X: 'X' },
             'posthog-js': { capture: (...args) => events.push(args) },
             '@/lib/post-copy-discovery': discovery,
         },
         {
-            document: { body: {} },
+            IntersectionObserver: class {
+                constructor(callback) {
+                    intersect = callback
+                }
+                observe(element) {
+                    assert.equal(element.tagName, 'SECTION')
+                }
+                disconnect() {
+                    disconnects++
+                }
+            },
             window: {
                 addEventListener: (name, fn) => listeners.set(name, fn),
                 removeEventListener: (name) => listeners.delete(name),
@@ -309,8 +324,14 @@ test('component exposes actual mount once, bounded options, dismissal and Escape
     const render = () => PostCopyJobQuestion({ properties, onFinish: (job) => finished.push(job) })
     const tree = h.render(render)
     h.render(render)
+    assert.equal(events.length, 0, 'mount below fold is not exposure')
+    intersect([{ isIntersecting: false }])
+    assert.equal(events.length, 0)
+    intersect([{ isIntersecting: true }])
+    intersect([{ isIntersecting: true }])
     assert.equal(events.length, 1)
     assert.equal(events[0][0], 'post_copy_job_exposed')
+    assert.doesNotMatch(tree.props.className, /\b(fixed|absolute|sticky)\b/, 'question reserves normal page space')
     const options = tree.props.children[1].props.children
     assert.deepEqual(
         Array.from(options, (node) => node.props.children),
@@ -324,4 +345,5 @@ test('component exposes actual mount once, bounded options, dismissal and Escape
     assert.equal(finished.at(-1), undefined)
     h.unmount()
     assert.equal(listeners.size, 0)
+    assert.ok(disconnects >= 2)
 })

@@ -15,8 +15,10 @@ import { decodeDraft, encodeDraft } from '@/lib/draft-url'
 import { extractPlainText } from '@/lib/editor-utils'
 import { cn } from '@/lib/utils'
 import { backupStoredDraft, readStoredDraft, takeBackupDraft, useDraftPersistence } from '@/hooks/use-draft-persistence'
+import { useFeedbackAfterCopy } from '@/hooks/use-feedback-after-copy'
 import { useIsDesktop } from '@/hooks/use-is-desktop'
 import { Button } from '@/components/ui/button'
+import { PostCopyJobQuestion } from '@/components/feedback/post-copy-job-question'
 
 import { EditorLoading } from './editor-loading'
 import { PreviewPanel } from './preview/preview-panel'
@@ -79,6 +81,7 @@ function isSameDoc(a: any, b: any): boolean {
 
 export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: ToolProps) {
     const [content, setContent] = React.useState<any>(null)
+    const { notifyCopy, question, finishQuestion } = useFeedbackAfterCopy()
     const [media, setMedia] = React.useState<Media | null>(null)
     const [mobileTab, setMobileTab] = React.useState<MobileTab>('editor')
     const [initialContent, setInitialContent] = React.useState<any>(undefined)
@@ -341,6 +344,7 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                     <Panel defaultSize='50%' minSize='30%' className='flex min-w-0 flex-col'>
                         <EditorPanel
                             initialContent={seedDoc}
+                            onSuccessfulCopy={notifyCopy}
                             injectedDoc={pendingDoc}
                             onInjectedDocApplied={handlePendingDocApplied}
                             onRestoreDoc={setPendingDoc}
@@ -383,6 +387,7 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                         )}>
                         <EditorPanel
                             initialContent={seedDoc}
+                            onSuccessfulCopy={notifyCopy}
                             injectedDoc={pendingDoc}
                             onInjectedDocApplied={handlePendingDocApplied}
                             onRestoreDoc={setPendingDoc}
@@ -458,6 +463,7 @@ export function Tool({ variant = 'default', layout = 'auto', injectedDoc }: Tool
                 <div className='flex flex-col max-sm:-mx-7' style={{ height: 'max(70vh, 520px)' }}>
                     {inner}
                 </div>
+                {question && <PostCopyJobQuestion properties={question} onFinish={finishQuestion} />}
             </div>
         </section>
     )

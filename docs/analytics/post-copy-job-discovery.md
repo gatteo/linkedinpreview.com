@@ -2,6 +2,8 @@
 
 One optional categorical question shown by the public tool after a visitor's second successful copy.
 
+The card takes normal page space below the tool and its unchanged activation controls. It does not float over the editor, copy, cookie banner or toast. Visitors can scroll to every answer without dismissing an existing control. No automatic scroll or focus takeover. The tool owns discovery state so switching mobile preview tabs or crossing a responsive breakpoint does not discard a pending question.
+
 - Question: "What are you preparing today?"
 - Options: My own LinkedIn posts / Posts for clients or a company / Ad creative / Something else
 - Surfaces: top-level `/` (`homepage`) and `/formatter` (`formatter`) only. `/embed` and any framed page (third-party embeds) never show it or any automatic Tally popup. Other routes (blog tool embeds, dashboard editor) keep the legacy Tally post-copy popup, gated by the shared cooldown.
@@ -10,14 +12,18 @@ One optional categorical question shown by the public tool after a visitor's sec
 
 ## Events
 
-| Event                     | When                                                                        | Properties                            |
-| ------------------------- | --------------------------------------------------------------------------- | ------------------------------------- |
-| `post_copy_job_eligible`  | Copy reached the 2-copy threshold on an allowed surface and cadence permits | `source`, `experiment_overlap`        |
-| `post_copy_job_exposed`   | Question actually mounted in the DOM (denominator for response rate)        | `source`, `experiment_overlap`        |
-| `post_copy_job_answered`  | Visitor picked one option (first answer only, then the card closes)         | `source`, `experiment_overlap`, `job` |
-| `post_copy_job_dismissed` | Visitor closed the card with the X button or Escape, without answering      | `source`, `experiment_overlap`        |
+| Event                     | When                                                                            | Properties                            |
+| ------------------------- | ------------------------------------------------------------------------------- | ------------------------------------- |
+| `post_copy_job_eligible`  | Copy reached the 2-copy threshold on an allowed surface and cadence permits     | `source`, `experiment_overlap`        |
+| `post_copy_job_exposed`   | Rendered question first intersects the viewport (denominator for response rate) | `source`, `experiment_overlap`        |
+| `post_copy_job_answered`  | Visitor picked one option (first answer only, then the card closes)             | `source`, `experiment_overlap`, `job` |
+| `post_copy_job_dismissed` | Visitor closed the card with the X button or Escape, without answering          | `source`, `experiment_overlap`        |
 
 - `source`: `homepage` | `formatter`
 - `job`: `own_posts` | `client_company_posts` | `ad_creative` | `other`
 - `experiment_overlap`: `local_marker_present` when a readable `lp-draft-first:*` or `lp-monthly-offer:*` assignment marker exists in this browser, else `unknown`. It is not proof of non-enrollment and carries no identifier.
 - Device split: use PostHog's automatic `$device_type`. Missing response (exposed, neither answered nor dismissed) stays distinct from dismissal. No raw draft text or free-text answer is recorded.
+
+Mounted below-fold cards are not exposures until scrolled into view (IntersectionObserver). Eligibility without exposure remains in coverage reporting. Cadence is reserved before mounting, including below-fold cards, so a visitor who never scrolls does not get solicited again within seven days. Viewport intersection is not proof of attention or unobscured pixels.
+
+Layout regression: evaluate `tests/fixtures/post-copy-layout-browser.js` in a browser after two successful copies on each route at mobile width, with and without cookie consent. It checks normal-flow placement below all copy/activation controls, a low-viewport copy hit target, all four answer targets, dismissal and cookie buttons. It does not click conversion links or call providers.

@@ -3,7 +3,6 @@
 import React from 'react'
 import { X } from 'lucide-react'
 import posthog from 'posthog-js'
-import { createPortal } from 'react-dom'
 
 import { VISITOR_JOBS, type DiscoverySource, type VisitorJob } from '@/lib/post-copy-discovery'
 
@@ -15,13 +14,21 @@ export function PostCopyJobQuestion({
     onFinish: (job?: VisitorJob) => void
 }) {
     const exposedRef = React.useRef(false)
+    const questionRef = React.useRef<HTMLElement>(null)
 
     React.useEffect(() => {
-        if (exposedRef.current) return
-        exposedRef.current = true
-        try {
-            posthog?.capture('post_copy_job_exposed', properties)
-        } catch {}
+        const element = questionRef.current
+        if (!element) return
+        const observer = new IntersectionObserver(([entry]) => {
+            if (!entry.isIntersecting || exposedRef.current) return
+            exposedRef.current = true
+            try {
+                posthog?.capture('post_copy_job_exposed', properties)
+            } catch {}
+            observer.disconnect()
+        })
+        observer.observe(element)
+        return () => observer.disconnect()
     }, [properties])
 
     React.useEffect(() => {
@@ -32,10 +39,11 @@ export function PostCopyJobQuestion({
         return () => window.removeEventListener('keydown', onKeyDown)
     }, [onFinish])
 
-    return createPortal(
+    return (
         <section
+            ref={questionRef}
             aria-label='Optional visitor question'
-            className='bg-card text-card-foreground border-border fixed right-4 bottom-4 left-4 z-50 max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border p-4 shadow-lg sm:left-auto sm:w-80'>
+            className='bg-card text-card-foreground border-border mt-4 rounded-xl border p-4'>
             <div className='flex items-start justify-between gap-3'>
                 <div>
                     <p className='text-muted-foreground mb-1 text-xs'>Optional · Help shape this tool</p>
@@ -49,7 +57,7 @@ export function PostCopyJobQuestion({
                     <X className='size-4' />
                 </button>
             </div>
-            <div className='mt-3 flex flex-col gap-2'>
+            <div className='mt-3 grid gap-2 sm:grid-cols-2'>
                 {VISITOR_JOBS.map((job) => (
                     <button
                         type='button'
@@ -60,7 +68,6 @@ export function PostCopyJobQuestion({
                     </button>
                 ))}
             </div>
-        </section>,
-        document.body,
+        </section>
     )
 }
