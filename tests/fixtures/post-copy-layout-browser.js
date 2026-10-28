@@ -1,10 +1,10 @@
 // Evaluate in the preview after two successful copies on / or /formatter.
 // Run at mobile width with consent undecided and again after dismissal.
-;(async () => {
+;(() => {
     const assert = (condition, message) => {
         if (!condition) throw new Error(message)
     }
-    const settle = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+
     assert(['/', '/formatter'].includes(location.pathname), 'expected a public discovery surface')
     const question = document.querySelector('[aria-label="Optional visitor question"]')
     assert(question, 'question must be mounted after two successful copies')
@@ -29,15 +29,14 @@
     }
     const results = []
     // A low copy position, while leaving clearance for the unchanged cookie banner/toasts.
-    window.scrollBy(0, copy.getBoundingClientRect().top - innerHeight * 0.62)
-    await settle()
+    window.scrollBy({ top: copy.getBoundingClientRect().top - innerHeight * 0.62, behavior: 'instant' })
     assert(hit(copy), 'low-viewport Copy Text must not be intercepted')
     results.push({ control: 'Copy Text (low viewport)', rect: rect(copy), hit: true })
     const dismiss = question.querySelector('[aria-label="Dismiss visitor question"]')
     for (const element of [copy, draft, plan, dismiss, ...question.querySelectorAll('button:not([aria-label])')]) {
         assert(element, 'control must exist')
         element.scrollIntoView({ block: 'center', behavior: 'instant' })
-        await settle()
+
         assert(hit(element), `${element.innerText || element.getAttribute('aria-label')} must remain reachable`)
         results.push({
             control: element.innerText || element.getAttribute('aria-label'),
