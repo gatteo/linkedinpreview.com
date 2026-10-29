@@ -328,7 +328,7 @@ Produce specific, evidence-based, encouraging insights grounded ONLY in the data
 - Prefer the correlation drivers and format/timing patterns over generic advice. If the data is thin (small sample), say so and keep claims tentative.
 - Each insight must be distinct and actionable. No filler, no platitudes, no em dashes.
 - "kind" meanings: win = something working well to double down on; opportunity = an underused lever with upside; experiment = a specific test to try next; warning = a pattern hurting reach.
-- Keep "title" punchy (<= 8 words) and "detail" 1-2 sentences. "action" is one concrete next step.
+- Keep "title" punchy (<= 8 words) and "detail" 1-2 sentences. Include "action" as one concrete next step, using null when there is no next step.
 - nextPost is a single concrete recommendation for their next post (format + hook angle + timing) based on what performs best for them.
 - headline is a single encouraging sentence summarizing their current trajectory.`
 

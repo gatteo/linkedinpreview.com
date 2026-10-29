@@ -15,5 +15,22 @@ export const insightsSchema = z.object({
     }),
 })
 
+export const providerInsightsSchema = insightsSchema.extend({
+    insights: z
+        .array(insightSchema.extend({ action: insightSchema.shape.action.unwrap().nullable() }))
+        .min(1)
+        .max(6),
+})
+
+export function normalizeProviderInsights({
+    insights,
+    ...result
+}: z.infer<typeof providerInsightsSchema>): z.infer<typeof insightsSchema> {
+    return {
+        ...result,
+        insights: insights.map(({ action, ...insight }) => ({ ...insight, ...(action === null ? {} : { action }) })),
+    }
+}
+
 export type Insight = z.infer<typeof insightSchema>
 export type InsightsResult = z.infer<typeof insightsSchema>
