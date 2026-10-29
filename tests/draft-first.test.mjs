@@ -1027,6 +1027,10 @@ test('actual free-tool handoff records eligibility before encoding, carries medi
                 readStoredDraft: () => doc,
             },
             '@/hooks/use-is-desktop': { useIsDesktop: () => true },
+            '@/hooks/use-feedback-after-copy': {
+                useFeedbackAfterCopy: () => ({ notifyCopy() {}, question: null, finishQuestion() {} }),
+            },
+            '@/components/feedback/post-copy-job-question': { PostCopyJobQuestion: 'question' },
             '@/components/ui/button': { Button: 'button' },
             './editor-loading': {},
             './preview/preview-panel': { PreviewPanel: 'preview' },

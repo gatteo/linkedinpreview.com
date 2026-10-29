@@ -126,6 +126,7 @@ export function EditorPanel({
     contentReplace,
     onContentReplaceApplied,
     onCopyText,
+    onSuccessfulCopy,
 }: {
     initialContent?: any
     initialMedia?: Media | null
@@ -133,6 +134,7 @@ export function EditorPanel({
     onInjectedDocApplied?: () => void
     onRestoreDoc?: (doc: any) => void
     onChange: (json: any) => void
+    onSuccessfulCopy?: (contentLength: number) => void
     onMediaChange: (media: Media | null) => void
     onShare?: () => Promise<string | null>
     contentReplace?: string | null
@@ -282,11 +284,12 @@ export function EditorPanel({
         (json: any, text: string) => {
             toast.success('Text copied to clipboard')
             onCopyText?.()
-            notifyCopy(text.length)
+            const feedback = onSuccessfulCopy ?? notifyCopy
+            feedback(text.length)
             posthog.capture('post_copied', getPostAnalytics(json, text, !!currentMedia))
             analyzePost(json, text) // fire-and-forget
         },
-        [notifyCopy, currentMedia, analyzePost, onCopyText],
+        [notifyCopy, onSuccessfulCopy, currentMedia, analyzePost, onCopyText],
     )
 
     const handleCopy = React.useCallback(() => {
@@ -466,6 +469,7 @@ export function EditorPanel({
     return (
         <div className='flex size-full min-h-0 flex-col'>
             <style>{listStyles}</style>
+
             {/** Panel title */}
             <div className='bg-card border-border flex h-14 shrink-0 border-b'>
                 <div className='flex min-w-0 grow items-center overflow-x-auto'>

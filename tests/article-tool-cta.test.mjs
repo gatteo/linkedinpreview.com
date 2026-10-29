@@ -193,6 +193,8 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
         { variant: 'embed', desktop: false },
         { layout: 'tabs' },
         { layout: 'tabs', tab: 'preview' },
+        { desktop: false, question: true },
+        { desktop: false, question: true, tab: 'preview' },
     ]) {
         let index = 0
         const states = [doc, null, props.tab ?? 'editor', doc, null, false]
@@ -229,6 +231,16 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             '@/lib/utils': { cn: (...classes) => classes.filter(Boolean).join(' ') },
             '@/hooks/use-draft-persistence': { useDraftPersistence: () => ({ flush() {} }) },
             '@/hooks/use-is-desktop': { useIsDesktop: () => props.desktop !== false },
+            '@/hooks/use-feedback-after-copy': {
+                useFeedbackAfterCopy: () => ({
+                    notifyCopy() {},
+                    question: props.question ? {} : null,
+                    finishQuestion() {},
+                }),
+            },
+            '@/components/feedback/post-copy-job-question': {
+                PostCopyJobQuestion: () => React.createElement('section', { 'data-question': true }),
+            },
             '@/components/ui/button': { Button: passthrough },
             './editor-loading': { EditorLoading: () => null },
             './preview/preview-panel': {
@@ -264,5 +276,14 @@ test('actual Tool keeps default/embed desktop layout and reuses persistent tabs 
             assert.ok(!html.includes('inert=""'))
         }
         assert.equal(html.includes('Create my LinkedIn plan'), props.variant !== 'embed')
+        if (props.question) {
+            const { document } = parseHTML(html)
+            const question = document.querySelector('[data-question]')
+            const frame = question.previousElementSibling
+            assert.ok(frame.getAttribute('style').includes('max(70vh, 520px)'))
+            assert.ok(frame.textContent.includes('Continue my draft'))
+            assert.ok(frame.textContent.includes('Create my LinkedIn plan'))
+            assert.equal(question.closest('[inert]'), null)
+        }
     }
 })
