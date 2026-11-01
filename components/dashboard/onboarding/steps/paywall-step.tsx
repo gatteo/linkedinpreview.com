@@ -163,8 +163,9 @@ export function MonthlyOffer({ enrollment }: { enrollment: MonthlyEnrollment }) 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const startCheckout = () => {
-        track('onb_offer_select', { plan: selected })
+    const startCheckout = (plan: CheckoutPlan = selected) => {
+        setSelected(plan)
+        track('onb_offer_select', { plan })
         setCheckoutError(false)
         setCheckout(true)
     }
@@ -450,7 +451,19 @@ export function MonthlyOffer({ enrollment }: { enrollment: MonthlyEnrollment }) 
             <div
                 className='sticky bottom-0 z-10 -mx-[clamp(20px,4vw,40px)] mt-2 flex flex-col items-center gap-2 px-[clamp(20px,4vw,40px)] pt-10 pb-1'
                 style={{ background: 'linear-gradient(to bottom, transparent, var(--card) 42%)' }}>
-                <CTA onClick={startCheckout}>{selected === 'lifetime' ? 'Get lifetime' : 'Start monthly'}</CTA>
+                <CTA onClick={() => startCheckout()}>{selected === 'lifetime' ? 'Get lifetime' : 'Start monthly'}</CTA>
+                <button
+                    type='button'
+                    onClick={() => {
+                        track('offer_lifetime_line_clicked', {
+                            ...monthlyOfferProperties(enrollment),
+                            plan: 'lifetime',
+                        })
+                        startCheckout('lifetime')
+                    }}
+                    className='text-muted-foreground hover:text-foreground focus-visible:ring-ring min-h-11 cursor-pointer rounded-sm px-2 text-center text-xs underline underline-offset-4 focus-visible:ring-2 focus-visible:outline-none'>
+                    Prefer a one-time payment? Lifetime Pro: {PRICING.lifetime.display}
+                </button>
             </div>
         </div>
     )

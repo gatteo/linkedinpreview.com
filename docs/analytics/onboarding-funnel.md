@@ -184,6 +184,15 @@ The free-tool events are captured before the dashboard onboarding controller, so
 
 ### Offer & checkout
 
+`offer_lifetime_line_clicked` records the additive "Prefer a one-time payment? Lifetime Pro: $39.99"
+button below the existing purchase CTA. It carries `plan: lifetime` and the existing monthly/draft
+enrollment properties through `track()`, with no draft/profile content. It opens the same lifetime
+checkout and also emits the existing `onb_offer_select`; it is a click diagnostic, not a purchase.
+LIN-561 release is held until 2026-11-07T11:05Z after EXP-9/10 enrollment closes. November 7-14
+maturity overlap is a confound; existing experiment assignments, primary outcomes and clocks stay frozen.
+Vera registers release T/SHA before release: initial paid orders / offer checkout starts, 14-day
+enrollment plus 7-day maturity, 10-start floor; stop below 10 starts or with zero paid at maturity.
+
 | Event                      | Properties                                               | Meaning                                                                                                                                                                                                                                     |
 | -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `onb_paywall_view`         | `ideas`                                                  | paywall rendered (`ideas` = real generated posts shown)                                                                                                                                                                                     |
