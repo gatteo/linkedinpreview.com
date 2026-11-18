@@ -89,9 +89,10 @@ test('fallback metrics, six variables, Latin-only preloads and shared export cla
     assert.match(read('components/dashboard/carousel/render/slide-artboard.tsx'), /className=\{carouselFontVars\}/)
 })
 
-test('carousel no longer enters Google import-map parser while root scope remains unchanged', () => {
+test('carousel and root fonts avoid the Google import-map parser', () => {
     assert.doesNotMatch(fontModule, /next\/font\/(google|local)/)
-    assert.match(read('app/layout.tsx'), /from 'next\/font\/google'/)
+    assert.doesNotMatch(read('app/layout.tsx'), /from 'next\/font\/google'/)
+    assert.match(read('app/layout.tsx'), /@\/styles\/fonts\.css/)
     assert.equal(manifest.families.length, 6)
     for (const [family, , weights] of manifest.families) {
         const actual = [...new Set(manifest.faces.filter((face) => face.family === family).map((face) => face.weight))]
