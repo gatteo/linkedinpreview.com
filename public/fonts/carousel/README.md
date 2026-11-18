@@ -1,0 +1,11 @@
+# Existing carousel fonts
+
+These are unmodified official Google Fonts WOFF2 files. All 89 face declarations across 23 distinct files matched the current successful application's exact font bytes, weight/style/display and Unicode ranges before product edits, including carousel Inter. `sources.json` records CDN and CSS URLs, asset SHA256/size, the existing build asset, exact Next 16.1.6 request user agent, and pinned upstream license/metadata records. Original SIL OFL files and upstream metadata are included.
+
+`styles/carousel-fonts.css` retains the existing six families, requested normal weights, all original subsets, swap and exact generated fallback metrics. The same six `--cf-*` variables apply on artboards and export clones. `app/dashboard/carousel/layout.tsx` loads this stylesheet and preloads only the six original Latin files. Font data remains same-origin for modern-screenshot export. Labels, pairings, renderer and export code are unchanged.
+
+Using one next/font/local multi-source call per family would lose per-source Unicode ranges/preload selection and recalculate fallback metrics. Exact preserved CSS is smaller than separate per-subset local calls and bespoke metric overrides. Do not convert/reencode files, refresh versions, reduce coverage or change metrics in an unrelated build repair.
+
+The carousel Google macro path is removed. The November 18 lifetime-offer integration also reproduced the same failure in root JetBrains Mono, so the repair includes the existing verified root assets documented in `public/fonts/google/README.md`. Both root and carousel font loading now avoid the Google query parser. Parser cache-versus-response trigger attribution is unknown. Historical failed artifacts and unchanged recoveries remain historical, not new verification or a failure-rate denominator.
+
+Run `node --test tests/carousel-font-assets.test.mjs`, the existing tests, and mandatory type-check/lint/clean/build plus a second unchanged-head clean build. Normal exact-head green CI, READY preview, contained native typography/export/clipboard acceptance and independent Sentinel review remain mandatory. No mocks, runtime CDN loading, dependency/config changes or check bypass. Before merge withdraw the branch; after actual shipment independently review a revert of the actual squash SHA.
