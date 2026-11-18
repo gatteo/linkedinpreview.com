@@ -48,7 +48,7 @@ header-to-paid attribution requires independently reconciled identity/event evid
 LIN-122 approval is historical for its old head/basis. This integrated artifact requires fresh full gates, contained
 desktop/mobile smoke and NEW independent exact-head Sentinel acceptance. Existing LIN-87 October 8 second-day
 health endpoint and Atlas-only LIN-61 merge remain; no third day, EXP-7, flag setup or maturity dependency is added.
-Separate #104/#105 work and evidence are preserved, not merged here. Evidence: `docs/evidence/lin-113/oct07/`.
+Separate #104/#105 work and evidence are preserved, not merged here. Evidence: [historical review evidence](https://github.com/gatteo/linkedinpreview.com/tree/1ab6ef79bce7277f81803b9b0622b82031430d68/docs/evidence/lin-113/oct07/).
 
 ## Historical prospective terms integration (October 5)
 
