@@ -20,3 +20,18 @@ This evidence predates the subsequent main rollback integration. Final-head READ
 ![Mobile worked example](./selected-390-worked-example.png)
 ![Mobile preview](./selected-390-preview.png)
 ![Mobile native copy](./selected-390-copy.png)
+
+## Released-main integration screenshots
+
+These additional images are from the exact READY preview at head `66f7613c74a9c027e5179a18a369ea4c073256ef`, integrated with released main `1ab6ef79bce7277f81803b9b0622b82031430d68`:
+
+- Preview: https://linkedinpreview-l4r43ez0r-gatteos.vercel.app
+- Deployment: `dpl_Fwv223HHqvws3GTbzhWSUuxRPwk5`, preview target, READY with matching Git source SHA.
+- Both widths passed native own-draft editing, visible non-editor preview, exact original clipboard, same-node reopening, reload restoration and later-card native navigation. No captured application errors in either context.
+- Backend/provider/telemetry transports remained synthetic-contained. No real customer write, payment or production acceptance is claimed.
+- The subsequent evidence-only commit adds these images and captions, not product code. Its exact-head hosted regression receipt is linked in the PR and LIN-733 handoff. Earlier images and failures above remain historical, not final-head evidence.
+
+![Integrated desktop worked example](./integrated-1440-worked-example.png)
+![Integrated desktop preview](./integrated-1440-preview.png)
+![Integrated mobile worked example](./integrated-390-worked-example.png)
+![Integrated mobile preview](./integrated-390-preview.png)
