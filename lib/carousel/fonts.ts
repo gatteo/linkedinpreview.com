@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
 // Carousel fonts
 //
-// Loaded through next/font/google so they are self-hosted (same-origin) at
-// build time. Same-origin matters twice over: it keeps the editor fast and it
+// Exact upstream font assets are self-hosted by the carousel layout.
+// Same-origin matters twice over: it keeps the editor fast and it
 // lets the export pipeline (modern-screenshot getFontEmbedCSS) inline the
 // @font-face rules without tripping cross-origin/tainted-canvas errors.
 //
@@ -11,44 +11,17 @@
 // both the on-screen artboard and the off-screen export clone.
 // ---------------------------------------------------------------------------
 
-import { Bebas_Neue, DM_Sans, Inter, Montserrat, Playfair_Display, Space_Grotesk } from 'next/font/google'
-
-const inter = Inter({
-    subsets: ['latin'],
-    variable: '--cf-inter',
-    weight: ['400', '500', '600', '700'],
-    display: 'swap',
-})
-const montserrat = Montserrat({
-    subsets: ['latin'],
-    variable: '--cf-montserrat',
-    weight: ['400', '500', '600', '700', '800'],
-    display: 'swap',
-})
-const dmSans = DM_Sans({ subsets: ['latin'], variable: '--cf-dm-sans', weight: ['400', '500', '700'], display: 'swap' })
-const spaceGrotesk = Space_Grotesk({
-    subsets: ['latin'],
-    variable: '--cf-space-grotesk',
-    weight: ['400', '500', '600', '700'],
-    display: 'swap',
-})
-const playfair = Playfair_Display({
-    subsets: ['latin'],
-    variable: '--cf-playfair',
-    weight: ['400', '600', '700', '800'],
-    display: 'swap',
-})
-const bebas = Bebas_Neue({ subsets: ['latin'], variable: '--cf-bebas', weight: ['400'], display: 'swap' })
-
 /** Apply on the editor + export-clone root so every font variable resolves. */
-export const carouselFontVars = [
-    inter.variable,
-    montserrat.variable,
-    dmSans.variable,
-    spaceGrotesk.variable,
-    playfair.variable,
-    bebas.variable,
-].join(' ')
+export const carouselFontVars = 'carousel-fonts'
+
+export const carouselFontPreloads = [
+    '/fonts/carousel/inter-latin.woff2',
+    '/fonts/carousel/montserrat-latin.woff2',
+    '/fonts/carousel/dmsans-latin.woff2',
+    '/fonts/carousel/spacegrotesk-latin.woff2',
+    '/fonts/carousel/playfairdisplay-latin.woff2',
+    '/fonts/carousel/bebasneue-latin.woff2',
+]
 
 const SANS_FALLBACK = `system-ui, -apple-system, 'Segoe UI', sans-serif`
 const SERIF_FALLBACK = `Georgia, 'Times New Roman', serif`
