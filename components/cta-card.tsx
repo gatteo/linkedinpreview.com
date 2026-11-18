@@ -11,6 +11,7 @@ import { articleToolEntry } from '@/config/article-tool-entries'
 import { cn, shineAnimation } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
+import { PostingBestPracticesPreflight } from '@/components/article-workspaces/posting-best-practices'
 import { TrackClick } from '@/components/tracking/track-click'
 
 const ArticleTool = dynamic(() => import('@/components/tool/tool').then((mod) => mod.Tool), {
@@ -83,7 +84,9 @@ export function CtaCard({
                     <div className={cn('text-balance', align === 'center' && 'text-center')}>
                         <CardTitle className='font-heading tracking-wide'>{title}</CardTitle>
                         <CardDescription className='mt-2'>{description}</CardDescription>
-                        {entry && <p className='text-muted-foreground mt-2 text-sm'>{entry.supportingCopy}</p>}
+                        {entry?.supportingCopy && (
+                            <p className='text-muted-foreground mt-2 text-sm'>{entry.supportingCopy}</p>
+                        )}
                     </div>
                     <div className='flex gap-4'>
                         {secondaryButtonText && secondaryButtonUrl && (
@@ -147,6 +150,7 @@ export function CtaCard({
                     aria-label={entry.buttonText}
                     data-article-tool={entry.pathname}
                     className='min-w-0 outline-none [&>section>div]:border-0 [&>section>div]:py-6 [&>section>div]:sm:px-4'>
+                    {entry.workspace === 'posting-preflight' && <PostingBestPracticesPreflight />}
                     <ArticleTool layout='tabs' />
                 </div>
             )}
