@@ -3,6 +3,7 @@ type ArticleToolEntry = {
     cardTitle: string
     buttonText: string
     supportingCopy: string
+    workspace?: 'posting-preflight'
 }
 
 export const ARTICLE_TOOL_ENTRIES: readonly ArticleToolEntry[] = [
@@ -32,6 +33,13 @@ export const ARTICLE_TOOL_ENTRIES: readonly ArticleToolEntry[] = [
         buttonText: 'Draft and preview here',
         supportingCopy:
             'Write or paste your post, check its layout, then copy it or intentionally carry it into the full editor.',
+    },
+    {
+        pathname: '/blog/linkedin-posting-best-practices',
+        cardTitle: 'Format and Preview Your LinkedIn Posts',
+        buttonText: 'Try It Free',
+        supportingCopy: '',
+        workspace: 'posting-preflight',
     },
 ]
 

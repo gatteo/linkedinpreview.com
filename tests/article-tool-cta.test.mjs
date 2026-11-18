@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -37,6 +38,7 @@ function load(path, mocks = {}) {
 }
 
 const config = load('config/article-tool-entries.ts')
+const workspace = load('components/article-workspaces/posting-best-practices.tsx')
 const urls = load('utils/urls.ts', {
     '@/types/urls': { UtmMediums: { Blog: 'blog' } },
     '@/config/site': { site: { url: 'https://linkedinpreview.com' } },
@@ -69,6 +71,7 @@ const { CtaCard } = load('components/cta-card.tsx', {
     '@/lib/utils': { cn: (...classes) => classes.filter(Boolean).join(' '), shineAnimation: '' },
     '@/components/ui/button': { Button: ({ children }) => children },
     '@/components/ui/card': { Card: passthrough, CardDescription: passthrough, CardTitle: passthrough },
+    '@/components/article-workspaces/posting-best-practices': workspace,
     '@/components/tracking/track-click': { TrackClick },
 })
 const propsFor = (entry) => ({
@@ -95,7 +98,7 @@ async function click(window, element, overrides = {}) {
 }
 
 test('exact pathname/title allowlist excludes other routes and later cards', () => {
-    assert.equal(config.ARTICLE_TOOL_ENTRIES.length, 4)
+    assert.equal(config.ARTICLE_TOOL_ENTRIES.length, 5)
     for (const entry of config.ARTICLE_TOOL_ENTRIES) {
         assert.equal(config.articleToolEntry(entry.pathname, entry.cardTitle), entry)
         for (const other of [null, '/', '/formatter', `${entry.pathname}/`, `${entry.pathname}-other`]) {
@@ -126,6 +129,7 @@ for (const entry of config.ARTICLE_TOOL_ENTRIES) {
             /href="\/\?utm_source=linkedinpreview.com&amp;utm_medium=blog&amp;utm_content=card_cta#tool"/,
         )
         assert.ok(!markup.includes('data-synthetic-tool'))
+        assert.ok(!markup.includes('data-posting-preflight'))
         const window = installDOM()
         const root = createRoot(document.getElementById('root'))
         await React.act(async () => root.render(React.createElement(CtaCard, props)))
@@ -148,6 +152,16 @@ for (const entry of config.ARTICLE_TOOL_ENTRIES) {
         assert.equal(link.getAttribute('aria-expanded'), 'true')
         assert.equal(document.querySelectorAll('[data-synthetic-tool]').length, 1)
         assert.equal(mounts, 1)
+        const preflight = document.querySelector('[data-posting-preflight]')
+        assert.equal(!!preflight, entry.workspace === 'posting-preflight')
+        if (preflight) {
+            assert.equal(preflight.querySelectorAll('button, a, textarea, [contenteditable]').length, 0)
+            assert.equal(preflight.querySelectorAll('ol > li').length, 5)
+            assert.ok(preflight.textContent.includes('Illustrative starting draft, not a customer result'))
+            assert.ok(preflight.textContent.includes('does not replace your saved draft'))
+            assert.ok(preflight.textContent.includes('not a guarantee'))
+            assert.equal(preflight.nextElementSibling, document.querySelector('[data-synthetic-tool]'))
+        }
         assert.equal(events.length, 1)
         assert.equal(events[0].event, 'cta_card_clicked')
         assert.equal(events[0].properties.button_text, entry.buttonText)
@@ -181,6 +195,37 @@ test('nonmatching cards retain primary label, fallback and navigation without lo
     assert.equal((await click(window, primary)).defaultPrevented, false)
     assert.equal(mounts, 0)
     assert.equal(document.querySelectorAll('[data-article-tool]').length, 0)
+    await React.act(async () => root.unmount())
+})
+
+test('posting preflight leaves protected MDX byte-identical and later cards navigating', async () => {
+    const mdx = readFileSync(new URL('../contents/blog/linkedin-posting-best-practices.mdx', import.meta.url))
+    assert.equal(
+        createHash('sha256').update(mdx).digest('hex'),
+        '05cde6c7dff73ce657d076bbc6af5d7701c612ef38402fe64fb1226c46586881',
+    )
+    const cards = [...mdx.toString().matchAll(/<CtaCard\s+[\s\S]*?\/>/g)].map((match) => match[0])
+    assert.equal(cards.length, 4)
+    assert.ok(cards[0].includes("primaryButtonText='Try It Free'"))
+    pathname = '/blog/linkedin-posting-best-practices'
+    const window = installDOM()
+    const root = createRoot(document.getElementById('root'))
+    for (const card of cards.slice(1)) {
+        const props = Object.fromEntries([...card.matchAll(/(\w+)='([^']*)'/g)].map((match) => [match[1], match[2]]))
+        mounts = 0
+        events.length = 0
+        await React.act(async () => root.render(React.createElement(CtaCard, props)))
+        const primary = [...document.querySelectorAll('a')].find(
+            (anchor) => anchor.textContent === props.primaryButtonText,
+        )
+        assert.ok(primary)
+        assert.equal(primary.hasAttribute('aria-expanded'), false)
+        assert.equal((await click(window, primary)).defaultPrevented, false)
+        assert.equal(events[0].properties.button_text, props.primaryButtonText)
+        assert.equal(events[0].properties.button_url, props.primaryButtonUrl)
+        assert.equal(mounts, 0)
+        assert.equal(document.querySelectorAll('[data-posting-preflight]').length, 0)
+    }
     await React.act(async () => root.unmount())
 })
 
