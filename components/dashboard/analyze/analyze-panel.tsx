@@ -13,6 +13,7 @@ import { getPostAnalytics } from '@/lib/post-analytics'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { analysisSchema } from '@/app/api/analyze/route.schema'
 
 import { CircularGauge } from './circular-gauge'
 import { StatsSection } from './stats-section'
@@ -66,6 +67,7 @@ export function AnalyzePanel({
     const [suggestions, setSuggestions] = React.useState<Suggestion[]>([])
     const [isFetchingSuggestions, setIsFetchingSuggestions] = React.useState(false)
     const [applyingIndex, setApplyingIndex] = React.useState<number | null>(null)
+    const analyzeAttempt = React.useRef(0)
 
     const hasChanged = analysis !== null && contentText !== lastAnalyzedText
 
@@ -75,8 +77,9 @@ export function AnalyzePanel({
             return
         }
 
+        const attempt = ++analyzeAttempt.current
         setIsAnalyzing(true)
-        setIsFetchingSuggestions(true)
+        setIsFetchingSuggestions(false)
         setSuggestions([])
 
         try {
@@ -98,25 +101,33 @@ export function AnalyzePanel({
 
             if (!res.ok) {
                 const data = (await res.json().catch(() => ({}))) as { error?: string }
-                toast.error(data.error ?? 'Analysis failed')
+                if (attempt === analyzeAttempt.current) toast.error(data?.error ?? 'Analysis failed')
                 return
             }
 
-            const data = (await res.json()) as { success: boolean; analysis: Analysis }
-            setAnalysis(data.analysis)
+            const data = await res.json()
+            const parsed = analysisSchema.safeParse(data?.analysis)
+            if (data?.success !== true || !parsed.success) throw new Error('Invalid analysis response')
+            if (attempt !== analyzeAttempt.current) return
+
+            setAnalysis(parsed.data)
             setLastAnalyzedText(contentText)
             posthog?.capture('post_analyzed_panel', { content_length: contentText.length })
-        } catch {
-            toast.error('Failed to analyze post')
-        } finally {
-            setIsAnalyzing(false)
-        }
 
-        // Fetch suggestions in parallel (non-blocking for analysis display)
-        fetchSuggestions(contentText)
-            .then((s) => setSuggestions(s))
-            .catch(() => {})
-            .finally(() => setIsFetchingSuggestions(false))
+            setIsFetchingSuggestions(true)
+            fetchSuggestions(contentText)
+                .then((s) => {
+                    if (attempt === analyzeAttempt.current) setSuggestions(s)
+                })
+                .catch(() => {})
+                .finally(() => {
+                    if (attempt === analyzeAttempt.current) setIsFetchingSuggestions(false)
+                })
+        } catch {
+            if (attempt === analyzeAttempt.current) toast.error('Failed to analyze post')
+        } finally {
+            if (attempt === analyzeAttempt.current) setIsAnalyzing(false)
+        }
     }, [content, contentText, hasImage])
 
     const handleApplySuggestion = React.useCallback(
