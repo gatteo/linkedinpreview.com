@@ -291,7 +291,7 @@ export function EditorPanel({
 
     const handleCopy = React.useCallback(() => {
         const content = getEditorContent()
-        if (!content) return
+        if (!content || !content.text) return
 
         navigator.clipboard
             .writeText(content.text)
@@ -616,7 +616,7 @@ export function EditorPanel({
                         )}
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant='default' onClick={handleCopy}>
+                                <Button variant='default' onClick={handleCopy} disabled={!copyText}>
                                     <Icons.copy className='mr-1 size-4' />
                                     Copy Text
                                 </Button>

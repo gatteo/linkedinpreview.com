@@ -20,7 +20,7 @@
 - [x] 025-AC-6 A native copy of a genuine sub-range copies only the selected text, through the same Unicode pipeline _(verified: `components/tool/editor-panel.tsx:206-219` serializes `selection.content()`; branch at `:316-322`)_
 - [x] 025-AC-7 A partial copy emits `post_partial_copied` and does not fire the success toast, the feedback prompt, or the analyze call _(verified: `components/tool/editor-panel.tsx:316-322` returns before the `onCopied` path at `:324-328`)_
 - [x] 025-AC-8 The copy interception is scoped to the editor DOM node, so a copy elsewhere on the page keeps its own clipboard payload _(verified: `components/tool/editor-panel.tsx:300-333` binds the listener to `editor.view.dom`)_
-- [x] 025-AC-9 An empty document does not clear the clipboard _(verified: `components/tool/editor-panel.tsx:324-326` returns without `preventDefault` when there is no text)_
+- [x] 025-AC-9 An empty exported document does not clear the clipboard. Copy Text is disabled when the existing serializer exports an empty string, and its handler also guards absent/empty content before writing or invoking full-copy side effects. Keyboard copying retains its existing empty guard. No extra trim is applied. _(verified: `components/tool/editor-panel.tsx:292-303,333-335,619`; unit regression: `node --test tests/editor-copy.test.mjs`)_
 
 ## Implementation
 
