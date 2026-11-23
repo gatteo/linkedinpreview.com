@@ -53,7 +53,7 @@ export const DEFAULT_LLM_MODEL = 'gpt-4o-mini'
  * labeling where a stronger model visibly outperforms; the volume is a few
  * calls per onboarding, so the cost delta is cents.
  */
-export const DEFAULT_ANALYSIS_MODEL = 'gpt-5-mini'
+export const DEFAULT_ANALYSIS_MODEL = 'gpt-5.6-terra'
 
 export const AI_ERROR_CODES = {
     RATE_LIMITED: 'RATE_LIMITED',
