@@ -115,6 +115,7 @@ export async function createDraft(
     diagnostics?: DraftCreateDiagnostics,
 ): Promise<DraftManifestEntry> {
     let response: unknown
+    let responseReceived = false
     try {
         if (diagnostics) diagnostics.create_checkpoint = 'preprocessing'
         const id = crypto.randomUUID()
@@ -142,12 +143,13 @@ export async function createDraft(
             .select(ENTRY_COLUMNS)
             .single()
         response = result
+        responseReceived = true
         const { data, error } = result
         if (error) throw error
         if (diagnostics) diagnostics.create_checkpoint = 'result_mapping'
         return rowToEntry(data as DraftRow)
     } catch (error) {
-        recordDraftCreateError(diagnostics, error, response)
+        recordDraftCreateError(diagnostics, error, response, responseReceived)
         throw error
     }
 }

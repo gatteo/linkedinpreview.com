@@ -18,12 +18,13 @@ const ERROR_CODES = new Map<string, (typeof ERROR_CATEGORIES)[number]>([
     ['PGRST303', 'auth_error'],
     ['PGRST116', 'response_cardinality'],
 ])
-const ERROR_STATUSES = new Set([200, 201, 204, 400, 401, 403, 404, 406, 408, 409, 413, 422, 429, 500, 502, 503, 504])
+const ERROR_STATUSES = new Set([0, 200, 201, 204, 400, 401, 403, 404, 406, 408, 409, 413, 422, 429, 500, 502, 503, 504])
 
 export type DraftCreateDiagnostics = {
     create_checkpoint?: (typeof CREATE_CHECKPOINTS)[number]
     create_error_category?: (typeof ERROR_CATEGORIES)[number]
     create_error_status?: number
+    create_response_received?: boolean
 }
 
 function ownValue(value: unknown, key: string): unknown {
@@ -43,21 +44,25 @@ export function recordDraftCreateError(
     diagnostics: DraftCreateDiagnostics | undefined,
     error: unknown,
     response?: unknown,
+    responseReceived = response !== undefined,
 ) {
     if (!diagnostics) return
     const code = ownValue(error, 'code')
     diagnostics.create_error_category = (typeof code === 'string' ? ERROR_CODES.get(code) : undefined) ?? 'unknown'
     diagnostics.create_error_status =
         errorStatus(ownValue(response, 'status')) ?? errorStatus(ownValue(error, 'status'))
+    diagnostics.create_response_received = responseReceived
 }
 
 export function draftCreateFailureProperties(diagnostics?: DraftCreateDiagnostics) {
     const checkpoint = ownValue(diagnostics, 'create_checkpoint') as DraftCreateDiagnostics['create_checkpoint']
     const category = ownValue(diagnostics, 'create_error_category') as DraftCreateDiagnostics['create_error_category']
     const status = errorStatus(ownValue(diagnostics, 'create_error_status'))
+    const responseReceived = ownValue(diagnostics, 'create_response_received')
     return {
         create_checkpoint: checkpoint && CREATE_CHECKPOINTS.includes(checkpoint) ? checkpoint : 'unknown',
         create_error_category: category && ERROR_CATEGORIES.includes(category) ? category : 'unknown',
         ...(status === undefined ? {} : { create_error_status: status }),
+        ...(typeof responseReceived === 'boolean' ? { create_response_received: responseReceived } : {}),
     }
 }

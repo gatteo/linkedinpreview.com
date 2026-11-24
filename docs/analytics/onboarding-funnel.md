@@ -271,12 +271,26 @@ checkpoint is an executing boundary, not proof a request reached the backend.
 `constraint_violation` for23502/23503/23505/23514; `response_cardinality` for
 PGRST116; otherwise `unknown`. No message/type-name parsing or network inference.
 Optional `create_error_status` accepts only observed numeric statuses
-200/201/204/400/401/403/404/406/408/409/413/422/429/500/502/503/504 from own data properties
+0/200/201/204/400/401/403/404/406/408/409/413/422/429/500/502/503/504 from own data properties
 of the response/error. Getter, inherited, arbitrary string/code and unsupported
 status values are discarded. Raw errors, contents, URLs, tokens and new identity
 fields are never captured.
 
-Existing `diagnostic_schema_version=1`, legacy properties, success/failure capture
+LIN-806 adds numeric SDK status `0` without converting absent/unsupported status
+to zero. Zero is not an HTTP response or a network-only/abort/noncommit claim:
+the SDK can return it for fetch, abort or response-processing failures.
+Optional boolean `create_response_received` records whether the persistence
+adapter's insert/select await returned before the failure (`true`) or no result
+had returned (`false`). This is SDK-result evidence, not proof of a server
+response or transaction outcome. A returned error result and a rejected promise
+can both carry status zero; the boolean distinguishes them. Preprocessing
+failures record false; the absent-user guard does not enter the adapter and
+omits it. Historical missing booleans remain unknown, never inferred false.
+No error names, correlation identifiers or new event family are added.
+
+These are additive optional fields within existing `diagnostic_schema_version=1`;
+consumers must preserve zero explicitly and treat missing fields as unknown.
+Existing legacy properties, success/failure capture
 points/counts and clocks remain unchanged. No retries or auth/persistence repair.
 Historical create failures without a checkpoint stay unknown. Operational
 diagnosis uses the next genuine failure immediately, not a paid-maturity wait.

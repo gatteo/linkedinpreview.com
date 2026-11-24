@@ -484,8 +484,10 @@ async function actualDraftCreate(opts = {}) {
                 },
                 async single() {
                     counts.singles++
-                    if (opts.rejection) throw opts.rejection
-                    return opts.response ?? { data: inserted, error: null, status: 201 }
+                    if (Object.hasOwn(opts, 'rejection')) throw opts.rejection
+                    return Object.hasOwn(opts, 'response')
+                        ? opts.response
+                        : { data: inserted, error: null, status: 201 }
                 },
                 then(resolve, reject) {
                     return Promise.resolve({ data: [], error: null }).then(resolve, reject)
@@ -586,6 +588,10 @@ test('actual import/user/create modules classify finite boundaries without retri
             assert.equal(props.create_checkpoint, checkpoint)
             assert.equal(props.create_error_category, category)
             assert.equal(props.create_error_status, status)
+            assert.equal(
+                props.create_response_received,
+                options.absentUser ? undefined : Object.hasOwn(options, 'response'),
+            )
             assert.equal(props.exposure_id, exposure)
             assert.equal(props.entry_source, 'tool_footer')
             assert.equal(props.assigned_variant, 'draft_first')
@@ -624,6 +630,7 @@ test('actual create preserves thrown error identity and successful insert/entry/
         'create_checkpoint',
         'create_error_category',
         'create_error_status',
+        'create_response_received',
     ]) {
         assert.equal(Object.hasOwn(props, key), false)
     }
@@ -641,12 +648,13 @@ test('actual create preserves thrown error identity and successful insert/entry/
 test('create diagnostic projection rejects arbitrary, inherited, getter and unsafe metadata', () => {
     const props = (value) => json(createDiagnostics.draftCreateFailureProperties(value))
     const unknown = { create_checkpoint: 'unknown', create_error_category: 'unknown' }
-    for (const unsafe of [sensitive, {}, [], 503.1, '503', 0, 999, NaN, Infinity, null]) {
+    for (const unsafe of [sensitive, {}, [], 503.1, '503', '0', 999, NaN, Infinity, null]) {
         assert.deepEqual(
             props({
                 create_checkpoint: unsafe,
                 create_error_category: unsafe,
                 create_error_status: unsafe,
+                create_response_received: unsafe,
                 raw_error: sensitive,
             }),
             unknown,
@@ -658,12 +666,13 @@ test('create diagnostic projection rejects arbitrary, inherited, getter and unsa
                 create_checkpoint: 'absent_user',
                 create_error_category: 'auth_error',
                 create_error_status: 401,
+                create_response_received: true,
             }),
         ),
         unknown,
     )
     const getters = Object.fromEntries(
-        ['create_checkpoint', 'create_error_category', 'create_error_status'].map((key) => [
+        ['create_checkpoint', 'create_error_category', 'create_error_status', 'create_response_received'].map((key) => [
             key,
             {
                 get() {
@@ -703,7 +712,7 @@ test('create diagnostic projection rejects arbitrary, inherited, getter and unsa
         },
     )
     createDiagnostics.recordDraftCreateError(d, error)
-    assert.deepEqual(props(d), unknown)
+    assert.deepEqual(props(d), { ...unknown, create_response_received: false })
     for (const [code, category] of [
         ['42501', 'permission_denied'],
         ['23502', 'constraint_violation'],
@@ -718,7 +727,130 @@ test('create diagnostic projection rejects arbitrary, inherited, getter and unsa
         ['__proto__', 'unknown'],
     ]) {
         createDiagnostics.recordDraftCreateError(d, { code, message: sensitive }, { status: 403 })
-        assert.deepEqual(props(d), { ...unknown, create_error_category: category, create_error_status: 403 })
+        assert.deepEqual(props(d), {
+            ...unknown,
+            create_error_category: category,
+            create_error_status: 403,
+            create_response_received: true,
+        })
+    }
+})
+
+test('actual create/import distinguishes returned SDK status zero, absent status and pre-response rejection', async (t) => {
+    for (const [name, options, status, received] of [
+        ['returned-zero', { response: { data: null, error: { message: sensitive }, status: 0 } }, 0, true],
+        ['returned-absent-status', { response: { data: null, error: { message: sensitive } } }, undefined, true],
+        ['returned-unsupported-status', { response: { data: null, error: sensitive, status: 999 } }, undefined, true],
+        ['rejected-before-response', { rejection: Error(sensitive) }, undefined, false],
+        ['rejected-with-zero', { rejection: { status: 0, message: sensitive } }, 0, false],
+        ['returned-undefined', { response: undefined }, undefined, true],
+        ['returned-null', { response: null }, undefined, true],
+    ]) {
+        await t.test(name, async () => {
+            const actual = await actualDraftCreate(options)
+            const state = await currentDraft(importUrl, { actualCreate: actual.create })
+            const events = importEvents(state)
+            assert.equal(events.length, 1)
+            const props = events[0][1]
+            assert.equal(props.outcome, 'failure')
+            assert.equal(props.failure_stage, 'create')
+            assert.equal(props.create_checkpoint, 'insert_select')
+            assert.equal(props.create_resolved, false)
+            assert.equal(props.diagnostic_schema_version, 1)
+            assert.equal(props.create_error_category, 'unknown')
+            assert.equal(props.create_response_received, received)
+            assert.equal(props.create_error_status, status)
+            assert.equal(Object.hasOwn(props, 'create_error_status'), status !== undefined)
+            assert.doesNotMatch(JSON.stringify(props), /token=|email=|private\.invalid|message|details|synthetic-user/)
+            assert.equal(actual.counts.inserts, 1)
+            assert.equal(actual.counts.singles, 1)
+            assert.equal(actual.counts.transport, 0)
+            assert.equal(state.redirects.length, 0)
+            state.h.unmount()
+            actual.h.unmount()
+        })
+    }
+})
+
+test('exported diagnostics keep all existing numeric status mappings and reject hostile error/response metadata', () => {
+    const project = (error, response) => {
+        const diagnostics = {}
+        createDiagnostics.recordDraftCreateError(diagnostics, error, response)
+        return json(createDiagnostics.draftCreateFailureProperties(diagnostics))
+    }
+    for (const status of [0, 200, 201, 204, 400, 401, 403, 404, 406, 408, 409, 413, 422, 429, 500, 502, 503, 504]) {
+        assert.equal(project({}, { status }).create_error_status, status)
+        assert.equal(project({ status }).create_error_status, status)
+    }
+    assert.equal(project({ status: 503 }, { status: 0 }).create_error_status, 0)
+    const hostile = Object.defineProperties(
+        {},
+        Object.fromEntries(
+            ['code', 'status', 'message', 'details', 'hint', 'name', 'toString', 'valueOf'].map((key) => [
+                key,
+                {
+                    get() {
+                        assert.fail('Untrusted getter invoked')
+                    },
+                },
+            ]),
+        ),
+    )
+    const proxy = new Proxy(
+        {},
+        {
+            get() {
+                assert.fail('Untrusted property read')
+            },
+            getOwnPropertyDescriptor() {
+                throw Error(sensitive)
+            },
+        },
+    )
+    const revoked = Proxy.revocable({}, {})
+    revoked.revoke()
+    for (const input of [
+        hostile,
+        proxy,
+        revoked.proxy,
+        sensitive,
+        null,
+        undefined,
+        0,
+        Symbol(sensitive),
+        Object.create({ code: '42501', status: 403 }),
+        { code: hostile, status: hostile },
+    ]) {
+        const props = project(input, input)
+        assert.equal(props.create_error_category, 'unknown')
+        assert.equal(Object.hasOwn(props, 'create_error_status'), false)
+        assert.equal(props.create_response_received, input !== undefined)
+        assert.doesNotMatch(JSON.stringify(props), /token=|email=|private\.invalid|message|details/)
+        assert.doesNotThrow(() => createDiagnostics.draftCreateFailureProperties(input))
+    }
+})
+
+test('actual create preserves hostile returned/thrown error identity without diagnostics invoking getters', async () => {
+    const error = Object.defineProperties(
+        {},
+        Object.fromEntries(
+            ['code', 'status', 'message', 'details', 'hint', 'name'].map((key) => [
+                key,
+                {
+                    get() {
+                        assert.fail('Untrusted error getter invoked')
+                    },
+                },
+            ]),
+        ),
+    )
+    for (const options of [{ rejection: error }, { response: { data: null, error, status: 0 } }]) {
+        const actual = await actualDraftCreate(options)
+        const diagnostics = {}
+        await assert.rejects(actual.create(doc, {}, diagnostics), (value) => value === error)
+        assert.equal(diagnostics.create_response_received, Object.hasOwn(options, 'response'))
+        assert.equal(actual.counts.transport, 0)
+        actual.h.unmount()
     }
 })
 
